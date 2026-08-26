@@ -86,12 +86,6 @@ h1 .g{color:var(--g4);}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--g4);animation:blink 1.2s infinite;}
 .powered{font-size:10px;color:var(--t3);}
 
-/* STATS BAR */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1b3020;border:1px solid #1b3020;border-radius:12px;overflow:hidden;margin:48px 48px 0;}
-.stat-cell{background:var(--d2);padding:24px 28px;transition:background 0.2s;}
-.stat-cell:hover{background:#0d1d10;}
-.stat-num{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:800;color:var(--g4);margin-bottom:5px;}
-.stat-label{font-size:12px;color:var(--t3);font-weight:500;}
 
 /* SECTIONS */
 .sec{padding:64px 48px;}
@@ -115,13 +109,6 @@ h1 .g{color:var(--g4);}
 .prod-arrow{margin-left:auto;color:var(--t3);font-size:14px;transition:all 0.25s;flex-shrink:0;}
 .prod-btn:hover .prod-arrow{color:var(--g4);transform:translateX(3px);}
 
-/* OVERVIEW STRIP */
-.overview-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-.ov-card{background:var(--d3);border:1px solid #182d1e;border-radius:10px;padding:18px 20px;transition:border-color 0.2s;}
-.ov-card:hover{border-color:rgba(46,204,113,0.2);}
-.ov-icon{font-size:20px;margin-bottom:8px;}
-.ov-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
-.ov-desc{font-size:12px;color:var(--t3);line-height:1.55;}
 
 /* NEWS */
 .news-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
@@ -148,14 +135,6 @@ h1 .g{color:var(--g4);}
 .up{color:var(--g4);}
 .dn{color:var(--red);}
 
-/* TESTIMONIALS */
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.testi-card{background:var(--card);border:1px solid #1b3020;border-radius:12px;padding:26px;transition:border-color 0.2s,transform 0.2s;}
-.testi-card:hover{border-color:rgba(46,204,113,0.25);transform:translateY(-2px);}
-.testi-stars{color:var(--g4);font-size:14px;margin-bottom:13px;letter-spacing:2px;}
-.testi-text{font-size:13.5px;color:var(--t2);line-height:1.7;margin-bottom:18px;font-style:italic;}
-.testi-name{font-size:13px;font-weight:700;color:#fff;}
-.testi-role{font-size:11px;color:var(--t3);margin-top:2px;}
 
 /* CTA BANNER */
 .cta-banner{margin:0 48px 64px;background:linear-gradient(135deg,#0d2419 0%,#091a10 100%);border:1px solid rgba(46,204,113,0.18);border-radius:14px;padding:52px;display:flex;align-items:center;justify-content:space-between;gap:32px;position:relative;overflow:hidden;}
@@ -199,21 +178,16 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
   .hero{padding:40px 20px 36px;}
   .hero-grid{grid-template-columns:1fr;gap:28px;}
   h1{font-size:38px;}
-  .stats-bar{grid-template-columns:repeat(2,1fr);margin:32px 20px 0;}
   .sec{padding:44px 20px;}
-  .prod-grid{grid-template-columns:repeat(2,1fr);}
-  .overview-strip{grid-template-columns:1fr 1fr;}
+  .prod-grid{grid-template-columns:repeat(2,1fr)!important;}
   .news-grid{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr;}
   .cta-banner{flex-direction:column;margin:0 20px 40px;padding:36px 28px;}
   footer{padding:24px 20px;}
   .divider{margin:0 20px;}
 }
 @media(max-width:600px){
   h1{font-size:30px;letter-spacing:-1px;}
-  .prod-grid{grid-template-columns:1fr 1fr;}
-  .overview-strip{grid-template-columns:1fr;}
-  .stats-bar{grid-template-columns:1fr 1fr;}
+  .prod-grid{grid-template-columns:1fr 1fr!important;}
 }
 </style>
 </head>
@@ -327,14 +301,6 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
   </div>
 </section>
 
-<!-- STATS BAR -->
-<div class="stats-bar reveal">
-  <div class="stat-cell"><div class="stat-num">12K+</div><div class="stat-label">Active Traders Worldwide</div></div>
-  <div class="stat-cell"><div class="stat-num">94%</div><div class="stat-label">Signal Win Rate</div></div>
-  <div class="stat-cell"><div class="stat-num">15+</div><div class="stat-label">Signals Per Day</div></div>
-  <div class="stat-cell"><div class="stat-num">24/7</div><div class="stat-label">Market Coverage</div></div>
-</div>
-
 <div style="height:48px"></div>
 <div class="divider"></div>
 
@@ -344,20 +310,20 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
   <div class="sec-h">All We Have — All You Need</div>
   <div class="sec-sub">Click any service to learn more. Full pages launching soon.</div>
 
-  <div class="prod-grid">
-    <button class="prod-btn" onclick="openModal('Briefings','Daily market briefings covering all major sessions — pre-market context, key levels, and bias for the day ahead. Delivered every morning before the open.','📋')">
-      <div class="prod-icon-wrap">📋</div>
-      <div class="prod-text"><div class="prod-name">Briefings</div><div class="prod-sub">Daily market context</div></div>
+  <div class="prod-grid" style="grid-template-columns:repeat(4,1fr);">
+    <button class="prod-btn" onclick="openModal('Bridge','Seamlessly connect your broker to AG Technical — copy trades directly from our signals to your account. Auto-execute every call with zero manual intervention.','🌉')">
+      <div class="prod-icon-wrap">🌉</div>
+      <div class="prod-text"><div class="prod-name">Bridge</div><div class="prod-sub">Trade copy connector</div></div>
       <div class="prod-arrow">→</div>
     </button>
-    <button class="prod-btn" onclick="openModal('Signal Bot','Automated trade signals with Entry, Stop Loss, and Take Profit levels. Delivered instantly via Telegram — no delay, no manual re-posting.','🤖')">
+    <button class="prod-btn" onclick="openModal('Algo (Auto Trading)','Fully automated trading algorithms built on AG Technical strategy — runs 24/7, executes entries and exits without you watching the screen.','🤖')">
       <div class="prod-icon-wrap">🤖</div>
-      <div class="prod-text"><div class="prod-name">Signal Bot</div><div class="prod-sub">Auto trade alerts</div></div>
+      <div class="prod-text"><div class="prod-name">Algo</div><div class="prod-sub">Auto trading system</div></div>
       <div class="prod-arrow">→</div>
     </button>
-    <button class="prod-btn" onclick="openModal('TradingView Ideas','Published chart ideas on TradingView — annotated setups, marked key zones, and live trade calls updated in real time.','📈')">
+    <button class="prod-btn" onclick="openModal('TV Indicator','Custom TradingView indicator — plots AG Technical key levels, zones, and signals directly on your chart in real time. Plug and trade.','📈')">
       <div class="prod-icon-wrap">📈</div>
-      <div class="prod-text"><div class="prod-name">TV Ideas</div><div class="prod-sub">TradingView setups</div></div>
+      <div class="prod-text"><div class="prod-name">TV Indicator</div><div class="prod-sub">Custom chart indicator</div></div>
       <div class="prod-arrow">→</div>
     </button>
     <button class="prod-btn" onclick="openModal('Education','Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.','🧠')">
@@ -365,50 +331,21 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
       <div class="prod-text"><div class="prod-name">Education</div><div class="prod-sub">Courses &amp; academy</div></div>
       <div class="prod-arrow">→</div>
     </button>
-    <button class="prod-btn" onclick="openModal('Guides','Step-by-step written guides covering specific topics — how to read order flow, how to set stops, session timing, prop firm rules, and more.','📖')">
+    <button class="prod-btn" onclick="openModal('Guides','Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.','📖')">
       <div class="prod-icon-wrap">📖</div>
-      <div class="prod-text"><div class="prod-name">Guides</div><div class="prod-sub">Written playbooks</div></div>
+      <div class="prod-text"><div class="prod-name">Guide</div><div class="prod-sub">Written playbooks</div></div>
       <div class="prod-arrow">→</div>
     </button>
-    <button class="prod-btn" onclick="openModal('Mobile Alerts','Push notifications straight to your phone — session opens, signal alerts, breaking market moves, and economic events. Never miss a move.','📱')">
-      <div class="prod-icon-wrap">📱</div>
-      <div class="prod-text"><div class="prod-name">Mobile Alerts</div><div class="prod-sub">Push notifications</div></div>
-      <div class="prod-arrow">→</div>
-    </button>
-    <button class="prod-btn" onclick="openModal('Custom Plans','Tailored service packages for prop firm traders, institutions, or groups. Custom signal feeds, private channels, and dedicated analyst access.','⚙️')">
+    <button class="prod-btn" onclick="openModal('Custom Strategy','Your own personalised trading strategy built by AG Technical analysts — tailored to your risk profile, timeframe, and market preference.','⚙️')">
       <div class="prod-icon-wrap">⚙️</div>
-      <div class="prod-text"><div class="prod-name">Custom Plans</div><div class="prod-sub">Tailored packages</div></div>
+      <div class="prod-text"><div class="prod-name">Custom Strategy</div><div class="prod-sub">Built for you</div></div>
       <div class="prod-arrow">→</div>
     </button>
-    <button class="prod-btn" onclick="openModal('On-the-Fly Analysis','Live analysis posted mid-session as setups form — not pre-scheduled, not recycled. Real-time reads on price action as the market moves.','⚡')">
-      <div class="prod-icon-wrap">⚡</div>
-      <div class="prod-text"><div class="prod-name">On-the-Fly</div><div class="prod-sub">Live session reads</div></div>
+    <button class="prod-btn" onclick="openModal('News','Real-time market news, macro events, and AG analysis — all in one feed. Know what moves the market before it moves.','📰')">
+      <div class="prod-icon-wrap">📰</div>
+      <div class="prod-text"><div class="prod-name">News</div><div class="prod-sub">Live market feed</div></div>
       <div class="prod-arrow">→</div>
     </button>
-  </div>
-
-  <!-- OVERVIEW STRIP -->
-  <div class="overview-strip">
-    <div class="ov-card">
-      <div class="ov-icon">📡</div>
-      <div class="ov-title">Up to 15 signals/day</div>
-      <div class="ov-desc">Across Forex, Crypto, Indices and Commodities — every major session covered.</div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-icon">🎓</div>
-      <div class="ov-title">Education-first approach</div>
-      <div class="ov-desc">Every call comes with the reasoning — you learn the trade, not just copy it.</div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-icon">🔐</div>
-      <div class="ov-title">Private community</div>
-      <div class="ov-desc">3,000+ active traders, weekly live sessions, and optional 1-on-1 mentorship.</div>
-    </div>
-    <div class="ov-card">
-      <div class="ov-icon">📊</div>
-      <div class="ov-title">Full transparency</div>
-      <div class="ov-desc">Track record posted publicly every month — win rate, drawdown, all of it.</div>
-    </div>
   </div>
 </section>
 
@@ -450,34 +387,7 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
   </div>
 </section>
 
-<div class="divider"></div>
 
-<!-- TESTIMONIALS -->
-<section class="sec reveal" id="traders">
-  <div class="sec-tag">Traders Say</div>
-  <div class="sec-h">Real results, real traders</div>
-  <div class="sec-sub">What our community members say after trading with AG Technical.</div>
-  <div class="testi-grid">
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <div class="testi-text">"The analysis here is on another level. I've been trading for 4 years and AG Technical's breakdowns taught me things I never learned anywhere else."</div>
-      <div class="testi-name">Rahul M.</div>
-      <div class="testi-role">Forex Trader · Mumbai</div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <div class="testi-text">"94% accuracy isn't hype — I tracked 3 months of signals personally. The risk management guidance alone is worth the entire subscription."</div>
-      <div class="testi-name">Sarah K.</div>
-      <div class="testi-role">Crypto Trader · Dubai</div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-stars">★★★★★</div>
-      <div class="testi-text">"Started as a complete beginner. Six months with AG Technical's academy and I'm consistently profitable. The community support is incredible."</div>
-      <div class="testi-name">James O.</div>
-      <div class="testi-role">Indices Trader · London</div>
-    </div>
-  </div>
-</section>
 
 <!-- CTA BANNER -->
 <div class="cta-banner reveal">

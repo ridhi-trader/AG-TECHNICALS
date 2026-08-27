@@ -33,11 +33,17 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 .btn-cta:hover{background:#27ae60;}
 
 /* TICKER */
-.ticker-wrap{background:var(--d2);border-bottom:1px solid #182d1e;padding:7px 0;overflow:hidden;white-space:nowrap;}
-.ticker-track{display:inline-flex;gap:36px;animation:ticker 38s linear infinite;}
+.ticker-wrap{background:#0a1210;border-bottom:1px solid #1a2e1e;padding:10px 0;overflow:hidden;white-space:nowrap;}
+.ticker-track{display:inline-block;animation:ticker 50s linear infinite;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
 @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;padding:0 6px;}
-.ti-sym{color:var(--t3);font-weight:700;font-size:11px;letter-spacing:0.5px;}
+.ti{display:inline-block;margin-right:12px;color:#ffffff;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.2);padding:5px 14px;border-radius:20px;vertical-align:middle;}
+.ti b{font-weight:800;}
+.ti-price{color:#ffd23f;text-shadow:0 0 12px rgba(255,210,63,0.55);}
+.ti-dxy{color:#7fd4ff!important;border-color:rgba(127,212,255,0.55)!important;background:rgba(127,212,255,0.12)!important;}
+.ti-jh{color:#ff8a65!important;border-color:rgba(255,138,101,0.55)!important;background:rgba(255,138,101,0.12)!important;}
+.ti-cot{color:#8affc1!important;border-color:rgba(138,255,193,0.55)!important;background:rgba(138,255,193,0.12)!important;}
+.ti-gold{color:#ffd23f!important;border-color:rgba(255,210,63,0.55)!important;background:rgba(255,210,63,0.12)!important;}
+.ti-sym{color:#9abfa6;font-size:11px;margin-right:6px;}
 .ti-val{color:var(--t1);font-weight:600;font-family:'Space Grotesk',sans-serif;}
 .ti-up{color:var(--g4);font-size:11px;}
 .ti-dn{color:var(--red);font-size:11px;}
@@ -222,38 +228,31 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
 </nav>
 
 <!-- TICKER -->
-<div class="ticker-wrap" style="background:#0d1a10;border-bottom:1px solid #1b3020;padding:9px 0;overflow:hidden;white-space:nowrap;">
-  <div class="ticker-track" style="display:inline-block;animation:ticker 38s linear infinite;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;">
-    <span class="ti"><span class="ti-sym">XAU/USD</span><span class="ti-val" style="color:#ffd23f;text-shadow:0 0 10px rgba(255,210,63,0.5)">$4,645.00</span><span class="ti-up">▲ 1.82%</span></span>
-    <span class="ti" style="color:#7fd4ff;border-color:rgba(127,212,255,0.4);background:rgba(127,212,255,0.08)">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
-    <span class="ti"><span class="ti-sym">BTCUSD</span><span class="ti-val">67,420</span><span class="ti-up">▲ 2.41%</span></span>
-    <span class="ti"><span class="ti-sym">ETHUSD</span><span class="ti-val">3,540</span><span class="ti-up">▲ 3.10%</span></span>
-    <span class="ti" style="color:#ff8a65;border-color:rgba(255,138,101,0.4);background:rgba(255,138,101,0.08)">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
-    <span class="ti"><span class="ti-sym">EURUSD</span><span class="ti-val">1.0842</span><span class="ti-up">▲ 0.18%</span></span>
-    <span class="ti"><span class="ti-sym">XAUUSD</span><span class="ti-val">4,645</span><span class="ti-up">▲ 1.82%</span></span>
-    <span class="ti" style="color:#8affc1;border-color:rgba(138,255,193,0.4);background:rgba(138,255,193,0.08)">COT · <b>Managed Money net long 130,766 contracts</b></span>
-    <span class="ti"><span class="ti-sym">GBPUSD</span><span class="ti-val">1.2735</span><span class="ti-up">▲ 0.22%</span></span>
-    <span class="ti"><span class="ti-sym">NAS100</span><span class="ti-val">18,920</span><span class="ti-up">▲ 1.20%</span></span>
-    <span class="ti"><span class="ti-sym">CRUDE</span><span class="ti-val">82.50</span><span class="ti-dn">▼ 0.61%</span></span>
-    <span class="ti"><span class="ti-sym">USDJPY</span><span class="ti-val">156.20</span><span class="ti-dn">▼ 0.15%</span></span>
-    <span class="ti" style="color:#ffd23f;border-color:rgba(255,210,63,0.4);background:rgba(255,210,63,0.08)">AG INTEL · <b>Gold Dossier: Jackson Hole Week — Read Now ↗</b></span>
-    <span class="ti"><span class="ti-sym">XAU/USD</span><span class="ti-val" style="color:#ffd23f;text-shadow:0 0 10px rgba(255,210,63,0.5)">$4,645.00</span><span class="ti-up">▲ 1.82%</span></span>
-    <span class="ti" style="color:#7fd4ff;border-color:rgba(127,212,255,0.4);background:rgba(127,212,255,0.08)">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
-    <span class="ti"><span class="ti-sym">BTCUSD</span><span class="ti-val">67,420</span><span class="ti-up">▲ 2.41%</span></span>
-    <span class="ti"><span class="ti-sym">ETHUSD</span><span class="ti-val">3,540</span><span class="ti-up">▲ 3.10%</span></span>
-    <span class="ti" style="color:#ff8a65;border-color:rgba(255,138,101,0.4);background:rgba(255,138,101,0.08)">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
-    <span class="ti"><span class="ti-sym">EURUSD</span><span class="ti-val">1.0842</span><span class="ti-up">▲ 0.18%</span></span>
-    <span class="ti"><span class="ti-sym">XAUUSD</span><span class="ti-val">4,645</span><span class="ti-up">▲ 1.82%</span></span>
-    <span class="ti" style="color:#8affc1;border-color:rgba(138,255,193,0.4);background:rgba(138,255,193,0.08)">COT · <b>Managed Money net long 130,766 contracts</b></span>
-    <span class="ti"><span class="ti-sym">GBPUSD</span><span class="ti-val">1.2735</span><span class="ti-up">▲ 0.22%</span></span>
-    <span class="ti"><span class="ti-sym">NAS100</span><span class="ti-val">18,920</span><span class="ti-up">▲ 1.20%</span></span>
-    <span class="ti" style="color:#ffd23f;border-color:rgba(255,210,63,0.4);background:rgba(255,210,63,0.08)">AG INTEL · <b>Gold Dossier: Jackson Hole Week — Read Now ↗</b></span>
-    <span class="ti"><span class="ti-sym">GBPUSD</span><span class="ti-val">1.2735</span><span class="ti-up">▲ 0.22%</span></span>
-    <span class="ti"><span class="ti-sym">SPX500</span><span class="ti-val">5,421</span><span class="ti-up">▲ 0.85%</span></span>
-    <span class="ti"><span class="ti-sym">NAS100</span><span class="ti-val">18,920</span><span class="ti-up">▲ 1.20%</span></span>
-    <span class="ti"><span class="ti-sym">CRUDE</span><span class="ti-val">82.50</span><span class="ti-dn">▼ 0.61%</span></span>
-    <span class="ti"><span class="ti-sym">USDJPY</span><span class="ti-val">156.20</span><span class="ti-dn">▼ 0.15%</span></span>
-    <span class="ti"><span class="ti-sym">XAGUSD</span><span class="ti-val">29.42</span><span class="ti-up">▲ 0.74%</span></span>
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ti"><span class="ti-sym">XAU/USD</span> <b class="ti-price">$4,645.00</b></span>
+    <span class="ti ti-dxy">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
+    <span class="ti"><span class="ti-sym">BTCUSD</span> <b>67,420</b> <span style="color:#2ecc71">▲ 2.41%</span></span>
+    <span class="ti"><span class="ti-sym">ETHUSD</span> <b>3,540</b> <span style="color:#2ecc71">▲ 3.10%</span></span>
+    <span class="ti ti-jh">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
+    <span class="ti"><span class="ti-sym">EURUSD</span> <b>1.0842</b> <span style="color:#2ecc71">▲ 0.18%</span></span>
+    <span class="ti"><span class="ti-sym">GBPUSD</span> <b>1.2735</b> <span style="color:#2ecc71">▲ 0.22%</span></span>
+    <span class="ti ti-cot">COT · <b>Managed Money net long 130,766 contracts</b></span>
+    <span class="ti"><span class="ti-sym">NAS100</span> <b>18,920</b> <span style="color:#2ecc71">▲ 1.20%</span></span>
+    <span class="ti"><span class="ti-sym">CRUDE</span> <b>82.50</b> <span style="color:#e74c3c">▼ 0.61%</span></span>
+    <span class="ti"><span class="ti-sym">USDJPY</span> <b>156.20</b> <span style="color:#e74c3c">▼ 0.15%</span></span>
+    <span class="ti ti-gold">AG INTEL · <b>Gold Dossier: Jackson Hole — Read ↗</b></span>
+    <span class="ti"><span class="ti-sym">XAU/USD</span> <b class="ti-price">$4,645.00</b></span>
+    <span class="ti ti-dxy">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
+    <span class="ti"><span class="ti-sym">BTCUSD</span> <b>67,420</b> <span style="color:#2ecc71">▲ 2.41%</span></span>
+    <span class="ti"><span class="ti-sym">ETHUSD</span> <b>3,540</b> <span style="color:#2ecc71">▲ 3.10%</span></span>
+    <span class="ti ti-jh">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
+    <span class="ti"><span class="ti-sym">EURUSD</span> <b>1.0842</b> <span style="color:#2ecc71">▲ 0.18%</span></span>
+    <span class="ti"><span class="ti-sym">GBPUSD</span> <b>1.2735</b> <span style="color:#2ecc71">▲ 0.22%</span></span>
+    <span class="ti ti-cot">COT · <b>Managed Money net long 130,766 contracts</b></span>
+    <span class="ti"><span class="ti-sym">NAS100</span> <b>18,920</b> <span style="color:#2ecc71">▲ 1.20%</span></span>
+    <span class="ti"><span class="ti-sym">CRUDE</span> <b>82.50</b> <span style="color:#e74c3c">▼ 0.61%</span></span>
+    <span class="ti ti-gold">AG INTEL · <b>Gold Dossier: Jackson Hole — Read ↗</b></span>
   </div>
 </div>
 

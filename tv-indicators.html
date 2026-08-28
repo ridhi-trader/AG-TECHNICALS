@@ -7,11 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --dark:#060d09;--d2:#0a1410;--d3:#0d1a10;
-    --card:#111c14;--g4:#2ecc71;--t1:#e8f5ec;--t2:#9abfa6;--t3:#5c8068;
-    --red:#e74c3c;--amber:#f39c12;--gold:#c9a227;--gold-light:#e8c766;
-  }
+  :root{--dark:#060d09;--d2:#0a1410;--card:#111c14;--g4:#2ecc71;--t1:#e8f5ec;--t2:#9abfa6;--t3:#5c8068;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--dark);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
 
@@ -19,7 +15,7 @@
   nav{display:flex;align-items:center;justify-content:space-between;padding:16px 48px;border-bottom:1px solid #1b3020;background:rgba(6,13,9,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
   .nav-logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:#fff;text-decoration:none;}
   .nav-logo span{color:var(--g4);}
-  .nav-back{display:flex;align-items:center;gap:8px;color:var(--t2);font-size:13px;font-weight:500;text-decoration:none;transition:color 0.2s;}
+  .nav-back{color:var(--t2);font-size:13px;font-weight:500;text-decoration:none;transition:color 0.2s;}
   .nav-back:hover{color:var(--g4);}
 
   /* TICKER */
@@ -28,7 +24,6 @@
   @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   .ti{display:inline-block;margin-right:12px;color:#fff;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.2);padding:5px 14px;border-radius:20px;vertical-align:middle;}
   .ti b{font-weight:800;}
-  .ti-price{color:#ffd23f;text-shadow:0 0 12px rgba(255,210,63,0.55);}
   .ti-dxy{color:#7fd4ff!important;border-color:rgba(127,212,255,0.55)!important;background:rgba(127,212,255,0.12)!important;}
   .ti-jh{color:#ff8a65!important;border-color:rgba(255,138,101,0.55)!important;background:rgba(255,138,101,0.12)!important;}
   .ti-cot{color:#8affc1!important;border-color:rgba(138,255,193,0.55)!important;background:rgba(138,255,193,0.12)!important;}
@@ -36,56 +31,61 @@
   .ti-sym{color:#9abfa6;font-size:11px;margin-right:6px;}
 
   /* HERO */
-  .hero{padding:64px 48px 40px;max-width:1100px;margin:0 auto;}
-  .hero-tag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g4);margin-bottom:16px;}
-  .hero-title{font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1.1;margin-bottom:14px;}
+  .hero{padding:56px 48px 36px;max-width:1200px;margin:0 auto;}
+  .hero-tag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g4);margin-bottom:14px;}
+  .hero-title{font-family:'Space Grotesk',sans-serif;font-size:40px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:12px;}
   .hero-title span{color:var(--g4);}
-  .hero-sub{font-size:15px;color:var(--t2);max-width:56ch;line-height:1.7;}
+  .hero-sub{font-size:14px;color:var(--t2);max-width:52ch;line-height:1.7;}
 
-  /* CARDS */
-  .cards{max-width:1100px;margin:0 auto;padding:0 48px 80px;display:flex;flex-direction:column;gap:32px;}
+  /* GRID */
+  .grid{max-width:1200px;margin:0 auto;padding:0 48px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 
-  .ind-card{background:var(--card);border:1px solid #1b3020;border-radius:16px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;}
-  .ind-card:hover{border-color:rgba(46,204,113,0.3);transform:translateY(-2px);}
+  .ind-card{background:#0f1a12;border:1px solid #1b3020;border-radius:16px;overflow:hidden;cursor:pointer;transition:border-color 0.2s,transform 0.25s,box-shadow 0.25s;}
+  .ind-card:hover{border-color:rgba(46,204,113,0.35);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.4);}
 
-  .ind-img{width:100%;height:280px;object-fit:cover;object-position:top;display:block;border-bottom:1px solid #1b3020;}
-  .ind-img-placeholder{width:100%;height:280px;background:linear-gradient(135deg,#0d1a10,#111c14);display:flex;align-items:center;justify-content:center;border-bottom:1px solid #1b3020;font-size:48px;}
+  .ind-img-wrap{position:relative;width:100%;height:220px;overflow:hidden;}
+  .ind-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform 0.3s;}
+  .ind-card:hover .ind-img-wrap img{transform:scale(1.04);}
+  .premium-badge{position:absolute;top:12px;right:12px;background:#f39c12;color:#000;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:4px 10px;border-radius:4px;}
 
-  .ind-body{padding:28px 32px;}
-  .ind-pid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);letter-spacing:2px;margin-bottom:8px;}
-  .ind-name{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:20px;}
+  .ind-body{padding:22px 22px 24px;}
+  .ind-pid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);letter-spacing:2px;margin-bottom:7px;}
+  .ind-name{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
+  .ind-desc{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:20px;}
+  .ind-btn{width:100%;padding:13px;background:linear-gradient(135deg,#f39c12,#e67e22);border:none;border-radius:8px;color:#000;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
+  .ind-btn:hover{opacity:0.88;}
 
-  .ind-about{background:rgba(0,0,0,0.25);border:1px solid #1b3020;border-radius:10px;padding:20px 24px;margin-bottom:24px;}
-  .ind-about-title{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
-  .ind-about-text{font-size:14px;color:var(--t2);line-height:1.75;}
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(6px);z-index:999;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:#111c14;border:1px solid #1b3020;border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;}
+  .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;z-index:10;}
+  .modal-close:hover{color:#fff;}
+  .modal-img{width:100%;height:260px;object-fit:cover;object-position:top;border-radius:16px 16px 0 0;display:block;}
+  .modal-body{padding:24px 28px 28px;}
+  .modal-pid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);letter-spacing:2px;margin-bottom:8px;}
+  .modal-name{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff;margin-bottom:18px;}
+  .modal-about{background:rgba(0,0,0,0.3);border:1px solid #1b3020;border-radius:10px;padding:18px 20px;margin-bottom:20px;}
+  .modal-about-title{font-size:11px;font-weight:700;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .modal-about-text{font-size:13.5px;color:var(--t2);line-height:1.75;}
+  .modal-cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:linear-gradient(135deg,#f39c12,#e67e22);border:none;border-radius:10px;color:#000;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s;}
+  .modal-cta:hover{opacity:0.9;}
+  .modal-note{text-align:center;font-size:12px;color:var(--t3);margin-top:10px;}
 
-  .ind-cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,#f39c12,#e67e22);border:none;border-radius:10px;color:#000;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s,transform 0.2s;}
-  .ind-cta:hover{opacity:0.9;transform:scale(1.01);}
-  .ind-cta-note{text-align:center;font-size:12px;color:var(--t3);margin-top:10px;}
-
-  @media(max-width:768px){
-    nav{padding:14px 20px;}
-    .hero{padding:40px 20px 28px;}
-    .hero-title{font-size:30px;}
-    .cards{padding:0 20px 60px;}
-    .ind-img{height:200px;}
-    .ind-body{padding:20px;}
-    .ind-name{font-size:20px;}
-  }
+  @media(max-width:900px){.grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){nav{padding:14px 20px;}.hero{padding:36px 20px 24px;}.hero-title{font-size:28px;}.grid{grid-template-columns:1fr;padding:0 20px 60px;}}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="index.html" class="nav-logo">AG<span> Technical</span></a>
   <a href="index.html" class="nav-back">← Back to Home</a>
 </nav>
 
-<!-- TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-track">
-    <span class="ti"><span class="ti-sym">XAU/USD</span> <b class="ti-price">$4,645.00</b></span>
+    <span class="ti"><span class="ti-sym">XAU/USD</span> <b style="color:#ffd23f">$4,645.00</b></span>
     <span class="ti ti-dxy">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
     <span class="ti"><span class="ti-sym">BTCUSD</span> <b>67,420</b> <span style="color:#2ecc71">▲ 2.41%</span></span>
     <span class="ti"><span class="ti-sym">ETHUSD</span> <b>3,540</b> <span style="color:#2ecc71">▲ 3.10%</span></span>
@@ -94,74 +94,118 @@
     <span class="ti ti-cot">COT · <b>Managed Money net long 130,766 contracts</b></span>
     <span class="ti"><span class="ti-sym">NAS100</span> <b>18,920</b> <span style="color:#2ecc71">▲ 1.20%</span></span>
     <span class="ti ti-gold">AG INTEL · <b>Gold Dossier: Jackson Hole — Read ↗</b></span>
-    <span class="ti"><span class="ti-sym">XAU/USD</span> <b class="ti-price">$4,645.00</b></span>
+    <span class="ti"><span class="ti-sym">XAU/USD</span> <b style="color:#ffd23f">$4,645.00</b></span>
     <span class="ti ti-dxy">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
     <span class="ti"><span class="ti-sym">BTCUSD</span> <b>67,420</b> <span style="color:#2ecc71">▲ 2.41%</span></span>
-    <span class="ti"><span class="ti-sym">ETHUSD</span> <b>3,540</b> <span style="color:#2ecc71">▲ 3.10%</span></span>
     <span class="ti ti-jh">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
-    <span class="ti"><span class="ti-sym">EURUSD</span> <b>1.0842</b> <span style="color:#2ecc71">▲ 0.18%</span></span>
     <span class="ti ti-cot">COT · <b>Managed Money net long 130,766 contracts</b></span>
-    <span class="ti"><span class="ti-sym">NAS100</span> <b>18,920</b> <span style="color:#2ecc71">▲ 1.20%</span></span>
     <span class="ti ti-gold">AG INTEL · <b>Gold Dossier: Jackson Hole — Read ↗</b></span>
   </div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-tag">📈 TradingView Indicators</div>
   <div class="hero-title">AG <span>Custom Indicators</span></div>
-  <div class="hero-sub">Proprietary TradingView indicators built on AG Technical's methodology — plug directly into your chart and trade with institutional-grade confluence.</div>
+  <div class="hero-sub">Proprietary indicators built on AG Technical's methodology — plug into TradingView and trade with institutional-grade confluence.</div>
 </div>
 
-<!-- CARDS -->
-<div class="cards">
-
-  <!-- INDICATOR 1: AG SMC -->
-  <div class="ind-card">
-    <div class="ind-img-placeholder">📊</div>
+<div class="grid">
+  <div class="ind-card" onclick="openModal('smc')">
+    <div class="ind-img-wrap">
+      <img src="img-smc.png" alt="AG SMC Indicator">
+      <div class="premium-badge">PREMIUM</div>
+    </div>
     <div class="ind-body">
       <div class="ind-pid">PID: TVI-0003</div>
       <div class="ind-name">AG SMC Indicator</div>
-      <div class="ind-about">
-        <div class="ind-about-title">About the product</div>
-        <div class="ind-about-text">The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score, so you only take the highest-probability trades. Works on gold, forex, indices and crypto.</div>
-      </div>
-      <a class="ind-cta" href="https://wa.me/message/AGTECH" target="_blank">💬 Get this on WhatsApp</a>
-      <div class="ind-cta-note">Tap the button — it opens WhatsApp with your request ready. We'll reply with pricing and setup.</div>
+      <div class="ind-desc">Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.</div>
+      <button class="ind-btn">View details</button>
     </div>
   </div>
 
-  <!-- INDICATOR 2: AG Order Flow -->
-  <div class="ind-card">
-    <div class="ind-img-placeholder">🔴</div>
+  <div class="ind-card" onclick="openModal('orderflow')">
+    <div class="ind-img-wrap">
+      <img src="img-orderflow.png" alt="AG Order Flow">
+      <div class="premium-badge">PREMIUM</div>
+    </div>
     <div class="ind-body">
       <div class="ind-pid">PID: TVI-0004</div>
       <div class="ind-name">AG Order Flow</div>
-      <div class="ind-about">
-        <div class="ind-about-title">About the product</div>
-        <div class="ind-about-text">The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss. Built for gold, forex and indices.</div>
-      </div>
-      <a class="ind-cta" href="https://wa.me/message/AGTECH" target="_blank">💬 Get this on WhatsApp</a>
-      <div class="ind-cta-note">Tap the button — it opens WhatsApp with your request ready. We'll reply with pricing and setup.</div>
+      <div class="ind-desc">Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.</div>
+      <button class="ind-btn">View details</button>
     </div>
   </div>
 
-  <!-- INDICATOR 3: AG-ESB -->
-  <div class="ind-card">
-    <div class="ind-img-placeholder">⚡</div>
+  <div class="ind-card" onclick="openModal('esb')">
+    <div class="ind-img-wrap">
+      <img src="img-esb.png" alt="AG-ESB Indicator">
+      <div class="premium-badge">PREMIUM</div>
+    </div>
     <div class="ind-body">
       <div class="ind-pid">PID: TVI-0005</div>
       <div class="ind-name">AG-ESB (Swing + EMA + R:R)</div>
-      <div class="ind-about">
-        <div class="ind-about-title">About the product</div>
-        <div class="ind-about-text">The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.</div>
-      </div>
-      <a class="ind-cta" href="https://wa.me/message/AGTECH" target="_blank">💬 Get this on WhatsApp</a>
-      <div class="ind-cta-note">Tap the button — it opens WhatsApp with your request ready. We'll reply with pricing and setup.</div>
+      <div class="ind-desc">Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.</div>
+      <button class="ind-btn">View details</button>
     </div>
   </div>
-
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal(null,true)">✕</button>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-body">
+      <div class="modal-pid" id="modalPid"></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-about">
+        <div class="modal-about-title">About the product</div>
+        <div class="modal-about-text" id="modalDesc"></div>
+      </div>
+      <a class="modal-cta" href="https://wa.me/919876543210" target="_blank">💬 Get this on WhatsApp</a>
+      <div class="modal-note">Tap the button — it opens WhatsApp with your request ready. We'll reply with pricing and setup.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const data = {
+  smc: {
+    pid: 'PID: TVI-0003',
+    name: 'AG SMC Indicator',
+    img: 'img-smc.png',
+    desc: 'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score, so you only take the highest-probability trades. Works on gold, forex, indices and crypto.'
+  },
+  orderflow: {
+    pid: 'PID: TVI-0004',
+    name: 'AG Order Flow',
+    img: 'img-orderflow.png',
+    desc: 'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss. Built for gold, forex and indices.'
+  },
+  esb: {
+    pid: 'PID: TVI-0005',
+    name: 'AG-ESB (Swing + EMA + R:R)',
+    img: 'img-esb.png',
+    desc: 'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.'
+  }
+};
+
+function openModal(key) {
+  const d = data[key];
+  document.getElementById('modalImg').src = d.img;
+  document.getElementById('modalPid').textContent = d.pid;
+  document.getElementById('modalName').textContent = d.name;
+  document.getElementById('modalDesc').textContent = d.desc;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(e, force) {
+  if (force || (e && e.target === document.getElementById('modalOverlay'))) {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(null,true); });
+</script>
 </body>
 </html>

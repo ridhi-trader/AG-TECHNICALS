@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — AG Technical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--dark:#060d09;--d2:#0a1410;--card:#111c14;--g4:#2ecc71;--t1:#e8f5ec;--t2:#9abfa6;--t3:#5c8068;--amber:#f39c12;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--dark);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+
+  /* NAV */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 48px;border-bottom:1px solid #1b3020;background:rgba(6,13,9,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
+  .nav-logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:#fff;text-decoration:none;}
+  .nav-logo span{color:var(--g4);}
+  .nav-back{color:var(--t2);font-size:13px;font-weight:500;text-decoration:none;transition:color 0.2s;}
+  .nav-back:hover{color:var(--g4);}
+
+  /* TICKER */
+  .ticker-wrap{background:#0a1210;border-bottom:1px solid #1a2e1e;padding:10px 0;overflow:hidden;white-space:nowrap;}
+  .ticker-track{display:inline-block;animation:ticker 50s linear infinite;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;}
+  @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .ti{display:inline-block;margin-right:12px;color:#fff;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.2);padding:5px 14px;border-radius:20px;vertical-align:middle;}
+  .ti b{font-weight:800;}
+  .ti-dxy{color:#7fd4ff!important;border-color:rgba(127,212,255,0.55)!important;background:rgba(127,212,255,0.12)!important;}
+  .ti-jh{color:#ff8a65!important;border-color:rgba(255,138,101,0.55)!important;background:rgba(255,138,101,0.12)!important;}
+  .ti-cot{color:#8affc1!important;border-color:rgba(138,255,193,0.55)!important;background:rgba(138,255,193,0.12)!important;}
+  .ti-gold{color:#ffd23f!important;border-color:rgba(255,210,63,0.55)!important;background:rgba(255,210,63,0.12)!important;}
+  .ti-sym{color:#9abfa6;font-size:11px;margin-right:6px;}
+
+  /* LAYOUT */
+  .wrap{max-width:1100px;margin:0 auto;padding:0 48px;}
+
+  /* HERO */
+  .hero{padding:72px 48px 56px;max-width:1100px;margin:0 auto;border-bottom:1px solid #1b3020;}
+  .hero-tag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g4);margin-bottom:16px;}
+  .hero-title{font-family:'Space Grotesk',sans-serif;font-size:52px;font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1.05;margin-bottom:18px;}
+  .hero-title span{color:var(--g4);}
+  .hero-sub{font-size:16px;color:var(--t2);max-width:58ch;line-height:1.75;}
+
+  /* SECTION */
+  .sec{padding:64px 0;border-bottom:1px solid #1b3020;}
+  .sec:last-child{border-bottom:none;}
+  .sec-inner{max-width:1100px;margin:0 auto;padding:0 48px;}
+
+  .block{background:#0d1a10;border:1px solid #1b3020;border-left:3px solid var(--amber);border-radius:14px;padding:36px 40px;margin-bottom:24px;}
+  .block-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+  .block p{font-size:14.5px;color:var(--t2);line-height:1.8;margin-bottom:12px;}
+  .block p:last-child{margin-bottom:0;}
+  .block p b{color:var(--g4);}
+
+  /* MARKETS */
+  .market-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px;}
+  .market-cell{background:#0a1410;border:1px solid #1b3020;border-radius:10px;padding:20px 10px;text-align:center;transition:border-color 0.2s,transform 0.2s;}
+  .market-cell:hover{border-color:rgba(243,156,18,0.4);transform:translateY(-2px);}
+  .market-icon{font-size:26px;margin-bottom:8px;}
+  .market-name{font-size:11px;font-weight:700;color:var(--amber);font-family:'Space Grotesk',sans-serif;}
+  .market-in{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--amber);margin-bottom:6px;}
+
+  /* WHAT WE DO */
+  .wwd-list{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
+  .wwd-item{background:#0a1410;border:1px solid #1b3020;border-left:3px solid var(--g4);border-radius:10px;padding:16px 22px;font-size:14px;color:var(--t2);line-height:1.6;}
+  .wwd-item b{color:var(--g4);}
+
+  /* EXPERTISE */
+  .exp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px;}
+  .exp-card{background:#0a1410;border:1px solid #1b3020;border-radius:12px;padding:24px 20px;text-align:center;transition:border-color 0.2s,transform 0.2s;}
+  .exp-card:hover{border-color:rgba(243,156,18,0.35);transform:translateY(-3px);}
+  .exp-icon{font-size:32px;margin-bottom:12px;}
+  .exp-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--amber);margin-bottom:8px;}
+  .exp-desc{font-size:12px;color:var(--t3);line-height:1.65;}
+
+  /* SEC HEADER */
+  .sec-h{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .sec-sub{font-size:13px;color:var(--t3);margin-bottom:0;}
+
+  @media(max-width:900px){
+    .market-grid{grid-template-columns:repeat(3,1fr);}
+    .exp-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:600px){
+    nav{padding:14px 20px;}
+    .hero{padding:44px 20px 36px;}
+    .hero-title{font-size:34px;}
+    .sec-inner{padding:0 20px;}
+    .block{padding:24px 22px;}
+    .market-grid{grid-template-columns:repeat(2,1fr);}
+    .exp-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">AG<span> Technical</span></a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ti"><span class="ti-sym">XAU/USD</span> <b style="color:#ffd23f">$4,645.00</b></span>
+    <span class="ti ti-dxy">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
+    <span class="ti"><span class="ti-sym">BTCUSD</span> <b>67,420</b> <span style="color:#2ecc71">▲ 2.41%</span></span>
+    <span class="ti ti-jh">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
+    <span class="ti"><span class="ti-sym">EURUSD</span> <b>1.0842</b> <span style="color:#2ecc71">▲ 0.18%</span></span>
+    <span class="ti ti-cot">COT · <b>Managed Money net long 130,766 contracts</b></span>
+    <span class="ti"><span class="ti-sym">NAS100</span> <b>18,920</b> <span style="color:#2ecc71">▲ 1.20%</span></span>
+    <span class="ti ti-gold">AG INTEL · <b>Gold Dossier: Jackson Hole — Read ↗</b></span>
+    <span class="ti"><span class="ti-sym">XAU/USD</span> <b style="color:#ffd23f">$4,645.00</b></span>
+    <span class="ti ti-dxy">DXY WATCH · <b>Dollar softness fueling the rally</b></span>
+    <span class="ti"><span class="ti-sym">BTCUSD</span> <b>67,420</b> <span style="color:#2ecc71">▲ 2.41%</span></span>
+    <span class="ti ti-jh">JACKSON HOLE · <b>Fed speaks — all eyes on Warsh keynote</b></span>
+    <span class="ti ti-cot">COT · <b>Managed Money net long 130,766 contracts</b></span>
+    <span class="ti ti-gold">AG INTEL · <b>Gold Dossier: Jackson Hole — Read ↗</b></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">🎯 About AG Technical</div>
+  <div class="hero-title">Traders first.<br><span>Always.</span></div>
+  <div class="hero-sub">We're not a tech company that learned to trade. We're traders who built the tools we always wished existed — from 9+ years of real screen time across every major market.</div>
+</div>
+
+<!-- WHO WE ARE -->
+<section class="sec">
+  <div class="sec-inner">
+    <div class="block">
+      <div class="block-title">🎯 Who We Are</div>
+      <p>AG Technical is born from <b>9+ years of real trading experience (2017–2026)</b> in the global financial markets. We're not just software developers — we're <b>traders first</b>, who understand the nuances of every market and the power of disciplined automation.</p>
+      <p>Our team has traded through multiple market cycles, learned from thousands of trades, and perfected the art of turning analytical insights into <b>profitable, automated strategies</b> that work 24/7.</p>
+    </div>
+
+    <!-- MARKETS -->
+    <div class="block">
+      <div class="block-title">📊 Markets We Master</div>
+      <div class="sec-sub">Whatever you trade, we've traded it for the last 9 years.</div>
+      <div class="market-grid">
+        <div class="market-cell"><div class="market-in">IN</div><div class="market-name">Indian Markets</div></div>
+        <div class="market-cell"><div class="market-icon">🔄</div><div class="market-name">Forex</div></div>
+        <div class="market-cell"><div class="market-icon">₿</div><div class="market-name">Bitcoin & Crypto</div></div>
+        <div class="market-cell"><div class="market-icon">✨</div><div class="market-name">Gold</div></div>
+        <div class="market-cell"><div class="market-icon">⚪</div><div class="market-name">Silver</div></div>
+        <div class="market-cell"><div class="market-icon">🌐</div><div class="market-name">And More...</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE DO -->
+<section class="sec">
+  <div class="sec-inner">
+    <div class="block">
+      <div class="block-title">💡 What We Do</div>
+      <div class="wwd-list">
+        <div class="wwd-item">✓ <b>Analyze Charts</b> — 9+ years of professional trading; we read markets like books</div>
+        <div class="wwd-item">✓ <b>Build Winning Strategies</b> — strategies that work across all markets and timeframes</div>
+        <div class="wwd-item">✓ <b>Develop Algorithms</b> — turn manual trading into automated profit machines</div>
+        <div class="wwd-item">✓ <b>Create Custom Indicators</b> — TradingView indicators backed by real trading data</div>
+        <div class="wwd-item">✓ <b>Automate Everything</b> — from signal generation to execution, complete automation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CORE EXPERTISE -->
+<section class="sec">
+  <div class="sec-inner">
+    <div class="block">
+      <div class="block-title">🔥 Our Core Expertise</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="exp-icon">📈</div>
+          <div class="exp-name">Technical Analysis</div>
+          <div class="exp-desc">Support, resistance, trends, patterns — we spot them all from years of chart reading.</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-icon">🧠</div>
+          <div class="exp-name">Chart Analysis</div>
+          <div class="exp-desc">We read price action, volume, and the psychological levels that matter.</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-icon">⚙️</div>
+          <div class="exp-name">Strategy Building</div>
+          <div class="exp-desc">We don't copy strategies — we build them from scratch on real market behaviour.</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-icon">🤖</div>
+          <div class="exp-name">Algo Development</div>
+          <div class="exp-desc">Strategies become powerful algorithms that adapt and manage risk automatically.</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-icon">📊</div>
+          <div class="exp-name">Custom Indicators</div>
+          <div class="exp-desc">TradingView indicators that turn market data into clear, actionable signals.</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-icon">🚀</div>
+          <div class="exp-name">Automation</div>
+          <div class="exp-desc">From TradingView signals to MT5 execution — the complete pipeline.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

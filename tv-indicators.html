@@ -122,49 +122,7 @@
   <div class="hero-sub">Proprietary indicators built on AG Technical's methodology — plug into TradingView and trade with institutional-grade confluence.</div>
 </div>
 
-<div class="grid">
-  <div class="ind-card">
-    <div class="ind-img-wrap" onclick="openLightbox('img-smc.png','AG SMC Indicator')">
-      <img src="img-smc.png" alt="AG SMC Indicator">
-      <div class="premium-badge">PREMIUM</div>
-      <div class="img-expand-btn">⛶</div>
-    </div>
-    <div class="ind-body" onclick="openModal('smc')">
-      <div class="ind-pid">PID: TVI-0003</div>
-      <div class="ind-name">AG SMC Indicator</div>
-      <div class="ind-desc">Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.</div>
-      <button class="ind-btn">View details</button>
-    </div>
-  </div>
-
-  <div class="ind-card">
-    <div class="ind-img-wrap" onclick="openLightbox('img-orderflow.png','AG Order Flow')">
-      <img src="img-orderflow.png" alt="AG Order Flow">
-      <div class="premium-badge">PREMIUM</div>
-      <div class="img-expand-btn">⛶</div>
-    </div>
-    <div class="ind-body" onclick="openModal('orderflow')">
-      <div class="ind-pid">PID: TVI-0004</div>
-      <div class="ind-name">AG Order Flow</div>
-      <div class="ind-desc">Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.</div>
-      <button class="ind-btn">View details</button>
-    </div>
-  </div>
-
-  <div class="ind-card">
-    <div class="ind-img-wrap" onclick="openLightbox('img-esb.png','AG-ESB Indicator')">
-      <img src="img-esb.png" alt="AG-ESB Indicator">
-      <div class="premium-badge">PREMIUM</div>
-      <div class="img-expand-btn">⛶</div>
-    </div>
-    <div class="ind-body" onclick="openModal('esb')">
-      <div class="ind-pid">PID: TVI-0005</div>
-      <div class="ind-name">AG-ESB (Swing + EMA + R:R)</div>
-      <div class="ind-desc">Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.</div>
-      <button class="ind-btn">View details</button>
-    </div>
-  </div>
-</div>
+<div class="grid" id="indGrid"></div>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
@@ -178,40 +136,56 @@
         <div class="modal-about-title">About the product</div>
         <div class="modal-about-text" id="modalDesc"></div>
       </div>
-      <a class="modal-cta" href="https://wa.me/919876543210" target="_blank">💬 Get this on WhatsApp</a>
+      <a class="modal-cta" id="modalCta" href="https://wa.me/919876543210" target="_blank">💬 Get This On WhatsApp</a>
       <div class="modal-note">Tap the button — it opens WhatsApp with your request ready. We'll reply with pricing and setup.</div>
     </div>
   </div>
 </div>
 
 <script>
-const data = {
-  smc: {
-    pid: 'PID: TVI-0003',
-    name: 'AG SMC Indicator',
-    img: 'img-smc.png',
-    desc: 'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score, so you only take the highest-probability trades. Works on gold, forex, indices and crypto.'
-  },
-  orderflow: {
-    pid: 'PID: TVI-0004',
-    name: 'AG Order Flow',
-    img: 'img-orderflow.png',
-    desc: 'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss. Built for gold, forex and indices.'
-  },
-  esb: {
-    pid: 'PID: TVI-0005',
-    name: 'AG-ESB (Swing + EMA + R:R)',
-    img: 'img-esb.png',
-    desc: 'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.'
-  }
-};
+/* ── Default indicators (fallback if admin not used) ── */
+const IND_DEFAULTS = [
+  {id:'smc',       name:'AG SMC Indicator',            pid:'TVI-0003', shortDesc:'Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.', desc:'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score, so you only take the highest-probability trades. Works on gold, forex, indices and crypto.',img:'img-smc.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+  {id:'orderflow', name:'AG Order Flow',               pid:'TVI-0004', shortDesc:'Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.',    desc:'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss. Built for gold, forex and indices.',img:'img-orderflow.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+  {id:'esb',       name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', shortDesc:'Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.',                             desc:'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.',img:'img-esb.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+];
 
-function openModal(key) {
-  const d = data[key];
-  document.getElementById('modalImg').src = d.img;
-  document.getElementById('modalPid').textContent = d.pid;
-  document.getElementById('modalName').textContent = d.name;
-  document.getElementById('modalDesc').textContent = d.desc;
+/* ── Load from admin localStorage, fallback to defaults ── */
+const indicators = JSON.parse(localStorage.getItem('ag_indicators') || 'null') || IND_DEFAULTS;
+const visible    = indicators.filter(ind => !ind.hidden);
+
+/* ── Render cards ── */
+const grid = document.getElementById('indGrid');
+if(visible.length === 0){
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#5c8068;font-size:14px;">No Indicators Available Right Now. Check Back Soon.</div>';
+} else {
+  grid.innerHTML = visible.map((ind,i) => `
+    <div class="ind-card">
+      <div class="ind-img-wrap" onclick="openLightbox('${ind.img}','${ind.name}')">
+        ${ind.img ? `<img src="${ind.img}" alt="${ind.name}" onerror="this.parentElement.style.background='#1a2a1e';this.style.display='none'">` : '<div style="width:100%;height:100%;background:#1a2a1e;display:flex;align-items:center;justify-content:center;font-size:40px;">📊</div>'}
+        ${ind.badge ? `<div class="premium-badge">${ind.badge}</div>` : ''}
+        <div class="img-expand-btn">⛶</div>
+      </div>
+      <div class="ind-body" onclick="openModal(${i})">
+        <div class="ind-pid">PID: ${ind.pid}</div>
+        <div class="ind-name">${ind.name}</div>
+        <div class="ind-desc">${ind.shortDesc || ind.desc.slice(0,120)+'...'}</div>
+        <button class="ind-btn">View Details</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Modal ── */
+function openModal(i) {
+  const ind = visible[i];
+  document.getElementById('modalImg').src = ind.img || '';
+  document.getElementById('modalImg').style.display = ind.img ? 'block' : 'none';
+  document.getElementById('modalPid').textContent = 'PID: ' + ind.pid;
+  document.getElementById('modalName').textContent = ind.name;
+  document.getElementById('modalDesc').textContent = ind.desc;
+  const cta = document.getElementById('modalCta');
+  cta.href = 'https://wa.me/' + (ind.waNum || '919876543210');
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -221,9 +195,10 @@ function closeModal(e, force) {
     document.body.style.overflow = '';
   }
 }
-document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(null,true); closeLightbox(null,true); } });
 
+/* ── Lightbox ── */
 function openLightbox(src, label) {
+  if(!src) return;
   document.getElementById('lightboxImg').src = src;
   document.getElementById('lightboxLabel').textContent = label;
   document.getElementById('lightbox').classList.add('open');
@@ -235,6 +210,7 @@ function closeLightbox(e, force) {
     document.body.style.overflow = '';
   }
 }
+document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(null,true); closeLightbox(null,true); } });
 </script>
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">

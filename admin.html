@@ -15,17 +15,17 @@
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);min-height:100vh;overflow-x:hidden;}
 
-/* ═══ LOGIN ═══ */
+/* LOGIN */
 #loginScreen{position:fixed;inset:0;background:var(--dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
 .login-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(201,150,12,0.14) 0%,transparent 65%);pointer-events:none;}
 .login-box{position:relative;z-index:1;background:var(--card);border:1px solid rgba(232,184,75,0.25);border-radius:20px;padding:48px 44px;width:400px;text-align:center;box-shadow:0 0 60px rgba(201,150,12,0.1),0 24px 60px rgba(0,0,0,0.6);}
 .login-logo{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-.login-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-0.5px;}
+.login-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:6px;}
 .login-sub{font-size:13px;color:var(--t3);margin-bottom:28px;}
 .login-label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:left;}
 .login-inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:13px 16px;border-radius:9px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:16px;}
 .login-inp:focus{border-color:var(--g5);}
-.terms-box{background:#0c0b10;border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:16px;text-align:left;max-height:120px;overflow-y:auto;}
+.terms-box{background:#0c0b10;border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:14px;text-align:left;max-height:110px;overflow-y:auto;}
 .terms-box p{font-size:11.5px;color:var(--t3);line-height:1.7;}
 .terms-box strong{color:var(--t2);}
 .terms-check{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;text-align:left;cursor:pointer;}
@@ -33,14 +33,14 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);min-h
 .terms-check span{font-size:12px;color:var(--t2);line-height:1.5;}
 .terms-check span a{color:var(--g5);text-decoration:none;}
 .login-btn{width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:14px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 20px rgba(232,184,75,0.4);transition:all 0.25s;}
-.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,184,75,0.55);}
-.login-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,184,75,0.55);}
+.login-btn:disabled{opacity:0.35;cursor:not-allowed;}
 .login-err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px;}
 
-/* ═══ LAYOUT ═══ */
+/* LAYOUT */
 #adminPanel{display:none;}
 .layout{display:flex;min-height:100vh;}
-.sidebar{width:240px;flex-shrink:0;background:var(--d2);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sidebar{width:242px;flex-shrink:0;background:var(--d2);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);}
 .sb-logo-text{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:var(--g5);}
 .sb-logo-sub{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
@@ -49,208 +49,195 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);min-h
 .sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all 0.15s;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;}
 .sb-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
 .sb-item.active{background:rgba(232,184,75,0.1);color:var(--g5);font-weight:600;}
-.sb-item .icon{font-size:16px;width:20px;text-align:center;}
+.sb-item .icon{font-size:15px;width:20px;text-align:center;}
 .sb-bottom{padding:16px;border-top:1px solid var(--border);}
-.sb-logout{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;}
+.sb-logout{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--t3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;}
 .sb-logout:hover{background:rgba(242,109,109,0.1);color:var(--red);}
-
-.main{flex:1;padding:32px 36px;overflow-y:auto;max-width:960px;}
+.main{flex:1;padding:32px 36px;overflow-y:auto;}
 .page{display:none;}
 .page.active{display:block;}
 
-/* ═══ TYPOGRAPHY ═══ */
+/* TYPOGRAPHY */
 .page-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
-.page-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
-.page-sub{font-size:13px;color:var(--t3);margin-top:4px;margin-bottom:24px;}
-
-/* Highlight core words */
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.page-sub{font-size:13px;color:var(--t3);margin-top:4px;margin-bottom:22px;}
 .hl{color:var(--g5);font-weight:700;}
 
-/* ═══ TOAST ═══ */
-#toast{position:fixed;bottom:28px;right:28px;z-index:999;background:var(--card2);border:1px solid rgba(95,207,148,0.4);border-radius:10px;padding:14px 20px;font-size:13px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+/* TOAST */
+#toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--card2);border:1px solid rgba(95,207,148,0.4);border-radius:10px;padding:13px 20px;font-size:13px;font-weight:600;color:var(--green);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
 #toast.show{transform:translateY(0);opacity:1;}
 #toast.err{border-color:rgba(242,109,109,0.4);color:var(--red);}
 
-/* ═══ CARDS ═══ */
+/* CARDS */
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:14px;}
-.card-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
-.card-sub{font-size:12px;color:var(--t3);margin-bottom:18px;}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.card-sub{font-size:12px;color:var(--t3);margin-bottom:16px;}
 
-/* ═══ FORM ═══ */
-.field{margin-bottom:14px;}
+/* FORM */
+.field{margin-bottom:13px;}
 .label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
-.inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:11px 14px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;}
+.inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:10px 13px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;}
 .inp:focus{border-color:var(--g5);}
 .inp::placeholder{color:var(--t3);}
-textarea.inp{resize:vertical;min-height:80px;line-height:1.6;}
+textarea.inp{resize:vertical;min-height:75px;line-height:1.6;}
+select.inp{cursor:pointer;}
 
-/* ═══ BUTTONS ═══ */
-.btn-save{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.25s;box-shadow:0 3px 12px rgba(232,184,75,0.35);}
+/* BUTTONS */
+.btn-save{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.25s;box-shadow:0 3px 12px rgba(232,184,75,0.3);}
 .btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,75,0.5);}
 .btn-outline{background:transparent;color:var(--t2);border:1px solid var(--border);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
 .btn-outline:hover{border-color:var(--g5);color:var(--g5);}
-.btn-red{background:transparent;color:var(--red);border:1px solid rgba(242,109,109,0.3);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
-.btn-red:hover{background:rgba(242,109,109,0.1);}
-.btn-icon{background:transparent;border:none;cursor:pointer;padding:6px 8px;border-radius:6px;font-size:16px;transition:background 0.15s;}
+.btn-icon{background:transparent;border:none;cursor:pointer;padding:6px 8px;border-radius:6px;font-size:15px;transition:background 0.15s;line-height:1;}
 .btn-icon:hover{background:rgba(255,255,255,0.08);}
 
-/* ═══ STATS ═══ */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
 .stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
 .stat-val{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:var(--g5);margin-bottom:4px;}
 .stat-label{font-size:12px;color:var(--t3);}
 
-/* ═══ PRODUCTS LIST ═══ */
-.prod-row{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:border-color 0.2s;}
-.prod-row:hover{border-color:rgba(232,184,75,0.2);}
-.prod-row.hidden-prod{opacity:0.45;}
-.prod-row-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0;}
-.prod-row-info{flex:1;}
-.prod-row-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;}
-.prod-row-sub{font-size:11px;color:var(--t3);margin-top:2px;}
-.prod-row-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-.badge-hidden{background:rgba(242,109,109,0.12);border:1px solid rgba(242,109,109,0.3);color:var(--red);font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;}
-.badge-live{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;}
+/* ROW LIST (products & indicators) */
+.item-row{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:border-color 0.2s;}
+.item-row:hover{border-color:rgba(232,184,75,0.2);}
+.item-row.hidden-item{opacity:0.4;}
+.item-row-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0;}
+.item-row-info{flex:1;}
+.item-row-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;}
+.item-row-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.item-row-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.badge-hidden{background:rgba(242,109,109,0.12);border:1px solid rgba(242,109,109,0.3);color:var(--red);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.badge-live{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;}
 
-/* ═══ PRODUCT EDITOR MODAL ═══ */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(4px);}
+/* ADD FORM */
+.add-form{background:var(--card);border:1px solid rgba(232,184,75,0.12);border-radius:14px;padding:20px;margin-bottom:18px;}
+.add-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.add-grid3{display:grid;grid-template-columns:1fr 1fr 80px;gap:10px;}
+
+/* EDITOR OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(4px);}
 .overlay.open{opacity:1;pointer-events:all;}
-.editor-modal{background:#18151f;border:1px solid rgba(232,184,75,0.2);border-radius:18px;padding:32px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;transform:scale(0.94) translateY(12px);transition:transform 0.25s;box-shadow:0 0 60px rgba(201,150,12,0.12),0 24px 60px rgba(0,0,0,0.7);}
+.editor-modal{background:#18151f;border:1px solid rgba(232,184,75,0.2);border-radius:18px;padding:30px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;transform:scale(0.94) translateY(12px);transition:transform 0.25s;box-shadow:0 0 60px rgba(201,150,12,0.12),0 24px 60px rgba(0,0,0,0.7);}
 .overlay.open .editor-modal{transform:scale(1) translateY(0);}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
-.modal-hdr-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-hdr-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:#fff;}
 .modal-close-btn{background:transparent;border:none;color:var(--t3);font-size:20px;cursor:pointer;transition:color 0.2s;}
 .modal-close-btn:hover{color:#fff;}
 .link-toggle{display:flex;gap:6px;margin-bottom:10px;}
 .link-opt{flex:1;padding:9px;border-radius:7px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all 0.15s;background:transparent;font-family:'Inter',sans-serif;text-align:center;}
 .link-opt.active{background:rgba(232,184,75,0.1);border-color:rgba(232,184,75,0.4);color:var(--g5);}
-.preview-box{background:#0a090e;border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:14px;}
-.preview-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-.preview-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:8px;}
+.preview-box{background:#0a090e;border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;}
+.prev-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.prev-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:6px;}
 
-/* ═══ USERS TABLE ═══ */
+/* USERS TABLE */
 .users-table{width:100%;border-collapse:collapse;}
 .users-table th{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
-.users-table td{padding:13px 14px;font-size:13px;color:var(--t2);border-bottom:1px solid rgba(42,39,54,0.6);vertical-align:middle;}
+.users-table td{padding:12px 14px;font-size:13px;color:var(--t2);border-bottom:1px solid rgba(42,39,54,0.6);vertical-align:middle;}
 .users-table tr:hover td{background:rgba(255,255,255,0.02);}
 .users-table td:first-child{color:#fff;font-weight:600;}
-.product-tag{display:inline-block;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;margin:2px;}
+.product-tag{display:inline-block;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.22);color:var(--g5);font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin:2px 2px 2px 0;}
 .status-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;}
-.status-active{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);}
-.status-expired{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);}
-.user-actions{display:flex;gap:6px;}
-
-/* Add user form */
-.add-user-form{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;}
-.add-user-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.s-active{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);}
+.s-expired{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);}
 .products-check{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-.prod-check-item{display:flex;align-items:center;gap:6px;background:#0c0b10;border:1px solid var(--border);border-radius:7px;padding:7px 12px;cursor:pointer;transition:border-color 0.15s;}
-.prod-check-item:hover{border-color:var(--g5);}
+.prod-check-item{display:flex;align-items:center;gap:6px;background:#0c0b10;border:1px solid var(--border);border-radius:7px;padding:6px 11px;cursor:pointer;transition:border-color 0.15s;}
+.prod-check-item:hover{border-color:rgba(232,184,75,0.3);}
 .prod-check-item input{accent-color:var(--g5);}
 .prod-check-item label{font-size:12px;color:var(--t2);cursor:pointer;}
 
-/* ═══ EXPORT ═══ */
-.export-code{width:100%;background:#0a090e;border:1px solid var(--border);color:var(--t2);padding:16px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:12px;min-height:280px;resize:vertical;outline:none;line-height:1.7;}
+/* EXPORT */
+.export-code{width:100%;background:#0a090e;border:1px solid var(--border);color:var(--t2);padding:16px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:12px;min-height:260px;resize:vertical;outline:none;line-height:1.7;}
 
-/* ═══ PW ═══ */
+/* PW */
 .pw-hint{font-size:11px;color:var(--t3);margin-top:5px;line-height:1.5;}
-
-/* ═══ ADD PRODUCT FORM ═══ */
-.add-prod-form{background:var(--card);border:1px solid rgba(232,184,75,0.15);border-radius:14px;padding:22px;margin-bottom:20px;}
-.add-prod-grid{display:grid;grid-template-columns:1fr 1fr 80px;gap:10px;margin-bottom:12px;}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ LOGIN ═══════════ -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-glow"></div>
   <div class="login-box">
     <div class="login-logo">AG Technicals</div>
     <div class="login-title">Admin <span style="color:var(--g5)">Panel</span></div>
     <div class="login-sub">Restricted Access — Authorised Personnel Only</div>
-
     <label class="login-label">Password</label>
     <input class="login-inp" id="pwInput" type="password" placeholder="Enter Admin Password" onkeydown="if(event.key==='Enter')doLogin()">
-
     <div class="terms-box">
       <p><strong>Terms & Conditions — Admin Access</strong><br><br>
-      By accessing this admin panel, you agree that: (1) You are an <strong>authorised representative</strong> of AG Technicals. (2) All data edited here affects <strong>live website content</strong>. (3) You will not share login credentials with unauthorised persons. (4) AG Technicals reserves the right to revoke access at any time. (5) All actions are logged and traceable. Misuse of admin access may result in legal action.</p>
+      By accessing this panel you confirm: (1) You are an <strong>authorised representative</strong> of AG Technicals. (2) All edits affect <strong>live site content</strong>. (3) Credentials must not be shared. (4) AG Technicals may revoke access at any time. (5) Misuse may result in legal action.</p>
     </div>
-
     <label class="terms-check">
       <input type="checkbox" id="termsCheck" onchange="document.getElementById('loginBtn').disabled=!this.checked">
-      <span>I Accept the <a href="#">Terms & Conditions</a> and confirm I am an authorised admin.</span>
+      <span>I Accept The <a href="#">Terms & Conditions</a> — I Am An Authorised Admin.</span>
     </label>
-
     <button class="login-btn" id="loginBtn" onclick="doLogin()" disabled>Access Panel →</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
 <!-- Toast -->
-<div id="toast">✓ Saved</div>
+<div id="toast"></div>
 
-<!-- Editor Overlay -->
-<div class="overlay" id="editorOverlay" onclick="if(event.target===this)closeEditor()">
+<!-- PRODUCT EDITOR OVERLAY -->
+<div class="overlay" id="prodOverlay" onclick="if(event.target===this)closeProdEditor()">
   <div class="editor-modal">
     <div class="modal-hdr">
-      <div class="modal-hdr-title" id="edModalTitle">Edit Product</div>
-      <button class="modal-close-btn" onclick="closeEditor()">✕</button>
+      <div class="modal-hdr-title" id="pedTitle">Edit Product</div>
+      <button class="modal-close-btn" onclick="closeProdEditor()">✕</button>
     </div>
-    <div class="field">
-      <label class="label">Product Name</label>
-      <input class="inp" id="fName" placeholder="e.g. Bridge">
-    </div>
-    <div class="field">
-      <label class="label">Icon (Emoji)</label>
-      <input class="inp" id="fIcon" placeholder="🌉" style="width:100px;">
-    </div>
-    <div class="field">
-      <label class="label">Sub-label</label>
-      <input class="inp" id="fSub" placeholder="e.g. Trade Copy Connector">
-    </div>
-    <div class="field">
-      <label class="label">Modal Title</label>
-      <input class="inp" id="fTitle" placeholder="e.g. Bridge — Trade Copy">
-    </div>
-    <div class="field">
-      <label class="label">Modal Description</label>
-      <textarea class="inp" id="fDesc" placeholder="What Does This Product Do?"></textarea>
-    </div>
-    <div class="field">
-      <label class="label">CTA Button Text</label>
-      <input class="inp" id="fCta" placeholder="e.g. Join Waitlist →">
-    </div>
+    <div class="field"><label class="label">Product Name</label><input class="inp" id="peName" placeholder="Name"></div>
+    <div class="field"><label class="label">Icon (Emoji)</label><input class="inp" id="peIcon" placeholder="🌉" style="width:90px;"></div>
+    <div class="field"><label class="label">Sub-Label</label><input class="inp" id="peSub" placeholder="e.g. Trade Copy Connector"></div>
+    <div class="field"><label class="label">Modal Title</label><input class="inp" id="peTitle" placeholder="Modal Heading"></div>
+    <div class="field"><label class="label">Modal Description</label><textarea class="inp" id="peDesc" placeholder="What Does This Product Do?"></textarea></div>
+    <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="peCta" placeholder="Join Waitlist →"></div>
     <div class="field">
       <label class="label">Button Action</label>
       <div class="link-toggle">
-        <button class="link-opt active" id="optModal" onclick="setLinkType('modal')">Popup Modal</button>
-        <button class="link-opt" id="optPage" onclick="setLinkType('page')">Go To Page</button>
+        <button class="link-opt active" id="peOptModal" onclick="setLinkType('modal','pe')">Popup Modal</button>
+        <button class="link-opt" id="peOptPage" onclick="setLinkType('page','pe')">Go To Page</button>
       </div>
-      <div id="pageUrlField" style="display:none;">
-        <input class="inp" id="fPageUrl" placeholder="e.g. tv-indicators.html">
-      </div>
+      <div id="pePageUrlField" style="display:none;"><input class="inp" id="pePageUrl" placeholder="e.g. tv-indicators.html"></div>
     </div>
-
-    <div style="margin-top:4px;">
-      <div class="label">Live Preview</div>
+    <div class="field">
+      <label class="label">Live Preview</label>
       <div class="preview-box">
-        <div class="preview-tag" id="prevTag">🌉  Service</div>
-        <div class="preview-title" id="prevTitle">Product</div>
-        <div id="prevDesc" style="font-size:13px;color:#a09cb0;line-height:1.6;margin-bottom:14px;">Description</div>
-        <div style="display:inline-block;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:9px 18px;border-radius:7px;font-size:13px;font-weight:700;" id="prevCta">Join Waitlist →</div>
+        <div class="prev-tag" id="pePrevTag">🌉  Service</div>
+        <div class="prev-title" id="pePrevTitle">Product</div>
+        <div id="pePrevDesc" style="font-size:12px;color:#a09cb0;line-height:1.6;margin-bottom:12px;">Description</div>
+        <div style="display:inline-block;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:700;" id="pePrevCta">Join Waitlist →</div>
       </div>
     </div>
-
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn-save" onclick="saveEditorProduct()">Save Changes</button>
-      <button class="btn-outline" onclick="closeEditor()">Cancel</button>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn-save" onclick="saveProdEditor()">Save Changes</button>
+      <button class="btn-outline" onclick="closeProdEditor()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ ADMIN PANEL ═══════════ -->
+<!-- INDICATOR EDITOR OVERLAY -->
+<div class="overlay" id="indOverlay" onclick="if(event.target===this)closeIndEditor()">
+  <div class="editor-modal">
+    <div class="modal-hdr">
+      <div class="modal-hdr-title" id="iedTitle">Edit Indicator</div>
+      <button class="modal-close-btn" onclick="closeIndEditor()">✕</button>
+    </div>
+    <div class="field"><label class="label">Indicator Name</label><input class="inp" id="ieName" placeholder="Name"></div>
+    <div class="field"><label class="label">PID (Product ID)</label><input class="inp" id="iePid" placeholder="e.g. TVI-0003"></div>
+    <div class="field"><label class="label">Short Description (Card)</label><input class="inp" id="ieShortDesc" placeholder="One line shown on card"></div>
+    <div class="field"><label class="label">Full Description (Modal)</label><textarea class="inp" id="ieDesc" placeholder="Detailed description shown in popup modal" style="min-height:100px;"></textarea></div>
+    <div class="field"><label class="label">Image File (in repo)</label><input class="inp" id="ieImg" placeholder="e.g. img-smc.png"></div>
+    <div class="field"><label class="label">WhatsApp Number</label><input class="inp" id="ieWa" placeholder="e.g. 919876543210"></div>
+    <div class="field"><label class="label">Badge Text</label><input class="inp" id="ieBadge" placeholder="e.g. PREMIUM"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn-save" onclick="saveIndEditor()">Save Changes</button>
+      <button class="btn-outline" onclick="closeIndEditor()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
 <div id="adminPanel">
   <div class="layout">
 
@@ -263,6 +250,7 @@ textarea.inp{resize:vertical;min-height:80px;line-height:1.6;}
       <div class="sb-nav">
         <div class="sb-section">Content</div>
         <button class="sb-item active" onclick="showPage('products',this)"><span class="icon">🎯</span> Products</button>
+        <button class="sb-item" onclick="showPage('indicators',this)"><span class="icon">📈</span> TV Indicators</button>
         <button class="sb-item" onclick="showPage('users',this)"><span class="icon">👥</span> Users & Access</button>
         <div class="sb-section">Tools</div>
         <button class="sb-item" onclick="showPage('export',this)"><span class="icon">📦</span> Export Code</button>
@@ -276,98 +264,88 @@ textarea.inp{resize:vertical;min-height:80px;line-height:1.6;}
     <!-- MAIN -->
     <div class="main">
 
-      <!-- ─── PRODUCTS PAGE ─── -->
+      <!-- PRODUCTS PAGE -->
       <div class="page active" id="page-products">
         <div class="page-tag">Content Editor</div>
         <div class="page-title">Products <span class="hl">&</span> Services</div>
         <div class="page-sub">Add, Edit, Hide Or Delete Product Cards. Hidden Products Won't Show On Site.</div>
-
-        <div class="stats" id="statsRow"></div>
-
-        <!-- Add new product -->
-        <div class="add-prod-form">
+        <div class="stats" id="prodStats"></div>
+        <div class="add-form">
           <div class="card-title">➕ Add New Product</div>
-          <div class="card-sub">Fill In Details And Click Add — Edit Full Content After Adding.</div>
-          <div class="add-prod-grid">
-            <input class="inp" id="newName" placeholder="Product Name (e.g. Signals)">
-            <input class="inp" id="newSub" placeholder="Sub-label (e.g. Live Alerts)">
-            <input class="inp" id="newIcon" placeholder="Icon" style="text-align:center;">
+          <div class="card-sub">Quick Add — Edit Full Details After.</div>
+          <div class="add-grid3" style="margin-bottom:12px;">
+            <input class="inp" id="newProdName" placeholder="Product Name">
+            <input class="inp" id="newProdSub" placeholder="Sub-Label">
+            <input class="inp" id="newProdIcon" placeholder="Icon" style="text-align:center;">
           </div>
           <button class="btn-save" onclick="addProduct()">Add Product</button>
         </div>
-
-        <!-- Product list -->
         <div id="prodList"></div>
       </div>
 
-      <!-- ─── USERS PAGE ─── -->
+      <!-- INDICATORS PAGE -->
+      <div class="page" id="page-indicators">
+        <div class="page-tag">TradingView Indicators</div>
+        <div class="page-title">TV <span class="hl">Indicators</span></div>
+        <div class="page-sub">Add, Edit, Hide Or Delete Indicators On The tv-indicators.html Page.</div>
+        <div class="stats" id="indStats"></div>
+        <div class="add-form">
+          <div class="card-title">➕ Add New Indicator</div>
+          <div class="card-sub">Quick Add — Edit Full Details After.</div>
+          <div class="add-grid2" style="margin-bottom:10px;">
+            <input class="inp" id="newIndName" placeholder="Indicator Name (e.g. AG MACD Pro)">
+            <input class="inp" id="newIndPid" placeholder="PID (e.g. TVI-0006)">
+          </div>
+          <div class="add-grid2" style="margin-bottom:12px;">
+            <input class="inp" id="newIndImg" placeholder="Image file (e.g. img-new.png)">
+            <input class="inp" id="newIndBadge" placeholder="Badge (e.g. PREMIUM)">
+          </div>
+          <button class="btn-save" onclick="addIndicator()">Add Indicator</button>
+        </div>
+        <div id="indList"></div>
+        <div class="card" style="margin-top:16px;border-color:rgba(232,184,75,0.15);">
+          <div class="card-title" style="color:var(--g5);">ℹ️ How It Works</div>
+          <div style="font-size:13px;color:var(--t3);line-height:1.8;">Indicators Saved Here Are Stored In <strong style="color:var(--t2)">localStorage</strong>. The tv-indicators.html Page Reads This Data And Renders Cards Dynamically. <br>Hidden Indicators Are Not Shown. Deleted Ones Are Removed Permanently From This Panel.<br><strong style="color:var(--t2)">Note:</strong> For New Indicators, Upload The Image File To GitHub Repo First.</div>
+        </div>
+      </div>
+
+      <!-- USERS PAGE -->
       <div class="page" id="page-users">
         <div class="page-tag">Access Management</div>
-        <div class="page-title">Users <span class="hl">&</span> Product Access</div>
-        <div class="page-sub">Track Which Users Have Access To Which Products.</div>
-
-        <!-- Add user form -->
-        <div class="add-user-form">
+        <div class="page-title">Users <span class="hl">&</span> Access</div>
+        <div class="page-sub">Track Which Users Have Access To Which Products Or Indicators.</div>
+        <div class="add-form">
           <div class="card-title">➕ Add New User</div>
-          <div class="card-sub">Enter User Details And Assign Products.</div>
-          <div class="add-user-grid">
-            <div class="field" style="margin:0">
-              <label class="label">Name</label>
-              <input class="inp" id="uName" placeholder="Full Name">
-            </div>
-            <div class="field" style="margin:0">
-              <label class="label">Contact (WhatsApp/Telegram)</label>
-              <input class="inp" id="uContact" placeholder="e.g. +91 98765 43210">
-            </div>
+          <div class="add-grid2" style="margin-bottom:10px;">
+            <div class="field" style="margin:0"><label class="label">Name</label><input class="inp" id="uName" placeholder="Full Name"></div>
+            <div class="field" style="margin:0"><label class="label">Contact</label><input class="inp" id="uContact" placeholder="+91 98765 43210"></div>
           </div>
-          <div class="add-user-grid" style="margin-top:10px;">
-            <div class="field" style="margin:0">
-              <label class="label">Join Date</label>
-              <input class="inp" id="uDate" type="date">
-            </div>
-            <div class="field" style="margin:0">
-              <label class="label">Status</label>
-              <select class="inp" id="uStatus">
-                <option value="active">Active</option>
-                <option value="expired">Expired</option>
-              </select>
-            </div>
+          <div class="add-grid2" style="margin-bottom:12px;">
+            <div class="field" style="margin:0"><label class="label">Join Date</label><input class="inp" id="uDate" type="date"></div>
+            <div class="field" style="margin:0"><label class="label">Status</label><select class="inp" id="uStatus"><option value="active">Active</option><option value="expired">Expired</option></select></div>
           </div>
-          <div class="field" style="margin-top:12px;">
-            <label class="label">Assigned Products</label>
+          <div class="field" style="margin-bottom:14px;">
+            <label class="label">Assigned Products / Indicators</label>
             <div class="products-check" id="userProductCheck"></div>
           </div>
-          <div style="margin-top:14px;">
-            <button class="btn-save" onclick="addUser()">Add User</button>
-          </div>
+          <button class="btn-save" onclick="addUser()">Add User</button>
         </div>
-
-        <!-- Users table -->
         <div class="card" style="padding:0;overflow:hidden;">
-          <table class="users-table" id="usersTable">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Products</th>
-                <th>Joined</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+          <table class="users-table">
+            <thead><tr><th>Name</th><th>Contact</th><th>Products</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="usersBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- ─── EXPORT PAGE ─── -->
+      <!-- EXPORT PAGE -->
       <div class="page" id="page-export">
         <div class="page-tag">Export</div>
         <div class="page-title">Export <span class="hl">Code</span></div>
-        <div class="page-sub">Copy The Generated onclick= Calls And Paste Into index.html Product Buttons.</div>
+        <div class="page-sub">Copy Generated onclick= Calls → Paste Into index.html Product Buttons.</div>
         <div class="card">
           <div class="card-title">Generated Product Button Code</div>
-          <div class="card-sub">Replace onclick= Attributes In Your .prod-btn Elements With These.</div>
+          <div class="card-sub">Replace onclick= Attributes In .prod-btn Elements With These.</div>
           <textarea class="export-code" id="exportArea" readonly></textarea>
           <div style="display:flex;gap:8px;margin-top:12px;">
             <button class="btn-save" onclick="copyExport()">Copy To Clipboard</button>
@@ -376,14 +354,14 @@ textarea.inp{resize:vertical;min-height:80px;line-height:1.6;}
         </div>
       </div>
 
-      <!-- ─── PASSWORD PAGE ─── -->
+      <!-- PASSWORD PAGE -->
       <div class="page" id="page-password">
         <div class="page-tag">Settings</div>
         <div class="page-title">Change <span class="hl">Password</span></div>
-        <div class="page-sub">After Changing, The New Password Appears In Export — Push Updated File To GitHub.</div>
+        <div class="page-sub">After Changing, Export admin.html And Push To GitHub.</div>
         <div class="card">
           <div class="field"><label class="label">Current Password</label><input class="inp" id="pwCurrent" type="password" placeholder="Current Password"></div>
-          <div class="field"><label class="label">New Password</label><input class="inp" id="pwNew" type="password" placeholder="New Password (Min 8 Chars)"><div class="pw-hint">Push The Exported admin.html To GitHub After Changing Password.</div></div>
+          <div class="field"><label class="label">New Password</label><input class="inp" id="pwNew" type="password" placeholder="New Password (Min 8 Chars)"><div class="pw-hint">Push Exported admin.html To GitHub To Make It Permanent.</div></div>
           <div class="field"><label class="label">Confirm New Password</label><input class="inp" id="pwConfirm" type="password" placeholder="Confirm New Password"></div>
           <button class="btn-save" onclick="changePassword()">Update Password</button>
           <div id="pwMsg" style="font-size:12px;margin-top:10px;min-height:18px;"></div>
@@ -395,40 +373,48 @@ textarea.inp{resize:vertical;min-height:80px;line-height:1.6;}
 </div>
 
 <script>
-/* ════ CONFIG ════ */
+/* ═══ CONFIG ═══ */
 const ADMIN_PASSWORD = 'agtech2024';
 let currentPassword = ADMIN_PASSWORD;
 
-/* ════ DEFAULTS ════ */
-const DEFAULTS = [
-  {id:'bridge',    name:'Bridge',                    icon:'🌉', sub:'Trade Copy Connector',         title:'Bridge',                   desc:'Seamlessly connect your broker to AG Technicals — copy trades directly from our signals to your account. Auto-execute every call with zero manual intervention.',cta:'Join Waitlist →',  type:'modal',url:'',     hidden:false},
-  {id:'algo',      name:'Algo (MT5)',                 icon:'🤖', sub:'Auto Trading System (MT5)',     title:'Algo (MT5)',                desc:'Fully automated trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.',cta:'Join Waitlist →', type:'modal',url:'',     hidden:false},
-  {id:'tvindicator',name:'TradingView Indicator',    icon:'📈', sub:'Custom TradingView Indicator',  title:'TradingView Indicator',    desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time. Setup in under 5 minutes.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',hidden:false},
-  {id:'education', name:'Education',                 icon:'🧠', sub:'Courses & Academy',             title:'Education',                desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'guide',     name:'Guide',                     icon:'📖', sub:'Written Playbooks',             title:'Guides',                   desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'strategy',  name:'Custom Strategy',           icon:'⚙️', sub:'Built For You',                 title:'Custom Strategy',          desc:'Your own personalised trading strategy built by AG Technicals analysts — tailored to your risk profile, timeframe, and market preference.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'news',      name:'News',                      icon:'📰', sub:'Live Market Feed',              title:'News',                     desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow breakdowns.',cta:'Read Dossier →',type:'page',url:'gold-dossier.html',hidden:false},
+/* ═══ DEFAULTS ═══ */
+const PROD_DEFAULTS = [
+  {id:'bridge',      name:'Bridge',                 icon:'🌉', sub:'Trade Copy Connector',        title:'Bridge',                desc:'Seamlessly connect your broker to AG Technicals — copy trades directly from our signals to your account. Auto-execute every call with zero manual intervention.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
+  {id:'algo',        name:'Algo (MT5)',              icon:'🤖', sub:'Auto Trading System (MT5)',    title:'Algo (MT5)',             desc:'Fully automated trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
+  {id:'tvindicator', name:'TradingView Indicator',  icon:'📈', sub:'Custom TradingView Indicator', title:'TradingView Indicator',  desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',hidden:false},
+  {id:'education',   name:'Education',              icon:'🧠', sub:'Courses & Academy',            title:'Education',             desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
+  {id:'guide',       name:'Guide',                  icon:'📖', sub:'Written Playbooks',            title:'Guides',                desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
+  {id:'strategy',    name:'Custom Strategy',        icon:'⚙️', sub:'Built For You',                title:'Custom Strategy',       desc:'Your own personalised trading strategy built by AG Technicals analysts — tailored to your risk profile, timeframe, and market preference.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
+  {id:'news',        name:'News',                   icon:'📰', sub:'Live Market Feed',             title:'News',                  desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow breakdowns.',cta:'Read Dossier →',type:'page',url:'gold-dossier.html',hidden:false},
 ];
 
-/* ════ STATE ════ */
-let products = JSON.parse(localStorage.getItem('ag_products') || 'null') || JSON.parse(JSON.stringify(DEFAULTS));
-let users    = JSON.parse(localStorage.getItem('ag_users')    || '[]');
-let editingIdx = -1;
-let linkType = 'modal';
+const IND_DEFAULTS = [
+  {id:'smc',       name:'AG SMC Indicator',            pid:'TVI-0003', shortDesc:'Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.', desc:'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score, so you only take the highest-probability trades. Works on gold, forex, indices and crypto.',img:'img-smc.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+  {id:'orderflow', name:'AG Order Flow',               pid:'TVI-0004', shortDesc:'Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.',    desc:'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss. Built for gold, forex and indices.',img:'img-orderflow.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+  {id:'esb',       name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', shortDesc:'Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.',                             desc:'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.',img:'img-esb.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+];
 
-/* ════ LOGIN ════ */
+/* ═══ STATE ═══ */
+let products   = JSON.parse(localStorage.getItem('ag_products')   || 'null') || JSON.parse(JSON.stringify(PROD_DEFAULTS));
+let indicators = JSON.parse(localStorage.getItem('ag_indicators') || 'null') || JSON.parse(JSON.stringify(IND_DEFAULTS));
+let users      = JSON.parse(localStorage.getItem('ag_users')      || '[]');
+let editProdIdx = -1;
+let editIndIdx  = -1;
+let prodLinkType = 'modal';
+
+/* ═══ LOGIN ═══ */
 function doLogin(){
   const v = document.getElementById('pwInput').value;
   if(v === currentPassword){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminPanel').style.display='block';
-    initPanel();
+    init();
   } else {
-    const e = document.getElementById('loginErr');
-    e.textContent = 'Incorrect Password. Try Again.';
+    const e=document.getElementById('loginErr');
+    e.textContent='Incorrect Password. Try Again.';
     document.getElementById('pwInput').value='';
     document.getElementById('pwInput').focus();
-    setTimeout(()=>{ e.textContent=''; },3000);
+    setTimeout(()=>e.textContent='',3000);
   }
 }
 function doLogout(){
@@ -439,159 +425,206 @@ function doLogout(){
   document.getElementById('loginBtn').disabled=true;
 }
 
-/* ════ INIT ════ */
-function initPanel(){
-  renderProducts();
-  renderStats();
-  renderUsers();
-  renderUserProductChecks();
+/* ═══ INIT ═══ */
+function init(){
+  renderProducts(); renderProductStats();
+  renderIndicators(); renderIndStats();
+  renderUsers(); buildUserProductChecks();
   genExport();
 }
 
-/* ════ STATS ════ */
-function renderStats(){
-  const live   = products.filter(p=>!p.hidden).length;
-  const hidden = products.filter(p=>p.hidden).length;
-  document.getElementById('statsRow').innerHTML = `
-    <div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total Products</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live On Site</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hidden}</div><div class="stat-label">Hidden</div></div>
-    <div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users Tracked</div></div>
-  `;
+/* ═══ UTILS ═══ */
+function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=(type==='ok'?'✓ ':'✕ ')+msg;
+  t.className='show'+(type==='err'?' err':'');
+  setTimeout(()=>t.className='',2800);
+}
+function uid(){ return 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
+
+/* ═══ SAVE HELPERS ═══ */
+function saveProds(){ localStorage.setItem('ag_products',   JSON.stringify(products)); }
+function saveInds(){  localStorage.setItem('ag_indicators', JSON.stringify(indicators)); }
+function saveUsers(){ localStorage.setItem('ag_users',      JSON.stringify(users)); }
+
+/* ═══ PRODUCTS ═══ */
+function renderProductStats(){
+  const live=products.filter(p=>!p.hidden).length, hid=products.filter(p=>p.hidden).length;
+  document.getElementById('prodStats').innerHTML=`
+    <div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div>
+    <div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users</div></div>`;
 }
 
-/* ════ PRODUCTS ════ */
 function renderProducts(){
-  const el = document.getElementById('prodList');
-  el.innerHTML = products.map((p,i)=>`
-    <div class="prod-row ${p.hidden?'hidden-prod':''}">
-      <div class="prod-row-icon">${p.icon}</div>
-      <div class="prod-row-info">
-        <div class="prod-row-name">${p.name}</div>
-        <div class="prod-row-sub">${p.sub}</div>
+  document.getElementById('prodList').innerHTML = products.map((p,i)=>`
+    <div class="item-row ${p.hidden?'hidden-item':''}">
+      <div class="item-row-icon">${p.icon}</div>
+      <div class="item-row-info">
+        <div class="item-row-name">${p.name}</div>
+        <div class="item-row-sub">${p.sub}</div>
       </div>
-      <div class="prod-row-actions">
+      <div class="item-row-actions">
         <span class="${p.hidden?'badge-hidden':'badge-live'}">${p.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="editProduct(${i})" title="Edit">✏️</button>
-        <button class="btn-icon" onclick="toggleHide(${i})" title="${p.hidden?'Show':'Hide'}">${p.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteProduct(${i})" title="Delete">🗑️</button>
+        <button class="btn-icon" onclick="openProdEditor(${i})" title="Edit">✏️</button>
+        <button class="btn-icon" onclick="toggleProdHide(${i})" title="${p.hidden?'Show':'Hide'}">${p.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="deleteProd(${i})" title="Delete">🗑️</button>
       </div>
-    </div>
-  `).join('');
-  renderStats();
-  renderUserProductChecks();
+    </div>`).join('');
+  renderProductStats(); buildUserProductChecks(); genExport();
 }
 
 function addProduct(){
-  const name = document.getElementById('newName').value.trim();
-  const sub  = document.getElementById('newSub').value.trim();
-  const icon = document.getElementById('newIcon').value.trim() || '📦';
+  const name=document.getElementById('newProdName').value.trim();
+  const sub =document.getElementById('newProdSub').value.trim();
+  const icon=document.getElementById('newProdIcon').value.trim()||'📦';
   if(!name){ showToast('Enter A Product Name','err'); return; }
-  products.push({
-    id:'prod_'+Date.now(), name, icon, sub: sub||'New Product',
-    title:name, desc:'Add Description In Editor.',
-    cta:'Join Waitlist →', type:'modal', url:'', hidden:false
-  });
-  save();
-  document.getElementById('newName').value='';
-  document.getElementById('newSub').value='';
-  document.getElementById('newIcon').value='';
+  products.push({id:uid(),name:cap(name),icon,sub:cap(sub)||'New Product',title:cap(name),desc:'Add Description In Editor.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false});
+  saveProds(); renderProducts();
+  document.getElementById('newProdName').value='';
+  document.getElementById('newProdSub').value='';
+  document.getElementById('newProdIcon').value='';
   showToast('Product Added — Click ✏️ To Edit Details');
 }
 
-function editProduct(i){
-  editingIdx = i;
-  const p = products[i];
-  document.getElementById('edModalTitle').textContent = 'Edit: ' + p.name;
-  document.getElementById('fName').value  = p.name;
-  document.getElementById('fIcon').value  = p.icon;
-  document.getElementById('fSub').value   = p.sub;
-  document.getElementById('fTitle').value = p.title;
-  document.getElementById('fDesc').value  = p.desc;
-  document.getElementById('fCta').value   = p.cta;
-  document.getElementById('fPageUrl').value = p.url||'';
-  setLinkType(p.type||'modal');
-  updateEdPreview();
-  document.getElementById('editorOverlay').classList.add('open');
+function openProdEditor(i){
+  editProdIdx=i; const p=products[i];
+  document.getElementById('pedTitle').textContent='Edit: '+p.name;
+  document.getElementById('peName').value=p.name;
+  document.getElementById('peIcon').value=p.icon;
+  document.getElementById('peSub').value=p.sub;
+  document.getElementById('peTitle').value=p.title;
+  document.getElementById('peDesc').value=p.desc;
+  document.getElementById('peCta').value=p.cta;
+  document.getElementById('pePageUrl').value=p.url||'';
+  setLinkType(p.type||'modal','pe');
+  updatePePreview();
+  document.getElementById('prodOverlay').classList.add('open');
+}
+function closeProdEditor(){ document.getElementById('prodOverlay').classList.remove('open'); editProdIdx=-1; }
+
+function saveProdEditor(){
+  if(editProdIdx<0) return;
+  const p=products[editProdIdx];
+  p.name=cap(document.getElementById('peName').value);
+  p.icon=document.getElementById('peIcon').value;
+  p.sub=cap(document.getElementById('peSub').value);
+  p.title=cap(document.getElementById('peTitle').value);
+  p.desc=document.getElementById('peDesc').value;
+  p.cta=document.getElementById('peCta').value;
+  p.type=prodLinkType;
+  p.url=document.getElementById('pePageUrl').value;
+  saveProds(); renderProducts(); closeProdEditor();
+  showToast('Saved: '+p.name);
 }
 
-function closeEditor(){
-  document.getElementById('editorOverlay').classList.remove('open');
-  editingIdx = -1;
+function toggleProdHide(i){ products[i].hidden=!products[i].hidden; saveProds(); renderProducts(); showToast(products[i].hidden?products[i].name+' Hidden':products[i].name+' Now Live'); }
+function deleteProd(i){ if(!confirm('Delete "'+products[i].name+'"?')) return; products.splice(i,1); saveProds(); renderProducts(); showToast('Product Deleted','err'); }
+
+function setLinkType(t,prefix){
+  prodLinkType=t;
+  document.getElementById(prefix+'OptModal').classList.toggle('active',t==='modal');
+  document.getElementById(prefix+'OptPage').classList.toggle('active',t==='page');
+  document.getElementById(prefix+'PageUrlField').style.display=t==='page'?'block':'none';
 }
 
-function saveEditorProduct(){
-  if(editingIdx<0) return;
-  const p = products[editingIdx];
-  p.name  = cap(document.getElementById('fName').value);
-  p.icon  = document.getElementById('fIcon').value;
-  p.sub   = cap(document.getElementById('fSub').value);
-  p.title = cap(document.getElementById('fTitle').value);
-  p.desc  = document.getElementById('fDesc').value;
-  p.cta   = document.getElementById('fCta').value;
-  p.type  = linkType;
-  p.url   = document.getElementById('fPageUrl').value;
-  save();
-  closeEditor();
-  showToast('Saved: ' + p.name);
+function updatePePreview(){
+  document.getElementById('pePrevTag').textContent=(document.getElementById('peIcon').value||'📦')+'  Service';
+  document.getElementById('pePrevTitle').textContent=document.getElementById('peTitle').value||'Title';
+  document.getElementById('pePrevDesc').textContent=document.getElementById('peDesc').value||'Description';
+  document.getElementById('pePrevCta').textContent=document.getElementById('peCta').value||'Join Waitlist →';
+}
+['peTitle','peDesc','peIcon','peCta'].forEach(id=>document.getElementById(id)?.addEventListener('input',updatePePreview));
+
+/* ═══ INDICATORS ═══ */
+function renderIndStats(){
+  const live=indicators.filter(i=>!i.hidden).length, hid=indicators.filter(i=>i.hidden).length;
+  document.getElementById('indStats').innerHTML=`
+    <div class="stat-box"><div class="stat-val">${indicators.length}</div><div class="stat-label">Total</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div>
+    <div class="stat-box"><div class="stat-val" style="color:var(--g5)">${indicators.length>0?indicators[indicators.length-1].pid:'—'}</div><div class="stat-label">Latest PID</div></div>`;
 }
 
-function toggleHide(i){
-  products[i].hidden = !products[i].hidden;
-  save();
-  showToast(products[i].hidden ? products[i].name+' Hidden' : products[i].name+' Now Live');
+function renderIndicators(){
+  document.getElementById('indList').innerHTML = indicators.map((ind,i)=>`
+    <div class="item-row ${ind.hidden?'hidden-item':''}">
+      <div class="item-row-icon">📊</div>
+      <div class="item-row-info">
+        <div class="item-row-name">${ind.name}</div>
+        <div class="item-row-sub">${ind.pid} · ${ind.badge||'PREMIUM'}</div>
+      </div>
+      <div class="item-row-actions">
+        <span class="${ind.hidden?'badge-hidden':'badge-live'}">${ind.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="openIndEditor(${i})" title="Edit">✏️</button>
+        <button class="btn-icon" onclick="toggleIndHide(${i})" title="${ind.hidden?'Show':'Hide'}">${ind.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="deleteInd(${i})" title="Delete">🗑️</button>
+      </div>
+    </div>`).join('');
+  renderIndStats(); buildUserProductChecks();
 }
 
-function deleteProduct(i){
-  if(!confirm('Delete "'+products[i].name+'"? This Cannot Be Undone.')) return;
-  products.splice(i,1);
-  save();
-  showToast('Product Deleted','err');
+function addIndicator(){
+  const name=document.getElementById('newIndName').value.trim();
+  const pid =document.getElementById('newIndPid').value.trim();
+  const img =document.getElementById('newIndImg').value.trim();
+  const badge=document.getElementById('newIndBadge').value.trim()||'PREMIUM';
+  if(!name){ showToast('Enter Indicator Name','err'); return; }
+  indicators.push({id:uid(),name:cap(name),pid:pid||'TVI-NEW',shortDesc:'Add Description In Editor.',desc:'Add Full Description In Editor.',img:img||'',waNum:'919876543210',badge,hidden:false});
+  saveInds(); renderIndicators();
+  ['newIndName','newIndPid','newIndImg','newIndBadge'].forEach(id=>document.getElementById(id).value='');
+  showToast('Indicator Added — Click ✏️ To Edit');
 }
 
-/* ════ LINK TYPE ════ */
-function setLinkType(t){
-  linkType = t;
-  document.getElementById('optModal').classList.toggle('active',t==='modal');
-  document.getElementById('optPage').classList.toggle('active',t==='page');
-  document.getElementById('pageUrlField').style.display = t==='page'?'block':'none';
-  updateEdPreview();
+function openIndEditor(i){
+  editIndIdx=i; const ind=indicators[i];
+  document.getElementById('iedTitle').textContent='Edit: '+ind.name;
+  document.getElementById('ieName').value=ind.name;
+  document.getElementById('iePid').value=ind.pid;
+  document.getElementById('ieShortDesc').value=ind.shortDesc||'';
+  document.getElementById('ieDesc').value=ind.desc||'';
+  document.getElementById('ieImg').value=ind.img||'';
+  document.getElementById('ieWa').value=ind.waNum||'919876543210';
+  document.getElementById('ieBadge').value=ind.badge||'PREMIUM';
+  document.getElementById('indOverlay').classList.add('open');
+}
+function closeIndEditor(){ document.getElementById('indOverlay').classList.remove('open'); editIndIdx=-1; }
+
+function saveIndEditor(){
+  if(editIndIdx<0) return;
+  const ind=indicators[editIndIdx];
+  ind.name=cap(document.getElementById('ieName').value);
+  ind.pid=document.getElementById('iePid').value;
+  ind.shortDesc=document.getElementById('ieShortDesc').value;
+  ind.desc=document.getElementById('ieDesc').value;
+  ind.img=document.getElementById('ieImg').value;
+  ind.waNum=document.getElementById('ieWa').value;
+  ind.badge=document.getElementById('ieBadge').value;
+  saveInds(); renderIndicators(); closeIndEditor();
+  showToast('Saved: '+ind.name);
 }
 
-/* ════ PREVIEW ════ */
-function updateEdPreview(){
-  document.getElementById('prevTag').textContent   = (document.getElementById('fIcon').value||'📦') + '  Service';
-  document.getElementById('prevTitle').textContent = document.getElementById('fTitle').value||'Title';
-  document.getElementById('prevDesc').textContent  = document.getElementById('fDesc').value||'Description';
-  document.getElementById('prevCta').textContent   = document.getElementById('fCta').value||'Join Waitlist →';
-}
-['fTitle','fDesc','fIcon','fCta'].forEach(id=>{
-  document.getElementById(id)?.addEventListener('input', updateEdPreview);
-});
+function toggleIndHide(i){ indicators[i].hidden=!indicators[i].hidden; saveInds(); renderIndicators(); showToast(indicators[i].hidden?indicators[i].name+' Hidden':indicators[i].name+' Now Live'); }
+function deleteInd(i){ if(!confirm('Delete "'+indicators[i].name+'"?')) return; indicators.splice(i,1); saveInds(); renderIndicators(); showToast('Indicator Deleted','err'); }
 
-/* ════ USERS ════ */
-function renderUserProductChecks(){
-  const c = document.getElementById('userProductCheck');
-  if(!c) return;
-  c.innerHTML = products.filter(p=>!p.hidden).map(p=>`
-    <div class="prod-check-item">
-      <input type="checkbox" id="uc_${p.id}" value="${p.id}">
-      <label for="uc_${p.id}">${p.icon} ${p.name}</label>
-    </div>
-  `).join('');
+/* ═══ USERS ═══ */
+function buildUserProductChecks(){
+  const c=document.getElementById('userProductCheck'); if(!c) return;
+  const all=[...products.filter(p=>!p.hidden).map(p=>({id:p.id,label:p.icon+' '+p.name})),...indicators.filter(i=>!i.hidden).map(i=>({id:'ind_'+i.id,label:'📊 '+i.name}))];
+  c.innerHTML=all.map(x=>`<div class="prod-check-item"><input type="checkbox" id="uc_${x.id}" value="${x.id}"><label for="uc_${x.id}">${x.label}</label></div>`).join('');
 }
 
 function addUser(){
-  const name    = cap(document.getElementById('uName').value.trim());
-  const contact = document.getElementById('uContact').value.trim();
-  const date    = document.getElementById('uDate').value;
-  const status  = document.getElementById('uStatus').value;
+  const name=cap(document.getElementById('uName').value.trim());
+  const contact=document.getElementById('uContact').value.trim();
+  const date=document.getElementById('uDate').value;
+  const status=document.getElementById('uStatus').value;
   if(!name){ showToast('Enter User Name','err'); return; }
-  const prods = [...document.querySelectorAll('#userProductCheck input:checked')].map(c=>c.value);
-  users.push({id:'u_'+Date.now(), name, contact, date, status, products:prods});
-  localStorage.setItem('ag_users', JSON.stringify(users));
-  renderUsers();
-  renderStats();
+  const prods=[...document.querySelectorAll('#userProductCheck input:checked')].map(c=>c.value);
+  users.push({id:uid(),name,contact,date,status,products:prods});
+  saveUsers(); renderUsers(); renderProductStats();
   document.getElementById('uName').value='';
   document.getElementById('uContact').value='';
   document.getElementById('uDate').value='';
@@ -600,90 +633,52 @@ function addUser(){
 }
 
 function renderUsers(){
-  const tbody = document.getElementById('usersBody');
-  if(!tbody) return;
-  if(!users.length){
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:32px;">No Users Added Yet</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = users.map((u,i)=>{
-    const prodTags = (u.products||[]).map(pid=>{
-      const p = products.find(x=>x.id===pid);
-      return p ? `<span class="product-tag">${p.icon} ${p.name}</span>` : '';
-    }).join('');
-    return `
-      <tr>
-        <td>${u.name}</td>
-        <td style="color:var(--t3)">${u.contact||'—'}</td>
-        <td>${prodTags||'<span style="color:var(--t3);font-size:11px;">None</span>'}</td>
-        <td style="color:var(--t3)">${u.date||'—'}</td>
-        <td><span class="status-tag ${u.status==='active'?'status-active':'status-expired'}">${u.status==='active'?'Active':'Expired'}</span></td>
-        <td>
-          <div class="user-actions">
-            <button class="btn-icon" onclick="toggleUserStatus(${i})" title="Toggle Status">${u.status==='active'?'⏸':'▶️'}</button>
-            <button class="btn-icon" onclick="deleteUser(${i})" title="Delete">🗑️</button>
-          </div>
-        </td>
-      </tr>
-    `;
+  const tbody=document.getElementById('usersBody'); if(!tbody) return;
+  if(!users.length){ tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:32px;">No Users Added Yet</td></tr>`; return; }
+  tbody.innerHTML=users.map((u,i)=>{
+    const allItems=[...products,...indicators.map(ind=>({id:'ind_'+ind.id,name:ind.name,icon:'📊'}))];
+    const tags=(u.products||[]).map(pid=>{ const item=allItems.find(x=>x.id===pid); return item?`<span class="product-tag">${item.icon||''} ${item.name}</span>`:''; }).join('');
+    return `<tr>
+      <td>${u.name}</td>
+      <td style="color:var(--t3)">${u.contact||'—'}</td>
+      <td>${tags||'<span style="color:var(--t3);font-size:11px;">None</span>'}</td>
+      <td style="color:var(--t3)">${u.date||'—'}</td>
+      <td><span class="status-tag ${u.status==='active'?'s-active':'s-expired'}">${u.status==='active'?'Active':'Expired'}</span></td>
+      <td><button class="btn-icon" onclick="toggleUserStatus(${i})" title="Toggle">${u.status==='active'?'⏸':'▶️'}</button><button class="btn-icon" onclick="deleteUser(${i})" title="Delete">🗑️</button></td>
+    </tr>`;
   }).join('');
 }
 
-function toggleUserStatus(i){
-  users[i].status = users[i].status==='active'?'expired':'active';
-  localStorage.setItem('ag_users', JSON.stringify(users));
-  renderUsers();
-  showToast('Status Updated: '+users[i].name);
-}
+function toggleUserStatus(i){ users[i].status=users[i].status==='active'?'expired':'active'; saveUsers(); renderUsers(); showToast('Status Updated'); }
+function deleteUser(i){ if(!confirm('Delete User "'+users[i].name+'"?')) return; users.splice(i,1); saveUsers(); renderUsers(); renderProductStats(); showToast('User Deleted','err'); }
 
-function deleteUser(i){
-  if(!confirm('Delete User "'+users[i].name+'"?')) return;
-  users.splice(i,1);
-  localStorage.setItem('ag_users', JSON.stringify(users));
-  renderUsers();
-  renderStats();
-  showToast('User Deleted','err');
-}
-
-/* ════ EXPORT ════ */
+/* ═══ EXPORT ═══ */
 function genExport(){
-  const lines = products.filter(p=>!p.hidden).map(p=>{
-    if(p.type==='page'){
-      return `<!-- ${p.name} -->\nonclick="window.location.href='${p.url}'"`;
-    } else {
-      const d = p.desc.replace(/'/g,"\\'");
-      return `<!-- ${p.name} -->\nonclick="openModal('${p.title}','${d}','${p.icon}')"`;
-    }
+  const lines=products.filter(p=>!p.hidden).map(p=>{
+    if(p.type==='page') return `<!-- ${p.name} -->\nonclick="window.location.href='${p.url}'"`;
+    return `<!-- ${p.name} -->\nonclick="openModal('${p.title}','${p.desc.replace(/'/g,"\\'")}','${p.icon}')"`;
   }).join('\n\n');
-  const el = document.getElementById('exportArea');
-  if(el) el.value = lines;
+  const el=document.getElementById('exportArea'); if(el) el.value=lines;
 }
+function copyExport(){ const ta=document.getElementById('exportArea'); ta.select(); navigator.clipboard.writeText(ta.value).then(()=>showToast('Copied!')).catch(()=>{ document.execCommand('copy'); showToast('Copied!'); }); }
 
-function copyExport(){
-  const ta = document.getElementById('exportArea');
-  ta.select();
-  navigator.clipboard.writeText(ta.value)
-    .then(()=>showToast('Copied To Clipboard!'))
-    .catch(()=>{ document.execCommand('copy'); showToast('Copied!'); });
-}
-
-/* ════ PASSWORD ════ */
+/* ═══ PASSWORD ═══ */
 function changePassword(){
-  const cur = document.getElementById('pwCurrent').value;
-  const nw  = document.getElementById('pwNew').value;
-  const cf  = document.getElementById('pwConfirm').value;
-  const msg = document.getElementById('pwMsg');
+  const cur=document.getElementById('pwCurrent').value;
+  const nw=document.getElementById('pwNew').value;
+  const cf=document.getElementById('pwConfirm').value;
+  const msg=document.getElementById('pwMsg');
   if(cur!==currentPassword){ msg.style.color='var(--red)'; msg.textContent='Current Password Is Wrong.'; return; }
   if(nw.length<8){ msg.style.color='var(--red)'; msg.textContent='New Password Must Be At Least 8 Characters.'; return; }
   if(nw!==cf){ msg.style.color='var(--red)'; msg.textContent='Passwords Do Not Match.'; return; }
-  currentPassword = nw;
+  currentPassword=nw;
   msg.style.color='var(--green)';
-  msg.textContent='Password Changed! Go To Export → Push Updated admin.html To GitHub.';
+  msg.textContent='Password Changed! Export admin.html → Push To GitHub.';
   ['pwCurrent','pwNew','pwConfirm'].forEach(id=>document.getElementById(id).value='');
 }
 
-/* ════ PAGE NAV ════ */
-function showPage(name, btn){
+/* ═══ PAGE NAV ═══ */
+function showPage(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -691,26 +686,8 @@ function showPage(name, btn){
   if(name==='export') genExport();
 }
 
-/* ════ SAVE ════ */
-function save(){
-  localStorage.setItem('ag_products', JSON.stringify(products));
-  renderProducts();
-  genExport();
-}
-
-/* ════ UTILS ════ */
-function cap(str){ return str ? str.charAt(0).toUpperCase() + str.slice(1) : str; }
-
-function showToast(msg, type='ok'){
-  const t = document.getElementById('toast');
-  t.textContent = (type==='ok'?'✓ ':'✕ ') + msg;
-  t.className = 'toast show' + (type==='err'?' err':'');
-  setTimeout(()=>{ t.classList.remove('show'); },2800);
-}
-
-/* ════ ESC to close editor ════ */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeEditor(); });
-window.addEventListener('load', genExport);
+/* ═══ ESC ═══ */
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeProdEditor(); closeIndEditor(); } });
 </script>
 </body>
 </html>

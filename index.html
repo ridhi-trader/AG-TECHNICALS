@@ -149,7 +149,18 @@ h1 .g{color:var(--g4);}
 .cta-sub{font-size:14px;color:var(--t2);line-height:1.6;}
 .cta-btns{display:flex;gap:11px;flex-shrink:0;}
 
-/* FOOTER */
+/* FAQ */
+.faq-item{background:var(--card);border:1px solid #1b3020;border-radius:10px;overflow:hidden;cursor:pointer;transition:border-color 0.2s;}
+.faq-item:hover{border-color:rgba(46,204,113,0.25);}
+.faq-item.open{border-color:rgba(46,204,113,0.35);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;font-size:14px;font-weight:600;color:var(--t1);font-family:'Space Grotesk',sans-serif;}
+.faq-arrow{color:var(--g4);font-size:16px;transition:transform 0.25s;flex-shrink:0;margin-left:16px;}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-a{display:none;padding:0 22px 18px;font-size:13.5px;color:var(--t2);line-height:1.75;border-top:1px solid #1b3020;padding-top:14px;}
+.faq-item.open .faq-a{display:block;}
+
+/* DISCLAIMER */
+.disclaimer-box{background:#0a0f0b;border:1px solid #1b3020;border-top:2px solid #e74c3c;padding:22px 32px;margin:0 48px 32px;border-radius:10px;}
 footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
 .f-logo{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--g4);}
 .f-logo span{color:var(--t2);}
@@ -454,6 +465,53 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
 
 </section>
 
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section class="sec reveal" id="faq">
+  <div class="sec-tag">FAQ</div>
+  <div class="sec-h">Frequently Asked Questions</div>
+  <div class="sec-sub" style="margin-bottom:32px;">Everything you need to know before getting started.</div>
+  <div id="faq-list" style="display:flex;flex-direction:column;gap:10px;max-width:860px;margin:0 auto;">
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What markets does AG Technical cover? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">We cover Forex (all major & minor pairs), Gold & Silver, Bitcoin & Crypto, Indian Markets (NSE/BSE), Indices (NAS100, SPX500, US30) and Crude Oil. If it moves, we have analysis on it.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is this financial advice? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">No. AG Technical provides market analysis, educational content, and tools only. Nothing on this platform constitutes financial advice. All trading decisions are your own responsibility. Please read the full risk disclaimer below.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do the TV Indicators work? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">Our custom TradingView indicators (AG SMC, AG Order Flow, AG-ESB) are Pine Script-based scripts that get added directly to your TradingView chart. Once set up, they auto-detect key levels, signals, and zones in real time. Setup takes under 5 minutes — we guide you through it.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What is the Bridge / copy trading? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">The Bridge connects your broker account to AG Technical's signal source. When a trade fires on our end, it automatically executes on your MT4/MT5 account with your chosen lot size and risk settings. No manual intervention needed.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do I need trading experience to use AG Technical? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">Not necessarily. Our Education and Guide sections are built for beginners, while our indicators and algo tools suit experienced traders. We have products for every level — if you're unsure where to start, message us on WhatsApp.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I get access to indicators or the algo? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">Click the relevant product button (TV Indicator, Bridge, or Algo) on this page, then tap "Get this on WhatsApp." We'll confirm availability, explain setup, and handle everything from there.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What is the win rate and how is it measured? <span class="faq-arrow">↓</span></div>
+      <div class="faq-a">Our stated win rate is based on tracked signals across live accounts over multiple months. A win is counted when the trade hits TP1 before stop loss. We publish our track record publicly — ask us for the latest stats on WhatsApp.</div>
+    </div>
+
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="f-logo">AG<span> Technical</span></div>
@@ -465,11 +523,19 @@ footer{background:var(--d2);border-top:1px solid #182d1e;padding:32px 48px;displ
     <a href="#">Risk Disclaimer</a>
   </div>
 </footer>
-<div class="disclaimer">
-  Trading in financial markets involves significant risk of loss and may not be suitable for all investors. Leverage can work against you as well as for you. Past performance is not indicative of future results. AG Technical provides market analysis and educational content only — this is not financial advice. Please ensure you fully understand the risks involved before trading. Trade responsibly.
+<div class="disclaimer-box">
+  <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;font-family:'Space Grotesk',sans-serif;">⚠ RISK DISCLAIMER</div>
+  <div style="font-size:11.5px;color:var(--t3);line-height:1.8;">Trading in financial markets involves significant risk of loss and may not be suitable for all investors. Leverage can work against you as well as for you. Past performance is not indicative of future results. AG Technical provides market analysis, educational content and tools only — nothing on this platform constitutes financial advice or a solicitation to trade. You are solely responsible for your trading decisions. Please ensure you fully understand the risks involved and seek independent financial advice if necessary. Never trade with money you cannot afford to lose. Trade responsibly.</div>
 </div>
 
 <script>
+// FAQ TOGGLE
+function toggleFaq(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
 // MOUSE GLOW
 document.addEventListener('mousemove', e => {
   const g = document.getElementById('mglow');

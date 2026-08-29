@@ -74,8 +74,17 @@
 
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  .img-zoom-hint{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.75);color:#9abfa6;font-size:10px;padding:3px 8px;border-radius:4px;opacity:0;transition:opacity 0.2s;pointer-events:none;}
-  .ind-card:hover .img-zoom-hint{opacity:1;}
+  .img-expand-btn{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.7);color:#2ecc71;font-size:16px;width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;cursor:zoom-in;border:1px solid rgba(46,204,113,0.4);}
+  .ind-img-wrap:hover .img-expand-btn{opacity:1;}
+  .ind-img-wrap{cursor:zoom-in;}
+
+  /* LIGHTBOX */
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s ease;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 0 80px rgba(46,204,113,0.15);animation:slideUp 0.25s ease;}
+  .lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:18px;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+  .lightbox-close:hover{background:rgba(255,255,255,0.2);}
+  .lightbox-label{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;}
   @media(max-width:900px){.grid{grid-template-columns:1fr 1fr;}}
   @media(max-width:600px){nav{padding:14px 20px;}.hero{padding:36px 20px 24px;}.hero-title{font-size:28px;}.grid{grid-template-columns:1fr;padding:0 20px 60px;}}
 </style>
@@ -114,12 +123,13 @@
 </div>
 
 <div class="grid">
-  <div class="ind-card" onclick="openModal('smc')">
-    <div class="ind-img-wrap">
+  <div class="ind-card">
+    <div class="ind-img-wrap" onclick="openLightbox('img-smc.png','AG SMC Indicator')">
       <img src="img-smc.png" alt="AG SMC Indicator">
-      <div class="premium-badge">PREMIUM</div><div class="img-zoom-hint">🔍 Click to expand</div>
+      <div class="premium-badge">PREMIUM</div>
+      <div class="img-expand-btn">⛶</div>
     </div>
-    <div class="ind-body">
+    <div class="ind-body" onclick="openModal('smc')">
       <div class="ind-pid">PID: TVI-0003</div>
       <div class="ind-name">AG SMC Indicator</div>
       <div class="ind-desc">Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.</div>
@@ -127,12 +137,13 @@
     </div>
   </div>
 
-  <div class="ind-card" onclick="openModal('orderflow')">
-    <div class="ind-img-wrap">
+  <div class="ind-card">
+    <div class="ind-img-wrap" onclick="openLightbox('img-orderflow.png','AG Order Flow')">
       <img src="img-orderflow.png" alt="AG Order Flow">
-      <div class="premium-badge">PREMIUM</div><div class="img-zoom-hint">🔍 Click to expand</div>
+      <div class="premium-badge">PREMIUM</div>
+      <div class="img-expand-btn">⛶</div>
     </div>
-    <div class="ind-body">
+    <div class="ind-body" onclick="openModal('orderflow')">
       <div class="ind-pid">PID: TVI-0004</div>
       <div class="ind-name">AG Order Flow</div>
       <div class="ind-desc">Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.</div>
@@ -140,12 +151,13 @@
     </div>
   </div>
 
-  <div class="ind-card" onclick="openModal('esb')">
-    <div class="ind-img-wrap">
+  <div class="ind-card">
+    <div class="ind-img-wrap" onclick="openLightbox('img-esb.png','AG-ESB Indicator')">
       <img src="img-esb.png" alt="AG-ESB Indicator">
-      <div class="premium-badge">PREMIUM</div><div class="img-zoom-hint">🔍 Click to expand</div>
+      <div class="premium-badge">PREMIUM</div>
+      <div class="img-expand-btn">⛶</div>
     </div>
-    <div class="ind-body">
+    <div class="ind-body" onclick="openModal('esb')">
       <div class="ind-pid">PID: TVI-0005</div>
       <div class="ind-name">AG-ESB (Swing + EMA + R:R)</div>
       <div class="ind-desc">Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.</div>
@@ -209,7 +221,27 @@ function closeModal(e, force) {
     document.body.style.overflow = '';
   }
 }
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(null,true); });
+document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(null,true); closeLightbox(null,true); } });
+
+function openLightbox(src, label) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxLabel').textContent = label;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e, force) {
+  if (force || (e && e.target === document.getElementById('lightbox'))) {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
 </script>
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(null,true)">✕</button>
+  <img id="lightboxImg" src="" alt="" style="max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 0 80px rgba(46,204,113,0.15);animation:slideUp 0.25s ease;">
+  <div class="lightbox-label" id="lightboxLabel"></div>
+</div>
+
 </body>
 </html>

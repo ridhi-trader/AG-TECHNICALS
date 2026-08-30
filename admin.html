@@ -177,6 +177,27 @@ select.inp{cursor:pointer;}
 </div>
 
 <!-- LAYOUT -->
+<!-- SUB-ITEM EDITOR OVERLAY -->
+<div class="overlay" id="subItemOverlay" onclick="if(event.target===this)closeSubItemEd()">
+  <div class="editor-modal" style="max-width:480px;">
+    <div class="modal-hdr">
+      <div class="modal-hdr-title" id="subEdTitle">Edit Item</div>
+      <button class="modal-close-btn" onclick="closeSubItemEd()">✕</button>
+    </div>
+    <div class="field"><label class="label">Item Name</label><input class="inp" id="siName" placeholder="e.g. SMC Algo Gold"></div>
+    <div class="field"><label class="label">ID / PID</label><input class="inp" id="siPid" placeholder="e.g. ALG-0001"></div>
+    <div class="field"><label class="label">Short Description</label><input class="inp" id="siShortDesc" placeholder="One line shown on card"></div>
+    <div class="field"><label class="label">Full Description</label><textarea class="inp" id="siDesc" style="min-height:80px;" placeholder="Detailed description for modal/popup"></textarea></div>
+    <div class="field"><label class="label">Image File (in repo)</label><input class="inp" id="siImg" placeholder="e.g. img-smc.png"></div>
+    <div class="field"><label class="label">WhatsApp Number</label><input class="inp" id="siWa" placeholder="919876543210"></div>
+    <div class="field"><label class="label">Badge</label><input class="inp" id="siBadge" placeholder="e.g. PREMIUM"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn-save" onclick="saveSubItemEd()">Save</button>
+      <button class="btn-outline" onclick="closeSubItemEd()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="layout">
 
   <!-- SIDEBAR -->
@@ -520,20 +541,48 @@ function renderProdStats(){
   const el=document.getElementById('prodStats'); if(!el) return;
   el.innerHTML=`<div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div><div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div><div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users</div></div>`;
 }
-function renderProds(){
-  renderProdStats();
-  const el=document.getElementById('prodList'); if(!el) return;
-  el.innerHTML=products.map((p,i)=>`
-    <div class="item-row ${p.hidden?'hidden-item':''}">
-      <div class="item-icon">${p.icon}</div>
-      <div class="item-info"><div class="item-name">${p.name}</div><div class="item-sub">${p.sub}</div></div>
-      <div class="item-actions">
-        <span class="${p.hidden?'badge-hidden':'badge-live'}">${p.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="openProdEd(${i})" title="Edit">✏️</button>
-        <button class="btn-icon" onclick="toggleProd(${i})">${p.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="delProd(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
+function renderProds(){\
+  renderProdStats();\
+  const el=document.getElementById('prodList'); if(!el) return;\
+  el.innerHTML=products.map((p,i)=>{\
+    const itemCount=(p.items||[]).length;\
+    const liveCount=(p.items||[]).filter(it=>!it.hidden).length;\
+    return `\
+    <div style="margin-bottom:8px;">\
+      <div class="item-row ${p.hidden?'hidden-item':''}" style="border-radius:${itemCount?'12px 12px 0 0':'12px'}">\
+        <div class="item-icon">${p.icon}</div>\
+        <div class="item-info"><div class="item-name">${p.name}</div><div class="item-sub">${p.sub}</div></div>\
+        <div class="item-actions">\
+          ${itemCount?`<span style="background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);color:var(--g5);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">${liveCount}/${itemCount} Items</span>`:''}\ 
+          <button class="btn-icon" onclick="openProdEd(${i})" title="Edit">✏️</button>\
+          <button class="btn-icon" onclick="toggleProd(${i})">${p.hidden?'👁':'🙈'}</button>\
+          <button class="btn-icon" onclick="delProd(${i})">🗑️</button>\
+        </div>\
+      </div>\
+      <div style="background:#0f0d14;border:1px solid #2a2736;border-top:none;border-radius:0 0 12px 12px;padding:14px 16px;">\
+        <div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📦 Sub-Items (Shown Inside This Product)</div>\
+        <div id="subitems_${i}" style="margin-bottom:10px;">\
+          ${(p.items||[]).map((it,j)=>`\
+            <div class="item-row ${it.hidden?'hidden-item':''}" style="margin-bottom:6px;padding:10px 14px;">\
+              <div class="item-icon" style="font-size:14px;">${it.img?'🖼':'📄'}</div>\
+              <div class="item-info"><div class="item-name" style="font-size:13px;">${it.name}</div><div class="item-sub">${it.pid||''} ${it.badge?'· '+it.badge:''}</div></div>\
+              <div class="item-actions">\
+                <span class="${it.hidden?'badge-hidden':'badge-live'}">${it.hidden?'Hidden':'Live'}</span>\
+                <button class="btn-icon" onclick="openSubItemEd(${i},${j})">✏️</button>\
+                <button class="btn-icon" onclick="toggleSubItem(${i},${j})">${it.hidden?'👁':'🙈'}</button>\
+                <button class="btn-icon" onclick="delSubItem(${i},${j})">🗑️</button>\
+              </div>\
+            </div>`).join('')}\
+        </div>\
+        <div style="display:flex;gap:8px;align-items:center;">\
+          <input class="inp" id="newSub_name_${i}" placeholder="Item Name" style="flex:1;padding:8px 12px;font-size:12px;">\
+          <input class="inp" id="newSub_pid_${i}" placeholder="ID/PID" style="width:100px;padding:8px 12px;font-size:12px;">\
+          <input class="inp" id="newSub_badge_${i}" placeholder="Badge" style="width:90px;padding:8px 12px;font-size:12px;">\
+          <button class="btn-save" style="padding:8px 16px;font-size:12px;white-space:nowrap;" onclick="addSubItem(${i})">+ Add</button>\
+        </div>\
+      </div>\
+    </div>`;\
+  }).join('');\
 }
 function addProduct(){
   const name=document.getElementById('newProdName').value.trim();
@@ -802,8 +851,61 @@ function copyExport(){ const ta=document.getElementById('exportArea'); if(!ta)re
 /* ═══ PASSWORD ═══ */
 function setPassword(){ const nw=document.getElementById('pwNew').value, cf=document.getElementById('pwConfirm').value, msg=document.getElementById('pwMsg'); if(nw.length<8){msg.style.color='var(--red)';msg.textContent='Min 8 Characters.';return;} if(nw!==cf){msg.style.color='var(--red)';msg.textContent='Passwords Do Not Match.';return;} msg.style.color='var(--green)';msg.textContent='Password Set! To Enforce It, Add A Login Check Back To The admin.html File.'; }
 
+/* ═══ SUB-ITEMS ═══ */
+let editSubProdIdx=-1, editSubItemIdx=-1;
+
+function addSubItem(prodIdx){
+  const name=document.getElementById('newSub_name_'+prodIdx)?.value.trim();
+  const pid=document.getElementById('newSub_pid_'+prodIdx)?.value.trim()||'';
+  const badge=document.getElementById('newSub_badge_'+prodIdx)?.value.trim()||'PREMIUM';
+  if(!name){toast('Enter Item Name','err');return;}
+  if(!products[prodIdx].items) products[prodIdx].items=[];
+  products[prodIdx].items.push({id:uid(),name:cap(name),pid,shortDesc:'Add Short Description.',desc:'Add Full Description.',img:'',waNum:'919876543210',badge,hidden:false});
+  save('products',products); renderProds();
+  toast('Item Added To '+products[prodIdx].name+' — Click ✏️ To Edit');
+}
+
+function openSubItemEd(prodIdx,itemIdx){
+  editSubProdIdx=prodIdx; editSubItemIdx=itemIdx;
+  const it=products[prodIdx].items[itemIdx];
+  document.getElementById('subEdTitle').textContent='Edit: '+it.name+' ('+products[prodIdx].name+')';
+  document.getElementById('siName').value=it.name||'';
+  document.getElementById('siPid').value=it.pid||'';
+  document.getElementById('siShortDesc').value=it.shortDesc||'';
+  document.getElementById('siDesc').value=it.desc||'';
+  document.getElementById('siImg').value=it.img||'';
+  document.getElementById('siWa').value=it.waNum||'919876543210';
+  document.getElementById('siBadge').value=it.badge||'PREMIUM';
+  document.getElementById('subItemOverlay').classList.add('open');
+}
+function closeSubItemEd(){ document.getElementById('subItemOverlay').classList.remove('open'); editSubProdIdx=-1; editSubItemIdx=-1; }
+
+function saveSubItemEd(){
+  if(editSubProdIdx<0||editSubItemIdx<0) return;
+  const it=products[editSubProdIdx].items[editSubItemIdx];
+  it.name=cap(document.getElementById('siName').value);
+  it.pid=document.getElementById('siPid').value;
+  it.shortDesc=document.getElementById('siShortDesc').value;
+  it.desc=document.getElementById('siDesc').value;
+  it.img=document.getElementById('siImg').value;
+  it.waNum=document.getElementById('siWa').value;
+  it.badge=document.getElementById('siBadge').value;
+  save('products',products); renderProds(); closeSubItemEd();
+  toast('Saved: '+it.name);
+}
+
+function toggleSubItem(prodIdx,itemIdx){
+  products[prodIdx].items[itemIdx].hidden=!products[prodIdx].items[itemIdx].hidden;
+  save('products',products); renderProds();
+}
+function delSubItem(prodIdx,itemIdx){
+  if(!confirm('Delete "'+products[prodIdx].items[itemIdx].name+'"?'))return;
+  products[prodIdx].items.splice(itemIdx,1);
+  save('products',products); renderProds(); toast('Deleted','err');
+}
+
 /* ═══ ESC ═══ */
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); document.getElementById('subItemOverlay').classList.remove('open'); } });
 
 /* ═══ INIT ═══ */
 window.addEventListener('DOMContentLoaded', ()=>{ renderProds(); });

@@ -252,6 +252,12 @@ select.inp{cursor:pointer;}
         <button class="sb-item active" onclick="showPage('products',this)"><span class="icon">🎯</span> Products</button>
         <button class="sb-item" onclick="showPage('indicators',this)"><span class="icon">📈</span> TV Indicators</button>
         <button class="sb-item" onclick="showPage('users',this)"><span class="icon">👥</span> Users & Access</button>
+        <button class="sb-item" onclick="showPage('faq',this)"><span class="icon">❓</span> FAQ</button>
+        <button class="sb-item" onclick="showPage('ticker',this)"><span class="icon">📡</span> Ticker Strip</button>
+        <button class="sb-item" onclick="showPage('contact',this)"><span class="icon">📞</span> Contact Links</button>
+        <button class="sb-item" onclick="showPage('hero',this)"><span class="icon">🏠</span> Hero Section</button>
+        <button class="sb-item" onclick="showPage('about',this)"><span class="icon">👤</span> About Us</button>
+        <button class="sb-item" onclick="showPage('newsed',this)"><span class="icon">📰</span> News & Videos</button>
         <div class="sb-section">Tools</div>
         <button class="sb-item" onclick="showPage('export',this)"><span class="icon">📦</span> Export Code</button>
         <button class="sb-item" onclick="showPage('password',this)"><span class="icon">🔐</span> Change Password</button>
@@ -368,7 +374,165 @@ select.inp{cursor:pointer;}
         </div>
       </div>
 
-    </div><!-- /main -->
+    
+      <!-- HERO PAGE -->
+      <div class="page" id="page-hero">
+        <div class="page-tag">Hero Section</div>
+        <div class="page-title">Hero <span class="hl">Content</span></div>
+        <div class="page-sub">Edit The Main Hero Text, CTA Button, And Optional Video.</div>
+        <div class="card">
+          <div class="field"><label class="label">Badge Text</label><input class="inp" id="heroBadge" placeholder="Live Market Intelligence — 24/7"></div>
+          <div class="field"><label class="label">Headline (HTML allowed, use &lt;span class="g"&gt;text&lt;/span&gt; for gold)</label><textarea class="inp" id="heroH1" style="min-height:60px;" placeholder="No Prediction.&lt;br&gt;&lt;span class=g&gt;Follow Price Action.&lt;/span&gt;"></textarea></div>
+          <div class="field"><label class="label">Subheading</label><textarea class="inp" id="heroSub" placeholder="AG Technicals delivers..."></textarea></div>
+          <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="heroBtnText" placeholder="Join The Community →"></div>
+          <div class="field"><label class="label">Video URL (YouTube or Vimeo — optional)</label><input class="inp" id="heroVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn-save" onclick="saveHero()">Save Hero</button>
+            <button class="btn-outline" onclick="resetHero()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TICKER PAGE -->
+      <div class="page" id="page-ticker">
+        <div class="page-tag">Ticker Strip</div>
+        <div class="page-title">Ticker <span class="hl">Items</span></div>
+        <div class="page-sub">Add, Edit, Hide Or Delete Scrolling Ticker Pills.</div>
+        <div class="add-form">
+          <div class="card-title">➕ Add Ticker Item</div>
+          <div class="add-grid2" style="margin-bottom:10px;">
+            <input class="inp" id="newTickText" placeholder="Text (e.g. EURUSD  1.0842  ▲ 0.18%)">
+            <select class="inp" id="newTickType">
+              <option value="default">White (Default)</option>
+              <option value="price">Gold Price</option>
+              <option value="dxy">Blue (DXY)</option>
+              <option value="jh">Orange (Event)</option>
+              <option value="cot">Green (COT)</option>
+              <option value="gold">Gold (AG Intel)</option>
+            </select>
+          </div>
+          <button class="btn-save" onclick="addTicker()">Add Item</button>
+        </div>
+        <div id="tickerList"></div>
+      </div>
+
+      <!-- CONTACT PAGE -->
+      <div class="page" id="page-contact">
+        <div class="page-tag">Contact Links</div>
+        <div class="page-title">Contact <span class="hl">Cards</span></div>
+        <div class="page-sub">Edit Telegram, WhatsApp, Instagram And Any Other Contact Links.</div>
+        <div class="add-form">
+          <div class="card-title">➕ Add Contact</div>
+          <div class="add-grid3" style="margin-bottom:10px;">
+            <input class="inp" id="newContactName" placeholder="Name (e.g. Telegram)">
+            <input class="inp" id="newContactUrl" placeholder="URL (e.g. https://t.me/...)">
+            <input class="inp" id="newContactIcon" placeholder="Icon" style="text-align:center;">
+          </div>
+          <div style="margin-bottom:10px;"><input class="inp" id="newContactSub" placeholder="Sub-label (e.g. @agtechnical)"></div>
+          <button class="btn-save" onclick="addContact()">Add Contact</button>
+        </div>
+        <div id="contactList"></div>
+      </div>
+
+      <!-- ABOUT PAGE -->
+      <div class="page" id="page-about">
+        <div class="page-tag">About Us</div>
+        <div class="page-title">About <span class="hl">Section</span></div>
+        <div class="page-sub">Edit All About Us Text, Markets Grid, And Optional Video.</div>
+        <div class="card">
+          <div class="field"><label class="label">Section Headline</label><input class="inp" id="aboutH" placeholder="Traders First. Always."></div>
+          <div class="field"><label class="label">Section Sub</label><input class="inp" id="aboutSub" placeholder="9+ years of real screen time..."></div>
+          <div class="field"><label class="label">Who We Are Text</label><textarea class="inp" id="aboutWhoText" style="min-height:90px;"></textarea></div>
+          <div class="field"><label class="label">What We Do (one item per line, use " — " to split title from desc)</label><textarea class="inp" id="aboutDoList" style="min-height:100px;" placeholder="Analyze Charts — 9+ years; we read markets like books&#10;Build Strategies — work across all markets and timeframes"></textarea></div>
+          <div class="field"><label class="label">Markets Subtitle</label><input class="inp" id="aboutMarketsSubtitle" placeholder="Whatever you trade, we've traded it for the last 9 years."></div>
+          <div class="field"><label class="label">Markets (one per line: emoji|label  OR  TEXT|label|isText)</label><textarea class="inp" id="aboutMarkets" style="min-height:80px;" placeholder="IN|Indian Markets|isText&#10;🔄|Forex&#10;₿|Bitcoin & Crypto"></textarea></div>
+          <div class="field"><label class="label">Video URL (YouTube or Vimeo — optional)</label><input class="inp" id="aboutVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn-save" onclick="saveAbout()">Save About</button>
+            <button class="btn-outline" onclick="resetAbout()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ PAGE -->
+      <div class="page" id="page-faq">
+        <div class="page-tag">FAQ</div>
+        <div class="page-title">FAQ <span class="hl">Questions</span></div>
+        <div class="page-sub">Add, Edit, Hide Or Delete FAQ Items.</div>
+        <div class="add-form">
+          <div class="card-title">➕ Add FAQ Item</div>
+          <div class="field" style="margin-bottom:10px;"><input class="inp" id="newFaqQ" placeholder="Question"></div>
+          <div class="field" style="margin-bottom:10px;"><textarea class="inp" id="newFaqA" placeholder="Answer" style="min-height:60px;"></textarea></div>
+          <button class="btn-save" onclick="addFaq()">Add Question</button>
+        </div>
+        <div id="faqList"></div>
+      </div>
+
+      <!-- NEWS & VIDEOS PAGE -->
+      <div class="page" id="page-newsed">
+        <div class="page-tag">News & Videos</div>
+        <div class="page-title">News <span class="hl">& Videos</span></div>
+        <div class="page-sub">Edit Dossier Card, News Items, Sentiment, And Add Videos.</div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">📁 Featured Dossier Card</div>
+          <div class="field"><label class="label">Dossier Title</label><input class="inp" id="nDossierTitle" placeholder="Gold Dossier — Jackson Hole Week"></div>
+          <div class="field"><label class="label">Dossier Sub</label><input class="inp" id="nDossierSub" placeholder="XAU/USD at $4,645 · ..."></div>
+          <div class="field"><label class="label">Dossier Link URL</label><input class="inp" id="nDossierUrl" placeholder="gold-dossier.html"></div>
+          <button class="btn-save" onclick="saveNewsMeta()">Save Dossier</button>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">🎬 News Section Videos</div>
+          <div class="card-sub">Add YouTube/Vimeo URLs — They Appear Above The News Grid.</div>
+          <div class="add-grid2" style="margin-bottom:10px;">
+            <input class="inp" id="newVidLabel" placeholder="Video Label (e.g. Weekly Analysis)">
+            <input class="inp" id="newVidUrl" placeholder="https://youtube.com/watch?v=...">
+          </div>
+          <button class="btn-save" onclick="addVideo()">Add Video</button>
+          <div id="videoList" style="margin-top:12px;"></div>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">📰 Latest News Items</div>
+          <div class="add-grid2" style="margin-bottom:10px;">
+            <input class="inp" id="newLatestTitle" placeholder="News Headline">
+            <input class="inp" id="newLatestTime" placeholder="2h ago · Forex">
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="link-opt active" id="latestDirUp" onclick="setNewsDir('latest','up',this)">▲ Bullish</button>
+            <button class="link-opt" id="latestDirDn" onclick="setNewsDir('latest','dn',this)">▼ Bearish</button>
+          </div>
+          <button class="btn-save" onclick="addNewsItem('latest')">Add Item</button>
+          <div id="latestList" style="margin-top:12px;"></div>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">📊 AG Analysis Items</div>
+          <div class="add-grid2" style="margin-bottom:10px;">
+            <input class="inp" id="newAnalysisTitle" placeholder="Analysis Headline">
+            <input class="inp" id="newAnalysisTime" placeholder="1h ago · AG Analysis">
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="link-opt active" id="analysisDirUp" onclick="setNewsDir('analysis','up',this)">▲ Bullish</button>
+            <button class="link-opt" id="analysisDirDn" onclick="setNewsDir('analysis','dn',this)">▼ Bearish</button>
+          </div>
+          <button class="btn-save" onclick="addNewsItem('analysis')">Add Item</button>
+          <div id="analysisList" style="margin-top:12px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 Sentiment</div>
+          <div id="sentimentList"></div>
+          <div class="add-grid2" style="margin-top:12px;margin-bottom:10px;">
+            <input class="inp" id="newSentLabel" placeholder="Market (e.g. Forex)">
+            <input class="inp" id="newSentPct" type="number" min="0" max="100" placeholder="Bull % (0-100)">
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="link-opt active" id="sentDirUp" onclick="setNewsDir('sent','up',this)">▲ Bull</button>
+            <button class="link-opt" id="sentDirDn" onclick="setNewsDir('sent','dn',this)">▼ Bear</button>
+            <button class="link-opt" id="sentDirNeutral" onclick="setNewsDir('sent','neutral',this)">⬆ Neutral</button>
+          </div>
+          <button class="btn-save" onclick="addSentiment()">Add Sentiment</button>
+        </div>
+      </div>
+
+</div><!-- /main -->
   </div>
 </div>
 
@@ -686,8 +850,261 @@ function showPage(name,btn){
   if(name==='export') genExport();
 }
 
+
+/* ═══ HERO ═══ */
+const HERO_DEF = {badge:'Live Market Intelligence — 24/7',h1:'No Prediction.<br><span class="g">Follow Price Action.</span>',sub:'AG Technicals delivers institutional-grade analysis, live signals, and real-time charts — everything you need to trade Forex, Crypto, Indices, and Commodities with confidence.',btnText:'Join The Community →',videoUrl:''};
+function loadHeroPage(){
+  const h=JSON.parse(localStorage.getItem('ag_hero')||'null')||HERO_DEF;
+  document.getElementById('heroBadge').value=h.badge||'';
+  document.getElementById('heroH1').value=h.h1||'';
+  document.getElementById('heroSub').value=h.sub||'';
+  document.getElementById('heroBtnText').value=h.btnText||'';
+  document.getElementById('heroVideoUrl').value=h.videoUrl||'';
+}
+function saveHero(){
+  const h={badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtnText').value,videoUrl:document.getElementById('heroVideoUrl').value};
+  localStorage.setItem('ag_hero',JSON.stringify(h)); showToast('Hero Saved');
+}
+function resetHero(){ localStorage.removeItem('ag_hero'); loadHeroPage(); showToast('Hero Reset'); }
+
+/* ═══ TICKER ═══ */
+const TICKER_DEF=[{text:'XAU/USD  $4,645.00',type:'price'},{text:'DXY WATCH · Dollar softness fueling the rally',type:'dxy'},{text:'BTCUSD  67,420  ▲ 2.41%',type:'default'},{text:'JACKSON HOLE · Fed speaks — all eyes on Warsh keynote',type:'jh'},{text:'EURUSD  1.0842  ▲ 0.18%',type:'default'},{text:'COT · Managed Money net long 130,766 contracts',type:'cot'},{text:'NAS100  18,920  ▲ 1.20%',type:'default'},{text:'AG INTEL · Gold Dossier: Jackson Hole — Read ↗',type:'gold'}];
+let tickerItems=JSON.parse(localStorage.getItem('ag_ticker')||'null')||JSON.parse(JSON.stringify(TICKER_DEF));
+function renderTicker(){
+  document.getElementById('tickerList').innerHTML=tickerItems.map((t,i)=>`
+    <div class="item-row ${t.hidden?'hidden-item':''}">
+      <div class="item-row-icon" style="font-size:13px;width:50px;text-align:center;flex-shrink:0;">${t.type}</div>
+      <div class="item-row-info"><div class="item-row-name">${t.text}</div></div>
+      <div class="item-row-actions">
+        <span class="${t.hidden?'badge-hidden':'badge-live'}">${t.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="toggleTickerHide(${i})">${t.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="deleteTicker(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function addTicker(){
+  const text=document.getElementById('newTickText').value.trim(),type=document.getElementById('newTickType').value;
+  if(!text){showToast('Enter Ticker Text','err');return;}
+  tickerItems.push({text,type,hidden:false});
+  localStorage.setItem('ag_ticker',JSON.stringify(tickerItems));
+  renderTicker();
+  document.getElementById('newTickText').value='';
+  showToast('Ticker Item Added');
+}
+function toggleTickerHide(i){tickerItems[i].hidden=!tickerItems[i].hidden;localStorage.setItem('ag_ticker',JSON.stringify(tickerItems));renderTicker();}
+function deleteTicker(i){if(!confirm('Delete this ticker item?'))return;tickerItems.splice(i,1);localStorage.setItem('ag_ticker',JSON.stringify(tickerItems));renderTicker();showToast('Deleted','err');}
+
+/* ═══ CONTACT ═══ */
+const CONTACT_DEF=[{icon:'✈️',name:'Telegram',sub:'@agtechnical',url:'https://t.me/agtechnical',hidden:false},{icon:'💬',name:'WhatsApp',sub:'Message us directly',url:'https://wa.me/919876543210',hidden:false},{icon:'📸',name:'Instagram',sub:'@agtechnical',url:'https://instagram.com/agtechnical',hidden:false}];
+let contactItems=JSON.parse(localStorage.getItem('ag_contact')||'null')||JSON.parse(JSON.stringify(CONTACT_DEF));
+function renderContact(){
+  document.getElementById('contactList').innerHTML=contactItems.map((c,i)=>`
+    <div class="item-row ${c.hidden?'hidden-item':''}">
+      <div class="item-row-icon">${c.icon}</div>
+      <div class="item-row-info"><div class="item-row-name">${c.name}</div><div class="item-row-sub">${c.sub} · ${c.url}</div></div>
+      <div class="item-row-actions">
+        <span class="${c.hidden?'badge-hidden':'badge-live'}">${c.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="editContact(${i})">✏️</button>
+        <button class="btn-icon" onclick="toggleContactHide(${i})">${c.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="deleteContact(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function addContact(){
+  const name=document.getElementById('newContactName').value.trim(),url=document.getElementById('newContactUrl').value.trim(),icon=document.getElementById('newContactIcon').value.trim()||'💬',sub=document.getElementById('newContactSub').value.trim();
+  if(!name||!url){showToast('Enter Name And URL','err');return;}
+  contactItems.push({icon,name,sub,url,hidden:false});
+  localStorage.setItem('ag_contact',JSON.stringify(contactItems));
+  renderContact();
+  ['newContactName','newContactUrl','newContactIcon','newContactSub'].forEach(id=>document.getElementById(id).value='');
+  showToast('Contact Added');
+}
+function editContact(i){
+  const c=contactItems[i];
+  const nn=prompt('Name:',c.name); if(nn===null)return; c.name=nn;
+  const nu=prompt('URL:',c.url); if(nu===null)return; c.url=nu;
+  const ns=prompt('Sub-label:',c.sub); if(ns===null)return; c.sub=ns;
+  const ni=prompt('Icon:',c.icon); if(ni===null)return; c.icon=ni;
+  localStorage.setItem('ag_contact',JSON.stringify(contactItems)); renderContact(); showToast('Contact Updated');
+}
+function toggleContactHide(i){contactItems[i].hidden=!contactItems[i].hidden;localStorage.setItem('ag_contact',JSON.stringify(contactItems));renderContact();}
+function deleteContact(i){if(!confirm('Delete?'))return;contactItems.splice(i,1);localStorage.setItem('ag_contact',JSON.stringify(contactItems));renderContact();showToast('Deleted','err');}
+
+/* ═══ FAQ ═══ */
+const FAQ_DEF=[{q:'What markets does AG Technicals cover?',a:'We cover Forex, Gold & Silver, Bitcoin & Crypto, Indian Markets, Indices and Crude Oil.',hidden:false},{q:'Is this financial advice?',a:'No. AG Technicals provides market analysis and educational content only.',hidden:false},{q:'How do the TV Indicators work?',a:'Our custom TradingView indicators are Pine Script-based scripts added directly to your chart.',hidden:false},{q:'What is the Bridge / copy trading?',a:'The Bridge connects your broker account to our signal source — trades execute automatically.',hidden:false}];
+let faqData=JSON.parse(localStorage.getItem('ag_faq')||'null')||JSON.parse(JSON.stringify(FAQ_DEF));
+let faqNewsDir={latest:'up',analysis:'up',sent:'up'};
+function setNewsDir(section,dir,btn){
+  faqNewsDir[section]=dir;
+  const prefix=section==='sent'?'sentDir':section==='latest'?'latestDir':'analysisDir';
+  ['Up','Dn','Neutral'].forEach(d=>{ const el=document.getElementById(prefix+d); if(el) el.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function renderFaq(){
+  document.getElementById('faqList').innerHTML=faqData.map((f,i)=>`
+    <div class="item-row ${f.hidden?'hidden-item':''}">
+      <div class="item-row-info"><div class="item-row-name">${f.q}</div><div class="item-row-sub">${f.a.slice(0,80)}...</div></div>
+      <div class="item-row-actions">
+        <span class="${f.hidden?'badge-hidden':'badge-live'}">${f.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="editFaq(${i})">✏️</button>
+        <button class="btn-icon" onclick="toggleFaqHide(${i})">${f.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="deleteFaq(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function addFaq(){
+  const q=document.getElementById('newFaqQ').value.trim(),a=document.getElementById('newFaqA').value.trim();
+  if(!q||!a){showToast('Enter Question And Answer','err');return;}
+  faqData.push({q,a,hidden:false});
+  localStorage.setItem('ag_faq',JSON.stringify(faqData));
+  renderFaq();
+  document.getElementById('newFaqQ').value='';
+  document.getElementById('newFaqA').value='';
+  showToast('FAQ Added');
+}
+function editFaq(i){
+  const f=faqData[i];
+  const nq=prompt('Question:',f.q); if(nq===null)return; f.q=nq;
+  const na=prompt('Answer:',f.a); if(na===null)return; f.a=na;
+  localStorage.setItem('ag_faq',JSON.stringify(faqData)); renderFaq(); showToast('FAQ Updated');
+}
+function toggleFaqHide(i){faqData[i].hidden=!faqData[i].hidden;localStorage.setItem('ag_faq',JSON.stringify(faqData));renderFaq();}
+function deleteFaq(i){if(!confirm('Delete?'))return;faqData.splice(i,1);localStorage.setItem('ag_faq',JSON.stringify(faqData));renderFaq();showToast('Deleted','err');}
+
+/* ═══ ABOUT ═══ */
+const ABOUT_DEF={h:'Traders First. Always.',sub:'9+ years of real screen time across every major market.',whoText:'AG Technicals is born from 9+ years of real trading experience (2017–2026) in global financial markets.',doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop Algorithms — manual trading into automated machines'],marketsSubtitle:"Whatever you trade, we've traded it for the last 9 years.",markets:[{icon:'IN',label:'Indian Markets',isText:true},{icon:'🔄',label:'Forex'},{icon:'₿',label:'Bitcoin & Crypto'},{icon:'✨',label:'Gold'},{icon:'⚪',label:'Silver'},{icon:'🌐',label:'And More...'}],videoUrl:''};
+function loadAboutPage(){
+  const a=JSON.parse(localStorage.getItem('ag_about')||'null')||ABOUT_DEF;
+  document.getElementById('aboutH').value=a.h||'';
+  document.getElementById('aboutSub').value=a.sub||'';
+  document.getElementById('aboutWhoText').value=a.whoText||'';
+  document.getElementById('aboutDoList').value=(a.doList||[]).join('
+');
+  document.getElementById('aboutMarketsSubtitle').value=a.marketsSubtitle||'';
+  document.getElementById('aboutMarkets').value=(a.markets||[]).map(m=>m.isText?`${m.icon}|${m.label}|isText`:`${m.icon}|${m.label}`).join('
+');
+  document.getElementById('aboutVideoUrl').value=a.videoUrl||'';
+}
+function saveAbout(){
+  const doRaw=document.getElementById('aboutDoList').value.split('
+').filter(l=>l.trim());
+  const mktsRaw=document.getElementById('aboutMarkets').value.split('
+').filter(l=>l.trim()).map(l=>{const p=l.split('|');return{icon:p[0],label:p[1]||p[0],isText:p[2]==='isText'};});
+  const a={h:document.getElementById('aboutH').value,sub:document.getElementById('aboutSub').value,whoText:document.getElementById('aboutWhoText').value,doList:doRaw,marketsSubtitle:document.getElementById('aboutMarketsSubtitle').value,markets:mktsRaw,videoUrl:document.getElementById('aboutVideoUrl').value};
+  localStorage.setItem('ag_about',JSON.stringify(a)); showToast('About Saved');
+}
+function resetAbout(){localStorage.removeItem('ag_about');loadAboutPage();showToast('About Reset');}
+
+/* ═══ NEWS & VIDEOS ═══ */
+const NEWS_DEF={dossierTitle:'Gold Dossier — Jackson Hole Week',dossierSub:'XAU/USD at $4,645 · Institutions crowded long · Full COT + DXY breakdown inside',dossierUrl:'gold-dossier.html',videos:[],latest:[{title:'Fed holds rates — dollar softens across majors',time:'2h ago · Forex',dir:'up'},{title:'BTC reclaims $68K — bulls eye $72K resistance',time:'3h ago · Crypto',dir:'up'}],analysis:[{title:'EUR/USD: Bullish structure holds above 1.0820',time:'1h ago · AG Analysis',dir:'up'},{title:'XAU/USD: Rejection at $2340 — short setup forming',time:'4h ago · AG Analysis',dir:'dn'}],sentiment:[{label:'Forex',pct:72,dir:'up'},{label:'Crypto',pct:81,dir:'up'},{label:'Gold',pct:38,dir:'dn'},{label:'Indices',pct:68,dir:'up'}]};
+let newsData=JSON.parse(localStorage.getItem('ag_news')||'null')||JSON.parse(JSON.stringify(NEWS_DEF));
+function loadNewsPage(){
+  document.getElementById('nDossierTitle').value=newsData.dossierTitle||'';
+  document.getElementById('nDossierSub').value=newsData.dossierSub||'';
+  document.getElementById('nDossierUrl').value=newsData.dossierUrl||'';
+  renderVideoList(); renderNewsItems('latest'); renderNewsItems('analysis'); renderSentiment();
+}
+function saveNewsMeta(){
+  newsData.dossierTitle=document.getElementById('nDossierTitle').value;
+  newsData.dossierSub=document.getElementById('nDossierSub').value;
+  newsData.dossierUrl=document.getElementById('nDossierUrl').value;
+  localStorage.setItem('ag_news',JSON.stringify(newsData)); showToast('Dossier Saved');
+}
+function addVideo(){
+  const label=document.getElementById('newVidLabel').value.trim(),url=document.getElementById('newVidUrl').value.trim();
+  if(!url){showToast('Enter Video URL','err');return;}
+  if(!newsData.videos) newsData.videos=[];
+  newsData.videos.push({label:label||'Video',url,hidden:false});
+  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderVideoList();
+  document.getElementById('newVidLabel').value=''; document.getElementById('newVidUrl').value='';
+  showToast('Video Added');
+}
+function renderVideoList(){
+  const el=document.getElementById('videoList'); if(!el)return;
+  el.innerHTML=(newsData.videos||[]).map((v,i)=>`
+    <div class="item-row ${v.hidden?'hidden-item':''}">
+      <div class="item-row-icon">🎬</div>
+      <div class="item-row-info"><div class="item-row-name">${v.label}</div><div class="item-row-sub">${v.url.slice(0,50)}...</div></div>
+      <div class="item-row-actions">
+        <span class="${v.hidden?'badge-hidden':'badge-live'}">${v.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="toggleVideoHide(${i})">${v.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="deleteVideo(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function toggleVideoHide(i){newsData.videos[i].hidden=!newsData.videos[i].hidden;localStorage.setItem('ag_news',JSON.stringify(newsData));renderVideoList();}
+function deleteVideo(i){newsData.videos.splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderVideoList();showToast('Deleted','err');}
+function addNewsItem(section){
+  const t=document.getElementById('new'+cap(section)+'Title').value.trim();
+  const time=document.getElementById('new'+cap(section)+'Time').value.trim();
+  const dir=faqNewsDir[section]||'up';
+  if(!t){showToast('Enter Headline','err');return;}
+  if(!newsData[section]) newsData[section]=[];
+  newsData[section].unshift({title:t,time:time||'Just now',dir});
+  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderNewsItems(section);
+  document.getElementById('new'+cap(section)+'Title').value=''; document.getElementById('new'+cap(section)+'Time').value='';
+  showToast('News Item Added');
+}
+function renderNewsItems(section){
+  const el=document.getElementById(section+'List'); if(!el)return;
+  el.innerHTML=(newsData[section]||[]).map((n,i)=>`
+    <div class="item-row" style="padding:10px 14px;">
+      <div class="item-row-icon" style="font-size:11px;width:16px;">${n.dir==='up'?'▲':'▼'}</div>
+      <div class="item-row-info"><div class="item-row-name" style="font-size:13px;">${n.title}</div><div class="item-row-sub">${n.time}</div></div>
+      <div class="item-row-actions"><button class="btn-icon" onclick="deleteNewsItem('${section}',${i})">🗑️</button></div>
+    </div>`).join('');
+}
+function deleteNewsItem(section,i){newsData[section].splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderNewsItems(section);showToast('Deleted','err');}
+function addSentiment(){
+  const label=document.getElementById('newSentLabel').value.trim(),pct=parseInt(document.getElementById('newSentPct').value)||50,dir=faqNewsDir['sent']||'up';
+  if(!label){showToast('Enter Market Label','err');return;}
+  if(!newsData.sentiment) newsData.sentiment=[];
+  newsData.sentiment.push({label,pct,dir});
+  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderSentiment();
+  document.getElementById('newSentLabel').value=''; document.getElementById('newSentPct').value='';
+  showToast('Sentiment Added');
+}
+function renderSentiment(){
+  const el=document.getElementById('sentimentList'); if(!el)return;
+  el.innerHTML=(newsData.sentiment||[]).map((s,i)=>`
+    <div class="item-row" style="padding:10px 14px;margin-bottom:6px;">
+      <div class="item-row-info"><div class="item-row-name" style="font-size:13px;">${s.label} — ${s.pct}% Bull (${s.dir})</div></div>
+      <div class="item-row-actions">
+        <button class="btn-icon" onclick="editSentiment(${i})">✏️</button>
+        <button class="btn-icon" onclick="deleteSentiment(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function editSentiment(i){
+  const s=newsData.sentiment[i];
+  const np=prompt('Bull % (0-100):',s.pct); if(np===null)return; s.pct=parseInt(np)||s.pct;
+  const nd=prompt('Direction (up/dn/neutral):',s.dir); if(nd===null)return; s.dir=nd;
+  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderSentiment(); showToast('Updated');
+}
+function deleteSentiment(i){newsData.sentiment.splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderSentiment();showToast('Deleted','err');}
+
+/* ═══ PATCH showPage to load dynamic pages ═══ */
+const _origShowPage = showPage;
+showPage = function(name, btn){
+  _origShowPage(name, btn);
+  if(name==='hero') loadHeroPage();
+  if(name==='ticker') renderTicker();
+  if(name==='contact') renderContact();
+  if(name==='faq') renderFaq();
+  if(name==='about') loadAboutPage();
+  if(name==='newsed') loadNewsPage();
+};
+
+/* ═══ PATCH init ═══ */
+const _origInit = init;
+init = function(){
+  _origInit();
+  renderTicker(); renderContact(); renderFaq();
+};
+
 /* ═══ ESC ═══ */
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeProdEditor(); closeIndEditor(); } });
 </script>
 </body>
 </html>
+<!-- This file is complete — appending is not needed, full rewrite below -->

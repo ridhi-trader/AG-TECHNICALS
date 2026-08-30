@@ -565,13 +565,14 @@ function renderProds(){
         '<div class="item-icon">'+p.icon+'</div>'+
         '<div class="item-info"><div class="item-name">'+p.name+'</div><div class="item-sub">'+p.sub+'</div></div>'+
         '<div class="item-actions">'+
+          '<button class="btn-icon" onclick="toggleSubPanel('+i+')" title="Sub-Items" style="font-size:12px;color:var(--g5);border:1px solid rgba(232,184,75,0.3);border-radius:6px;padding:4px 9px;">'+itemCount+' Items ▾</button>'+
           itemBadge+
           '<button class="btn-icon" onclick="openProdEd('+i+')" title="Edit">✏️</button>'+
           '<button class="btn-icon" onclick="toggleProd('+i+')">'+(p.hidden?'👁':'🙈')+'</button>'+
           '<button class="btn-icon" onclick="delProd('+i+')">🗑️</button>'+
         '</div>'+
       '</div>'+
-      '<div style="background:#0f0d14;border:1px solid #2a2736;border-top:none;border-radius:0 0 12px 12px;padding:14px 16px;">'+
+      '<div id="subpanel_'+i+'" style="background:#0f0d14;border:1px solid #2a2736;border-top:none;border-radius:0 0 12px 12px;padding:14px 16px;display:none;">'+
         '<div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📦 Sub-Items (Shown Inside This Product)</div>'+
         '<div id="subitems_'+i+'" style="margin-bottom:10px;">'+subRows+'</div>'+
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'+
@@ -853,6 +854,12 @@ function setPassword(){ const nw=document.getElementById('pwNew').value, cf=docu
 
 /* ═══ SUB-ITEMS ═══ */
 let editSubProdIdx=-1, editSubItemIdx=-1;
+
+function toggleSubPanel(i){
+  const panel=document.getElementById('subpanel_'+i);
+  if(!panel) return;
+  panel.style.display=panel.style.display==='none'?'block':'none';
+}
 
 function addSubItem(prodIdx){
   const name=document.getElementById('newSub_name_'+prodIdx)?.value.trim();

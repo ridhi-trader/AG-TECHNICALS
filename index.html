@@ -413,7 +413,7 @@ const D = {
   ],
   products: [
     {id:'bridge',      name:'Bridge',               icon:'🌉',sub:'Trade Copy Connector',       title:'Bridge',               desc:'Seamlessly connect your broker to AG Technicals — copy trades directly from our signals to your account. Auto-execute every call with zero manual intervention.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
-    {id:'algo',        name:'Algo (MT5)',            icon:'🤖',sub:'Auto Trading System (MT5)',  title:'Algo (MT5)',            desc:'Fully automated trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
+    {id:'algo',        name:'Algo (MT5)',            icon:'🤖',sub:'Auto Trading System (MT5)',  title:'Algo (MT5)',            desc:'Fully automated MT5 trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
     {id:'tvindicator', name:'TradingView Indicator', icon:'📈',sub:'Custom TV Indicator',        title:'TradingView Indicator', desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',videoUrl:'',hidden:false},
     {id:'education',   name:'Education',            icon:'🧠',sub:'Courses & Academy',          title:'Education',            desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
     {id:'guide',       name:'Guide',                icon:'📖',sub:'Written Playbooks',          title:'Guides',               desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
@@ -438,7 +438,7 @@ const D = {
     h:'Traders First. Always.',
     sub:'9+ years of real screen time across every major market — we built the tools we always wished existed.',
     whoText:'AG Technicals is born from 9+ years of real trading experience (2017–2026) in global financial markets. We\'re not just software developers — we\'re traders first, who understand the nuances of every market and the power of disciplined automation.',
-    doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop Algorithms — manual trading into automated machines','Custom Indicators — TradingView indicators from real data','Automate Everything — signal to execution, complete pipeline'],
+    doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop MT5 Algorithms — manual trading into automated machines','Custom TradingView Indicators — built from real institutional data','Automate Everything — signal to execution, complete pipeline'],
     marketsSubtitle:'Whatever you trade, we\'ve traded it for the last 9 years.',
     markets:[{icon:'IN',label:'Indian Markets',isText:true},{icon:'🔄',label:'Forex'},{icon:'₿',label:'Bitcoin & Crypto'},{icon:'✨',label:'Gold'},{icon:'⚪',label:'Silver'},{icon:'🌐',label:'And More...'}],
     videoUrl:''
@@ -533,8 +533,9 @@ document.getElementById('contactGrid').innerHTML = contact.filter(c=>!c.hidden).
 /* ── ABOUT ── */
 document.getElementById('aboutWhoText').textContent = about.whoText||D.about.whoText;
 document.getElementById('aboutDoList').innerHTML = (about.doList||D.about.doList).map(item=>{
-  const parts=item.split(' — ');
-  return `<div style="background:rgba(0,0,0,0.25);border:1px solid #2a2536;border-left:2px solid var(--g4);border-radius:8px;padding:11px 16px;font-size:13px;color:var(--t2);">✓ <span style="color:var(--g4);font-weight:600;">${parts[0]||item}</span>${parts[1]?' — '+parts[1]:''}`;
+  const [title,...rest] = item.split(' — ');
+  const desc = rest.join(' — ');
+  return `<div style="background:rgba(0,0,0,0.25);border:1px solid #2a2536;border-left:2px solid var(--g4);border-radius:8px;padding:11px 16px;font-size:13px;color:var(--t2);">✓ <span style="color:var(--g4);font-weight:700;">${title||item}</span>${desc?' — '+desc:''}</div>`;
 }).join('');
 document.getElementById('aboutMarketsSubtitle').textContent = about.marketsSubtitle||D.about.marketsSubtitle;
 document.getElementById('aboutMarketsGrid').innerHTML = (about.markets||D.about.markets).map(m=>`

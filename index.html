@@ -199,6 +199,10 @@ footer{background:var(--d2);border-top:1px solid #2a2736;padding:32px 48px;displ
     <div class="modal-tag" id="modalTag">Service</div>
     <div class="modal-title" id="modalTitle">Title</div>
     <div class="modal-desc" id="modalDesc">Description</div>
+    <div id="modalCodeWrap" style="display:none;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">How It Works — Integration</div>
+      <pre style="background:#0a090e;border:1px solid #2a2736;border-radius:8px;padding:14px;font-size:11px;color:#8affc1;overflow-x:auto;line-height:1.7;font-family:'JetBrains Mono',monospace;" id="modalCodeBlock"></pre>
+    </div>
     <div id="modalVideoWrap" style="display:none;" class="video-wrap"></div>
     <button class="modal-btn" id="modalBtn">Join Waitlist →</button>
     <div class="modal-coming" id="modalComing">Full page coming soon</div>
@@ -412,8 +416,8 @@ const D = {
     {text:'AG INTEL · Gold Dossier: Jackson Hole — Read ↗',type:'gold'},
   ],
   products: [
-    {id:'bridge',      name:'Bridge',               icon:'🌉',sub:'Trade Copy Connector',       title:'Bridge',               desc:'Seamlessly connect your broker to AG Technicals — copy trades directly from our signals to your account. Auto-execute every call with zero manual intervention.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
-    {id:'algo',        name:'Algo (MT5)',            icon:'🤖',sub:'Auto Trading System (MT5)',  title:'Algo (MT5)',            desc:'Fully automated MT5 trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
+    {id:'bridge',      name:'Bridge',               icon:'🌉',sub:'Trade Copy Connector',       title:'Bridge — TradingView → MT5',               desc:'AG Bridge connects TradingView directly to your MT5 — signals fire automatically, trades execute without you touching a button. Powered by our bridge_module engine: POST /master/{strategy} receives TV webhooks, GET /api/pull/{license} delivers to your MT5 EA. One license, one account, 24/7.',cta:'Get Bridge Access →',type:'modal',url:'',videoUrl:'',hidden:false},
+    {id:'algo',        name:'Algo (MT5)',            icon:'🤖',sub:'Auto Trading System (MT5)',  title:'SMC Algo — MT5 Auto Trader',            desc:'Our SMC Algo runs Smart Money Concept logic directly on MetaTrader 5 — 24/7 automated entries, exits, and risk management. Watch the demo video to see it live.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'smc-algo-video.mp4',hidden:false},
     {id:'tvindicator', name:'TradingView Indicator', icon:'📈',sub:'Custom TV Indicator',        title:'TradingView Indicator', desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',videoUrl:'',hidden:false},
     {id:'education',   name:'Education',            icon:'🧠',sub:'Courses & Academy',          title:'Education',            desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
     {id:'guide',       name:'Guide',                icon:'📖',sub:'Written Playbooks',          title:'Guides',               desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
@@ -481,6 +485,10 @@ const news     = load('news',     D.news);
 /* ── VIDEO EMBED ── */
 function videoEmbed(url){
   if(!url) return '';
+  // Direct mp4 file
+  if(url.match(/\.mp4$/i)){
+    return `<div class="video-wrap"><video controls style="width:100%;height:100%;border-radius:8px;background:#000;" playsinline><source src="${url}" type="video/mp4">Your browser does not support video.</video></div>`;
+  }
   let src='';
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
   const vm = url.match(/vimeo\.com\/(\d+)/);
@@ -504,12 +512,32 @@ document.getElementById('tickerTrack').innerHTML = pills+pills; // duplicate for
 
 /* ── PRODUCTS ── */
 const visProds = products.filter(p=>!p.hidden);
-document.getElementById('prodGrid').innerHTML = visProds.map(p=>`
-  <button class="prod-btn" onclick="${p.type==='page'?`window.location.href='${p.url}'`:`openModal('${p.title.replace(/'/g,"\\'")}','${p.desc.replace(/'/g,"\\'")}','${p.icon}','${(p.videoUrl||'').replace(/'/g,"\\'")}','${(p.cta||'Join Waitlist →').replace(/'/g,"\\'")}','${(p.ctaUrl||'').replace(/'/g,"\\'")}') `}">
+const BRIDGE_CODE = `from bridge_module import bridge_router, add_strategy, add_license, subscribe
+
+# 1. Register your strategy (TV webhook fires here)
+add_strategy("mystrategy", secret="your-secret", name="AG SMC")
+
+# 2. Register a user license (30 days)
+add_license("LIC-0001", days=30)
+
+# 3. Subscribe license to strategy
+subscribe("LIC-0001", "mystrategy")
+
+# TradingView webhook → POST /master/mystrategy
+# MT5 EA polls  → GET  /api/pull/LIC-0001`;
+
+document.getElementById('prodGrid').innerHTML = visProds.map(p=>{
+  const isBridge = p.id === 'bridge';
+  const code = isBridge ? BRIDGE_CODE : '';
+  const onclick = p.type==='page'
+    ? `window.location.href='${p.url}'`
+    : `openModal('${p.title.replace(/'/g,"\\'")}','${p.desc.replace(/'/g,"\\'")}','${p.icon}','${(p.videoUrl||'').replace(/'/g,"\\'")}','${(p.cta||'Join Waitlist →').replace(/'/g,"\\'")}','${(p.ctaUrl||'').replace(/'/g,"\\'")}',\`${isBridge?BRIDGE_CODE.replace(/`/g,'\\`'):''}\`)`;
+  return `<button class="prod-btn" onclick="${onclick}">
     <div class="prod-icon-wrap">${p.icon}</div>
     <div class="prod-text"><div class="prod-name">${p.name}</div><div class="prod-sub">${p.sub}</div></div>
     <div class="prod-arrow">→</div>
-  </button>`).join('');
+  </button>`;
+}).join('');
 
 /* ── FAQ ── */
 document.getElementById('faq-list').innerHTML = faqItems.filter(f=>!f.hidden).map(f=>`
@@ -614,12 +642,14 @@ function doSiteLogin(){
 }
 
 /* ── MODAL ── */
-function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl){
+function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet){
   document.getElementById('modalTag').textContent   = icon+'  Service';
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalDesc').textContent  = desc;
   const vw=document.getElementById('modalVideoWrap');
   if(videoUrl){ vw.style.display='block'; vw.innerHTML=videoEmbed(videoUrl); } else { vw.style.display='none'; vw.innerHTML=''; }
+  const cw=document.getElementById('modalCodeWrap');
+  if(codeSnippet){ cw.style.display='block'; document.getElementById('modalCodeBlock').textContent=codeSnippet; } else { cw.style.display='none'; }
   const btn=document.getElementById('modalBtn');
   btn.textContent=ctaText||'Join Waitlist →';
   if(ctaUrl){ btn.onclick=()=>window.open(ctaUrl,'_blank'); } else { btn.onclick=closeModalDirect; }

@@ -150,7 +150,26 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(232,184,75,0.5),0 2px 8px rgba(0
 .modal-btn{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:12px 26px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.25s;box-shadow:0 4px 18px rgba(201,150,12,0.4);}
 .modal-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,150,12,0.55);}
 .modal-coming{font-size:12px;color:var(--t3);margin-top:12px;text-align:center;}
-/* DISCLAIMER/FOOTER */
+/* LOGIN MODAL */
+.login-modal-box{background:#17151c;border:1px solid rgba(232,184,75,0.2);border-radius:18px;padding:36px 32px;max-width:420px;width:90%;transform:scale(0.92) translateY(16px);transition:transform 0.3s;position:relative;box-shadow:0 0 60px rgba(201,150,12,0.12),0 24px 60px rgba(0,0,0,0.7);}
+.modal-overlay.open .login-modal-box{transform:scale(1) translateY(0);}
+.lm-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-0.5px;}
+.lm-sub{font-size:13px;color:var(--t3);margin-bottom:22px;}
+.lm-label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.lm-inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:11px 14px;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:14px;}
+.lm-inp:focus{border-color:var(--g5);}
+.lm-inp::placeholder{color:var(--t3);}
+.lm-terms-box{background:#0c0b10;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;max-height:100px;overflow-y:auto;}
+.lm-terms-box p{font-size:11.5px;color:var(--t3);line-height:1.7;}
+.lm-terms-box strong{color:var(--t2);}
+.lm-check{display:flex;align-items:flex-start;gap:9px;margin-bottom:18px;cursor:pointer;}
+.lm-check input{width:15px;height:15px;margin-top:2px;accent-color:var(--g5);cursor:pointer;flex-shrink:0;}
+.lm-check span{font-size:12px;color:var(--t2);line-height:1.5;}
+.lm-btn{width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 18px rgba(232,184,75,0.4);transition:all 0.25s;}
+.lm-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,184,75,0.55);}
+.lm-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.lm-err{font-size:12px;color:var(--red);margin-top:10px;min-height:16px;text-align:center;}
+.lm-forgot{font-size:12px;color:var(--t3);text-align:center;margin-top:10px;}
 .disclaimer-box{background:#0a0a0c;border:1px solid #2a2736;border-top:2px solid #e74c3c;padding:22px 32px;margin:0 48px 32px;border-radius:10px;}
 footer{background:var(--d2);border-top:1px solid #2a2736;padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
 .f-logo{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--g5);}
@@ -173,7 +192,7 @@ footer{background:var(--d2);border-top:1px solid #2a2736;padding:32px 48px;displ
 
 <div id="mglow" style="position:fixed;pointer-events:none;z-index:1;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(201,150,12,0.10) 0%,rgba(180,130,0,0.04) 40%,transparent 70%);transform:translate(-50%,-50%);top:-350px;left:-350px;transition:left 0.06s,top 0.06s;"></div>
 
-<!-- MODAL -->
+<!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModalDirect()">✕</button>
@@ -183,6 +202,29 @@ footer{background:var(--d2);border-top:1px solid #2a2736;padding:32px 48px;displ
     <div id="modalVideoWrap" style="display:none;" class="video-wrap"></div>
     <button class="modal-btn" id="modalBtn">Join Waitlist →</button>
     <div class="modal-coming" id="modalComing">Full page coming soon</div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModalOverlay" onclick="closeLoginModal(event)">
+  <div class="login-modal-box">
+    <button class="modal-close" onclick="closeLoginModal({force:true})" style="position:absolute;top:14px;right:18px;background:transparent;border:none;color:var(--t3);font-size:20px;cursor:pointer;">✕</button>
+    <div class="lm-title">Welcome Back</div>
+    <div class="lm-sub">Sign in to your AG Technicals account</div>
+    <label class="lm-label">Email</label>
+    <input class="lm-inp" id="lmEmail" type="email" placeholder="you@email.com">
+    <label class="lm-label">Password</label>
+    <input class="lm-inp" id="lmPassword" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doSiteLogin()">
+    <div class="lm-terms-box">
+      <p><strong>Terms & Conditions</strong><br>By logging in you agree to our <strong>Terms of Service</strong> and <strong>Privacy Policy</strong>. AG Technicals provides market analysis and educational content only — not financial advice. All trading decisions are your own responsibility. You must be 18+ to use this service.</p>
+    </div>
+    <label class="lm-check">
+      <input type="checkbox" id="lmTermsCheck" onchange="document.getElementById('lmLoginBtn').disabled=!this.checked">
+      <span>I Accept The Terms & Conditions and Privacy Policy</span>
+    </label>
+    <button class="lm-btn" id="lmLoginBtn" onclick="doSiteLogin()" disabled>Sign In →</button>
+    <div class="lm-err" id="lmErr"></div>
+    <div class="lm-forgot">Forgot password? <a href="#contact" onclick="closeLoginModal({force:true})" style="color:var(--g5);text-decoration:none;">Contact Us</a></div>
   </div>
 </div>
 
@@ -196,7 +238,7 @@ footer{background:var(--d2);border-top:1px solid #2a2736;padding:32px 48px;displ
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <button class="btn-login">Login</button>
+    <button class="btn-login" onclick="openLoginModal()">Login</button>
     <button class="btn-cta">Join Now</button>
   </div>
 </nav>
@@ -545,6 +587,31 @@ document.getElementById('newsSentiment').innerHTML = (news.sentiment||D.news.sen
     <span class="sent-pct ${s.dir==='up'?'up':s.dir==='dn'?'dn':''}" style="${s.dir==='neutral'?'color:var(--amber)':''}">${s.pct}% Bull</span>
   </div>`).join('');
 
+/* ── LOGIN MODAL ── */
+function openLoginModal(){
+  document.getElementById('loginModalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('lmEmail').focus(),200);
+}
+function closeLoginModal(e){
+  if(e && e.force || (e && e.target===document.getElementById('loginModalOverlay'))){
+    document.getElementById('loginModalOverlay').classList.remove('open');
+    document.body.style.overflow='';
+    document.getElementById('lmErr').textContent='';
+    document.getElementById('lmTermsCheck').checked=false;
+    document.getElementById('lmLoginBtn').disabled=true;
+  }
+}
+function doSiteLogin(){
+  const email=document.getElementById('lmEmail').value.trim();
+  const pass=document.getElementById('lmPassword').value;
+  const err=document.getElementById('lmErr');
+  if(!email||!pass){ err.textContent='Please fill in all fields.'; return; }
+  // Placeholder — connect to your auth system
+  err.style.color='var(--g5)';
+  err.textContent='Login system coming soon. Contact us on WhatsApp to get access.';
+}
+
 /* ── MODAL ── */
 function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl){
   document.getElementById('modalTag').textContent   = icon+'  Service';
@@ -576,7 +643,7 @@ const SYM_MAP={'BTCUSD':'BINANCE:BTCUSDT','BTCUSDT':'BINANCE:BTCUSDT','ETHUSD':'
 function buildTVUrl(sym){ const s=SYM_MAP[sym]||'BINANCE:BTCUSDT'; return `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_main&symbol=${encodeURIComponent(s)}&interval=60&hidesidetoolbar=1&hidetoptoolbar=0&symboledit=0&saveimage=0&toolbarbg=0c0b10&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&showpopupbutton=0&locale=en&overrides=%7B%22mainSeriesProperties.candleStyle.upColor%22%3A%22%232ecc71%22%2C%22mainSeriesProperties.candleStyle.downColor%22%3A%22%23e74c3c%22%2C%22paneProperties.background%22%3A%22%230c0b10%22%2C%22paneProperties.vertGridProperties.color%22%3A%22%232a2736%22%2C%22paneProperties.horzGridProperties.color%22%3A%22%232a2536%22%7D&disabled_features=%5B%22use_localstorage_for_settings%22%5D`; }
 function searchSym(){ const inp=document.getElementById('chartSearchInp'),errEl=document.getElementById('chartSearchErr'),raw=inp.value.trim().toUpperCase().replace(/[\/\-\s]/g,''); if(!raw) return; const m=Object.keys(SYM_MAP).find(k=>k===raw||k.includes(raw)||raw.includes(k)); if(m){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); document.getElementById('tvFrame').src=buildTVUrl(m); inp.value=''; inp.placeholder=m+' loaded ✓'; errEl.textContent=''; setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD...',5000); } else { errEl.textContent='Not found. Try: BTCUSD, XAUUSD, EURUSD, NAS100'; setTimeout(()=>errEl.textContent='',3000); } }
 function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('tvFrame').src=buildTVUrl(sym); }
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModalDirect(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); } });
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
 </script>
 </body>

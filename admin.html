@@ -38,7 +38,7 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);min-h
 .login-err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px;}
 
 /* LAYOUT */
-#adminPanel{display:none;}
+#adminPanel{display:block;}
 .layout{display:flex;min-height:100vh;}
 .sidebar{width:242px;flex-shrink:0;background:var(--d2);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);}
@@ -563,12 +563,9 @@ let prodLinkType = 'modal';
 
 /* ═══ LOGIN ═══ */
 function doLogin(){
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('adminPanel').style.display='block';
-  init();
+  try{ init(); } catch(e){ console.error('init error:',e); }
 }
-// Auto-login on load
-window.addEventListener('DOMContentLoaded',()=>doLogin());
+window.addEventListener('DOMContentLoaded',()=>{ try{ init(); } catch(e){ console.error(e); } });
 function doLogout(){
   document.getElementById('adminPanel').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
@@ -787,10 +784,10 @@ function renderUsers(){
   const tbody=document.getElementById('usersBody'); if(!tbody) return;
   if(!users.length){ tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:32px;">No Users Added Yet</td></tr>`; return; }
   tbody.innerHTML=users.map((u,i)=>{
-    const allItems=[...products,...indicators.map(ind=>({id:'ind_'+ind.id,name:ind.name,icon:'📊'}))];
-    const tags=(u.products||[]).map(pid=>{ const item=allItems.find(x=>x.id===pid); return item?`<span class="product-tag">${item.icon||''} ${item.name}</span>`:''; }).join('');
+    const allItems=[...(products||[]),...(indicators||[]).map(ind=>({id:'ind_'+ind.id,name:ind.name,icon:'📊'}))];
+    const tags=((u.products)||[]).map(pid=>{ const item=allItems.find(x=>x.id===pid); return item?`<span class="product-tag">${item.icon||''} ${item.name}</span>`:''; }).join('');
     return `<tr>
-      <td>${u.name}</td>
+      <td>${u.name||''}</td>
       <td style="color:var(--t3)">${u.contact||'—'}</td>
       <td>${tags||'<span style="color:var(--t3);font-size:11px;">None</span>'}</td>
       <td style="color:var(--t3)">${u.date||'—'}</td>

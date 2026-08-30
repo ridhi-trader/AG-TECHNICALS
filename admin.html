@@ -563,19 +563,12 @@ let prodLinkType = 'modal';
 
 /* ═══ LOGIN ═══ */
 function doLogin(){
-  const v = document.getElementById('pwInput').value;
-  if(v === currentPassword){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('adminPanel').style.display='block';
-    init();
-  } else {
-    const e=document.getElementById('loginErr');
-    e.textContent='Incorrect Password. Try Again.';
-    document.getElementById('pwInput').value='';
-    document.getElementById('pwInput').focus();
-    setTimeout(()=>e.textContent='',3000);
-  }
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  init();
 }
+// Auto-login on load
+window.addEventListener('DOMContentLoaded',()=>doLogin());
 function doLogout(){
   document.getElementById('adminPanel').style.display='none';
   document.getElementById('loginScreen').style.display='flex';

@@ -553,6 +553,13 @@ const IND_DEFAULTS = [
   {id:'esb',       name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', shortDesc:'Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.',                             desc:'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.',img:'img-esb.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
 ];
 
+/* ═══ VERSION — bumping clears stale localStorage ═══ */
+const ADMIN_VERSION = 'v4';
+if(localStorage.getItem('ag_version') !== ADMIN_VERSION){
+  ['ag_products','ag_indicators','ag_users','ag_hero','ag_ticker','ag_contact','ag_faq','ag_about','ag_news'].forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('ag_version', ADMIN_VERSION);
+}
+
 /* ═══ STATE ═══ */
 let products   = JSON.parse(localStorage.getItem('ag_products')   || 'null') || JSON.parse(JSON.stringify(PROD_DEFAULTS));
 let indicators = JSON.parse(localStorage.getItem('ag_indicators') || 'null') || JSON.parse(JSON.stringify(IND_DEFAULTS));
@@ -806,11 +813,15 @@ function deleteUser(i){ if(!confirm('Delete User "'+users[i].name+'"?')) return;
 
 /* ═══ EXPORT ═══ */
 function genExport(){
-  const lines=products.filter(p=>!p.hidden).map(p=>{
-    if(p.type==='page') return `<!-- ${p.name} -->\nonclick="window.location.href='${p.url}'"`;
-    return `<!-- ${p.name} -->\nonclick="openModal('${p.title}','${p.desc.replace(/'/g,"\\'")}','${p.icon}')"`;
-  }).join('\n\n');
-  const el=document.getElementById('exportArea'); if(el) el.value=lines;
+  try{
+    const lines=(products||[]).filter(p=>!p.hidden).map(p=>{
+      const t=(p.title||p.name||'').replace(/'/g,"\\'");
+      const d=(p.desc||'').replace(/'/g,"\\'");
+      if(p.type==='page') return '<!-- '+p.name+' -->\nonclick="window.location.href=\''+( p.url||'')+'\'"';
+      return '<!-- '+p.name+' -->\nonclick="openModal(\''+t+'\',\''+d+'\',\''+( p.icon||'📦')+'\')"';
+    }).join('\n\n');
+    const el=document.getElementById('exportArea'); if(el) el.value=lines;
+  }catch(e){console.error('genExport:',e);}
 }
 function copyExport(){ const ta=document.getElementById('exportArea'); ta.select(); navigator.clipboard.writeText(ta.value).then(()=>showToast('Copied!')).catch(()=>{ document.execCommand('copy'); showToast('Copied!'); }); }
 

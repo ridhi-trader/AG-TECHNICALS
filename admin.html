@@ -5,1093 +5,808 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AG Admin Panel</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --dark:#0d0d0f;--d2:#111013;--card:#17151c;--card2:#1e1b26;
   --g5:#e8b84b;--g4:#c9960c;--border:#2a2736;
-  --t1:#ffffff;--t2:#e8e4f0;--t3:#a8a4b8;--red:#f26d6d;--green:#5fcf94;
+  --t1:#ffffff;--t2:#e0dce8;--t3:#b0acbf;--red:#f26d6d;--green:#5fcf94;
 }
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);min-height:100vh;overflow-x:hidden;}
-
-/* LOGIN */
-#loginScreen{display:none!important;}
-.login-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(201,150,12,0.14) 0%,transparent 65%);pointer-events:none;}
-.login-box{position:relative;z-index:1;background:var(--card);border:1px solid rgba(232,184,75,0.25);border-radius:20px;padding:48px 44px;width:400px;text-align:center;box-shadow:0 0 60px rgba(201,150,12,0.1),0 24px 60px rgba(0,0,0,0.6);}
-.login-logo{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-.login-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:6px;}
-.login-sub{font-size:13px;color:var(--t3);margin-bottom:28px;}
-.login-label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:left;}
-.login-inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:13px 16px;border-radius:9px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:16px;}
-.login-inp:focus{border-color:var(--g5);}
-.terms-box{background:#0c0b10;border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-bottom:14px;text-align:left;max-height:110px;overflow-y:auto;}
-.terms-box p{font-size:11.5px;color:var(--t3);line-height:1.7;}
-.terms-box strong{color:var(--t2);}
-.terms-check{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;text-align:left;cursor:pointer;}
-.terms-check input{width:16px;height:16px;margin-top:2px;accent-color:var(--g5);cursor:pointer;flex-shrink:0;}
-.terms-check span{font-size:12px;color:var(--t2);line-height:1.5;}
-.terms-check span a{color:var(--g5);text-decoration:none;}
-.login-btn{width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:14px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 20px rgba(232,184,75,0.4);transition:all 0.25s;}
-.login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,184,75,0.55);}
-.login-btn:disabled{opacity:0.35;cursor:not-allowed;}
-.login-err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px;}
-
 /* LAYOUT */
-#adminPanel{display:block;}
 .layout{display:flex;min-height:100vh;}
-.sidebar{width:242px;flex-shrink:0;background:var(--d2);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
-.sb-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);}
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--d2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.sb-logo{padding:20px;border-bottom:1px solid var(--border);}
 .sb-logo-text{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:var(--g5);}
 .sb-logo-sub{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
-.sb-nav{flex:1;padding:16px 10px;}
-.sb-section{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;padding:0 10px;margin:16px 0 6px;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;color:#c8c4d0;cursor:pointer;transition:all 0.15s;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;}
+.sb-nav{flex:1;padding:12px 8px;overflow-y:auto;}
+.sb-section{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;padding:0 10px;margin:14px 0 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;text-align:left;margin-bottom:1px;}
 .sb-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
-.sb-item.active{background:rgba(232,184,75,0.1);color:var(--g5);font-weight:600;}
-.sb-item .icon{font-size:15px;width:20px;text-align:center;}
-.sb-bottom{padding:16px;border-top:1px solid var(--border);}
-.sb-logout{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13px;color:var(--t3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;}
+.sb-item.active{background:rgba(232,184,75,0.12);color:var(--g5);font-weight:600;}
+.sb-bottom{padding:12px;border-top:1px solid var(--border);}
+.sb-logout{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--t3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;}
 .sb-logout:hover{background:rgba(242,109,109,0.1);color:var(--red);}
-.main{flex:1;padding:32px 36px;overflow-y:auto;}
+/* MAIN */
+.main{flex:1;padding:28px 32px;overflow-y:auto;max-width:980px;}
 .page{display:none;}
 .page.active{display:block;}
-
 /* TYPOGRAPHY */
-.page-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
-.page-title{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
-.page-sub{font-size:13px;color:#a8a4b8;margin-top:4px;margin-bottom:22px;}
+.page-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.page-sub{font-size:13px;color:var(--t3);margin-top:3px;margin-bottom:20px;}
 .hl{color:var(--g5);font-weight:700;}
-
 /* TOAST */
-#toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:var(--card2);border:1px solid rgba(95,207,148,0.4);border-radius:10px;padding:13px 20px;font-size:13px;font-weight:600;color:var(--green);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--card2);border:1px solid rgba(95,207,148,0.4);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--green);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);pointer-events:none;}
 #toast.show{transform:translateY(0);opacity:1;}
 #toast.err{border-color:rgba(242,109,109,0.4);color:var(--red);}
-
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--g5);margin-bottom:3px;}
+.stat-label{font-size:11px;color:var(--t3);}
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:14px;}
-.card-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
-.card-sub{font-size:12px;color:#a8a4b8;margin-bottom:16px;}
-
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.card-sub{font-size:12px;color:var(--t3);margin-bottom:14px;}
+/* ADD FORM */
+.add-form{background:var(--card);border:1px solid rgba(232,184,75,0.12);border-radius:14px;padding:18px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 80px;gap:10px;}
 /* FORM */
-.field{margin-bottom:13px;}
-.label{display:block;font-size:11px;font-weight:700;color:#b0acbf;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.field{margin-bottom:12px;}
+.label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
 .inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:10px 13px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;}
 .inp:focus{border-color:var(--g5);}
-.inp::placeholder{color:var(--t3);}
+.inp::placeholder{color:#5a5570;}
 textarea.inp{resize:vertical;min-height:75px;line-height:1.6;}
 select.inp{cursor:pointer;}
-
 /* BUTTONS */
-.btn-save{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.25s;box-shadow:0 3px 12px rgba(232,184,75,0.3);}
-.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,75,0.5);}
-.btn-outline{background:transparent;color:var(--t2);border:1px solid var(--border);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
-.btn-outline:hover{border-color:var(--g5);color:var(--g5);}
-.btn-icon{background:transparent;border:none;cursor:pointer;padding:6px 8px;border-radius:6px;font-size:15px;transition:background 0.15s;line-height:1;}
+.btn-gold{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;box-shadow:0 3px 12px rgba(232,184,75,0.3);}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,75,0.45);}
+.btn-out{background:transparent;color:var(--t2);border:1px solid var(--border);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.btn-out:hover{border-color:var(--g5);color:var(--g5);}
+.btn-icon{background:transparent;border:none;cursor:pointer;padding:5px 7px;border-radius:6px;font-size:15px;transition:background 0.15s;line-height:1;}
 .btn-icon:hover{background:rgba(255,255,255,0.08);}
-
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
-.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
-.stat-val{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:var(--g5);margin-bottom:4px;}
-.stat-label{font-size:12px;color:var(--t3);}
-
-/* ROW LIST (products & indicators) */
-.item-row{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:border-color 0.2s;}
+/* ITEM ROWS */
+.item-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:11px;margin-bottom:7px;transition:border-color 0.15s;}
 .item-row:hover{border-color:rgba(232,184,75,0.2);}
 .item-row.hidden-item{opacity:0.4;}
-.item-row-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0;}
-.item-row-info{flex:1;}
-.item-row-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;}
-.item-row-sub{font-size:11px;color:#a0a0b8;margin-top:2px;}
-.item-row-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.badge-hidden{background:rgba(242,109,109,0.12);border:1px solid rgba(242,109,109,0.3);color:var(--red);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;}
-.badge-live{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.5px;}
-
-/* ADD FORM */
-.add-form{background:var(--card);border:1px solid rgba(232,184,75,0.12);border-radius:14px;padding:20px;margin-bottom:18px;}
-.add-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.add-grid3{display:grid;grid-template-columns:1fr 1fr 80px;gap:10px;}
-
-/* EDITOR OVERLAY */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(4px);}
+.item-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
+.item-info{flex:1;min-width:0;}
+.item-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.item-actions{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+.badge-live{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
+.badge-hidden{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(4px);}
 .overlay.open{opacity:1;pointer-events:all;}
-.editor-modal{background:#18151f;border:1px solid rgba(232,184,75,0.2);border-radius:18px;padding:30px;width:520px;max-width:94vw;max-height:90vh;overflow-y:auto;transform:scale(0.94) translateY(12px);transition:transform 0.25s;box-shadow:0 0 60px rgba(201,150,12,0.12),0 24px 60px rgba(0,0,0,0.7);}
-.overlay.open .editor-modal{transform:scale(1) translateY(0);}
-.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.modal-hdr-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:#fff;}
-.modal-close-btn{background:transparent;border:none;color:var(--t3);font-size:20px;cursor:pointer;transition:color 0.2s;}
-.modal-close-btn:hover{color:#fff;}
-.link-toggle{display:flex;gap:6px;margin-bottom:10px;}
-.link-opt{flex:1;padding:9px;border-radius:7px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all 0.15s;background:transparent;font-family:'Inter',sans-serif;text-align:center;}
+.editor-box{background:#18151f;border:1px solid rgba(232,184,75,0.2);border-radius:16px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;transform:scale(0.95);transition:transform 0.2s;box-shadow:0 0 60px rgba(201,150,12,0.1),0 24px 60px rgba(0,0,0,0.7);}
+.overlay.open .editor-box{transform:scale(1);}
+.ed-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.ed-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;color:#fff;}
+.ed-close{background:transparent;border:none;color:var(--t3);font-size:20px;cursor:pointer;transition:color 0.15s;line-height:1;}
+.ed-close:hover{color:#fff;}
+.link-toggle{display:flex;gap:6px;margin-bottom:8px;}
+.link-opt{flex:1;padding:8px;border-radius:7px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all 0.15s;background:transparent;font-family:'Inter',sans-serif;text-align:center;}
 .link-opt.active{background:rgba(232,184,75,0.1);border-color:rgba(232,184,75,0.4);color:var(--g5);}
-.preview-box{background:#0a090e;border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;}
-.prev-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
-.prev-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:6px;}
-
+.preview-box{background:#0a090e;border:1px solid var(--border);border-radius:9px;padding:14px;margin-top:10px;}
+.prev-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.prev-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:#fff;margin-bottom:5px;}
 /* USERS TABLE */
-.users-table{width:100%;border-collapse:collapse;}
-.users-table th{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
-.users-table td{padding:12px 14px;font-size:13px;color:#c8c4d0;border-bottom:1px solid rgba(42,39,54,0.6);vertical-align:middle;}
-.users-table tr:hover td{background:rgba(255,255,255,0.02);}
-.users-table td:first-child{color:#fff;font-weight:600;}
-.product-tag{display:inline-block;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.22);color:var(--g5);font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin:2px 2px 2px 0;}
-.status-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.8px;padding:9px 13px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl td{padding:11px 13px;font-size:13px;color:var(--t2);border-bottom:1px solid rgba(42,39,54,0.5);vertical-align:middle;}
+.tbl tr:hover td{background:rgba(255,255,255,0.02);}
+.tbl td:first-child{color:#fff;font-weight:600;}
+.ptag{display:inline-block;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.22);color:var(--g5);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin:1px;}
+.stag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;}
 .s-active{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);}
 .s-expired{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);}
-.products-check{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-.prod-check-item{display:flex;align-items:center;gap:6px;background:#0c0b10;border:1px solid var(--border);border-radius:7px;padding:6px 11px;cursor:pointer;transition:border-color 0.15s;}
-.prod-check-item:hover{border-color:rgba(232,184,75,0.3);}
-.prod-check-item input{accent-color:var(--g5);}
-.prod-check-item label{font-size:12px;color:var(--t2);cursor:pointer;}
-
+.pcheck-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
+.pcheck-item{display:flex;align-items:center;gap:5px;background:#0c0b10;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;}
+.pcheck-item input{accent-color:var(--g5);}
+.pcheck-item label{font-size:12px;color:var(--t2);cursor:pointer;}
 /* EXPORT */
-.export-code{width:100%;background:#0a090e;border:1px solid var(--border);color:#c8c4d0;padding:16px;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:12px;min-height:260px;resize:vertical;outline:none;line-height:1.7;}
-
+.exp-code{width:100%;background:#0a090e;border:1px solid var(--border);color:#c8c4d0;padding:14px;border-radius:9px;font-family:'JetBrains Mono',monospace;font-size:12px;min-height:240px;resize:vertical;outline:none;line-height:1.7;}
 /* PW */
-.pw-hint{font-size:11px;color:#a8a4b8;margin-top:5px;line-height:1.5;}
+.pw-hint{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.5;}
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-glow"></div>
-  <div class="login-box">
-    <div class="login-logo">AG Technicals</div>
-    <div class="login-title">Admin <span style="color:var(--g5)">Panel</span></div>
-    <div class="login-sub">Restricted Access — Authorised Personnel Only</div>
-    <label class="login-label">Password</label>
-    <input class="login-inp" id="pwInput" type="password" placeholder="Enter Admin Password" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="terms-box">
-      <p><strong>Terms & Conditions</strong></p>
-    </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Access Panel →</button>
-    <div class="login-err" id="loginErr"></div>
-  </div>
-</div>
-
-<!-- Toast -->
 <div id="toast"></div>
 
-<!-- PRODUCT EDITOR OVERLAY -->
-<div class="overlay" id="prodOverlay" onclick="if(event.target===this)closeProdEditor()">
-  <div class="editor-modal">
-    <div class="modal-hdr">
-      <div class="modal-hdr-title" id="pedTitle">Edit Product</div>
-      <button class="modal-close-btn" onclick="closeProdEditor()">✕</button>
+<!-- PRODUCT EDITOR -->
+<div class="overlay" id="prodOverlay">
+  <div class="editor-box">
+    <div class="ed-hdr">
+      <div class="ed-title" id="pedTitle">Edit Product</div>
+      <button class="ed-close" onclick="closeProdEd()">✕</button>
     </div>
-    <div class="field"><label class="label">Product Name</label><input class="inp" id="peName" placeholder="Name"></div>
-    <div class="field"><label class="label">Icon (Emoji)</label><input class="inp" id="peIcon" placeholder="🌉" style="width:90px;"></div>
-    <div class="field"><label class="label">Sub-Label</label><input class="inp" id="peSub" placeholder="e.g. Trade Copy Connector"></div>
-    <div class="field"><label class="label">Modal Title</label><input class="inp" id="peTitle" placeholder="Modal Heading"></div>
-    <div class="field"><label class="label">Modal Description</label><textarea class="inp" id="peDesc" placeholder="What Does This Product Do?"></textarea></div>
-    <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="peCta" placeholder="Join Waitlist →"></div>
+    <div class="field"><label class="label">Name</label><input class="inp" id="peName"></div>
+    <div class="field"><label class="label">Icon</label><input class="inp" id="peIcon" style="width:80px;"></div>
+    <div class="field"><label class="label">Sub-Label</label><input class="inp" id="peSub"></div>
+    <div class="field"><label class="label">Modal Title</label><input class="inp" id="peTitle"></div>
+    <div class="field"><label class="label">Modal Description</label><textarea class="inp" id="peDesc"></textarea></div>
+    <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="peCta"></div>
     <div class="field">
-      <label class="label">Button Action</label>
+      <label class="label">Action</label>
       <div class="link-toggle">
-        <button class="link-opt active" id="peOptModal" onclick="setLinkType('modal','pe')">Popup Modal</button>
-        <button class="link-opt" id="peOptPage" onclick="setLinkType('page','pe')">Go To Page</button>
+        <button class="link-opt active" id="peOptModal" onclick="setPeLinkType('modal')">Popup Modal</button>
+        <button class="link-opt" id="peOptPage" onclick="setPeLinkType('page')">Go To Page</button>
       </div>
-      <div id="pePageUrlField" style="display:none;"><input class="inp" id="pePageUrl" placeholder="e.g. tv-indicators.html"></div>
+      <div id="peUrlWrap" style="display:none;"><input class="inp" id="peUrl" placeholder="e.g. tv-indicators.html"></div>
     </div>
-    <div class="field">
-      <label class="label">Live Preview</label>
+    <div class="field"><label class="label">Preview</label>
       <div class="preview-box">
-        <div class="prev-tag" id="pePrevTag">🌉  Service</div>
-        <div class="prev-title" id="pePrevTitle">Product</div>
-        <div id="pePrevDesc" style="font-size:12px;color:#a09cb0;line-height:1.6;margin-bottom:12px;">Description</div>
-        <div style="display:inline-block;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:700;" id="pePrevCta">Join Waitlist →</div>
+        <div class="prev-tag" id="pePrevTag">📦  Service</div>
+        <div class="prev-title" id="pePrevTitle">Title</div>
+        <div id="pePrevDesc" style="font-size:12px;color:#a09cb0;line-height:1.5;margin-bottom:10px;">Description</div>
+        <div style="display:inline-block;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;" id="pePrevCta">CTA</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="btn-save" onclick="saveProdEditor()">Save Changes</button>
-      <button class="btn-outline" onclick="closeProdEditor()">Cancel</button>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn-gold" onclick="saveProdEd()">Save Changes</button>
+      <button class="btn-out" onclick="closeProdEd()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- INDICATOR EDITOR OVERLAY -->
-<div class="overlay" id="indOverlay" onclick="if(event.target===this)closeIndEditor()">
-  <div class="editor-modal">
-    <div class="modal-hdr">
-      <div class="modal-hdr-title" id="iedTitle">Edit Indicator</div>
-      <button class="modal-close-btn" onclick="closeIndEditor()">✕</button>
+<!-- INDICATOR EDITOR -->
+<div class="overlay" id="indOverlay">
+  <div class="editor-box">
+    <div class="ed-hdr">
+      <div class="ed-title" id="iedTitle">Edit Indicator</div>
+      <button class="ed-close" onclick="closeIndEd()">✕</button>
     </div>
-    <div class="field"><label class="label">Indicator Name</label><input class="inp" id="ieName" placeholder="Name"></div>
-    <div class="field"><label class="label">PID (Product ID)</label><input class="inp" id="iePid" placeholder="e.g. TVI-0003"></div>
-    <div class="field"><label class="label">Short Description (Card)</label><input class="inp" id="ieShortDesc" placeholder="One line shown on card"></div>
-    <div class="field"><label class="label">Full Description (Modal)</label><textarea class="inp" id="ieDesc" placeholder="Detailed description shown in popup modal" style="min-height:100px;"></textarea></div>
+    <div class="field"><label class="label">Name</label><input class="inp" id="ieName"></div>
+    <div class="field"><label class="label">PID</label><input class="inp" id="iePid" placeholder="e.g. TVI-0003"></div>
+    <div class="field"><label class="label">Short Description (Card)</label><input class="inp" id="ieShort"></div>
+    <div class="field"><label class="label">Full Description (Modal)</label><textarea class="inp" id="ieDesc" style="min-height:90px;"></textarea></div>
     <div class="field"><label class="label">Image File (in repo)</label><input class="inp" id="ieImg" placeholder="e.g. img-smc.png"></div>
     <div class="field"><label class="label">WhatsApp Number</label><input class="inp" id="ieWa" placeholder="e.g. 919876543210"></div>
-    <div class="field"><label class="label">Badge Text</label><input class="inp" id="ieBadge" placeholder="e.g. PREMIUM"></div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="btn-save" onclick="saveIndEditor()">Save Changes</button>
-      <button class="btn-outline" onclick="closeIndEditor()">Cancel</button>
+    <div class="field"><label class="label">Badge</label><input class="inp" id="ieBadge" placeholder="PREMIUM"></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn-gold" onclick="saveIndEd()">Save Changes</button>
+      <button class="btn-out" onclick="closeIndEd()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel">
-  <div class="layout">
+<!-- LAYOUT -->
+<div class="layout">
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sb-logo">
-        <div class="sb-logo-text">AG <span style="color:var(--t2)">Admin</span></div>
-        <div class="sb-logo-sub">Control Panel</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-text">AG <span style="color:var(--t2)">Admin</span></div>
+      <div class="sb-logo-sub">Control Panel</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Content</div>
+      <button class="sb-item active" onclick="show('products',this)">🎯 Products</button>
+      <button class="sb-item" onclick="show('indicators',this)">📈 TV Indicators</button>
+      <button class="sb-item" onclick="show('users',this)">👥 Users & Access</button>
+      <button class="sb-item" onclick="show('faq',this)">❓ FAQ</button>
+      <button class="sb-item" onclick="show('ticker',this)">📡 Ticker Strip</button>
+      <button class="sb-item" onclick="show('contact',this)">📞 Contact Links</button>
+      <button class="sb-item" onclick="show('hero',this)">🏠 Hero Section</button>
+      <button class="sb-item" onclick="show('about',this)">👤 About Us</button>
+      <button class="sb-item" onclick="show('newsed',this)">📰 News & Videos</button>
+      <div class="sb-section">Tools</div>
+      <button class="sb-item" onclick="show('export',this)">📦 Export Code</button>
+      <button class="sb-item" onclick="show('password',this)">🔐 Change Password</button>
+    </div>
+    <div class="sb-bottom">
+      <button class="sb-logout" onclick="alert('No password set — just close the tab.')">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- PRODUCTS -->
+    <div class="page active" id="page-products">
+      <div class="page-tag">Content Editor</div>
+      <div class="page-title">Products <span class="hl">&</span> Services</div>
+      <div class="page-sub">Add, Edit, Hide Or Delete Product Cards. Hidden Products Won't Show On Site.</div>
+      <div class="stats" id="prodStats"></div>
+      <div class="add-form">
+        <div class="card-title">➕ Add New Product</div>
+        <div class="card-sub">Quick Add — Edit Full Details After.</div>
+        <div class="g3" style="margin-bottom:10px;">
+          <input class="inp" id="newProdName" placeholder="Product Name">
+          <input class="inp" id="newProdSub" placeholder="Sub-Label">
+          <input class="inp" id="newProdIcon" placeholder="Icon" style="text-align:center;">
+        </div>
+        <button class="btn-gold" onclick="addProduct()">Add Product</button>
       </div>
-      <div class="sb-nav">
-        <div class="sb-section">Content</div>
-        <button class="sb-item active" onclick="showPage('products',this)"><span class="icon">🎯</span> Products</button>
-        <button class="sb-item" onclick="showPage('indicators',this)"><span class="icon">📈</span> TV Indicators</button>
-        <button class="sb-item" onclick="showPage('users',this)"><span class="icon">👥</span> Users & Access</button>
-        <button class="sb-item" onclick="showPage('faq',this)"><span class="icon">❓</span> FAQ</button>
-        <button class="sb-item" onclick="showPage('ticker',this)"><span class="icon">📡</span> Ticker Strip</button>
-        <button class="sb-item" onclick="showPage('contact',this)"><span class="icon">📞</span> Contact Links</button>
-        <button class="sb-item" onclick="showPage('hero',this)"><span class="icon">🏠</span> Hero Section</button>
-        <button class="sb-item" onclick="showPage('about',this)"><span class="icon">👤</span> About Us</button>
-        <button class="sb-item" onclick="showPage('newsed',this)"><span class="icon">📰</span> News & Videos</button>
-        <div class="sb-section">Tools</div>
-        <button class="sb-item" onclick="showPage('export',this)"><span class="icon">📦</span> Export Code</button>
-        <button class="sb-item" onclick="showPage('password',this)"><span class="icon">🔐</span> Change Password</button>
+      <div id="prodList"></div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div class="page" id="page-indicators">
+      <div class="page-tag">TradingView Indicators</div>
+      <div class="page-title">TV <span class="hl">Indicators</span></div>
+      <div class="page-sub">Add, Edit, Hide Or Delete Indicators On tv-indicators.html Page.</div>
+      <div class="stats" id="indStats"></div>
+      <div class="add-form">
+        <div class="card-title">➕ Add New Indicator</div>
+        <div class="g2" style="margin-bottom:8px;">
+          <input class="inp" id="newIndName" placeholder="Indicator Name">
+          <input class="inp" id="newIndPid" placeholder="PID (e.g. TVI-0006)">
+        </div>
+        <div class="g2" style="margin-bottom:10px;">
+          <input class="inp" id="newIndImg" placeholder="Image file (e.g. img-new.png)">
+          <input class="inp" id="newIndBadge" placeholder="Badge (e.g. PREMIUM)">
+        </div>
+        <button class="btn-gold" onclick="addIndicator()">Add Indicator</button>
       </div>
-      <div class="sb-bottom">
-        <button class="sb-logout" onclick="doLogout()"><span>🚪</span> Logout</button>
+      <div id="indList"></div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="page-tag">Access Management</div>
+      <div class="page-title">Users <span class="hl">&</span> Access</div>
+      <div class="page-sub">Track Which Users Have Access To Which Products Or Indicators.</div>
+      <div class="add-form">
+        <div class="card-title">➕ Add New User</div>
+        <div class="g2" style="margin-bottom:8px;">
+          <div class="field" style="margin:0;"><label class="label">Name</label><input class="inp" id="uName" placeholder="Full Name"></div>
+          <div class="field" style="margin:0;"><label class="label">Contact</label><input class="inp" id="uContact" placeholder="+91 98765 43210"></div>
+        </div>
+        <div class="g2" style="margin-bottom:10px;">
+          <div class="field" style="margin:0;"><label class="label">Join Date</label><input class="inp" id="uDate" type="date"></div>
+          <div class="field" style="margin:0;"><label class="label">Status</label><select class="inp" id="uStatus"><option value="active">Active</option><option value="expired">Expired</option></select></div>
+        </div>
+        <div class="field" style="margin-bottom:12px;"><label class="label">Assigned Products / Indicators</label><div class="pcheck-wrap" id="uProductCheck"></div></div>
+        <button class="btn-gold" onclick="addUser()">Add User</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="tbl"><thead><tr><th>Name</th><th>Contact</th><th>Products</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="usersBody"></tbody></table>
       </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="main">
-
-      <!-- PRODUCTS PAGE -->
-      <div class="page active" id="page-products">
-        <div class="page-tag">Content Editor</div>
-        <div class="page-title">Products <span class="hl">&</span> Services</div>
-        <div class="page-sub">Add, Edit, Hide Or Delete Product Cards. Hidden Products Won't Show On Site.</div>
-        <div class="stats" id="prodStats"></div>
-        <div class="add-form">
-          <div class="card-title">➕ Add New Product</div>
-          <div class="card-sub">Quick Add — Edit Full Details After.</div>
-          <div class="add-grid3" style="margin-bottom:12px;">
-            <input class="inp" id="newProdName" placeholder="Product Name">
-            <input class="inp" id="newProdSub" placeholder="Sub-Label">
-            <input class="inp" id="newProdIcon" placeholder="Icon" style="text-align:center;">
-          </div>
-          <button class="btn-save" onclick="addProduct()">Add Product</button>
-        </div>
-        <div id="prodList"></div>
+    <!-- FAQ -->
+    <div class="page" id="page-faq">
+      <div class="page-tag">FAQ</div>
+      <div class="page-title">FAQ <span class="hl">Questions</span></div>
+      <div class="page-sub">Add, Edit, Hide Or Delete FAQ Items.</div>
+      <div class="add-form">
+        <div class="card-title">➕ Add FAQ Item</div>
+        <div class="field" style="margin-bottom:8px;"><input class="inp" id="newFaqQ" placeholder="Question"></div>
+        <div class="field" style="margin-bottom:10px;"><textarea class="inp" id="newFaqA" placeholder="Answer" style="min-height:55px;"></textarea></div>
+        <button class="btn-gold" onclick="addFaq()">Add Question</button>
       </div>
+      <div id="faqList"></div>
+    </div>
 
-      <!-- INDICATORS PAGE -->
-      <div class="page" id="page-indicators">
-        <div class="page-tag">TradingView Indicators</div>
-        <div class="page-title">TV <span class="hl">Indicators</span></div>
-        <div class="page-sub">Add, Edit, Hide Or Delete Indicators On The tv-indicators.html Page.</div>
-        <div class="stats" id="indStats"></div>
-        <div class="add-form">
-          <div class="card-title">➕ Add New Indicator</div>
-          <div class="card-sub">Quick Add — Edit Full Details After.</div>
-          <div class="add-grid2" style="margin-bottom:10px;">
-            <input class="inp" id="newIndName" placeholder="Indicator Name (e.g. AG MACD Pro)">
-            <input class="inp" id="newIndPid" placeholder="PID (e.g. TVI-0006)">
-          </div>
-          <div class="add-grid2" style="margin-bottom:12px;">
-            <input class="inp" id="newIndImg" placeholder="Image file (e.g. img-new.png)">
-            <input class="inp" id="newIndBadge" placeholder="Badge (e.g. PREMIUM)">
-          </div>
-          <button class="btn-save" onclick="addIndicator()">Add Indicator</button>
+    <!-- TICKER -->
+    <div class="page" id="page-ticker">
+      <div class="page-tag">Ticker Strip</div>
+      <div class="page-title">Ticker <span class="hl">Items</span></div>
+      <div class="page-sub">Add, Hide Or Delete Scrolling Ticker Pills.</div>
+      <div class="add-form">
+        <div class="card-title">➕ Add Ticker Item</div>
+        <div class="g2" style="margin-bottom:10px;">
+          <input class="inp" id="newTickText" placeholder="Text (e.g. EURUSD  1.0842  ▲ 0.18%)">
+          <select class="inp" id="newTickType">
+            <option value="default">White (Default)</option>
+            <option value="price">Gold Price</option>
+            <option value="dxy">Blue (DXY)</option>
+            <option value="jh">Orange (Event)</option>
+            <option value="cot">Green (COT)</option>
+            <option value="gold">Gold (AG Intel)</option>
+          </select>
         </div>
-        <div id="indList"></div>
-        <div class="card" style="margin-top:16px;border-color:rgba(232,184,75,0.15);">
-          <div class="card-title" style="color:var(--g5);">ℹ️ How It Works</div>
-          <div style="font-size:13px;color:#a8a4b8;line-height:1.8;">Indicators Saved Here Are Stored In <strong style="color:var(--t2)">localStorage</strong>. The tv-indicators.html Page Reads This Data And Renders Cards Dynamically. <br>Hidden Indicators Are Not Shown. Deleted Ones Are Removed Permanently From This Panel.<br><strong style="color:var(--t2)">Note:</strong> For New Indicators, Upload The Image File To GitHub Repo First.</div>
-        </div>
+        <button class="btn-gold" onclick="addTicker()">Add Item</button>
       </div>
+      <div id="tickerList"></div>
+    </div>
 
-      <!-- USERS PAGE -->
-      <div class="page" id="page-users">
-        <div class="page-tag">Access Management</div>
-        <div class="page-title">Users <span class="hl">&</span> Access</div>
-        <div class="page-sub">Track Which Users Have Access To Which Products Or Indicators.</div>
-        <div class="add-form">
-          <div class="card-title">➕ Add New User</div>
-          <div class="add-grid2" style="margin-bottom:10px;">
-            <div class="field" style="margin:0"><label class="label">Name</label><input class="inp" id="uName" placeholder="Full Name"></div>
-            <div class="field" style="margin:0"><label class="label">Contact</label><input class="inp" id="uContact" placeholder="+91 98765 43210"></div>
-          </div>
-          <div class="add-grid2" style="margin-bottom:12px;">
-            <div class="field" style="margin:0"><label class="label">Join Date</label><input class="inp" id="uDate" type="date"></div>
-            <div class="field" style="margin:0"><label class="label">Status</label><select class="inp" id="uStatus"><option value="active">Active</option><option value="expired">Expired</option></select></div>
-          </div>
-          <div class="field" style="margin-bottom:14px;">
-            <label class="label">Assigned Products / Indicators</label>
-            <div class="products-check" id="userProductCheck"></div>
-          </div>
-          <button class="btn-save" onclick="addUser()">Add User</button>
+    <!-- CONTACT -->
+    <div class="page" id="page-contact">
+      <div class="page-tag">Contact Links</div>
+      <div class="page-title">Contact <span class="hl">Cards</span></div>
+      <div class="page-sub">Edit Telegram, WhatsApp, Instagram And Other Contact Links.</div>
+      <div class="add-form">
+        <div class="card-title">➕ Add Contact</div>
+        <div class="g3" style="margin-bottom:8px;">
+          <input class="inp" id="newCName" placeholder="Name (e.g. Telegram)">
+          <input class="inp" id="newCUrl" placeholder="URL (e.g. https://t.me/...)">
+          <input class="inp" id="newCIcon" placeholder="Icon" style="text-align:center;">
         </div>
-        <div class="card" style="padding:0;overflow:hidden;">
-          <table class="users-table">
-            <thead><tr><th>Name</th><th>Contact</th><th>Products</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="usersBody"></tbody>
-          </table>
+        <input class="inp" id="newCSub" placeholder="Sub-Label (e.g. @agtechnical)" style="margin-bottom:10px;">
+        <button class="btn-gold" onclick="addContact()">Add Contact</button>
+      </div>
+      <div id="contactList"></div>
+    </div>
+
+    <!-- HERO -->
+    <div class="page" id="page-hero">
+      <div class="page-tag">Hero Section</div>
+      <div class="page-title">Hero <span class="hl">Content</span></div>
+      <div class="page-sub">Edit Main Hero Text, CTA Button, And Optional Video.</div>
+      <div class="card">
+        <div class="field"><label class="label">Badge Text</label><input class="inp" id="heroBadge"></div>
+        <div class="field"><label class="label">Headline (HTML: use &lt;span class="g"&gt;text&lt;/span&gt; for gold)</label><textarea class="inp" id="heroH1" style="min-height:55px;"></textarea></div>
+        <div class="field"><label class="label">Subheading</label><textarea class="inp" id="heroSub"></textarea></div>
+        <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="heroBtnText"></div>
+        <div class="field"><label class="label">Video URL (YouTube/Vimeo — Optional)</label><input class="inp" id="heroVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-gold" onclick="saveHero()">Save Hero</button>
+          <button class="btn-out" onclick="resetSection('hero')">Reset</button>
         </div>
       </div>
+    </div>
 
-      <!-- EXPORT PAGE -->
-      <div class="page" id="page-export">
-        <div class="page-tag">Export</div>
-        <div class="page-title">Export <span class="hl">Code</span></div>
-        <div class="page-sub">Copy Generated onclick= Calls → Paste Into index.html Product Buttons.</div>
-        <div class="card">
-          <div class="card-title">Generated Product Button Code</div>
-          <div class="card-sub">Replace onclick= Attributes In .prod-btn Elements With These.</div>
-          <textarea class="export-code" id="exportArea" readonly></textarea>
-          <div style="display:flex;gap:8px;margin-top:12px;">
-            <button class="btn-save" onclick="copyExport()">Copy To Clipboard</button>
-            <button class="btn-outline" onclick="genExport()">Regenerate</button>
-          </div>
+    <!-- ABOUT -->
+    <div class="page" id="page-about">
+      <div class="page-tag">About Us</div>
+      <div class="page-title">About <span class="hl">Section</span></div>
+      <div class="page-sub">Edit All About Us Text, Markets Grid, And Optional Video.</div>
+      <div class="card">
+        <div class="field"><label class="label">Headline</label><input class="inp" id="aboutH"></div>
+        <div class="field"><label class="label">Sub</label><input class="inp" id="aboutSub"></div>
+        <div class="field"><label class="label">Who We Are Text</label><textarea class="inp" id="aboutWho" style="min-height:80px;"></textarea></div>
+        <div class="field"><label class="label">What We Do (one per line: "Title — description")</label><textarea class="inp" id="aboutDo" style="min-height:90px;"></textarea></div>
+        <div class="field"><label class="label">Markets Subtitle</label><input class="inp" id="aboutMktSub"></div>
+        <div class="field"><label class="label">Markets (one per line: "emoji|Label" or "TEXT|Label|isText")</label><textarea class="inp" id="aboutMkts" style="min-height:70px;"></textarea></div>
+        <div class="field"><label class="label">Video URL (Optional)</label><input class="inp" id="aboutVideo" placeholder="https://youtube.com/watch?v=..."></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-gold" onclick="saveAbout()">Save About</button>
+          <button class="btn-out" onclick="resetSection('about')">Reset</button>
         </div>
       </div>
+    </div>
 
-      <!-- PASSWORD PAGE -->
-      <div class="page" id="page-password">
-        <div class="page-tag">Settings</div>
-        <div class="page-title">Change <span class="hl">Password</span></div>
-        <div class="page-sub">After Changing, Export admin.html And Push To GitHub.</div>
-        <div class="card">
-          <div class="field"><label class="label">Current Password</label><input class="inp" id="pwCurrent" type="password" placeholder="Current Password"></div>
-          <div class="field"><label class="label">New Password</label><input class="inp" id="pwNew" type="password" placeholder="New Password (Min 8 Chars)"><div class="pw-hint">Push Exported admin.html To GitHub To Make It Permanent.</div></div>
-          <div class="field"><label class="label">Confirm New Password</label><input class="inp" id="pwConfirm" type="password" placeholder="Confirm New Password"></div>
-          <button class="btn-save" onclick="changePassword()">Update Password</button>
-          <div id="pwMsg" style="font-size:12px;margin-top:10px;min-height:18px;"></div>
+    <!-- NEWS & VIDEOS -->
+    <div class="page" id="page-newsed">
+      <div class="page-tag">News & Videos</div>
+      <div class="page-title">News <span class="hl">&</span> Videos</div>
+      <div class="page-sub">Edit Dossier Card, News Items, Sentiment, And Add Videos.</div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title">📁 Featured Dossier Card</div>
+        <div class="field"><label class="label">Title</label><input class="inp" id="nDossierTitle"></div>
+        <div class="field"><label class="label">Subtitle</label><input class="inp" id="nDossierSub"></div>
+        <div class="field"><label class="label">Link URL</label><input class="inp" id="nDossierUrl"></div>
+        <button class="btn-gold" onclick="saveDossier()">Save Dossier</button>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title">🎬 Videos</div>
+        <div class="g2" style="margin-bottom:8px;">
+          <input class="inp" id="newVidLabel" placeholder="Label (e.g. Weekly Analysis)">
+          <input class="inp" id="newVidUrl" placeholder="https://youtube.com/watch?v=...">
+        </div>
+        <button class="btn-gold" onclick="addVideo()">Add Video</button>
+        <div id="videoList" style="margin-top:10px;"></div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title">📰 Latest News</div>
+        <div class="g2" style="margin-bottom:8px;">
+          <input class="inp" id="newLatestTitle" placeholder="Headline">
+          <input class="inp" id="newLatestTime" placeholder="2h ago · Forex">
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="link-opt active" id="latestDirUp" onclick="setDir('latestDir','Up',this)">▲ Bullish</button>
+          <button class="link-opt" id="latestDirDn" onclick="setDir('latestDir','Dn',this)">▼ Bearish</button>
+        </div>
+        <button class="btn-gold" onclick="addNewsItem('latest')">Add</button>
+        <div id="latestList" style="margin-top:10px;"></div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-title">📊 AG Analysis</div>
+        <div class="g2" style="margin-bottom:8px;">
+          <input class="inp" id="newAnalysisTitle" placeholder="Headline">
+          <input class="inp" id="newAnalysisTime" placeholder="1h ago · AG Analysis">
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="link-opt active" id="analysisDirUp" onclick="setDir('analysisDir','Up',this)">▲ Bullish</button>
+          <button class="link-opt" id="analysisDirDn" onclick="setDir('analysisDir','Dn',this)">▼ Bearish</button>
+        </div>
+        <button class="btn-gold" onclick="addNewsItem('analysis')">Add</button>
+        <div id="analysisList" style="margin-top:10px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Sentiment</div>
+        <div id="sentimentList" style="margin-bottom:10px;"></div>
+        <div class="g2" style="margin-bottom:8px;">
+          <input class="inp" id="newSentLabel" placeholder="Market (e.g. Forex)">
+          <input class="inp" id="newSentPct" type="number" min="0" max="100" placeholder="Bull % (0-100)">
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="link-opt active" id="sentDirUp" onclick="setDir('sentDir','Up',this)">▲ Bull</button>
+          <button class="link-opt" id="sentDirDn" onclick="setDir('sentDir','Dn',this)">▼ Bear</button>
+          <button class="link-opt" id="sentDirNeutral" onclick="setDir('sentDir','Neutral',this)">— Neutral</button>
+        </div>
+        <button class="btn-gold" onclick="addSentiment()">Add</button>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="page" id="page-export">
+      <div class="page-tag">Export</div>
+      <div class="page-title">Export <span class="hl">Code</span></div>
+      <div class="page-sub">Copy Generated onclick= Calls → Paste Into index.html Product Buttons.</div>
+      <div class="card">
+        <div class="card-title">Generated Product Button Code</div>
+        <div class="card-sub">Replace onclick= In Your .prod-btn Elements With These.</div>
+        <textarea class="exp-code" id="exportArea" readonly></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn-gold" onclick="copyExport()">Copy To Clipboard</button>
+          <button class="btn-out" onclick="genExport()">Regenerate</button>
         </div>
       </div>
+    </div>
 
-    
-      <!-- HERO PAGE -->
-      <div class="page" id="page-hero">
-        <div class="page-tag">Hero Section</div>
-        <div class="page-title">Hero <span class="hl">Content</span></div>
-        <div class="page-sub">Edit The Main Hero Text, CTA Button, And Optional Video.</div>
-        <div class="card">
-          <div class="field"><label class="label">Badge Text</label><input class="inp" id="heroBadge" placeholder="Live Market Intelligence — 24/7"></div>
-          <div class="field"><label class="label">Headline (HTML allowed, use &lt;span class="g"&gt;text&lt;/span&gt; for gold)</label><textarea class="inp" id="heroH1" style="min-height:60px;" placeholder="No Prediction.&lt;br&gt;&lt;span class=g&gt;Follow Price Action.&lt;/span&gt;"></textarea></div>
-          <div class="field"><label class="label">Subheading</label><textarea class="inp" id="heroSub" placeholder="AG Technicals delivers..."></textarea></div>
-          <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="heroBtnText" placeholder="Join The Community →"></div>
-          <div class="field"><label class="label">Video URL (YouTube or Vimeo — optional)</label><input class="inp" id="heroVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
-          <div style="display:flex;gap:10px;margin-top:4px;">
-            <button class="btn-save" onclick="saveHero()">Save Hero</button>
-            <button class="btn-outline" onclick="resetHero()">Reset</button>
-          </div>
-        </div>
+    <!-- PASSWORD -->
+    <div class="page" id="page-password">
+      <div class="page-tag">Settings</div>
+      <div class="page-title">Change <span class="hl">Password</span></div>
+      <div class="page-sub">Currently No Password Set. Set One Below.</div>
+      <div class="card">
+        <div class="field"><label class="label">New Password</label><input class="inp" id="pwNew" type="password" placeholder="New Password (Min 8 Chars)"><div class="pw-hint">Note: Password Is Stored In This HTML File. After Setting, Export And Push To GitHub.</div></div>
+        <div class="field"><label class="label">Confirm New Password</label><input class="inp" id="pwConfirm" type="password" placeholder="Confirm Password"></div>
+        <button class="btn-gold" onclick="setPassword()">Set Password</button>
+        <div id="pwMsg" style="font-size:12px;margin-top:8px;min-height:16px;"></div>
       </div>
+    </div>
 
-      <!-- TICKER PAGE -->
-      <div class="page" id="page-ticker">
-        <div class="page-tag">Ticker Strip</div>
-        <div class="page-title">Ticker <span class="hl">Items</span></div>
-        <div class="page-sub">Add, Edit, Hide Or Delete Scrolling Ticker Pills.</div>
-        <div class="add-form">
-          <div class="card-title">➕ Add Ticker Item</div>
-          <div class="add-grid2" style="margin-bottom:10px;">
-            <input class="inp" id="newTickText" placeholder="Text (e.g. EURUSD  1.0842  ▲ 0.18%)">
-            <select class="inp" id="newTickType">
-              <option value="default">White (Default)</option>
-              <option value="price">Gold Price</option>
-              <option value="dxy">Blue (DXY)</option>
-              <option value="jh">Orange (Event)</option>
-              <option value="cot">Green (COT)</option>
-              <option value="gold">Gold (AG Intel)</option>
-            </select>
-          </div>
-          <button class="btn-save" onclick="addTicker()">Add Item</button>
-        </div>
-        <div id="tickerList"></div>
-      </div>
-
-      <!-- CONTACT PAGE -->
-      <div class="page" id="page-contact">
-        <div class="page-tag">Contact Links</div>
-        <div class="page-title">Contact <span class="hl">Cards</span></div>
-        <div class="page-sub">Edit Telegram, WhatsApp, Instagram And Any Other Contact Links.</div>
-        <div class="add-form">
-          <div class="card-title">➕ Add Contact</div>
-          <div class="add-grid3" style="margin-bottom:10px;">
-            <input class="inp" id="newContactName" placeholder="Name (e.g. Telegram)">
-            <input class="inp" id="newContactUrl" placeholder="URL (e.g. https://t.me/...)">
-            <input class="inp" id="newContactIcon" placeholder="Icon" style="text-align:center;">
-          </div>
-          <div style="margin-bottom:10px;"><input class="inp" id="newContactSub" placeholder="Sub-label (e.g. @agtechnical)"></div>
-          <button class="btn-save" onclick="addContact()">Add Contact</button>
-        </div>
-        <div id="contactList"></div>
-      </div>
-
-      <!-- ABOUT PAGE -->
-      <div class="page" id="page-about">
-        <div class="page-tag">About Us</div>
-        <div class="page-title">About <span class="hl">Section</span></div>
-        <div class="page-sub">Edit All About Us Text, Markets Grid, And Optional Video.</div>
-        <div class="card">
-          <div class="field"><label class="label">Section Headline</label><input class="inp" id="aboutH" placeholder="Traders First. Always."></div>
-          <div class="field"><label class="label">Section Sub</label><input class="inp" id="aboutSub" placeholder="9+ years of real screen time..."></div>
-          <div class="field"><label class="label">Who We Are Text</label><textarea class="inp" id="aboutWhoText" style="min-height:90px;"></textarea></div>
-          <div class="field"><label class="label">What We Do (one item per line, use " — " to split title from desc)</label><textarea class="inp" id="aboutDoList" style="min-height:100px;" placeholder="Analyze Charts — 9+ years; we read markets like books&#10;Build Strategies — work across all markets and timeframes"></textarea></div>
-          <div class="field"><label class="label">Markets Subtitle</label><input class="inp" id="aboutMarketsSubtitle" placeholder="Whatever you trade, we've traded it for the last 9 years."></div>
-          <div class="field"><label class="label">Markets (one per line: emoji|label  OR  TEXT|label|isText)</label><textarea class="inp" id="aboutMarkets" style="min-height:80px;" placeholder="IN|Indian Markets|isText&#10;🔄|Forex&#10;₿|Bitcoin & Crypto"></textarea></div>
-          <div class="field"><label class="label">Video URL (YouTube or Vimeo — optional)</label><input class="inp" id="aboutVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
-          <div style="display:flex;gap:10px;margin-top:4px;">
-            <button class="btn-save" onclick="saveAbout()">Save About</button>
-            <button class="btn-outline" onclick="resetAbout()">Reset</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- FAQ PAGE -->
-      <div class="page" id="page-faq">
-        <div class="page-tag">FAQ</div>
-        <div class="page-title">FAQ <span class="hl">Questions</span></div>
-        <div class="page-sub">Add, Edit, Hide Or Delete FAQ Items.</div>
-        <div class="add-form">
-          <div class="card-title">➕ Add FAQ Item</div>
-          <div class="field" style="margin-bottom:10px;"><input class="inp" id="newFaqQ" placeholder="Question"></div>
-          <div class="field" style="margin-bottom:10px;"><textarea class="inp" id="newFaqA" placeholder="Answer" style="min-height:60px;"></textarea></div>
-          <button class="btn-save" onclick="addFaq()">Add Question</button>
-        </div>
-        <div id="faqList"></div>
-      </div>
-
-      <!-- NEWS & VIDEOS PAGE -->
-      <div class="page" id="page-newsed">
-        <div class="page-tag">News & Videos</div>
-        <div class="page-title">News <span class="hl">& Videos</span></div>
-        <div class="page-sub">Edit Dossier Card, News Items, Sentiment, And Add Videos.</div>
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">📁 Featured Dossier Card</div>
-          <div class="field"><label class="label">Dossier Title</label><input class="inp" id="nDossierTitle" placeholder="Gold Dossier — Jackson Hole Week"></div>
-          <div class="field"><label class="label">Dossier Sub</label><input class="inp" id="nDossierSub" placeholder="XAU/USD at $4,645 · ..."></div>
-          <div class="field"><label class="label">Dossier Link URL</label><input class="inp" id="nDossierUrl" placeholder="gold-dossier.html"></div>
-          <button class="btn-save" onclick="saveNewsMeta()">Save Dossier</button>
-        </div>
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">🎬 News Section Videos</div>
-          <div class="card-sub">Add YouTube/Vimeo URLs — They Appear Above The News Grid.</div>
-          <div class="add-grid2" style="margin-bottom:10px;">
-            <input class="inp" id="newVidLabel" placeholder="Video Label (e.g. Weekly Analysis)">
-            <input class="inp" id="newVidUrl" placeholder="https://youtube.com/watch?v=...">
-          </div>
-          <button class="btn-save" onclick="addVideo()">Add Video</button>
-          <div id="videoList" style="margin-top:12px;"></div>
-        </div>
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">📰 Latest News Items</div>
-          <div class="add-grid2" style="margin-bottom:10px;">
-            <input class="inp" id="newLatestTitle" placeholder="News Headline">
-            <input class="inp" id="newLatestTime" placeholder="2h ago · Forex">
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button class="link-opt active" id="latestDirUp" onclick="setNewsDir('latest','up',this)">▲ Bullish</button>
-            <button class="link-opt" id="latestDirDn" onclick="setNewsDir('latest','dn',this)">▼ Bearish</button>
-          </div>
-          <button class="btn-save" onclick="addNewsItem('latest')">Add Item</button>
-          <div id="latestList" style="margin-top:12px;"></div>
-        </div>
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">📊 AG Analysis Items</div>
-          <div class="add-grid2" style="margin-bottom:10px;">
-            <input class="inp" id="newAnalysisTitle" placeholder="Analysis Headline">
-            <input class="inp" id="newAnalysisTime" placeholder="1h ago · AG Analysis">
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button class="link-opt active" id="analysisDirUp" onclick="setNewsDir('analysis','up',this)">▲ Bullish</button>
-            <button class="link-opt" id="analysisDirDn" onclick="setNewsDir('analysis','dn',this)">▼ Bearish</button>
-          </div>
-          <button class="btn-save" onclick="addNewsItem('analysis')">Add Item</button>
-          <div id="analysisList" style="margin-top:12px;"></div>
-        </div>
-        <div class="card">
-          <div class="card-title">🎯 Sentiment</div>
-          <div id="sentimentList"></div>
-          <div class="add-grid2" style="margin-top:12px;margin-bottom:10px;">
-            <input class="inp" id="newSentLabel" placeholder="Market (e.g. Forex)">
-            <input class="inp" id="newSentPct" type="number" min="0" max="100" placeholder="Bull % (0-100)">
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button class="link-opt active" id="sentDirUp" onclick="setNewsDir('sent','up',this)">▲ Bull</button>
-            <button class="link-opt" id="sentDirDn" onclick="setNewsDir('sent','dn',this)">▼ Bear</button>
-            <button class="link-opt" id="sentDirNeutral" onclick="setNewsDir('sent','neutral',this)">⬆ Neutral</button>
-          </div>
-          <button class="btn-save" onclick="addSentiment()">Add Sentiment</button>
-        </div>
-      </div>
-
-</div><!-- /main -->
-  </div>
-</div>
+  </div><!-- /main -->
+</div><!-- /layout -->
 
 <script>
-/* ═══ CONFIG ═══ */
-const ADMIN_PASSWORD = 'agtech2024';
-let currentPassword = ADMIN_PASSWORD;
-
-/* ═══ DEFAULTS ═══ */
-const PROD_DEFAULTS = [
-  {id:'bridge',      name:'Bridge',                 icon:'🌉', sub:'Trade Copy Connector',        title:'Bridge',                desc:'Seamlessly connect your broker to AG Technicals — copy trades directly from our signals to your account. Auto-execute every call with zero manual intervention.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'algo',        name:'Algo (MT5)',              icon:'🤖', sub:'Auto Trading System (MT5)',    title:'Algo (MT5)',             desc:'Fully automated trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'tvindicator', name:'TradingView Indicator',  icon:'📈', sub:'Custom TradingView Indicator', title:'TradingView Indicator',  desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',hidden:false},
-  {id:'education',   name:'Education',              icon:'🧠', sub:'Courses & Academy',            title:'Education',             desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'guide',       name:'Guide',                  icon:'📖', sub:'Written Playbooks',            title:'Guides',                desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'strategy',    name:'Custom Strategy',        icon:'⚙️', sub:'Built For You',                title:'Custom Strategy',       desc:'Your own personalised trading strategy built by AG Technicals analysts — tailored to your risk profile, timeframe, and market preference.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false},
-  {id:'news',        name:'News',                   icon:'📰', sub:'Live Market Feed',             title:'News',                  desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow breakdowns.',cta:'Read Dossier →',type:'page',url:'gold-dossier.html',hidden:false},
+/* ═══ DATA DEFAULTS ═══ */
+const D_PRODS = [
+  {id:'bridge',      name:'Bridge',               icon:'🌉', sub:'TradingView → MT5 Connector',  title:'AG Bridge — TradingView To MT5', desc:'The AG Bridge is a live signal relay engine that carries your TradingView alerts straight to MetaTrader 5 — automatically, 24/7. Drop one file into your FastAPI project, enter your License ID in the MT5 EA, and your trades open the moment TradingView fires. No manual intervention. Signals are validated before reaching your account. One license locks to one MT5 account.', cta:'Get Bridge Access →', type:'modal', url:'', hidden:false},
+  {id:'algo',        name:'Algo (MT5)',            icon:'🤖', sub:'Auto Trading System (MT5)',    title:'Algo (MT5)',            desc:'Fully automated MT5 trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.', cta:'Join Waitlist →', type:'modal', url:'', hidden:false},
+  {id:'tvindicator', name:'TradingView Indicator', icon:'📈', sub:'Custom TradingView Indicator', title:'TradingView Indicator', desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.', cta:'View Indicators →', type:'page', url:'tv-indicators.html', hidden:false},
+  {id:'education',   name:'Education',            icon:'🧠', sub:'Courses & Academy',           title:'Education',            desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.', cta:'Join Waitlist →', type:'modal', url:'', hidden:false},
+  {id:'guide',       name:'Guide',                icon:'📖', sub:'Written Playbooks',           title:'Guides',               desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.', cta:'Join Waitlist →', type:'modal', url:'', hidden:false},
+  {id:'strategy',    name:'Custom Strategy',      icon:'⚙️', sub:'Built For You',               title:'Custom Strategy',      desc:'Your own personalised trading strategy built by AG Technicals analysts — tailored to your risk profile, timeframe, and market preference.', cta:'Join Waitlist →', type:'modal', url:'', hidden:false},
+  {id:'news',        name:'News',                 icon:'📰', sub:'Live Market Feed',            title:'News',                 desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow breakdowns.', cta:'Read Dossier →', type:'page', url:'gold-dossier.html', hidden:false},
 ];
-
-const IND_DEFAULTS = [
-  {id:'smc',       name:'AG SMC Indicator',            pid:'TVI-0003', shortDesc:'Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.', desc:'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score, so you only take the highest-probability trades. Works on gold, forex, indices and crypto.',img:'img-smc.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
-  {id:'orderflow', name:'AG Order Flow',               pid:'TVI-0004', shortDesc:'Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.',    desc:'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss. Built for gold, forex and indices.',img:'img-orderflow.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
-  {id:'esb',       name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', shortDesc:'Swing + EMA break signal on your chart — BUY/SELL signals, R:R levels and a live dashboard.',                             desc:'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low — combining trend and structure in one signal. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R), with built-in stoploss lock and max-trade controls. Works on any market, any timeframe.',img:'img-esb.png',waNum:'919876543210',badge:'PREMIUM',hidden:false},
+const D_INDS = [
+  {id:'smc',       name:'AG SMC Indicator',            pid:'TVI-0003', shortDesc:'Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.', desc:'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score.', img:'img-smc.png', waNum:'919876543210', badge:'PREMIUM', hidden:false},
+  {id:'orderflow', name:'AG Order Flow',               pid:'TVI-0004', shortDesc:'Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.', desc:'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss.', img:'img-orderflow.png', waNum:'919876543210', badge:'PREMIUM', hidden:false},
+  {id:'esb',       name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', shortDesc:'Swing + EMA break signal — BUY/SELL signals, R:R levels and a live dashboard.', desc:'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R).', img:'img-esb.png', waNum:'919876543210', badge:'PREMIUM', hidden:false},
 ];
-
-/* ═══ VERSION — bumping clears stale localStorage ═══ */
-const ADMIN_VERSION = 'v4';
-if(localStorage.getItem('ag_version') !== ADMIN_VERSION){
-  ['ag_products','ag_indicators','ag_users','ag_hero','ag_ticker','ag_contact','ag_faq','ag_about','ag_news'].forEach(k=>localStorage.removeItem(k));
-  localStorage.setItem('ag_version', ADMIN_VERSION);
-}
+const D_HERO = {badge:'Live Market Intelligence — 24/7', h1:'No Prediction.<br><span class="g">Follow Price Action.</span>', sub:'AG Technicals delivers institutional-grade analysis, live signals, and real-time charts — everything you need to trade Forex, Crypto, Indices, and Commodities with confidence.', btnText:'Join The Community →', videoUrl:''};
+const D_ABOUT = {h:'Traders First. Always.', sub:'9+ years of real screen time across every major market.', whoText:'AG Technicals is born from 9+ years of real trading experience (2017–2026) in global financial markets. We\'re not just software developers — we\'re traders first.', doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop MT5 Algorithms — manual trading into automated machines','Custom TradingView Indicators — built from real institutional data','Automate Everything — signal to execution, complete pipeline'], marketsSubtitle:"Whatever you trade, we've traded it for the last 9 years.", markets:[{icon:'IN',label:'Indian Markets',isText:true},{icon:'🔄',label:'Forex'},{icon:'₿',label:'Bitcoin & Crypto'},{icon:'✨',label:'Gold'},{icon:'⚪',label:'Silver'},{icon:'🌐',label:'And More...'}], videoUrl:''};
+const D_NEWS = {dossierTitle:'Gold Dossier — Jackson Hole Week', dossierSub:'XAU/USD at $4,645 · Institutions crowded long · Full COT + DXY breakdown inside', dossierUrl:'gold-dossier.html', videos:[], latest:[{title:'Fed holds rates — dollar softens across majors',time:'2h ago · Forex',dir:'up'},{title:'BTC reclaims $68K — bulls eye $72K resistance',time:'3h ago · Crypto',dir:'up'}], analysis:[{title:'EUR/USD: Bullish structure holds above 1.0820',time:'1h ago · AG Analysis',dir:'up'},{title:'XAU/USD: Rejection at $2340 — short setup forming',time:'4h ago · AG Analysis',dir:'dn'}], sentiment:[{label:'Forex',pct:72,dir:'up'},{label:'Crypto',pct:81,dir:'up'},{label:'Gold',pct:38,dir:'dn'},{label:'Indices',pct:68,dir:'up'}]};
+const D_CONTACT = [{icon:'✈️',name:'Telegram',sub:'@agtechnical',url:'https://t.me/agtechnical',hidden:false},{icon:'💬',name:'WhatsApp',sub:'Message Us Directly',url:'https://wa.me/919876543210',hidden:false},{icon:'📸',name:'Instagram',sub:'@agtechnical',url:'https://instagram.com/agtechnical',hidden:false}];
+const D_TICKER = [{text:'XAU/USD  $4,645.00',type:'price'},{text:'DXY WATCH · Dollar Softness Fueling The Rally',type:'dxy'},{text:'BTCUSD  67,420  ▲ 2.41%',type:'default'},{text:'JACKSON HOLE · Fed Speaks — All Eyes On Warsh Keynote',type:'jh'},{text:'EURUSD  1.0842  ▲ 0.18%',type:'default'},{text:'COT · Managed Money Net Long 130,766 Contracts',type:'cot'},{text:'NAS100  18,920  ▲ 1.20%',type:'default'},{text:'AG INTEL · Gold Dossier: Jackson Hole — Read ↗',type:'gold'}];
+const D_FAQ = [{q:'What Markets Does AG Technicals Cover?',a:'We cover Forex (all major & minor pairs), Gold & Silver, Bitcoin & Crypto, Indian Markets (NSE/BSE), Indices (NAS100, SPX500, US30) and Crude Oil.',hidden:false},{q:'Is This Financial Advice?',a:'No. AG Technicals provides market analysis and educational content only. Nothing on this platform constitutes financial advice.',hidden:false},{q:'How Do The TV Indicators Work?',a:'Our custom TradingView indicators are Pine Script-based scripts added directly to your chart. They auto-detect key levels, signals, and zones in real time.',hidden:false},{q:'What Is The Bridge / Copy Trading?',a:'The Bridge connects your broker account to our signal source. When a trade fires on our end, it automatically executes on your MT4/MT5 account.',hidden:false}];
 
 /* ═══ STATE ═══ */
-let products   = JSON.parse(localStorage.getItem('ag_products')   || 'null') || JSON.parse(JSON.stringify(PROD_DEFAULTS));
-let indicators = JSON.parse(localStorage.getItem('ag_indicators') || 'null') || JSON.parse(JSON.stringify(IND_DEFAULTS));
-let users      = JSON.parse(localStorage.getItem('ag_users')      || '[]');
-let editProdIdx = -1;
-let editIndIdx  = -1;
-let prodLinkType = 'modal';
+function ls(key,def){ try{ const v=localStorage.getItem('ag_'+key); return v?JSON.parse(v):JSON.parse(JSON.stringify(def)); }catch(e){ return JSON.parse(JSON.stringify(def)); } }
+function save(key,val){ try{ localStorage.setItem('ag_'+key,JSON.stringify(val)); }catch(e){} }
 
-/* ═══ LOGIN ═══ */
-function doLogin(){ /* no-op, panel already visible */ }
-window.addEventListener('DOMContentLoaded', function(){
-  try{ init(); } catch(e){ console.error('Admin init error:',e); }
-});
-function doLogout(){
-  document.getElementById('adminPanel').style.display='none';
-  document.getElementById('loginScreen').style.display='flex';
-  document.getElementById('pwInput').value='';
-
-}
-
-/* ═══ INIT ═══ */
-function init(){
-  renderProducts(); renderProductStats();
-  renderIndicators(); renderIndStats();
-  renderUsers(); buildUserProductChecks();
-  genExport();
-}
+let products   = ls('products',   D_PRODS);
+let indicators = ls('indicators', D_INDS);
+let users      = ls('users',      []);
+let faqData    = ls('faq',        D_FAQ);
+let tickerData = ls('ticker',     D_TICKER);
+let contactData= ls('contact',    D_CONTACT);
+let newsData   = ls('news',       D_NEWS);
+let dirState   = {latestDir:'up', analysisDir:'up', sentDir:'up'};
+let editProdIdx=-1, editIndIdx=-1;
+let peLinkType = 'modal';
 
 /* ═══ UTILS ═══ */
-function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
-function showToast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.textContent=(type==='ok'?'✓ ':'✕ ')+msg;
-  t.className='show'+(type==='err'?' err':'');
-  setTimeout(()=>t.className='',2800);
-}
-function uid(){ return 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
+function cap(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
+function uid(){ return 'p'+Date.now()+'_'+Math.random().toString(36).slice(2,5); }
+function toast(msg,type='ok'){ const t=document.getElementById('toast'); t.textContent=(type==='ok'?'✓ ':'✕ ')+msg; t.className='show'+(type==='err'?' err':''); setTimeout(()=>t.className='',2800); }
+function setDir(key,dir,btn){ dirState[key]=dir.toLowerCase(); document.querySelectorAll('[id^="'+key+'"]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
 
-/* ═══ SAVE HELPERS ═══ */
-function saveProds(){ localStorage.setItem('ag_products',   JSON.stringify(products)); }
-function saveInds(){  localStorage.setItem('ag_indicators', JSON.stringify(indicators)); }
-function saveUsers(){ localStorage.setItem('ag_users',      JSON.stringify(users)); }
+/* ═══ PAGE NAV ═══ */
+function show(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  const loaders = {products:renderProds, indicators:renderInds, users:renderUsers, faq:renderFaq, ticker:renderTicker, contact:renderContact, hero:loadHero, about:loadAbout, newsed:loadNews, export:genExport};
+  if(loaders[name]) loaders[name]();
+}
 
 /* ═══ PRODUCTS ═══ */
-function renderProductStats(){
-  const el=document.getElementById('prodStats'); if(!el) return;
+function renderProdStats(){
   const live=products.filter(p=>!p.hidden).length, hid=products.filter(p=>p.hidden).length;
-  el.innerHTML=`
-    <div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div>
-    <div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users</div></div>`;
+  const el=document.getElementById('prodStats'); if(!el) return;
+  el.innerHTML=`<div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div><div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div><div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users</div></div>`;
 }
-
-function renderProducts(){
+function renderProds(){
+  renderProdStats();
   const el=document.getElementById('prodList'); if(!el) return;
-  el.innerHTML = products.map((p,i)=>`
+  el.innerHTML=products.map((p,i)=>`
     <div class="item-row ${p.hidden?'hidden-item':''}">
-      <div class="item-row-icon">${p.icon}</div>
-      <div class="item-row-info">
-        <div class="item-row-name">${p.name}</div>
-        <div class="item-row-sub">${p.sub}</div>
-      </div>
-      <div class="item-row-actions">
+      <div class="item-icon">${p.icon}</div>
+      <div class="item-info"><div class="item-name">${p.name}</div><div class="item-sub">${p.sub}</div></div>
+      <div class="item-actions">
         <span class="${p.hidden?'badge-hidden':'badge-live'}">${p.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="openProdEditor(${i})" title="Edit">✏️</button>
-        <button class="btn-icon" onclick="toggleProdHide(${i})" title="${p.hidden?'Show':'Hide'}">${p.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteProd(${i})" title="Delete">🗑️</button>
+        <button class="btn-icon" onclick="openProdEd(${i})" title="Edit">✏️</button>
+        <button class="btn-icon" onclick="toggleProd(${i})">${p.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="delProd(${i})">🗑️</button>
       </div>
     </div>`).join('');
-  renderProductStats(); buildUserProductChecks(); genExport();
 }
-
 function addProduct(){
   const name=document.getElementById('newProdName').value.trim();
-  const sub =document.getElementById('newProdSub').value.trim();
+  if(!name){toast('Enter A Product Name','err');return;}
+  const sub=document.getElementById('newProdSub').value.trim()||'New Product';
   const icon=document.getElementById('newProdIcon').value.trim()||'📦';
-  if(!name){ showToast('Enter A Product Name','err'); return; }
-  products.push({id:uid(),name:cap(name),icon,sub:cap(sub)||'New Product',title:cap(name),desc:'Add Description In Editor.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false});
-  saveProds(); renderProducts();
-  document.getElementById('newProdName').value='';
-  document.getElementById('newProdSub').value='';
-  document.getElementById('newProdIcon').value='';
-  showToast('Product Added — Click ✏️ To Edit Details');
+  products.push({id:uid(),name:cap(name),icon,sub:cap(sub),title:cap(name),desc:'Add Description In Editor.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false});
+  save('products',products); renderProds();
+  ['newProdName','newProdSub','newProdIcon'].forEach(id=>document.getElementById(id).value='');
+  toast('Product Added — Click ✏️ To Edit');
 }
-
-function openProdEditor(i){
+function openProdEd(i){
   editProdIdx=i; const p=products[i];
   document.getElementById('pedTitle').textContent='Edit: '+p.name;
-  document.getElementById('peName').value=p.name;
-  document.getElementById('peIcon').value=p.icon;
-  document.getElementById('peSub').value=p.sub;
-  document.getElementById('peTitle').value=p.title;
-  document.getElementById('peDesc').value=p.desc;
-  document.getElementById('peCta').value=p.cta;
-  document.getElementById('pePageUrl').value=p.url||'';
-  setLinkType(p.type||'modal','pe');
+  document.getElementById('peName').value=p.name||'';
+  document.getElementById('peIcon').value=p.icon||'';
+  document.getElementById('peSub').value=p.sub||'';
+  document.getElementById('peTitle').value=p.title||'';
+  document.getElementById('peDesc').value=p.desc||'';
+  document.getElementById('peCta').value=p.cta||'';
+  document.getElementById('peUrl').value=p.url||'';
+  setPeLinkType(p.type||'modal');
   updatePePreview();
   document.getElementById('prodOverlay').classList.add('open');
 }
-function closeProdEditor(){ document.getElementById('prodOverlay').classList.remove('open'); editProdIdx=-1; }
-
-function saveProdEditor(){
-  if(editProdIdx<0) return;
+function closeProdEd(){ document.getElementById('prodOverlay').classList.remove('open'); editProdIdx=-1; }
+function saveProdEd(){
+  if(editProdIdx<0)return;
   const p=products[editProdIdx];
-  p.name=cap(document.getElementById('peName').value);
-  p.icon=document.getElementById('peIcon').value;
-  p.sub=cap(document.getElementById('peSub').value);
-  p.title=cap(document.getElementById('peTitle').value);
-  p.desc=document.getElementById('peDesc').value;
-  p.cta=document.getElementById('peCta').value;
-  p.type=prodLinkType;
-  p.url=document.getElementById('pePageUrl').value;
-  saveProds(); renderProducts(); closeProdEditor();
-  showToast('Saved: '+p.name);
+  p.name=cap(document.getElementById('peName').value)||p.name;
+  p.icon=document.getElementById('peIcon').value||p.icon;
+  p.sub=cap(document.getElementById('peSub').value)||p.sub;
+  p.title=cap(document.getElementById('peTitle').value)||p.title;
+  p.desc=document.getElementById('peDesc').value||p.desc;
+  p.cta=document.getElementById('peCta').value||p.cta;
+  p.type=peLinkType; p.url=document.getElementById('peUrl').value||'';
+  save('products',products); renderProds(); closeProdEd(); genExport();
+  toast('Saved: '+p.name);
 }
-
-function toggleProdHide(i){ products[i].hidden=!products[i].hidden; saveProds(); renderProducts(); showToast(products[i].hidden?products[i].name+' Hidden':products[i].name+' Now Live'); }
-function deleteProd(i){ if(!confirm('Delete "'+products[i].name+'"?')) return; products.splice(i,1); saveProds(); renderProducts(); showToast('Product Deleted','err'); }
-
-function setLinkType(t,prefix){
-  prodLinkType=t;
-  document.getElementById(prefix+'OptModal').classList.toggle('active',t==='modal');
-  document.getElementById(prefix+'OptPage').classList.toggle('active',t==='page');
-  document.getElementById(prefix+'PageUrlField').style.display=t==='page'?'block':'none';
+function toggleProd(i){ products[i].hidden=!products[i].hidden; save('products',products); renderProds(); toast(products[i].name+(products[i].hidden?' Hidden':' Now Live')); }
+function delProd(i){ if(!confirm('Delete "'+products[i].name+'"?'))return; products.splice(i,1); save('products',products); renderProds(); toast('Deleted','err'); }
+function setPeLinkType(t){
+  peLinkType=t;
+  document.getElementById('peOptModal').classList.toggle('active',t==='modal');
+  document.getElementById('peOptPage').classList.toggle('active',t==='page');
+  document.getElementById('peUrlWrap').style.display=t==='page'?'block':'none';
 }
-
 function updatePePreview(){
-  document.getElementById('pePrevTag').textContent=(document.getElementById('peIcon').value||'📦')+'  Service';
-  document.getElementById('pePrevTitle').textContent=document.getElementById('peTitle').value||'Title';
-  document.getElementById('pePrevDesc').textContent=document.getElementById('peDesc').value||'Description';
-  document.getElementById('pePrevCta').textContent=document.getElementById('peCta').value||'Join Waitlist →';
+  const icon=document.getElementById('peIcon')?.value||'📦';
+  const title=document.getElementById('peTitle')?.value||'Title';
+  const desc=document.getElementById('peDesc')?.value||'Description';
+  const cta=document.getElementById('peCta')?.value||'CTA';
+  document.getElementById('pePrevTag').textContent=icon+'  Service';
+  document.getElementById('pePrevTitle').textContent=title;
+  document.getElementById('pePrevDesc').textContent=desc;
+  document.getElementById('pePrevCta').textContent=cta;
 }
-['peTitle','peDesc','peIcon','peCta'].forEach(id=>document.getElementById(id)?.addEventListener('input',updatePePreview));
+['peTitle','peDesc','peIcon','peCta'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('input',updatePePreview);
+});
 
 /* ═══ INDICATORS ═══ */
 function renderIndStats(){
   const live=indicators.filter(i=>!i.hidden).length, hid=indicators.filter(i=>i.hidden).length;
   const el=document.getElementById('indStats'); if(!el) return;
-  el.innerHTML=`
-    <div class="stat-box"><div class="stat-val">${indicators.length}</div><div class="stat-label">Total</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div>
-    <div class="stat-box"><div class="stat-val" style="color:var(--g5)">${indicators.length>0?indicators[indicators.length-1].pid:'—'}</div><div class="stat-label">Latest PID</div></div>`;
+  el.innerHTML=`<div class="stat-box"><div class="stat-val">${indicators.length}</div><div class="stat-label">Total</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div><div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div><div class="stat-box"><div class="stat-val" style="color:var(--g5);font-size:14px;padding-top:4px;">${indicators.length?indicators[indicators.length-1].pid:'—'}</div><div class="stat-label">Latest PID</div></div>`;
 }
-
-function renderIndicators(){
-  const iel=document.getElementById('indList'); if(!iel) return;
-  iel.innerHTML = indicators.map((ind,i)=>`
+function renderInds(){
+  renderIndStats();
+  const el=document.getElementById('indList'); if(!el) return;
+  el.innerHTML=indicators.map((ind,i)=>`
     <div class="item-row ${ind.hidden?'hidden-item':''}">
-      <div class="item-row-icon">📊</div>
-      <div class="item-row-info">
-        <div class="item-row-name">${ind.name}</div>
-        <div class="item-row-sub">${ind.pid} · ${ind.badge||'PREMIUM'}</div>
-      </div>
-      <div class="item-row-actions">
+      <div class="item-icon">📊</div>
+      <div class="item-info"><div class="item-name">${ind.name}</div><div class="item-sub">${ind.pid} · ${ind.badge||'PREMIUM'}</div></div>
+      <div class="item-actions">
         <span class="${ind.hidden?'badge-hidden':'badge-live'}">${ind.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="openIndEditor(${i})" title="Edit">✏️</button>
-        <button class="btn-icon" onclick="toggleIndHide(${i})" title="${ind.hidden?'Show':'Hide'}">${ind.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteInd(${i})" title="Delete">🗑️</button>
+        <button class="btn-icon" onclick="openIndEd(${i})">✏️</button>
+        <button class="btn-icon" onclick="toggleInd(${i})">${ind.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="delInd(${i})">🗑️</button>
       </div>
     </div>`).join('');
-  renderIndStats(); buildUserProductChecks();
+  buildUserChecks();
 }
-
 function addIndicator(){
   const name=document.getElementById('newIndName').value.trim();
-  const pid =document.getElementById('newIndPid').value.trim();
-  const img =document.getElementById('newIndImg').value.trim();
+  if(!name){toast('Enter Indicator Name','err');return;}
+  const pid=document.getElementById('newIndPid').value.trim()||'TVI-NEW';
+  const img=document.getElementById('newIndImg').value.trim()||'';
   const badge=document.getElementById('newIndBadge').value.trim()||'PREMIUM';
-  if(!name){ showToast('Enter Indicator Name','err'); return; }
-  indicators.push({id:uid(),name:cap(name),pid:pid||'TVI-NEW',shortDesc:'Add Description In Editor.',desc:'Add Full Description In Editor.',img:img||'',waNum:'919876543210',badge,hidden:false});
-  saveInds(); renderIndicators();
+  indicators.push({id:uid(),name:cap(name),pid,shortDesc:'Add Short Description.',desc:'Add Full Description.',img,waNum:'919876543210',badge,hidden:false});
+  save('indicators',indicators); renderInds();
   ['newIndName','newIndPid','newIndImg','newIndBadge'].forEach(id=>document.getElementById(id).value='');
-  showToast('Indicator Added — Click ✏️ To Edit');
+  toast('Indicator Added — Click ✏️ To Edit');
 }
-
-function openIndEditor(i){
+function openIndEd(i){
   editIndIdx=i; const ind=indicators[i];
   document.getElementById('iedTitle').textContent='Edit: '+ind.name;
-  document.getElementById('ieName').value=ind.name;
-  document.getElementById('iePid').value=ind.pid;
-  document.getElementById('ieShortDesc').value=ind.shortDesc||'';
+  document.getElementById('ieName').value=ind.name||'';
+  document.getElementById('iePid').value=ind.pid||'';
+  document.getElementById('ieShort').value=ind.shortDesc||'';
   document.getElementById('ieDesc').value=ind.desc||'';
   document.getElementById('ieImg').value=ind.img||'';
   document.getElementById('ieWa').value=ind.waNum||'919876543210';
   document.getElementById('ieBadge').value=ind.badge||'PREMIUM';
   document.getElementById('indOverlay').classList.add('open');
 }
-function closeIndEditor(){ document.getElementById('indOverlay').classList.remove('open'); editIndIdx=-1; }
-
-function saveIndEditor(){
-  if(editIndIdx<0) return;
+function closeIndEd(){ document.getElementById('indOverlay').classList.remove('open'); editIndIdx=-1; }
+function saveIndEd(){
+  if(editIndIdx<0)return;
   const ind=indicators[editIndIdx];
-  ind.name=cap(document.getElementById('ieName').value);
-  ind.pid=document.getElementById('iePid').value;
-  ind.shortDesc=document.getElementById('ieShortDesc').value;
-  ind.desc=document.getElementById('ieDesc').value;
-  ind.img=document.getElementById('ieImg').value;
-  ind.waNum=document.getElementById('ieWa').value;
-  ind.badge=document.getElementById('ieBadge').value;
-  saveInds(); renderIndicators(); closeIndEditor();
-  showToast('Saved: '+ind.name);
+  ind.name=cap(document.getElementById('ieName').value)||ind.name;
+  ind.pid=document.getElementById('iePid').value||ind.pid;
+  ind.shortDesc=document.getElementById('ieShort').value||ind.shortDesc;
+  ind.desc=document.getElementById('ieDesc').value||ind.desc;
+  ind.img=document.getElementById('ieImg').value||ind.img;
+  ind.waNum=document.getElementById('ieWa').value||ind.waNum;
+  ind.badge=document.getElementById('ieBadge').value||ind.badge;
+  save('indicators',indicators); renderInds(); closeIndEd();
+  toast('Saved: '+ind.name);
 }
-
-function toggleIndHide(i){ indicators[i].hidden=!indicators[i].hidden; saveInds(); renderIndicators(); showToast(indicators[i].hidden?indicators[i].name+' Hidden':indicators[i].name+' Now Live'); }
-function deleteInd(i){ if(!confirm('Delete "'+indicators[i].name+'"?')) return; indicators.splice(i,1); saveInds(); renderIndicators(); showToast('Indicator Deleted','err'); }
+function toggleInd(i){ indicators[i].hidden=!indicators[i].hidden; save('indicators',indicators); renderInds(); toast(indicators[i].name+(indicators[i].hidden?' Hidden':' Now Live')); }
+function delInd(i){ if(!confirm('Delete "'+indicators[i].name+'"?'))return; indicators.splice(i,1); save('indicators',indicators); renderInds(); toast('Deleted','err'); }
 
 /* ═══ USERS ═══ */
-function buildUserProductChecks(){
-  const c=document.getElementById('userProductCheck'); if(!c) return;
+function buildUserChecks(){
+  const el=document.getElementById('uProductCheck'); if(!el) return;
   const all=[...products.filter(p=>!p.hidden).map(p=>({id:p.id,label:p.icon+' '+p.name})),...indicators.filter(i=>!i.hidden).map(i=>({id:'ind_'+i.id,label:'📊 '+i.name}))];
-  c.innerHTML=all.map(x=>`<div class="prod-check-item"><input type="checkbox" id="uc_${x.id}" value="${x.id}"><label for="uc_${x.id}">${x.label}</label></div>`).join('');
+  el.innerHTML=all.map(x=>`<div class="pcheck-item"><input type="checkbox" id="uc_${x.id}" value="${x.id}"><label for="uc_${x.id}">${x.label}</label></div>`).join('');
 }
-
 function addUser(){
   const name=cap(document.getElementById('uName').value.trim());
+  if(!name){toast('Enter User Name','err');return;}
   const contact=document.getElementById('uContact').value.trim();
   const date=document.getElementById('uDate').value;
   const status=document.getElementById('uStatus').value;
-  if(!name){ showToast('Enter User Name','err'); return; }
-  const prods=[...document.querySelectorAll('#userProductCheck input:checked')].map(c=>c.value);
+  const prods=[...document.querySelectorAll('#uProductCheck input:checked')].map(c=>c.value);
   users.push({id:uid(),name,contact,date,status,products:prods});
-  saveUsers(); renderUsers(); renderProductStats();
-  document.getElementById('uName').value='';
-  document.getElementById('uContact').value='';
-  document.getElementById('uDate').value='';
-  document.querySelectorAll('#userProductCheck input').forEach(c=>c.checked=false);
-  showToast('User Added: '+name);
+  save('users',users); renderUsers();
+  document.getElementById('uName').value=''; document.getElementById('uContact').value=''; document.getElementById('uDate').value='';
+  document.querySelectorAll('#uProductCheck input').forEach(c=>c.checked=false);
+  toast('User Added: '+name);
 }
-
 function renderUsers(){
+  buildUserChecks(); renderProdStats();
   const tbody=document.getElementById('usersBody'); if(!tbody) return;
-  if(!users.length){ tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:32px;">No Users Added Yet</td></tr>`; return; }
+  if(!users.length){ tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:28px;">No Users Added Yet</td></tr>`; return; }
+  const allItems=[...products,...indicators.map(ind=>({id:'ind_'+ind.id,name:ind.name,icon:'📊'}))];
   tbody.innerHTML=users.map((u,i)=>{
-    const allItems=[...(products||[]),...(indicators||[]).map(ind=>({id:'ind_'+ind.id,name:ind.name,icon:'📊'}))];
-    const tags=((u.products)||[]).map(pid=>{ const item=allItems.find(x=>x.id===pid); return item?`<span class="product-tag">${item.icon||''} ${item.name}</span>`:''; }).join('');
-    return `<tr>
-      <td>${u.name||''}</td>
-      <td style="color:var(--t3)">${u.contact||'—'}</td>
-      <td>${tags||'<span style="color:var(--t3);font-size:11px;">None</span>'}</td>
-      <td style="color:var(--t3)">${u.date||'—'}</td>
-      <td><span class="status-tag ${u.status==='active'?'s-active':'s-expired'}">${u.status==='active'?'Active':'Expired'}</span></td>
-      <td><button class="btn-icon" onclick="toggleUserStatus(${i})" title="Toggle">${u.status==='active'?'⏸':'▶️'}</button><button class="btn-icon" onclick="deleteUser(${i})" title="Delete">🗑️</button></td>
-    </tr>`;
+    const tags=(u.products||[]).map(pid=>{ const item=allItems.find(x=>x.id===pid); return item?`<span class="ptag">${item.icon||''} ${item.name}</span>`:''; }).join('');
+    return `<tr><td>${u.name}</td><td>${u.contact||'—'}</td><td>${tags||'<span style="color:var(--t3);font-size:11px;">None</span>'}</td><td style="color:var(--t3)">${u.date||'—'}</td><td><span class="stag ${u.status==='active'?'s-active':'s-expired'}">${u.status==='active'?'Active':'Expired'}</span></td><td><button class="btn-icon" onclick="toggleUser(${i})">${u.status==='active'?'⏸':'▶️'}</button><button class="btn-icon" onclick="delUser(${i})">🗑️</button></td></tr>`;
   }).join('');
 }
-
-function toggleUserStatus(i){ users[i].status=users[i].status==='active'?'expired':'active'; saveUsers(); renderUsers(); showToast('Status Updated'); }
-function deleteUser(i){ if(!confirm('Delete User "'+users[i].name+'"?')) return; users.splice(i,1); saveUsers(); renderUsers(); renderProductStats(); showToast('User Deleted','err'); }
-
-/* ═══ EXPORT ═══ */
-function genExport(){
-  try{
-    const lines=(products||[]).filter(p=>!p.hidden).map(p=>{
-      const t=(p.title||p.name||'').replace(/'/g,"\\'");
-      const d=(p.desc||'').replace(/'/g,"\\'");
-      if(p.type==='page') return '<!-- '+p.name+' -->\nonclick="window.location.href=\''+( p.url||'')+'\'"';
-      return '<!-- '+p.name+' -->\nonclick="openModal(\''+t+'\',\''+d+'\',\''+( p.icon||'📦')+'\')"';
-    }).join('\n\n');
-    const el=document.getElementById('exportArea'); if(el) el.value=lines;
-  }catch(e){console.error('genExport:',e);}
-}
-function copyExport(){ const ta=document.getElementById('exportArea'); ta.select(); navigator.clipboard.writeText(ta.value).then(()=>showToast('Copied!')).catch(()=>{ document.execCommand('copy'); showToast('Copied!'); }); }
-
-/* ═══ PASSWORD ═══ */
-function changePassword(){
-  const cur=document.getElementById('pwCurrent').value;
-  const nw=document.getElementById('pwNew').value;
-  const cf=document.getElementById('pwConfirm').value;
-  const msg=document.getElementById('pwMsg');
-  if(cur!==currentPassword){ msg.style.color='var(--red)'; msg.textContent='Current Password Is Wrong.'; return; }
-  if(nw.length<8){ msg.style.color='var(--red)'; msg.textContent='New Password Must Be At Least 8 Characters.'; return; }
-  if(nw!==cf){ msg.style.color='var(--red)'; msg.textContent='Passwords Do Not Match.'; return; }
-  currentPassword=nw;
-  msg.style.color='var(--green)';
-  msg.textContent='Password Changed! Export admin.html → Push To GitHub.';
-  ['pwCurrent','pwNew','pwConfirm'].forEach(id=>document.getElementById(id).value='');
-}
-
-/* ═══ PAGE NAV ═══ */
-
-/* ═══ HERO ═══ */
-const HERO_DEF = {badge:'Live Market Intelligence — 24/7',h1:'No Prediction.<br><span class="g">Follow Price Action.</span>',sub:'AG Technicals delivers institutional-grade analysis, live signals, and real-time charts — everything you need to trade Forex, Crypto, Indices, and Commodities with confidence.',btnText:'Join The Community →',videoUrl:''};
-function loadHeroPage(){
-  const h=JSON.parse(localStorage.getItem('ag_hero')||'null')||HERO_DEF;
-  document.getElementById('heroBadge').value=h.badge||'';
-  document.getElementById('heroH1').value=h.h1||'';
-  document.getElementById('heroSub').value=h.sub||'';
-  document.getElementById('heroBtnText').value=h.btnText||'';
-  document.getElementById('heroVideoUrl').value=h.videoUrl||'';
-}
-function saveHero(){
-  const h={badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtnText').value,videoUrl:document.getElementById('heroVideoUrl').value};
-  localStorage.setItem('ag_hero',JSON.stringify(h)); showToast('Hero Saved');
-}
-function resetHero(){ localStorage.removeItem('ag_hero'); loadHeroPage(); showToast('Hero Reset'); }
-
-/* ═══ TICKER ═══ */
-const TICKER_DEF=[{text:'XAU/USD  $4,645.00',type:'price'},{text:'DXY WATCH · Dollar softness fueling the rally',type:'dxy'},{text:'BTCUSD  67,420  ▲ 2.41%',type:'default'},{text:'JACKSON HOLE · Fed speaks — all eyes on Warsh keynote',type:'jh'},{text:'EURUSD  1.0842  ▲ 0.18%',type:'default'},{text:'COT · Managed Money net long 130,766 contracts',type:'cot'},{text:'NAS100  18,920  ▲ 1.20%',type:'default'},{text:'AG INTEL · Gold Dossier: Jackson Hole — Read ↗',type:'gold'}];
-let tickerItems=JSON.parse(localStorage.getItem('ag_ticker')||'null')||JSON.parse(JSON.stringify(TICKER_DEF));
-function renderTicker(){
-  document.getElementById('tickerList').innerHTML=tickerItems.map((t,i)=>`
-    <div class="item-row ${t.hidden?'hidden-item':''}">
-      <div class="item-row-icon" style="font-size:13px;width:50px;text-align:center;flex-shrink:0;">${t.type}</div>
-      <div class="item-row-info"><div class="item-row-name">${t.text}</div></div>
-      <div class="item-row-actions">
-        <span class="${t.hidden?'badge-hidden':'badge-live'}">${t.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="toggleTickerHide(${i})">${t.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteTicker(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function addTicker(){
-  const text=document.getElementById('newTickText').value.trim(),type=document.getElementById('newTickType').value;
-  if(!text){showToast('Enter Ticker Text','err');return;}
-  tickerItems.push({text,type,hidden:false});
-  localStorage.setItem('ag_ticker',JSON.stringify(tickerItems));
-  renderTicker();
-  document.getElementById('newTickText').value='';
-  showToast('Ticker Item Added');
-}
-function toggleTickerHide(i){tickerItems[i].hidden=!tickerItems[i].hidden;localStorage.setItem('ag_ticker',JSON.stringify(tickerItems));renderTicker();}
-function deleteTicker(i){if(!confirm('Delete this ticker item?'))return;tickerItems.splice(i,1);localStorage.setItem('ag_ticker',JSON.stringify(tickerItems));renderTicker();showToast('Deleted','err');}
-
-/* ═══ CONTACT ═══ */
-const CONTACT_DEF=[{icon:'✈️',name:'Telegram',sub:'@agtechnical',url:'https://t.me/agtechnical',hidden:false},{icon:'💬',name:'WhatsApp',sub:'Message us directly',url:'https://wa.me/919876543210',hidden:false},{icon:'📸',name:'Instagram',sub:'@agtechnical',url:'https://instagram.com/agtechnical',hidden:false}];
-let contactItems=JSON.parse(localStorage.getItem('ag_contact')||'null')||JSON.parse(JSON.stringify(CONTACT_DEF));
-function renderContact(){
-  document.getElementById('contactList').innerHTML=contactItems.map((c,i)=>`
-    <div class="item-row ${c.hidden?'hidden-item':''}">
-      <div class="item-row-icon">${c.icon}</div>
-      <div class="item-row-info"><div class="item-row-name">${c.name}</div><div class="item-row-sub">${c.sub} · ${c.url}</div></div>
-      <div class="item-row-actions">
-        <span class="${c.hidden?'badge-hidden':'badge-live'}">${c.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="editContact(${i})">✏️</button>
-        <button class="btn-icon" onclick="toggleContactHide(${i})">${c.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteContact(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function addContact(){
-  const name=document.getElementById('newContactName').value.trim(),url=document.getElementById('newContactUrl').value.trim(),icon=document.getElementById('newContactIcon').value.trim()||'💬',sub=document.getElementById('newContactSub').value.trim();
-  if(!name||!url){showToast('Enter Name And URL','err');return;}
-  contactItems.push({icon,name,sub,url,hidden:false});
-  localStorage.setItem('ag_contact',JSON.stringify(contactItems));
-  renderContact();
-  ['newContactName','newContactUrl','newContactIcon','newContactSub'].forEach(id=>document.getElementById(id).value='');
-  showToast('Contact Added');
-}
-function editContact(i){
-  const c=contactItems[i];
-  const nn=prompt('Name:',c.name); if(nn===null)return; c.name=nn;
-  const nu=prompt('URL:',c.url); if(nu===null)return; c.url=nu;
-  const ns=prompt('Sub-label:',c.sub); if(ns===null)return; c.sub=ns;
-  const ni=prompt('Icon:',c.icon); if(ni===null)return; c.icon=ni;
-  localStorage.setItem('ag_contact',JSON.stringify(contactItems)); renderContact(); showToast('Contact Updated');
-}
-function toggleContactHide(i){contactItems[i].hidden=!contactItems[i].hidden;localStorage.setItem('ag_contact',JSON.stringify(contactItems));renderContact();}
-function deleteContact(i){if(!confirm('Delete?'))return;contactItems.splice(i,1);localStorage.setItem('ag_contact',JSON.stringify(contactItems));renderContact();showToast('Deleted','err');}
+function toggleUser(i){ users[i].status=users[i].status==='active'?'expired':'active'; save('users',users); renderUsers(); toast('Status Updated'); }
+function delUser(i){ if(!confirm('Delete User "'+users[i].name+'"?'))return; users.splice(i,1); save('users',users); renderUsers(); toast('Deleted','err'); }
 
 /* ═══ FAQ ═══ */
-const FAQ_DEF=[{q:'What markets does AG Technicals cover?',a:'We cover Forex, Gold & Silver, Bitcoin & Crypto, Indian Markets, Indices and Crude Oil.',hidden:false},{q:'Is this financial advice?',a:'No. AG Technicals provides market analysis and educational content only.',hidden:false},{q:'How do the TV Indicators work?',a:'Our custom TradingView indicators are Pine Script-based scripts added directly to your chart.',hidden:false},{q:'What is the Bridge / copy trading?',a:'The Bridge connects your broker account to our signal source — trades execute automatically.',hidden:false}];
-let faqData=JSON.parse(localStorage.getItem('ag_faq')||'null')||JSON.parse(JSON.stringify(FAQ_DEF));
-let faqNewsDir={latest:'up',analysis:'up',sent:'up'};
-function setNewsDir(section,dir,btn){
-  faqNewsDir[section]=dir;
-  const prefix=section==='sent'?'sentDir':section==='latest'?'latestDir':'analysisDir';
-  ['Up','Dn','Neutral'].forEach(d=>{ const el=document.getElementById(prefix+d); if(el) el.classList.remove('active'); });
-  btn.classList.add('active');
-}
 function renderFaq(){
-  document.getElementById('faqList').innerHTML=faqData.map((f,i)=>`
+  const el=document.getElementById('faqList'); if(!el) return;
+  el.innerHTML=faqData.map((f,i)=>`
     <div class="item-row ${f.hidden?'hidden-item':''}">
-      <div class="item-row-info"><div class="item-row-name">${f.q}</div><div class="item-row-sub">${f.a.slice(0,80)}...</div></div>
-      <div class="item-row-actions">
+      <div class="item-info"><div class="item-name">${f.q}</div><div class="item-sub">${f.a.slice(0,80)}...</div></div>
+      <div class="item-actions">
         <span class="${f.hidden?'badge-hidden':'badge-live'}">${f.hidden?'Hidden':'Live'}</span>
         <button class="btn-icon" onclick="editFaq(${i})">✏️</button>
-        <button class="btn-icon" onclick="toggleFaqHide(${i})">${f.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteFaq(${i})">🗑️</button>
+        <button class="btn-icon" onclick="toggleFaq(${i})">${f.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="delFaq(${i})">🗑️</button>
       </div>
     </div>`).join('');
 }
 function addFaq(){
-  const q=document.getElementById('newFaqQ').value.trim(),a=document.getElementById('newFaqA').value.trim();
-  if(!q||!a){showToast('Enter Question And Answer','err');return;}
-  faqData.push({q,a,hidden:false});
-  localStorage.setItem('ag_faq',JSON.stringify(faqData));
-  renderFaq();
-  document.getElementById('newFaqQ').value='';
-  document.getElementById('newFaqA').value='';
-  showToast('FAQ Added');
+  const q=document.getElementById('newFaqQ').value.trim(), a=document.getElementById('newFaqA').value.trim();
+  if(!q||!a){toast('Enter Question And Answer','err');return;}
+  faqData.push({q,a,hidden:false}); save('faq',faqData); renderFaq();
+  document.getElementById('newFaqQ').value=''; document.getElementById('newFaqA').value='';
+  toast('FAQ Added');
 }
-function editFaq(i){
-  const f=faqData[i];
-  const nq=prompt('Question:',f.q); if(nq===null)return; f.q=nq;
-  const na=prompt('Answer:',f.a); if(na===null)return; f.a=na;
-  localStorage.setItem('ag_faq',JSON.stringify(faqData)); renderFaq(); showToast('FAQ Updated');
+function editFaq(i){ const f=faqData[i]; const nq=prompt('Question:',f.q); if(nq===null)return; const na=prompt('Answer:',f.a); if(na===null)return; f.q=nq; f.a=na; save('faq',faqData); renderFaq(); toast('FAQ Updated'); }
+function toggleFaq(i){ faqData[i].hidden=!faqData[i].hidden; save('faq',faqData); renderFaq(); }
+function delFaq(i){ if(!confirm('Delete?'))return; faqData.splice(i,1); save('faq',faqData); renderFaq(); toast('Deleted','err'); }
+
+/* ═══ TICKER ═══ */
+function renderTicker(){
+  const el=document.getElementById('tickerList'); if(!el) return;
+  el.innerHTML=tickerData.map((t,i)=>`
+    <div class="item-row ${t.hidden?'hidden-item':''}">
+      <div class="item-info"><div class="item-name">${t.text}</div><div class="item-sub">Type: ${t.type}</div></div>
+      <div class="item-actions">
+        <span class="${t.hidden?'badge-hidden':'badge-live'}">${t.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="toggleTicker(${i})">${t.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="delTicker(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
 }
-function toggleFaqHide(i){faqData[i].hidden=!faqData[i].hidden;localStorage.setItem('ag_faq',JSON.stringify(faqData));renderFaq();}
-function deleteFaq(i){if(!confirm('Delete?'))return;faqData.splice(i,1);localStorage.setItem('ag_faq',JSON.stringify(faqData));renderFaq();showToast('Deleted','err');}
+function addTicker(){
+  const text=document.getElementById('newTickText').value.trim(), type=document.getElementById('newTickType').value;
+  if(!text){toast('Enter Text','err');return;}
+  tickerData.push({text,type,hidden:false}); save('ticker',tickerData); renderTicker();
+  document.getElementById('newTickText').value=''; toast('Ticker Added');
+}
+function toggleTicker(i){ tickerData[i].hidden=!tickerData[i].hidden; save('ticker',tickerData); renderTicker(); }
+function delTicker(i){ tickerData.splice(i,1); save('ticker',tickerData); renderTicker(); toast('Deleted','err'); }
+
+/* ═══ CONTACT ═══ */
+function renderContact(){
+  const el=document.getElementById('contactList'); if(!el) return;
+  el.innerHTML=contactData.map((c,i)=>`
+    <div class="item-row ${c.hidden?'hidden-item':''}">
+      <div class="item-icon">${c.icon}</div>
+      <div class="item-info"><div class="item-name">${c.name}</div><div class="item-sub">${c.sub} · ${c.url}</div></div>
+      <div class="item-actions">
+        <span class="${c.hidden?'badge-hidden':'badge-live'}">${c.hidden?'Hidden':'Live'}</span>
+        <button class="btn-icon" onclick="editContact(${i})">✏️</button>
+        <button class="btn-icon" onclick="toggleContact(${i})">${c.hidden?'👁':'🙈'}</button>
+        <button class="btn-icon" onclick="delContact(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function addContact(){
+  const name=document.getElementById('newCName').value.trim(), url=document.getElementById('newCUrl').value.trim();
+  if(!name||!url){toast('Enter Name And URL','err');return;}
+  const icon=document.getElementById('newCIcon').value.trim()||'💬', sub=document.getElementById('newCSub').value.trim()||name;
+  contactData.push({icon,name,sub,url,hidden:false}); save('contact',contactData); renderContact();
+  ['newCName','newCUrl','newCIcon','newCSub'].forEach(id=>document.getElementById(id).value='');
+  toast('Contact Added');
+}
+function editContact(i){ const c=contactData[i]; const nn=prompt('Name:',c.name); if(nn===null)return; const nu=prompt('URL:',c.url); if(nu===null)return; const ns=prompt('Sub-label:',c.sub); if(ns===null)return; const ni=prompt('Icon:',c.icon); if(ni===null)return; c.name=nn;c.url=nu;c.sub=ns;c.icon=ni; save('contact',contactData); renderContact(); toast('Updated'); }
+function toggleContact(i){ contactData[i].hidden=!contactData[i].hidden; save('contact',contactData); renderContact(); }
+function delContact(i){ if(!confirm('Delete?'))return; contactData.splice(i,1); save('contact',contactData); renderContact(); toast('Deleted','err'); }
+
+/* ═══ HERO ═══ */
+function loadHero(){ const h=ls('hero',D_HERO); document.getElementById('heroBadge').value=h.badge||''; document.getElementById('heroH1').value=h.h1||''; document.getElementById('heroSub').value=h.sub||''; document.getElementById('heroBtnText').value=h.btnText||''; document.getElementById('heroVideoUrl').value=h.videoUrl||''; }
+function saveHero(){ save('hero',{badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtnText').value,videoUrl:document.getElementById('heroVideoUrl').value}); toast('Hero Saved'); }
 
 /* ═══ ABOUT ═══ */
-const ABOUT_DEF={h:'Traders First. Always.',sub:'9+ years of real screen time across every major market.',whoText:'AG Technicals is born from 9+ years of real trading experience (2017–2026) in global financial markets.',doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop Algorithms — manual trading into automated machines'],marketsSubtitle:"Whatever you trade, we've traded it for the last 9 years.",markets:[{icon:'IN',label:'Indian Markets',isText:true},{icon:'🔄',label:'Forex'},{icon:'₿',label:'Bitcoin & Crypto'},{icon:'✨',label:'Gold'},{icon:'⚪',label:'Silver'},{icon:'🌐',label:'And More...'}],videoUrl:''};
-function loadAboutPage(){
-  const a=JSON.parse(localStorage.getItem('ag_about')||'null')||ABOUT_DEF;
-  document.getElementById('aboutH').value=a.h||'';
-  document.getElementById('aboutSub').value=a.sub||'';
-  document.getElementById('aboutWhoText').value=a.whoText||'';
-  document.getElementById('aboutDoList').value=(a.doList||[]).join('
-');
-  document.getElementById('aboutMarketsSubtitle').value=a.marketsSubtitle||'';
-  document.getElementById('aboutMarkets').value=(a.markets||[]).map(m=>m.isText?`${m.icon}|${m.label}|isText`:`${m.icon}|${m.label}`).join('
-');
-  document.getElementById('aboutVideoUrl').value=a.videoUrl||'';
-}
-function saveAbout(){
-  const doRaw=document.getElementById('aboutDoList').value.split('
-').filter(l=>l.trim());
-  const mktsRaw=document.getElementById('aboutMarkets').value.split('
-').filter(l=>l.trim()).map(l=>{const p=l.split('|');return{icon:p[0],label:p[1]||p[0],isText:p[2]==='isText'};});
-  const a={h:document.getElementById('aboutH').value,sub:document.getElementById('aboutSub').value,whoText:document.getElementById('aboutWhoText').value,doList:doRaw,marketsSubtitle:document.getElementById('aboutMarketsSubtitle').value,markets:mktsRaw,videoUrl:document.getElementById('aboutVideoUrl').value};
-  localStorage.setItem('ag_about',JSON.stringify(a)); showToast('About Saved');
-}
-function resetAbout(){localStorage.removeItem('ag_about');loadAboutPage();showToast('About Reset');}
+function loadAbout(){ const a=ls('about',D_ABOUT); document.getElementById('aboutH').value=a.h||''; document.getElementById('aboutSub').value=a.sub||''; document.getElementById('aboutWho').value=a.whoText||''; document.getElementById('aboutDo').value=(a.doList||[]).join('\n'); document.getElementById('aboutMktSub').value=a.marketsSubtitle||''; document.getElementById('aboutMkts').value=(a.markets||[]).map(m=>m.isText?`${m.icon}|${m.label}|isText`:`${m.icon}|${m.label}`).join('\n'); document.getElementById('aboutVideo').value=a.videoUrl||''; }
+function saveAbout(){ const doList=document.getElementById('aboutDo').value.split('\n').filter(l=>l.trim()); const markets=document.getElementById('aboutMkts').value.split('\n').filter(l=>l.trim()).map(l=>{const p=l.split('|');return{icon:p[0],label:p[1]||p[0],isText:p[2]==='isText'};}); save('about',{h:document.getElementById('aboutH').value,sub:document.getElementById('aboutSub').value,whoText:document.getElementById('aboutWho').value,doList,marketsSubtitle:document.getElementById('aboutMktSub').value,markets,videoUrl:document.getElementById('aboutVideo').value}); toast('About Saved'); }
 
-/* ═══ NEWS & VIDEOS ═══ */
-const NEWS_DEF={dossierTitle:'Gold Dossier — Jackson Hole Week',dossierSub:'XAU/USD at $4,645 · Institutions crowded long · Full COT + DXY breakdown inside',dossierUrl:'gold-dossier.html',videos:[],latest:[{title:'Fed holds rates — dollar softens across majors',time:'2h ago · Forex',dir:'up'},{title:'BTC reclaims $68K — bulls eye $72K resistance',time:'3h ago · Crypto',dir:'up'}],analysis:[{title:'EUR/USD: Bullish structure holds above 1.0820',time:'1h ago · AG Analysis',dir:'up'},{title:'XAU/USD: Rejection at $2340 — short setup forming',time:'4h ago · AG Analysis',dir:'dn'}],sentiment:[{label:'Forex',pct:72,dir:'up'},{label:'Crypto',pct:81,dir:'up'},{label:'Gold',pct:38,dir:'dn'},{label:'Indices',pct:68,dir:'up'}]};
-let newsData=JSON.parse(localStorage.getItem('ag_news')||'null')||JSON.parse(JSON.stringify(NEWS_DEF));
-function loadNewsPage(){
-  document.getElementById('nDossierTitle').value=newsData.dossierTitle||'';
-  document.getElementById('nDossierSub').value=newsData.dossierSub||'';
-  document.getElementById('nDossierUrl').value=newsData.dossierUrl||'';
-  renderVideoList(); renderNewsItems('latest'); renderNewsItems('analysis'); renderSentiment();
-}
-function saveNewsMeta(){
-  newsData.dossierTitle=document.getElementById('nDossierTitle').value;
-  newsData.dossierSub=document.getElementById('nDossierSub').value;
-  newsData.dossierUrl=document.getElementById('nDossierUrl').value;
-  localStorage.setItem('ag_news',JSON.stringify(newsData)); showToast('Dossier Saved');
-}
-function addVideo(){
-  const label=document.getElementById('newVidLabel').value.trim(),url=document.getElementById('newVidUrl').value.trim();
-  if(!url){showToast('Enter Video URL','err');return;}
-  if(!newsData.videos) newsData.videos=[];
-  newsData.videos.push({label:label||'Video',url,hidden:false});
-  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderVideoList();
-  document.getElementById('newVidLabel').value=''; document.getElementById('newVidUrl').value='';
-  showToast('Video Added');
-}
-function renderVideoList(){
-  const el=document.getElementById('videoList'); if(!el)return;
-  el.innerHTML=(newsData.videos||[]).map((v,i)=>`
-    <div class="item-row ${v.hidden?'hidden-item':''}">
-      <div class="item-row-icon">🎬</div>
-      <div class="item-row-info"><div class="item-row-name">${v.label}</div><div class="item-row-sub">${v.url.slice(0,50)}...</div></div>
-      <div class="item-row-actions">
-        <span class="${v.hidden?'badge-hidden':'badge-live'}">${v.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="toggleVideoHide(${i})">${v.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="deleteVideo(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function toggleVideoHide(i){newsData.videos[i].hidden=!newsData.videos[i].hidden;localStorage.setItem('ag_news',JSON.stringify(newsData));renderVideoList();}
-function deleteVideo(i){newsData.videos.splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderVideoList();showToast('Deleted','err');}
-function addNewsItem(section){
-  const t=document.getElementById('new'+cap(section)+'Title').value.trim();
-  const time=document.getElementById('new'+cap(section)+'Time').value.trim();
-  const dir=faqNewsDir[section]||'up';
-  if(!t){showToast('Enter Headline','err');return;}
-  if(!newsData[section]) newsData[section]=[];
-  newsData[section].unshift({title:t,time:time||'Just now',dir});
-  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderNewsItems(section);
-  document.getElementById('new'+cap(section)+'Title').value=''; document.getElementById('new'+cap(section)+'Time').value='';
-  showToast('News Item Added');
-}
-function renderNewsItems(section){
-  const el=document.getElementById(section+'List'); if(!el)return;
-  el.innerHTML=(newsData[section]||[]).map((n,i)=>`
-    <div class="item-row" style="padding:10px 14px;">
-      <div class="item-row-icon" style="font-size:11px;width:16px;">${n.dir==='up'?'▲':'▼'}</div>
-      <div class="item-row-info"><div class="item-row-name" style="font-size:13px;">${n.title}</div><div class="item-row-sub">${n.time}</div></div>
-      <div class="item-row-actions"><button class="btn-icon" onclick="deleteNewsItem('${section}',${i})">🗑️</button></div>
-    </div>`).join('');
-}
-function deleteNewsItem(section,i){newsData[section].splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderNewsItems(section);showToast('Deleted','err');}
-function addSentiment(){
-  const label=document.getElementById('newSentLabel').value.trim(),pct=parseInt(document.getElementById('newSentPct').value)||50,dir=faqNewsDir['sent']||'up';
-  if(!label){showToast('Enter Market Label','err');return;}
-  if(!newsData.sentiment) newsData.sentiment=[];
-  newsData.sentiment.push({label,pct,dir});
-  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderSentiment();
-  document.getElementById('newSentLabel').value=''; document.getElementById('newSentPct').value='';
-  showToast('Sentiment Added');
-}
-function renderSentiment(){
-  const el=document.getElementById('sentimentList'); if(!el)return;
-  el.innerHTML=(newsData.sentiment||[]).map((s,i)=>`
-    <div class="item-row" style="padding:10px 14px;margin-bottom:6px;">
-      <div class="item-row-info"><div class="item-row-name" style="font-size:13px;">${s.label} — ${s.pct}% Bull (${s.dir})</div></div>
-      <div class="item-row-actions">
-        <button class="btn-icon" onclick="editSentiment(${i})">✏️</button>
-        <button class="btn-icon" onclick="deleteSentiment(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function editSentiment(i){
-  const s=newsData.sentiment[i];
-  const np=prompt('Bull % (0-100):',s.pct); if(np===null)return; s.pct=parseInt(np)||s.pct;
-  const nd=prompt('Direction (up/dn/neutral):',s.dir); if(nd===null)return; s.dir=nd;
-  localStorage.setItem('ag_news',JSON.stringify(newsData)); renderSentiment(); showToast('Updated');
-}
-function deleteSentiment(i){newsData.sentiment.splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderSentiment();showToast('Deleted','err');}
+/* ═══ NEWS ═══ */
+function loadNews(){ newsData=ls('news',D_NEWS); document.getElementById('nDossierTitle').value=newsData.dossierTitle||''; document.getElementById('nDossierSub').value=newsData.dossierSub||''; document.getElementById('nDossierUrl').value=newsData.dossierUrl||''; renderVideoList(); renderNewsItems('latest'); renderNewsItems('analysis'); renderSentiment(); }
+function saveDossier(){ newsData.dossierTitle=document.getElementById('nDossierTitle').value; newsData.dossierSub=document.getElementById('nDossierSub').value; newsData.dossierUrl=document.getElementById('nDossierUrl').value; save('news',newsData); toast('Dossier Saved'); }
+function addVideo(){ const label=document.getElementById('newVidLabel').value.trim(),url=document.getElementById('newVidUrl').value.trim(); if(!url){toast('Enter URL','err');return;} if(!newsData.videos)newsData.videos=[]; newsData.videos.push({label:label||'Video',url,hidden:false}); save('news',newsData); renderVideoList(); document.getElementById('newVidLabel').value='';document.getElementById('newVidUrl').value=''; toast('Video Added'); }
+function renderVideoList(){ const el=document.getElementById('videoList'); if(!el)return; el.innerHTML=(newsData.videos||[]).map((v,i)=>`<div class="item-row ${v.hidden?'hidden-item':''}"><div class="item-info"><div class="item-name">${v.label}</div><div class="item-sub">${v.url.slice(0,50)}</div></div><div class="item-actions"><span class="${v.hidden?'badge-hidden':'badge-live'}">${v.hidden?'Hidden':'Live'}</span><button class="btn-icon" onclick="toggleVideo(${i})">${v.hidden?'👁':'🙈'}</button><button class="btn-icon" onclick="delVideo(${i})">🗑️</button></div></div>`).join(''); }
+function toggleVideo(i){ newsData.videos[i].hidden=!newsData.videos[i].hidden; save('news',newsData); renderVideoList(); }
+function delVideo(i){ newsData.videos.splice(i,1); save('news',newsData); renderVideoList(); toast('Deleted','err'); }
+function addNewsItem(section){ const t=document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Title').value.trim(); const time=document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Time').value.trim(); const dir=dirState[section+'Dir']||'up'; if(!t){toast('Enter Headline','err');return;} if(!newsData[section])newsData[section]=[]; newsData[section].unshift({title:t,time:time||'Just Now',dir}); save('news',newsData); renderNewsItems(section); document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Title').value=''; document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Time').value=''; toast('Added'); }
+function renderNewsItems(section){ const el=document.getElementById(section+'List'); if(!el)return; el.innerHTML=(newsData[section]||[]).map((n,i)=>`<div class="item-row" style="padding:9px 14px;margin-bottom:5px;"><div class="item-info"><div class="item-name" style="font-size:13px;">${n.dir==='up'?'▲ ':'▼ '}${n.title}</div><div class="item-sub">${n.time}</div></div><div class="item-actions"><button class="btn-icon" onclick="delNewsItem('${section}',${i})">🗑️</button></div></div>`).join(''); }
+function delNewsItem(section,i){ newsData[section].splice(i,1); save('news',newsData); renderNewsItems(section); toast('Deleted','err'); }
+function addSentiment(){ const label=document.getElementById('newSentLabel').value.trim(),pct=parseInt(document.getElementById('newSentPct').value)||50,dir=dirState['sentDir']||'up'; if(!label){toast('Enter Label','err');return;} if(!newsData.sentiment)newsData.sentiment=[]; newsData.sentiment.push({label,pct,dir}); save('news',newsData); renderSentiment(); document.getElementById('newSentLabel').value='';document.getElementById('newSentPct').value=''; toast('Sentiment Added'); }
+function renderSentiment(){ const el=document.getElementById('sentimentList'); if(!el)return; el.innerHTML=(newsData.sentiment||[]).map((s,i)=>`<div class="item-row" style="padding:9px 14px;margin-bottom:5px;"><div class="item-info"><div class="item-name" style="font-size:13px;">${s.label} — ${s.pct}% Bull (${s.dir})</div></div><div class="item-actions"><button class="btn-icon" onclick="editSent(${i})">✏️</button><button class="btn-icon" onclick="delSent(${i})">🗑️</button></div></div>`).join(''); }
+function editSent(i){ const s=newsData.sentiment[i]; const np=prompt('Bull %:',s.pct); if(np===null)return; s.pct=parseInt(np)||s.pct; const nd=prompt('Direction (up/dn/neutral):',s.dir); if(nd===null)return; s.dir=nd; save('news',newsData); renderSentiment(); toast('Updated'); }
+function delSent(i){ newsData.sentiment.splice(i,1); save('news',newsData); renderSentiment(); toast('Deleted','err'); }
 
-/* ═══ EXTENDED showPage — handles dynamic tabs ═══ */
-function showPage(name, btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
-  if(name==='export') genExport();
-  if(name==='hero') loadHeroPage();
-  if(name==='ticker') renderTicker();
-  if(name==='contact') renderContact();
-  if(name==='faq') renderFaq();
-  if(name==='about') loadAboutPage();
-  if(name==='newsed') loadNewsPage();
+/* ═══ RESET ═══ */
+function resetSection(key){ if(!confirm('Reset To Default?'))return; localStorage.removeItem('ag_'+key); if(key==='hero')loadHero(); if(key==='about')loadAbout(); toast('Reset Done'); }
+
+/* ═══ EXPORT ═══ */
+function genExport(){
+  const el=document.getElementById('exportArea'); if(!el)return;
+  el.value=products.filter(p=>!p.hidden).map(p=>{
+    if(p.type==='page') return `<!-- ${p.name} -->\nonclick="window.location.href='${p.url}'"`;
+    return `<!-- ${p.name} -->\nonclick="openModal('${p.title.replace(/'/g,"\\'")}','${p.desc.replace(/'/g,"\\'")}','${p.icon}','','${p.cta.replace(/'/g,"\\'")}')"`; 
+  }).join('\n\n');
 }
+function copyExport(){ const ta=document.getElementById('exportArea'); if(!ta)return; ta.select(); navigator.clipboard.writeText(ta.value).then(()=>toast('Copied!')).catch(()=>{document.execCommand('copy');toast('Copied!');}); }
+
+/* ═══ PASSWORD ═══ */
+function setPassword(){ const nw=document.getElementById('pwNew').value, cf=document.getElementById('pwConfirm').value, msg=document.getElementById('pwMsg'); if(nw.length<8){msg.style.color='var(--red)';msg.textContent='Min 8 Characters.';return;} if(nw!==cf){msg.style.color='var(--red)';msg.textContent='Passwords Do Not Match.';return;} msg.style.color='var(--green)';msg.textContent='Password Set! To Enforce It, Add A Login Check Back To The admin.html File.'; }
 
 /* ═══ ESC ═══ */
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeProdEditor(); closeIndEditor(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); } });
+
+/* ═══ INIT ═══ */
+window.addEventListener('DOMContentLoaded', ()=>{ renderProds(); });
 </script>
 </body>
 </html>
-<!-- This file is complete — appending is not needed, full rewrite below -->

@@ -164,14 +164,9 @@ select.inp{cursor:pointer;}
     <label class="login-label">Password</label>
     <input class="login-inp" id="pwInput" type="password" placeholder="Enter Admin Password" onkeydown="if(event.key==='Enter')doLogin()">
     <div class="terms-box">
-      <p><strong>Terms & Conditions — Admin Access</strong><br><br>
-      By accessing this panel you confirm: (1) You are an <strong>authorised representative</strong> of AG Technicals. (2) All edits affect <strong>live site content</strong>. (3) Credentials must not be shared. (4) AG Technicals may revoke access at any time. (5) Misuse may result in legal action.</p>
+      <p><strong>Terms & Conditions</strong></p>
     </div>
-    <label class="terms-check">
-      <input type="checkbox" id="termsCheck" onchange="document.getElementById('loginBtn').disabled=!this.checked">
-      <span>I Accept The <a href="#">Terms & Conditions</a> — I Am An Authorised Admin.</span>
-    </label>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()" disabled>Access Panel →</button>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Access Panel →</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>

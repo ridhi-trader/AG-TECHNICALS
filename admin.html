@@ -179,10 +179,10 @@ select.inp{cursor:pointer;}
 <!-- LAYOUT -->
 <!-- SUB-ITEM EDITOR OVERLAY -->
 <div class="overlay" id="subItemOverlay" onclick="if(event.target===this)closeSubItemEd()">
-  <div class="editor-modal" style="max-width:480px;">
-    <div class="modal-hdr">
-      <div class="modal-hdr-title" id="subEdTitle">Edit Item</div>
-      <button class="modal-close-btn" onclick="closeSubItemEd()">✕</button>
+  <div class="editor-box" style="max-width:480px;">
+    <div class="ed-hdr">
+      <div class="ed-title" id="subEdTitle">Edit Item</div>
+      <button class="ed-close" onclick="closeSubItemEd()">✕</button>
     </div>
     <div class="field"><label class="label">Item Name</label><input class="inp" id="siName" placeholder="e.g. SMC Algo Gold"></div>
     <div class="field"><label class="label">ID / PID</label><input class="inp" id="siPid" placeholder="e.g. ALG-0001"></div>
@@ -192,8 +192,8 @@ select.inp{cursor:pointer;}
     <div class="field"><label class="label">WhatsApp Number</label><input class="inp" id="siWa" placeholder="919876543210"></div>
     <div class="field"><label class="label">Badge</label><input class="inp" id="siBadge" placeholder="e.g. PREMIUM"></div>
     <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="btn-save" onclick="saveSubItemEd()">Save</button>
-      <button class="btn-outline" onclick="closeSubItemEd()">Cancel</button>
+      <button class="btn-gold" onclick="saveSubItemEd()">Save Changes</button>
+      <button class="btn-out" onclick="closeSubItemEd()">Cancel</button>
     </div>
   </div>
 </div>
@@ -541,48 +541,48 @@ function renderProdStats(){
   const el=document.getElementById('prodStats'); if(!el) return;
   el.innerHTML=`<div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div><div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div><div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users</div></div>`;
 }
-function renderProds(){\
-  renderProdStats();\
-  const el=document.getElementById('prodList'); if(!el) return;\
-  el.innerHTML=products.map((p,i)=>{\
-    const itemCount=(p.items||[]).length;\
-    const liveCount=(p.items||[]).filter(it=>!it.hidden).length;\
-    return `\
-    <div style="margin-bottom:8px;">\
-      <div class="item-row ${p.hidden?'hidden-item':''}" style="border-radius:${itemCount?'12px 12px 0 0':'12px'}">\
-        <div class="item-icon">${p.icon}</div>\
-        <div class="item-info"><div class="item-name">${p.name}</div><div class="item-sub">${p.sub}</div></div>\
-        <div class="item-actions">\
-          ${itemCount?`<span style="background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);color:var(--g5);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">${liveCount}/${itemCount} Items</span>`:''}\ 
-          <button class="btn-icon" onclick="openProdEd(${i})" title="Edit">✏️</button>\
-          <button class="btn-icon" onclick="toggleProd(${i})">${p.hidden?'👁':'🙈'}</button>\
-          <button class="btn-icon" onclick="delProd(${i})">🗑️</button>\
-        </div>\
-      </div>\
-      <div style="background:#0f0d14;border:1px solid #2a2736;border-top:none;border-radius:0 0 12px 12px;padding:14px 16px;">\
-        <div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📦 Sub-Items (Shown Inside This Product)</div>\
-        <div id="subitems_${i}" style="margin-bottom:10px;">\
-          ${(p.items||[]).map((it,j)=>`\
-            <div class="item-row ${it.hidden?'hidden-item':''}" style="margin-bottom:6px;padding:10px 14px;">\
-              <div class="item-icon" style="font-size:14px;">${it.img?'🖼':'📄'}</div>\
-              <div class="item-info"><div class="item-name" style="font-size:13px;">${it.name}</div><div class="item-sub">${it.pid||''} ${it.badge?'· '+it.badge:''}</div></div>\
-              <div class="item-actions">\
-                <span class="${it.hidden?'badge-hidden':'badge-live'}">${it.hidden?'Hidden':'Live'}</span>\
-                <button class="btn-icon" onclick="openSubItemEd(${i},${j})">✏️</button>\
-                <button class="btn-icon" onclick="toggleSubItem(${i},${j})">${it.hidden?'👁':'🙈'}</button>\
-                <button class="btn-icon" onclick="delSubItem(${i},${j})">🗑️</button>\
-              </div>\
-            </div>`).join('')}\
-        </div>\
-        <div style="display:flex;gap:8px;align-items:center;">\
-          <input class="inp" id="newSub_name_${i}" placeholder="Item Name" style="flex:1;padding:8px 12px;font-size:12px;">\
-          <input class="inp" id="newSub_pid_${i}" placeholder="ID/PID" style="width:100px;padding:8px 12px;font-size:12px;">\
-          <input class="inp" id="newSub_badge_${i}" placeholder="Badge" style="width:90px;padding:8px 12px;font-size:12px;">\
-          <button class="btn-save" style="padding:8px 16px;font-size:12px;white-space:nowrap;" onclick="addSubItem(${i})">+ Add</button>\
-        </div>\
-      </div>\
-    </div>`;\
-  }).join('');\
+function renderProds(){
+  renderProdStats();
+  const el=document.getElementById('prodList'); if(!el) return;
+  el.innerHTML=products.map(function(p,i){
+    const itemCount=(p.items||[]).length;
+    const liveCount=(p.items||[]).filter(function(it){return !it.hidden;}).length;
+    const itemBadge=itemCount?'<span style="background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);color:var(--g5);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">'+liveCount+'/'+itemCount+' Items</span>':'';
+    const subRows=(p.items||[]).map(function(it,j){
+      return '<div class="item-row '+(it.hidden?'hidden-item':'')+'" style="margin-bottom:6px;padding:10px 14px;">'+
+        '<div class="item-icon" style="font-size:14px;">'+(it.img?'🖼':'📄')+'</div>'+
+        '<div class="item-info"><div class="item-name" style="font-size:13px;">'+it.name+'</div><div class="item-sub">'+(it.pid||'')+' '+(it.badge?'· '+it.badge:'')+'</div></div>'+
+        '<div class="item-actions">'+
+          '<span class="'+(it.hidden?'badge-hidden':'badge-live')+'">'+(it.hidden?'Hidden':'Live')+'</span>'+
+          '<button class="btn-icon" onclick="openSubItemEd('+i+','+j+')">✏️</button>'+
+          '<button class="btn-icon" onclick="toggleSubItem('+i+','+j+')">'+(it.hidden?'👁':'🙈')+'</button>'+
+          '<button class="btn-icon" onclick="delSubItem('+i+','+j+')">🗑️</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    return '<div style="margin-bottom:8px;">'+
+      '<div class="item-row '+(p.hidden?'hidden-item':'')+'" style="border-radius:'+(itemCount?'12px 12px 0 0':'12px')+'">'+
+        '<div class="item-icon">'+p.icon+'</div>'+
+        '<div class="item-info"><div class="item-name">'+p.name+'</div><div class="item-sub">'+p.sub+'</div></div>'+
+        '<div class="item-actions">'+
+          itemBadge+
+          '<button class="btn-icon" onclick="openProdEd('+i+')" title="Edit">✏️</button>'+
+          '<button class="btn-icon" onclick="toggleProd('+i+')">'+(p.hidden?'👁':'🙈')+'</button>'+
+          '<button class="btn-icon" onclick="delProd('+i+')">🗑️</button>'+
+        '</div>'+
+      '</div>'+
+      '<div style="background:#0f0d14;border:1px solid #2a2736;border-top:none;border-radius:0 0 12px 12px;padding:14px 16px;">'+
+        '<div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📦 Sub-Items (Shown Inside This Product)</div>'+
+        '<div id="subitems_'+i+'" style="margin-bottom:10px;">'+subRows+'</div>'+
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'+
+          '<input class="inp" id="newSub_name_'+i+'" placeholder="Item Name" style="flex:1;min-width:120px;padding:8px 12px;font-size:12px;">'+
+          '<input class="inp" id="newSub_pid_'+i+'" placeholder="ID/PID" style="width:100px;padding:8px 12px;font-size:12px;">'+
+          '<input class="inp" id="newSub_badge_'+i+'" placeholder="Badge" style="width:90px;padding:8px 12px;font-size:12px;">'+
+          '<button class="btn-gold" style="padding:8px 16px;font-size:12px;white-space:nowrap;" onclick="addSubItem('+i+')">+ Add</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
 function addProduct(){
   const name=document.getElementById('newProdName').value.trim();

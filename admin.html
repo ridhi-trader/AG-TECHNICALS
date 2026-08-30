@@ -562,10 +562,10 @@ let editIndIdx  = -1;
 let prodLinkType = 'modal';
 
 /* ═══ LOGIN ═══ */
-function doLogin(){
-  try{ init(); } catch(e){ console.error('init error:',e); }
-}
-window.addEventListener('DOMContentLoaded',()=>{ try{ init(); } catch(e){ console.error(e); } });
+function doLogin(){ /* no-op, panel already visible */ }
+window.addEventListener('DOMContentLoaded', function(){
+  try{ init(); } catch(e){ console.error('Admin init error:',e); }
+});
 function doLogout(){
   document.getElementById('adminPanel').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
@@ -598,8 +598,9 @@ function saveUsers(){ localStorage.setItem('ag_users',      JSON.stringify(users
 
 /* ═══ PRODUCTS ═══ */
 function renderProductStats(){
+  const el=document.getElementById('prodStats'); if(!el) return;
   const live=products.filter(p=>!p.hidden).length, hid=products.filter(p=>p.hidden).length;
-  document.getElementById('prodStats').innerHTML=`
+  el.innerHTML=`
     <div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div>
     <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div>
     <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div>
@@ -607,7 +608,8 @@ function renderProductStats(){
 }
 
 function renderProducts(){
-  document.getElementById('prodList').innerHTML = products.map((p,i)=>`
+  const el=document.getElementById('prodList'); if(!el) return;
+  el.innerHTML = products.map((p,i)=>`
     <div class="item-row ${p.hidden?'hidden-item':''}">
       <div class="item-row-icon">${p.icon}</div>
       <div class="item-row-info">
@@ -689,7 +691,8 @@ function updatePePreview(){
 /* ═══ INDICATORS ═══ */
 function renderIndStats(){
   const live=indicators.filter(i=>!i.hidden).length, hid=indicators.filter(i=>i.hidden).length;
-  document.getElementById('indStats').innerHTML=`
+  const el=document.getElementById('indStats'); if(!el) return;
+  el.innerHTML=`
     <div class="stat-box"><div class="stat-val">${indicators.length}</div><div class="stat-label">Total</div></div>
     <div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div>
     <div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div>
@@ -697,7 +700,8 @@ function renderIndStats(){
 }
 
 function renderIndicators(){
-  document.getElementById('indList').innerHTML = indicators.map((ind,i)=>`
+  const iel=document.getElementById('indList'); if(!iel) return;
+  iel.innerHTML = indicators.map((ind,i)=>`
     <div class="item-row ${ind.hidden?'hidden-item':''}">
       <div class="item-row-icon">📊</div>
       <div class="item-row-info">

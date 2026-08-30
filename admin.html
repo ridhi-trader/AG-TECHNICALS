@@ -836,14 +836,6 @@ function changePassword(){
 }
 
 /* ═══ PAGE NAV ═══ */
-function showPage(name,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
-  if(name==='export') genExport();
-}
-
 
 /* ═══ HERO ═══ */
 const HERO_DEF = {badge:'Live Market Intelligence — 24/7',h1:'No Prediction.<br><span class="g">Follow Price Action.</span>',sub:'AG Technicals delivers institutional-grade analysis, live signals, and real-time charts — everything you need to trade Forex, Crypto, Indices, and Commodities with confidence.',btnText:'Join The Community →',videoUrl:''};
@@ -1077,24 +1069,20 @@ function editSentiment(i){
 }
 function deleteSentiment(i){newsData.sentiment.splice(i,1);localStorage.setItem('ag_news',JSON.stringify(newsData));renderSentiment();showToast('Deleted','err');}
 
-/* ═══ PATCH showPage to load dynamic pages ═══ */
-const _origShowPage = showPage;
-showPage = function(name, btn){
-  _origShowPage(name, btn);
+/* ═══ EXTENDED showPage — handles dynamic tabs ═══ */
+function showPage(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='export') genExport();
   if(name==='hero') loadHeroPage();
   if(name==='ticker') renderTicker();
   if(name==='contact') renderContact();
   if(name==='faq') renderFaq();
   if(name==='about') loadAboutPage();
   if(name==='newsed') loadNewsPage();
-};
-
-/* ═══ PATCH init ═══ */
-const _origInit = init;
-init = function(){
-  _origInit();
-  renderTicker(); renderContact(); renderFaq();
-};
+}
 
 /* ═══ ESC ═══ */
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeProdEditor(); closeIndEditor(); } });

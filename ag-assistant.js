@@ -272,4 +272,14 @@ RULES — STRICTLY FOLLOW:
     }
   }, 8000);
 
+  // Keep backend warm - ping every 4 min so free instance doesn't sleep
+  setInterval(()=>{
+    fetch('https://ag-assistant-api.onrender.com/',{method:'GET'}).catch(()=>{});
+  }, 4 * 60 * 1000);
+
+  // Immediate warm-up ping on page load
+  setTimeout(()=>{
+    fetch('https://ag-assistant-api.onrender.com/',{method:'GET'}).catch(()=>{});
+  }, 2000);
+
 })();

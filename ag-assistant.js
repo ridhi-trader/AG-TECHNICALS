@@ -218,11 +218,15 @@ RULES — STRICTLY FOLLOW:
       const typingEl = this._addMsg('Typing...', 'bot typing');
 
       try{
+        const controller = new AbortController();
+        const timeout = setTimeout(()=>controller.abort(), 60000);
         const res = await fetch('https://ag-assistant-api.onrender.com/api/chat',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ messages: this.msgs })
+          body: JSON.stringify({ messages: this.msgs }),
+          signal: controller.signal
         });
+        clearTimeout(timeout);
         const data = await res.json();
         const reply = data.reply || 'Sorry, kuch problem ho gayi. Dobara try karo ya WhatsApp karo: wa.me/919876543210';
         typingEl.innerHTML = reply.replace(/\n/g,'<br>');

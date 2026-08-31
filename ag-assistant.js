@@ -218,7 +218,7 @@ RULES — STRICTLY FOLLOW:
       const typingEl = this._addMsg('Typing...', 'bot typing');
 
       try{
-        const res = await fetch('https://ag-chat-box.onrender.com/api/ai-chat',{
+        const res = await fetch('https://ag-assistant-api.onrender.com/api/chat',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ messages: this.msgs })

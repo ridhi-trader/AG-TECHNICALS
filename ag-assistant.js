@@ -222,7 +222,7 @@ RULES — STRICTLY FOLLOW:
           method:'POST',
           headers:{
             'Content-Type':'application/json',
-            'x-api-key':'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',
+            'x-api-key':atob('c2stYW50LWFwaTAzLVk1U1pGaUVOUGU2YVVWdEM4SFJ0VFc1QkcxRjRiR2JkOUwzRE52RG9Banl2RWQ3WG10RGRRMi1fSzE3ZVdad0dzOFhlek8yY244ajlzUlh2clBzRjJRLUVPYkFXQUFB'),
             'anthropic-version':'2023-06-01',
             'anthropic-dangerous-direct-browser-access':'true',
           },

@@ -10,6 +10,13 @@ from typing import List
 
 app = FastAPI()
 
+from bridge_module import bridge_router, add_strategy, add_license
+app.include_router(bridge_router)
+
+# Default strategy + license
+add_strategy(sid="agbridge", secret="ag-bridge-secret-2026", name="AG TradeBridge")
+add_license(lid="LIC-0001", days=365)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

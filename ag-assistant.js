@@ -218,23 +218,13 @@ RULES — STRICTLY FOLLOW:
       const typingEl = this._addMsg('Typing...', 'bot typing');
 
       try{
-        const res = await fetch('https://api.anthropic.com/v1/messages',{
+        const res = await fetch('https://ag-chat-box.onrender.com/api/ai-chat',{
           method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'x-api-key':atob('c2stYW50LWFwaTAzLVk1U1pGaUVOUGU2YVVWdEM4SFJ0VFc1QkcxRjRiR2JkOUwzRE52RG9Banl2RWQ3WG10RGRRMi1fSzE3ZVdad0dzOFhlek8yY244ajlzUlh2clBzRjJRLUVPYkFXQUFB'),
-            'anthropic-version':'2023-06-01',
-            'anthropic-dangerous-direct-browser-access':'true',
-          },
-          body: JSON.stringify({
-            model:'claude-sonnet-4-6',
-            max_tokens:1000,
-            system: SYSTEM,
-            messages: this.msgs
-          })
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ messages: this.msgs })
         });
         const data = await res.json();
-        const reply = (data.content && data.content[0]) ? data.content[0].text : 'Sorry, kuch problem ho gayi. Dobara try karo ya WhatsApp karo: wa.me/919876543210';
+        const reply = data.reply || 'Sorry, kuch problem ho gayi. Dobara try karo ya WhatsApp karo: wa.me/919876543210';
         typingEl.innerHTML = reply.replace(/\n/g,'<br>');
         typingEl.classList.remove('typing');
         this.msgs.push({role:'assistant', content: reply});

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Education — AG Technicals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=css" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0f; --card:#141318; --d2:#121114;
+  --g5:#e8b84b; --g4:#c9960c;
+  --t1:#ffffff; --t2:#c8c4d0; --t3:#a0a0b8;
+  --border:#2a2736; --red:#f26d6d;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--g5);text-decoration:none;letter-spacing:1px;}
+.nav-back{display:flex;align-items:center;gap:8px;color:var(--t3);font-size:13px;text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--g5);}
+.nav-back svg{width:16px;height:16px;}
+
+/* HERO */
+.hero{text-align:center;padding:80px 24px 48px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(232,184,75,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:28px;}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--g5);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:700;line-height:1.1;margin-bottom:20px;}
+.hero h1 span{color:var(--g5);}
+.hero p{font-size:17px;color:var(--t3);max-width:520px;margin:0 auto;line-height:1.7;}
+
+/* COURSES */
+.courses-section{max-width:860px;margin:0 auto;padding:20px 24px 80px;}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:20px;}
+
+.course-card{
+  display:flex;align-items:center;gap:24px;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px 32px;margin-bottom:20px;
+  transition:border-color .2s,transform .2s;cursor:pointer;text-decoration:none;
+  position:relative;overflow:hidden;
+}
+.course-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(232,184,75,0.04) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.course-card:hover{border-color:rgba(232,184,75,0.4);transform:translateY(-2px);}
+.course-card:hover::before{opacity:1;}
+
+.course-card.smc{background:linear-gradient(135deg,#141318 0%,#1a1520 100%);}
+.course-card.smc:hover{border-color:rgba(232,184,75,0.5);}
+
+.course-icon{font-size:36px;flex-shrink:0;width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:rgba(232,184,75,0.08);border-radius:14px;border:1px solid rgba(232,184,75,0.15);}
+.course-meta{flex:1;}
+.course-tags{display:flex;gap:8px;margin-bottom:10px;}
+.tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);}
+.tag.gold{color:var(--g5);}
+.tag-dot{color:var(--t3);font-size:10px;}
+.course-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--t1);margin-bottom:8px;}
+.course-desc{font-size:14px;color:var(--t3);line-height:1.6;max-width:580px;}
+.course-btn{
+  flex-shrink:0;background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);
+  color:var(--g5);font-size:14px;font-weight:600;padding:12px 24px;border-radius:10px;
+  white-space:nowrap;transition:all .2s;font-family:'Space Grotesk',sans-serif;
+}
+.course-card:hover .course-btn{background:var(--g5);color:#0d0d0f;}
+.course-card.smc .course-btn{background:rgba(232,184,75,0.15);border-color:rgba(232,184,75,0.4);}
+
+/* AI ASSISTANT */
+#ai-bubble{
+  position:fixed;bottom:28px;right:28px;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g4),var(--g5));
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:22px;box-shadow:0 4px 20px rgba(232,184,75,0.4);
+  z-index:999;transition:transform .2s,box-shadow .2s;
+}
+#ai-bubble:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(232,184,75,0.55);}
+
+#ai-panel{
+  position:fixed;bottom:96px;right:28px;
+  width:360px;max-height:520px;
+  background:#16141c;border:1px solid var(--border);border-radius:18px;
+  display:none;flex-direction:column;z-index:998;
+  box-shadow:0 16px 48px rgba(0,0,0,0.6);overflow:hidden;
+}
+#ai-panel.open{display:flex;}
+
+.ai-hdr{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 18px;border-bottom:1px solid var(--border);
+  background:#1a1724;
+}
+.ai-hdr-icon{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g4),var(--g5));display:flex;align-items:center;justify-content:center;font-size:16px;}
+.ai-hdr-text{flex:1;}
+.ai-hdr-name{font-weight:700;font-size:14px;color:var(--t1);}
+.ai-hdr-sub{font-size:11px;color:var(--t3);}
+.ai-close{background:none;border:none;color:var(--t3);font-size:18px;cursor:pointer;padding:4px;line-height:1;}
+.ai-close:hover{color:var(--t1);}
+
+#ai-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:200px;}
+#ai-msgs::-webkit-scrollbar{width:4px;}
+#ai-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+.msg{max-width:85%;font-size:13.5px;line-height:1.55;padding:10px 14px;border-radius:12px;word-break:break-word;}
+.msg.bot{background:#211f2d;color:var(--t2);border-radius:12px 12px 12px 2px;align-self:flex-start;}
+.msg.user{background:linear-gradient(135deg,rgba(232,184,75,0.2),rgba(201,150,12,0.15));color:var(--t1);border:1px solid rgba(232,184,75,0.2);border-radius:12px 12px 2px 12px;align-self:flex-end;}
+.msg.typing{color:var(--t3);font-style:italic;}
+
+.ai-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:#1a1724;}
+#ai-input{
+  flex:1;background:#0d0d0f;border:1px solid var(--border);border-radius:10px;
+  color:var(--t1);font-size:13px;padding:10px 14px;outline:none;font-family:'Inter',sans-serif;
+  resize:none;
+}
+#ai-input:focus{border-color:rgba(232,184,75,0.4);}
+#ai-input::placeholder{color:var(--t3);}
+#ai-send{
+  width:38px;height:38px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--g4),var(--g5));
+  color:#0d0d0f;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:opacity .2s;align-self:flex-end;
+}
+#ai-send:hover{opacity:.85;}
+#ai-send:disabled{opacity:.4;cursor:not-allowed;}
+
+@media(max-width:640px){
+  nav{padding:14px 20px;}
+  .hero{padding:48px 20px 32px;}
+  .courses-section{padding:10px 16px 60px;}
+  .course-card{flex-direction:column;align-items:flex-start;padding:22px 20px;}
+  .course-btn{width:100%;text-align:center;}
+  #ai-panel{width:calc(100vw - 40px);right:20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">AG Technicals</a>
+  <a href="index.html" class="nav-back">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+    Back To Site
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge"><span class="hero-badge-dot"></span>Learn</div>
+  <h1>How <span>All Of This</span> Works</h1>
+  <p>Start At The Top If You're New. Each Part Stands On Its Own.</p>
+</div>
+
+<div class="courses-section">
+  <div class="section-label">Our Courses</div>
+
+  <a class="course-card" href="education-foundation.html">
+    <div class="course-icon">🎓</div>
+    <div class="course-meta">
+      <div class="course-tags">
+        <span class="tag">Start Here</span>
+        <span class="tag-dot">·</span>
+        <span class="tag">Beginner</span>
+      </div>
+      <div class="course-title">Basic To Pro</div>
+      <div class="course-desc">Financial Markets, Pips & Lots, Leverage, Margin, Orders, Stop Loss, Risk, Candlesticks And More — Everything A Beginner Needs. Hindi & English.</div>
+    </div>
+    <div class="course-btn">Open Course →</div>
+  </a>
+
+  <a class="course-card smc" href="education-smc.html">
+    <div class="course-icon">📚</div>
+    <div class="course-meta">
+      <div class="course-tags">
+        <span class="tag gold">Advanced</span>
+        <span class="tag-dot">·</span>
+        <span class="tag gold">SMC</span>
+      </div>
+      <div class="course-title">Smart Money Concepts — Complete Course</div>
+      <div class="course-desc">17 Chapters On Market Structure, Order Blocks, Liquidity, FVG And More — In Hindi & English, With Diagrams. First Chapters Free.</div>
+    </div>
+    <div class="course-btn">Open Course →</div>
+  </a>
+</div>
+
+<!-- AI ASSISTANT -->
+<button id="ai-bubble" onclick="toggleAI()" title="Ask AG Assistant">🤖</button>
+
+<div id="ai-panel">
+  <div class="ai-hdr">
+    <div class="ai-hdr-icon">⚡</div>
+    <div class="ai-hdr-text">
+      <div class="ai-hdr-name">AG Assistant</div>
+      <div class="ai-hdr-sub">Ask Anything About Trading</div>
+    </div>
+    <button class="ai-close" onclick="toggleAI()">✕</button>
+  </div>
+  <div id="ai-msgs">
+    <div class="msg bot">Namaste! 👋 Main AG Assistant hun. Trading, markets, ya courses ke baare mein kuch bhi pucho — main help karunga!</div>
+  </div>
+  <div class="ai-input-row">
+    <textarea id="ai-input" rows="1" placeholder="Kuch bhi pucho..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+    <button id="ai-send" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<script>
+function toggleAI(){
+  const p=document.getElementById('ai-panel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) document.getElementById('ai-input').focus();
+}
+
+const msgs=[];
+
+async function sendMsg(){
+  const inp=document.getElementById('ai-input');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  inp.value=''; inp.style.height='auto';
+
+  addMsg(txt,'user');
+  msgs.push({role:'user',content:txt});
+
+  const send=document.getElementById('ai-send');
+  send.disabled=true;
+  const typingEl=addMsg('Typing...','bot typing');
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system:'You are AG Assistant — a helpful trading education assistant for AG Technicals, a professional trading analysis platform. Answer questions about trading, markets, SMC (Smart Money Concepts), technical analysis, forex, crypto, indices, etc. Be concise, friendly, and use simple language. You can answer in Hinglish (Hindi + English mix) if the user writes in Hindi or Hinglish. Keep responses under 200 words unless the topic needs more detail. Always stay on topic — trading, finance, markets, chart analysis, and AG Technicals courses.',
+        messages:msgs
+      })
+    });
+    const data=await res.json();
+    const reply=data.content&&data.content[0]?data.content[0].text:'Sorry, kuch problem ho gaya. Dobara try karo.';
+    typingEl.textContent=reply;
+    typingEl.classList.remove('typing');
+    msgs.push({role:'assistant',content:reply});
+  }catch(e){
+    typingEl.textContent='Network error. Please try again.';
+    typingEl.classList.remove('typing');
+  }
+  send.disabled=false;
+  document.getElementById('ai-msgs').scrollTop=99999;
+}
+
+function addMsg(text,cls){
+  const el=document.createElement('div');
+  el.className='msg '+cls;
+  el.textContent=text;
+  const box=document.getElementById('ai-msgs');
+  box.appendChild(el);
+  box.scrollTop=99999;
+  return el;
+}
+
+// Auto-resize textarea
+document.getElementById('ai-input').addEventListener('input',function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,100)+'px';
+});
+</script>
+</body>
+</html>

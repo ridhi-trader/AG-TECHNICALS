@@ -13,8 +13,17 @@ app = FastAPI()
 from bridge_module import bridge_router, add_strategy, add_license
 app.include_router(bridge_router)
 
-from video_module import video_router
+from video_module import video_router, add_video
 app.include_router(video_router)
+
+# EA Demo Videos
+import os as _os
+_base = _os.path.dirname(_os.path.abspath(__file__))
+add_video("smc_ea",       _os.path.join(_base, "SMC_EA_demo.mp4"))
+add_video("orderflow_ea", _os.path.join(_base, "AG_OrderFlow_EA_demo.mp4"))
+add_video("grid3_ea",     _os.path.join(_base, "AG_3LOGIC_GRID_EA_demo.mp4"))
+add_video("atr_ea",       _os.path.join(_base, "AG_ATR_GRID_EA_demo.mp4"))
+add_video("swing_ea",     _os.path.join(_base, "AG_SWING_EMA_RR_EA_demo.mp4"))
 
 # Default strategy + license
 add_strategy(sid="agbridge", secret="ag-bridge-secret-2026", name="AG TradeBridge")

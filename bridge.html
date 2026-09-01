@@ -214,69 +214,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     </div>
   </div>
 
-  <!-- SETUP GUIDE -->
-  <div class="sec-eyebrow">Setup Guide</div>
-  <div class="sec-title">Go Live In <span>Minutes</span></div>
-
-  <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:56px;">
-
-    <div class="step-card">
-      <div class="step-num">01</div>
-      <div class="step-title">TradingView — Webhook URL</div>
-      <div class="step-desc">In your TradingView alert, set <strong>Webhook URL</strong> to:</div>
-      <div style="margin-top:12px;background:#0d0d0f;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e8b84b;word-break:break-all;">https://ag-assistant-api.onrender.com/master/agbridge</div>
-    </div>
-
-    <div class="step-card">
-      <div class="step-num">02</div>
-      <div class="step-title">TradingView — Alert Message (JSON)</div>
-      <div class="step-desc">In the alert's <strong>Message</strong> box, paste this JSON exactly:</div>
-      <pre style="margin-top:12px;background:#0d0d0f;border:1px solid #2a2736;border-radius:10px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#c8c4d0;overflow-x:auto;">{
-  "secret": "ag-bridge-secret-2026",
-  "action": "buy",
-  "symbol": "XAUUSD",
-  "price": {{close}},
-  "swing_price": {{plot("Swing")}}
-}</pre>
-      <div style="margin-top:10px;font-size:12px;color:var(--t3);">&#x2022; <code style="color:var(--g5);">action</code> must be <code style="color:var(--g5);">buy</code> or <code style="color:var(--g5);">sell</code><br>&#x2022; <code style="color:var(--g5);">swing_price</code> is optional — remove if not used</div>
-    </div>
-
-    <div class="step-card">
-      <div class="step-num">03</div>
-      <div class="step-title">MT5 — Allow WebRequest</div>
-      <div class="step-desc">In MetaTrader 5: <strong>Tools → Options → Expert Advisors</strong> → check <em>"Allow WebRequest for listed URL"</em> → add:</div>
-      <div style="margin-top:12px;background:#0d0d0f;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#e8b84b;">https://ag-assistant-api.onrender.com</div>
-      <div style="margin-top:8px;font-size:12px;color:var(--t3);">Domain only — no path. MT5 blocks the EA from calling out otherwise.</div>
-    </div>
-
-    <div class="step-card">
-      <div class="step-num">04</div>
-      <div class="step-title">MT5 — EA Inputs</div>
-      <div class="step-desc">Enter these values in the EA's input settings:</div>
-      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div style="background:#0d0d0f;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;">
-          <div style="font-size:10px;color:var(--t3);margin-bottom:4px;font-family:'JetBrains Mono',monospace;">LICENSE ID</div>
-          <div style="font-size:13px;color:var(--g5);font-family:'JetBrains Mono',monospace;">LIC-0001</div>
-        </div>
-        <div style="background:#0d0d0f;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;">
-          <div style="font-size:10px;color:var(--t3);margin-bottom:4px;font-family:'JetBrains Mono',monospace;">SERVER URL</div>
-          <div style="font-size:12px;color:var(--g5);font-family:'JetBrains Mono',monospace;">ag-assistant-api.onrender.com</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="step-card" style="border-color:rgba(232,184,75,0.25);">
-      <div class="step-num" style="background:rgba(232,184,75,0.15);">✓</div>
-      <div class="step-title">Pre-Live Checklist</div>
-      <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;gap:10px;font-size:13px;color:var(--t2);align-items:flex-start;"><span style="color:var(--g5);margin-top:1px;">■</span><span>Webhook URL set in TradingView alert</span></div>
-        <div style="display:flex;gap:10px;font-size:13px;color:var(--t2);align-items:flex-start;"><span style="color:var(--g5);margin-top:1px;">■</span><span>JSON message with correct <code style="color:var(--g5);">secret</code>, <code style="color:var(--g5);">action</code>, <code style="color:var(--g5);">symbol</code></span></div>
-        <div style="display:flex;gap:10px;font-size:13px;color:var(--t2);align-items:flex-start;"><span style="color:var(--g5);margin-top:1px;">■</span><span>MT5 WebRequest URL added in Options</span></div>
-        <div style="display:flex;gap:10px;font-size:13px;color:var(--t2);align-items:flex-start;"><span style="color:var(--g5);margin-top:1px;">■</span><span>License ID and Server URL entered in EA inputs</span></div>
-        <div style="display:flex;gap:10px;font-size:13px;color:var(--t2);align-items:flex-start;"><span style="color:var(--g5);margin-top:1px;">■</span><span>EA attached and AutoTrading enabled in MT5</span></div>
-      </div>
-    </div>
-
+  <!-- GUIDE LINK -->
+  <div style="text-align:center;margin-bottom:56px;">
+    <a href="bridge-guide.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(232,184,75,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(232,184,75,0.08)'" onmouseout="this.style.background='var(--card)'">
+      📋 View Full Setup Guide →
+    </a>
+    <div style="margin-top:12px;font-size:13px;color:var(--t3);">Step-by-step: TradingView alert → MT5 EA setup, inputs, checklist</div>
   </div>
 
   <!-- CTA -->

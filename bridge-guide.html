@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge Setup Guide — AG Technicals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0f;--card:#141318;--panel2:#1a1724;
+  --g5:#e8b84b;--g4:#c9960c;
+  --t1:#ffffff;--t2:#c8c4d0;--t3:#a0a0b8;
+  --border:#2a2736;--green:#4ade80;--violet:#8b7cf0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+a{text-decoration:none;color:inherit;}
+code{font-family:'JetBrains Mono',monospace;font-size:0.9em;color:var(--g5);}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(13,13,15,0.92);backdrop-filter:blur(14px);z-index:50;}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--g5);letter-spacing:1px;}
+.nav-back{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3);transition:color .2s;}
+.nav-back:hover{color:var(--g5);}
+
+.hero{padding:56px 24px 40px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(232,184,75,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:22px;font-family:'JetBrains Mono',monospace;}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;margin-bottom:14px;}
+.hero h1 span{color:var(--g5);}
+.hero p{font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;}
+
+.guide{max-width:760px;margin:0 auto;padding:40px 24px 80px;}
+
+.step{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;margin-bottom:18px;position:relative;}
+.step:hover{border-color:rgba(232,184,75,0.2);}
+.step-header{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
+.step-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(232,184,75,0.15),rgba(201,150,12,0.08));border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;}
+.step-desc{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:16px;}
+.step-desc:last-child{margin-bottom:0;}
+
+.code-block{background:#0a0a0c;border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#c8c4d0;overflow-x:auto;margin:12px 0;position:relative;}
+.code-block .url{color:var(--g5);word-break:break-all;}
+.copy-btn{position:absolute;top:10px;right:12px;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.copy-btn:hover{background:rgba(232,184,75,0.2);}
+
+.input-table{width:100%;border-collapse:collapse;margin-top:14px;}
+.input-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
+.input-table td{padding:12px 14px;border-bottom:1px solid rgba(42,39,54,0.5);font-size:13.5px;color:var(--t2);vertical-align:top;}
+.input-table td:first-child{font-family:'JetBrains Mono',monospace;color:var(--t3);font-size:12px;white-space:nowrap;}
+.input-table td code{color:var(--g5);}
+.input-table tr:last-child td{border-bottom:none;}
+
+.response-table{width:100%;border-collapse:collapse;margin-top:14px;}
+.response-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
+.response-table td{padding:10px 14px;border-bottom:1px solid rgba(42,39,54,0.5);font-size:12.5px;font-family:'JetBrains Mono',monospace;vertical-align:top;}
+.response-table td:first-child{color:#4ade80;}
+.response-table td:last-child{color:var(--t3);}
+.response-table tr:last-child td{border-bottom:none;}
+
+.checklist{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.check-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--t2);padding:12px 16px;background:#0f0d14;border:1px solid var(--border);border-radius:10px;}
+.check-icon{color:var(--g5);font-size:16px;flex-shrink:0;margin-top:1px;}
+
+.note{background:rgba(232,184,75,0.07);border:1px solid rgba(232,184,75,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--t2);margin-top:12px;line-height:1.6;}
+.note strong{color:var(--g5);}
+
+.cta-band{background:linear-gradient(135deg,rgba(232,184,75,0.1),rgba(139,124,240,0.05));border:1px solid rgba(232,184,75,0.2);border-radius:20px;padding:40px 32px;text-align:center;margin-top:40px;}
+.cta-band h2{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-bottom:10px;}
+.cta-band p{color:var(--t3);margin-bottom:24px;}
+.btn-gold{background:linear-gradient(135deg,var(--g4),var(--g5));color:#0d0d0f;font-weight:700;font-size:15px;padding:13px 28px;border-radius:12px;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;display:inline-flex;align-items:center;gap:8px;transition:opacity .2s;}
+.btn-gold:hover{opacity:.88;}
+.btn-out{background:transparent;border:1px solid var(--border);color:var(--t2);font-size:15px;padding:13px 24px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;transition:border-color .2s;}
+.btn-out:hover{border-color:var(--g5);color:var(--g5);}
+
+@media(max-width:640px){
+  nav{padding:14px 18px;}
+  .step{padding:22px 20px;}
+  .guide{padding:28px 16px 60px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">AG Technicals</a>
+  <a href="bridge.html" class="nav-back">← Back To Bridge</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">📋 Setup Guide</div>
+  <h1>Bridge <span>Setup</span> Guide</h1>
+  <p>Wire TradingView alerts to your MT5 EA in 4 steps. Follow in order.</p>
+</div>
+
+<div class="guide">
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">01</div>
+      <div class="step-title">TradingView — Webhook URL</div>
+    </div>
+    <div class="step-desc">In your TradingView alert, set <strong>Webhook URL</strong> to:</div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copy(this,'https://ag-assistant-api.onrender.com/master/agbridge')">Copy</button>
+      <span class="url">https://ag-assistant-api.onrender.com/master/agbridge</span>
+    </div>
+    <div class="note"><strong>Note:</strong> Replace <code>agbridge</code> with your strategy ID if AG Technicals gave you a custom one.</div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">02</div>
+      <div class="step-title">TradingView — Alert Message (JSON)</div>
+    </div>
+    <div class="step-desc">In the alert's <strong>Message</strong> box, paste this JSON exactly — edit values to match your strategy:</div>
+    <div class="code-block" style="white-space:pre;">
+      <button class="copy-btn" onclick="copy(this,`{\n  \"secret\": \"ag-bridge-secret-2026\",\n  \"action\": \"buy\",\n  \"symbol\": \"XAUUSD\",\n  \"price\": {{close}},\n  \"swing_price\": {{plot(\"Swing\")}}\n}`)">Copy</button>{
+  "secret": "ag-bridge-secret-2026",
+  "action": "buy",
+  "symbol": "XAUUSD",
+  "price": <span style="color:#4ade80;">{{close}}</span>,
+  "swing_price": <span style="color:#8b7cf0;">{{plot("Swing")}}</span>
+}</div>
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:13px;color:var(--t2);">• <code>secret</code> — must match exactly what AG Technicals set for your account</div>
+      <div style="font-size:13px;color:var(--t2);">• <code>action</code> — must be <code>buy</code> or <code>sell</code></div>
+      <div style="font-size:13px;color:var(--t2);">• <code>price</code> — <code style="color:#4ade80;">{{close}}</code> fills automatically from your chart</div>
+      <div style="font-size:13px;color:var(--t2);">• <code>swing_price</code> — optional, for SL placement. Remove if not used.</div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">03</div>
+      <div class="step-title">MT5 — Allow WebRequest</div>
+    </div>
+    <div class="step-desc">In MetaTrader 5: <strong>Tools → Options → Expert Advisors</strong> tab → check <em>"Allow WebRequest for listed URL"</em> → add this domain:</div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copy(this,'https://ag-assistant-api.onrender.com')">Copy</button>
+      <span class="url">https://ag-assistant-api.onrender.com</span>
+    </div>
+    <div class="note"><strong>Important:</strong> Domain only — no path at the end. MT5 blocks the EA from reaching the internet without this.</div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">04</div>
+      <div class="step-title">MT5 — EA Inputs</div>
+    </div>
+    <div class="step-desc">Attach the AG Bridge EA to your chart and enter these values in the EA input settings:</div>
+    <table class="input-table">
+      <tr><th>Input Name</th><th>What To Enter</th></tr>
+      <tr><td>License ID</td><td><code>LIC-0001</code> (or the ID AG Technicals gave you)</td></tr>
+      <tr><td>Server URL</td><td><code>https://ag-assistant-api.onrender.com</code></td></tr>
+      <tr><td>Account</td><td>Filled automatically from your MT5 terminal</td></tr>
+    </table>
+  </div>
+
+  <!-- STEP 5 — EA Responses -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">05</div>
+      <div class="step-title">What The EA Gets Back (Reference)</div>
+    </div>
+    <div class="step-desc">The EA polls <code>GET /api/pull/{license_id}</code> and receives plain text responses:</div>
+    <table class="response-table">
+      <tr><th>Response</th><th>Meaning</th></tr>
+      <tr><td>OK|License activated...</td><td>First call — license bound to this account</td></tr>
+      <tr><td>buy,XAUUSD,2634.5,...</td><td>Signal waiting — EA will execute trade</td></tr>
+      <tr><td>(empty)</td><td>No signal pending — EA keeps polling</td></tr>
+      <tr><td>ERROR|License locked...</td><td>Wrong MT5 account for this license</td></tr>
+      <tr><td>ERROR|Subscription expired</td><td>License has expired — contact AG Technicals to renew</td></tr>
+    </table>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="step" style="border-color:rgba(232,184,75,0.25);">
+    <div class="step-header">
+      <div class="step-num" style="background:rgba(232,184,75,0.15);">✓</div>
+      <div class="step-title">Pre-Live Checklist</div>
+    </div>
+    <div class="checklist">
+      <div class="check-item"><span class="check-icon">■</span><span>Webhook URL set correctly in TradingView alert</span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>JSON message has correct <code>secret</code>, <code>action</code>, and <code>symbol</code></span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>MT5 WebRequest URL added in Tools → Options</span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>License ID and Server URL entered in EA inputs</span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>EA attached to chart and AutoTrading enabled in MT5</span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>Test alert sent from TradingView — check MT5 journal for "License activated"</span></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-band">
+    <h2>Need Help With Setup?</h2>
+    <p>Contact us — we will get you live in minutes.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://wa.me/919876543210?text=Hi!+I+need+help+setting+up+AG+Bridge" target="_blank" class="btn-gold">💬 WhatsApp</a>
+      <a href="https://t.me/agtechnical" target="_blank" class="btn-out">✈️ Telegram</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="ag-assistant.js"></script>
+<script>
+function copy(btn, text){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent='Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>

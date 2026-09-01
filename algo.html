@@ -156,6 +156,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <!-- MODAL -->
 <div class="overlay" id="eaOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal" id="eaModal">
+    <div id="modalVideoWrap" style="display:none;padding:16px 16px 0;"></div>
     <div class="modal-img" id="modalImg">⚙️</div>
     <div class="modal-body">
       <div class="modal-header-row">
@@ -176,10 +177,23 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 </div>
 
 <script src="ag-assistant.js"></script>
+
+<!-- VIDEO LIGHTBOX -->
+<div id="vlb" onclick="if(event.target.id==='vlb')closeVideoLB()" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.94);align-items:center;justify-content:center;padding:20px">
+  <video id="vlbvid" controls playsinline autoplay style="max-width:94%;max-height:90%;width:auto;border-radius:16px;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(232,184,75,.25),0 0 60px rgba(232,184,75,.12);border:2px solid rgba(232,184,75,.3)"></video>
+  <div onclick="closeVideoLB()" style="position:absolute;top:24px;right:28px;color:#fff;font-size:22px;cursor:pointer;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;">&times;</div>
+</div>
+<script>
+function videoLB(src){var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.src=src;b.style.display='flex';v.play().catch(function(){});}
+function closeVideoLB(){var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.pause();v.removeAttribute('src');v.load();b.style.display='none';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB();});
+</script>
+
 <script>
 const EAS = [
   {
     pid:'MTA-0002', name:'SMC EA',
+    videoId:'smc_ea',
     icon:'📊', badge:'PREMIUM',
     desc:'Smart Money Concept EA — trades the way institutions do.',
     fullDesc:'Built entirely on Smart Money Concepts — market structure shifts, order blocks, fair value gaps, and liquidity sweeps. No indicators, no lagging signals. Trades exactly like institutions.',
@@ -195,6 +209,7 @@ const EAS = [
   },
   {
     pid:'MTA-0003', name:'Order Flow EA',
+    videoId:'orderflow_ea',
     icon:'🌊', badge:'PREMIUM',
     desc:'Institutional order-flow EA — trades with the real money behind every move.',
     fullDesc:'Reads real institutional order flow — volume imbalances, absorption, and delta divergence. Enters only when large-money positioning aligns with the setup. Built for gold and indices.',
@@ -210,6 +225,7 @@ const EAS = [
   },
   {
     pid:'MTA-0004', name:'AG 3-Logic Grid EA',
+    videoId:'grid3_ea',
     icon:'⚡', badge:'PREMIUM',
     desc:'Three independent trading logics in one grid system — built for gold, with full risk control.',
     fullDesc:'Three independent logic engines run simultaneously — SMC trend, momentum, and mean-reversion. If two or more agree, the EA enters. The grid layer manages multiple positions with a hard circuit breaker.',
@@ -225,6 +241,7 @@ const EAS = [
   },
   {
     pid:'MTA-0005', name:'AG ATR Grid EA',
+    videoId:'atr_ea',
     icon:'📐', badge:'PREMIUM',
     desc:'ATR-based grid EA with EMA bias filter — tuned for gold.',
     fullDesc:'Uses Average True Range to place grid levels dynamically — not fixed pip spacing. The EMA filter ensures grid orders only open in the direction of the prevailing trend. Designed and backtested on XAUUSD.',
@@ -240,6 +257,7 @@ const EAS = [
   },
   {
     pid:'MTA-0006', name:'AG Swing + EMA + R:R EA',
+    videoId:'swing_ea',
     icon:'📈', badge:'PREMIUM',
     desc:'Swing-structure EA with EMA trend filter, partial close and SL-lock.',
     fullDesc:'Captures swing highs and lows, enters on structure confirmation, and uses a configurable R:R ratio with partial close at 1:1 and runner to 1:3. EMA filter keeps it on the right side of the market.',
@@ -283,11 +301,25 @@ function openModal(i){
   document.getElementById('modalPid').textContent='PID: '+ea.pid;
   document.getElementById('modalName').textContent=ea.name;
   document.getElementById('modalDesc').textContent=ea.fullDesc;
-  document.getElementById('modalImg').textContent=ea.icon;
   document.getElementById('modalWa').href='https://wa.me/'+ea.waNum+'?text=Hi!+I%27m+interested+in+'+encodeURIComponent(ea.name)+'+('+ea.pid+')';
   document.getElementById('modalFeats').innerHTML=ea.features.map(f=>
     '<div class="modal-feat"><span class="modal-feat-icon">✦</span><span>'+f+'</span></div>'
   ).join('');
+  // Video player
+  const vwrap=document.getElementById('modalVideoWrap');
+  if(ea.videoId){
+    const vsrc='https://ag-assistant-api.onrender.com/video/'+ea.videoId+'.mp4';
+    vwrap.style.display='block';
+    vwrap.innerHTML='<div style="position:relative;margin-bottom:16px;">'+
+      '<video controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;max-height:220px;" src="'+vsrc+'"></video>'+
+      '<div onclick="videoLB(''+vsrc+'')" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⛶</div>'+
+    '</div>';
+  } else {
+    vwrap.style.display='none'; vwrap.innerHTML='';
+  }
+  // Fallback icon
+  document.getElementById('modalImg').style.display=ea.videoId?'none':'flex';
+  document.getElementById('modalImg').textContent=ea.icon;
   document.getElementById('eaOverlay').classList.add('open');
 }
 

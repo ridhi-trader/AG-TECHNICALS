@@ -218,7 +218,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto;">
     <button class="modal-close" onclick="closeModalDirect()">✕</button>
     <div class="modal-tag" id="modalTag">Service</div>
     <div class="modal-title" id="modalTitle">Title</div>
@@ -228,6 +228,23 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
       <pre style="background:#0a090e;border:1px solid #2a2736;border-radius:8px;padding:14px;font-size:11px;color:#8affc1;overflow-x:auto;line-height:1.7;font-family:'JetBrains Mono',monospace;" id="modalCodeBlock"></pre>
     </div>
     <div id="modalVideoWrap" style="display:none;" class="video-wrap"></div>
+    <!-- CONTACT FORM (shown for strategy/guide products) -->
+    <div id="modalContactForm" style="display:none;margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">📋 Tell Us About Yourself</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <input id="mcfName" placeholder="Your Name" style="background:#141318;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#e8b84b'" onblur="this.style.borderColor='#2a2736'">
+        <select id="mcfMarket" style="background:#141318;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#e8b84b'" onblur="this.style.borderColor='#2a2736'">
+          <option value="">Select Market You Trade</option>
+          <option>Gold / XAU</option><option>Forex (Majors)</option><option>Crypto (BTC/ETH)</option>
+          <option>Indian Market (NSE/BSE)</option><option>Indices (NAS100 / SPX)</option><option>Crude Oil</option><option>Multiple Markets</option>
+        </select>
+        <select id="mcfExp" style="background:#141318;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#e8b84b'" onblur="this.style.borderColor='#2a2736'">
+          <option value="">Your Experience Level</option>
+          <option>Beginner (0–1 year)</option><option>Intermediate (1–3 years)</option><option>Advanced (3+ years)</option>
+        </select>
+        <textarea id="mcfMsg" placeholder="Any specific requirements? (optional)" style="background:#141318;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;min-height:70px;resize:none;" onfocus="this.style.borderColor='#e8b84b'" onblur="this.style.borderColor='#2a2736'"></textarea>
+      </div>
+    </div>
     <button class="modal-btn" id="modalBtn">Join Waitlist →</button>
     <div class="modal-coming" id="modalComing">Full Page Coming Soon</div>
   </div>
@@ -661,6 +678,7 @@ function openSubItems(prodId){
         <div style="font-size:10px;color:var(--t3);font-family:monospace;letter-spacing:1px;margin-bottom:4px;">${it.pid||''}</div>
         <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;">${it.name}</div>
         <div style="font-size:12px;color:#c8c4d0;line-height:1.6;margin-bottom:14px;">${it.shortDesc||''}</div>
+        ${it.fileUrl?`<a href="${it.fileUrl}" download="${it.fileName||it.name}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:9px;background:#141318;border:1px solid #e8b84b;color:#e8b84b;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;">⬇ Download File</a>`:''}
         <a href="https://wa.me/${it.waNum||'919876543210'}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:all 0.2s;">💬 Get On WhatsApp</a>
       </div>
     </div>`).join('') || '<div style="color:var(--t3);text-align:center;padding:32px;">No Items Added Yet.</div>';
@@ -707,8 +725,33 @@ function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet){
   const cw=document.getElementById('modalCodeWrap');
   if(codeSnippet){ cw.style.display='block'; document.getElementById('modalCodeBlock').textContent=codeSnippet; } else { cw.style.display='none'; }
   const btn=document.getElementById('modalBtn');
-  btn.textContent=ctaText||'Join Waitlist →';
-  if(ctaUrl){ btn.onclick=()=>window.open(ctaUrl,'_blank'); } else { btn.onclick=closeModalDirect; }
+  // Check if this is a contact/inquiry modal (Custom Strategy or Guide)
+  const isInquiry = ['custom strategy','guide','guides'].includes(title.toLowerCase());
+  const cf=document.getElementById('modalContactForm');
+  if(isInquiry){
+    cf.style.display='block';
+    ['mcfName','mcfMarket','mcfExp','mcfMsg'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    btn.textContent='Send Inquiry On WhatsApp →';
+    btn.onclick=function(){
+      const name=document.getElementById('mcfName').value.trim()||'Interested User';
+      const market=document.getElementById('mcfMarket').value||'Not specified';
+      const exp=document.getElementById('mcfExp').value||'Not specified';
+      const msg=document.getElementById('mcfMsg').value.trim();
+      const wa=contact.find&&contact.find(c=>c.name==='WhatsApp');
+      const waNum=(wa&&wa.url?wa.url.replace('https://wa.me/',''):'919876543210');
+      const text=encodeURIComponent('Hi AG Technicals! I am interested in *'+title+'*.
+
+Name: '+name+'
+Market: '+market+'
+Experience: '+exp+(msg?'
+Message: '+msg:''));
+      window.open('https://wa.me/'+waNum+'?text='+text,'_blank');
+    };
+  } else {
+    cf.style.display='none';
+    btn.textContent=ctaText||'Join Waitlist →';
+    if(ctaUrl){ btn.onclick=()=>window.open(ctaUrl,'_blank'); } else { btn.onclick=closeModalDirect; }
+  }
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }

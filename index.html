@@ -732,6 +732,56 @@ function searchSym(){ const inp=document.getElementById('chartSearchInp'),errEl=
 function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('tvFrame').src=buildTVUrl(sym); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
+
+/* ── LIVE MARKET DATA ── */
+(function(){
+  const API = 'https://ag-assistant-api.onrender.com/api/market-data';
+  const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',price:'ti',default:'ti'};
+  
+  function renderTicker(tickerData){
+    const pills = tickerData.map(t=>`<span class="ti ${typeClass[t.type]||'ti'}"><b>${t.text}</b></span>`).join('');
+    document.getElementById('tickerTrack').innerHTML = pills + pills;
+  }
+  
+  function renderNews(newsData){
+    if(!newsData) return;
+    const ni=(arr,el)=>{
+      if(!arr||!arr.length) return;
+      document.getElementById(el).innerHTML = arr.map(n=>`
+        <div class="news-item">
+          <div class="news-dot ${n.dir==='up'?'up-dot':'dn-dot'}"></div>
+          <div><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>
+        </div>`).join('');
+    };
+    ni(newsData.latest, 'newsLatest');
+    ni(newsData.analysis, 'newsAnalysis');
+    if(newsData.sentiment && newsData.sentiment.length){
+      document.getElementById('newsSentiment').innerHTML = newsData.sentiment.map(s=>`
+        <div class="sent-item">
+          <span class="sent-label">${s.label}</span>
+          <div class="sent-bar"><div class="sent-fill" style="width:${s.pct}%;background:${s.dir==='up'?'var(--g4)':s.dir==='dn'?'var(--red)':'var(--amber)'}"></div></div>
+          <span class="sent-pct ${s.dir==='up'?'up':s.dir==='dn'?'dn':''}" style="${s.dir==='neutral'?'color:var(--amber)':''}">${s.pct}% Bull</span>
+        </div>`).join('');
+    }
+  }
+
+  async function loadMarketData(){
+    try {
+      const res = await fetch(API, {signal: AbortSignal.timeout(15000)});
+      if(!res.ok) return;
+      const data = await res.json();
+      if(data.ticker && data.ticker.length) renderTicker(data.ticker);
+      if(data.news) renderNews(data.news);
+    } catch(e){
+      // silently fail — static defaults already rendered
+    }
+  }
+
+  // Load immediately + refresh every 15 min
+  loadMarketData();
+  setInterval(loadMarketData, 15 * 60 * 1000);
+})();
+
 </script>
 <script src="ag-assistant.js"></script>
 </body>

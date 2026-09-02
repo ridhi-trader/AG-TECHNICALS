@@ -1213,16 +1213,16 @@ async function uploadEA(){
   const file = document.getElementById('eaFileInput').files[0];
   if(!file){ toast('Select A File First','err'); return; }
   const st = document.getElementById('eaStatus');
-  st.textContent = 'Reading file...';
-  try{
-    const b64 = await toBase64(file);
-    uploadedFiles.ea = {name: file.name, size: file.size, data: b64, date: new Date().toISOString().split('T')[0]};
+  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
+  const url = await uploadToServer(file, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
+  if(url){
+    uploadedFiles.ea = {name: file.name, size: file.size, url: url, date: new Date().toISOString().split('T')[0]};
     save('uploadedFiles', uploadedFiles);
     st.style.color = '#4ade80';
-    st.textContent = 'Uploaded: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+    st.textContent = '✓ '+file.name+' — uploaded';
     renderEAList();
     toast('EA Uploaded: ' + file.name);
-  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+  }
 }
 
 function renderEAList(){
@@ -1240,7 +1240,7 @@ function renderEAList(){
 
 function downloadUploadedEA(){
   const ea = uploadedFiles.ea; if(!ea) return;
-  const a = document.createElement('a'); a.href = ea.data; a.download = ea.name; a.click();
+  window.open(ea.url||ea.data, '_blank');
 }
 
 function deleteEA(){ if(!confirm('Delete EA file?')) return; uploadedFiles.ea=null; save('uploadedFiles',uploadedFiles); renderEAList(); toast('EA Deleted','err'); }
@@ -1251,19 +1251,18 @@ async function uploadVideo(){
   const vidId = document.getElementById('vidId').value.trim().replace(/\s+/g,'_').toLowerCase();
   if(!file||!label||!vidId){ toast('Fill Label, ID & Select File','err'); return; }
   const st = document.getElementById('vidStatus');
-  st.textContent = 'Reading file... (large files take a moment)';
-  try{
-    const b64 = await toBase64(file);
+  st.style.color='#e8b84b'; st.textContent='Uploading video to server... (may take a moment for large files)';
+  const url = await uploadToServer(file, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
+  if(url){
     const existing = uploadedFiles.videos.findIndex(v=>v.id===vidId);
-    const entry = {id:vidId, name:label, size:file.size, data:b64, date:new Date().toISOString().split('T')[0]};
+    const entry = {id:vidId, name:label, size:file.size, url:url, date:new Date().toISOString().split('T')[0]};
     if(existing>=0) uploadedFiles.videos[existing] = entry;
     else uploadedFiles.videos.push(entry);
     save('uploadedFiles', uploadedFiles);
-    st.style.color='#4ade80';
-    st.textContent = 'Uploaded: ' + label + ' (' + (file.size/1024/1024).toFixed(1) + ' MB)';
+    st.style.color='#4ade80'; st.textContent='✓ '+label+' — uploaded';
     document.getElementById('vidLabel').value=''; document.getElementById('vidId').value=''; document.getElementById('vidFileInput').value='';
     renderVidList(); toast('Video Uploaded: '+label);
-  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+  }
 }
 
 function renderVidList(){
@@ -1279,7 +1278,7 @@ function renderVidList(){
     </div>`).join('');
 }
 
-function downloadVid(i){ const v=uploadedFiles.videos[i]; if(!v)return; const a=document.createElement('a');a.href=v.data;a.download=v.id+'.mp4';a.click(); }
+function downloadVid(i){ const v=uploadedFiles.videos[i]; if(!v)return; window.open(v.url||v.data, '_blank'); }
 function deleteVid(i){ if(!confirm('Delete video?'))return; uploadedFiles.videos.splice(i,1); save('uploadedFiles',uploadedFiles); renderVidList(); toast('Video Deleted','err'); }
 
 async function uploadImg(){
@@ -1287,19 +1286,23 @@ async function uploadImg(){
   const name = document.getElementById('imgName').value.trim().replace(/\s+/g,'-').toLowerCase();
   if(!file||!name){ toast('Enter Name & Select Image','err'); return; }
   const st = document.getElementById('imgStatus');
-  st.textContent = 'Reading image...';
-  try{
-    const b64 = await toBase64(file);
+  let url;
+  if(file.size < 500*1024){
+    url = await toB64(file);
+  } else {
+    st.style.color='#e8b84b'; st.textContent='Uploading image...';
+    url = await uploadToServer(file, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
+  }
+  if(url){
     const existing = uploadedFiles.images.findIndex(v=>v.id===name);
-    const entry = {id:name, size:file.size, data:b64, date:new Date().toISOString().split('T')[0]};
+    const entry = {id:name, size:file.size, data:url, date:new Date().toISOString().split('T')[0]};
     if(existing>=0) uploadedFiles.images[existing] = entry;
     else uploadedFiles.images.push(entry);
     save('uploadedFiles', uploadedFiles);
-    st.style.color='#4ade80';
-    st.textContent = 'Uploaded: ' + name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+    st.style.color='#4ade80'; st.textContent='✓ '+name+' — ready';
     document.getElementById('imgName').value=''; document.getElementById('imgFileInput').value='';
     renderImgList(); toast('Image Uploaded: '+name);
-  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+  }
 }
 
 function renderImgList(){
@@ -1325,35 +1328,61 @@ function deleteImg(i){ if(!confirm('Delete image?'))return; uploadedFiles.images
 /* ═══ DIRECT IMAGE/FILE UPLOAD HELPERS ═══ */
 function toB64(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
 
+const UPLOAD_API = 'https://ag-assistant-api.onrender.com';
+async function uploadToServer(file, onProgress){
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('category', 'admin');
+  if(onProgress) onProgress('Uploading ' + file.name + '...');
+  try {
+    const res = await fetch(UPLOAD_API + '/api/upload', {method:'POST', body:fd});
+    const data = await res.json();
+    if(data.ok){
+      const sizeStr = data.size < 1024*1024 ? (data.size/1024).toFixed(0)+' KB' : (data.size/1024/1024).toFixed(1)+' MB';
+      if(onProgress) onProgress('✓ ' + file.name + ' (' + sizeStr + ') — uploaded');
+      return data.url;
+    } else {
+      if(onProgress) onProgress('✗ Upload failed: ' + (data.error||'unknown'));
+      return null;
+    }
+  } catch(e) {
+    if(onProgress) onProgress('✗ Network error: ' + e.message);
+    return null;
+  }
+}
+
 async function uploadSiImg(){
   const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image first','err');return;}
-  const b64=await toB64(f);
-  document.getElementById('siImg').value=b64;
-  document.getElementById('siImgThumb').src=b64;
-  document.getElementById('siImgPreview').style.display='block';
-  toast('Image Ready — Click Save');
+  // Small images (<500KB) → base64 OK; larger → server upload
+  if(f.size < 500*1024){
+    const b64=await toB64(f);
+    document.getElementById('siImg').value=b64;
+    document.getElementById('siImgThumb').src=b64;
+    document.getElementById('siImgPreview').style.display='block';
+    toast('Image Ready — Click Save');
+  } else {
+    const url = await uploadToServer(f, msg=>toast(msg));
+    if(url){
+      document.getElementById('siImg').value=url;
+      document.getElementById('siImgThumb').src=url;
+      document.getElementById('siImgPreview').style.display='block';
+      toast('Image Uploaded — Click Save');
+    }
+  }
 }
 
 async function uploadSiFile(){
   const f=document.getElementById('siFileInput').files[0]; if(!f){toast('Select file first','err');return;}
   const st=document.getElementById('siFileStatus');
-  st.textContent='Reading...';
-  try{
-    const b64=await toB64(f);
-    // store in uploadedFiles too
-    let uf=ls('uploadedFiles',{ea:null,videos:[],images:[]});
-    const pid=products[editSubProdIdx]&&products[editSubProdIdx].items[editSubItemIdx]&&products[editSubProdIdx].items[editSubItemIdx].pid||f.name;
-    uf.ea={name:f.name,size:f.size,data:b64,date:new Date().toISOString().split('T')[0],pid};
-    save('uploadedFiles',uf);
-    // also set fileUrl as data URL so download works
-    document.getElementById('siFileUrl').value=b64;
-    // store filename in the item
-    products[editSubProdIdx].items[editSubItemIdx].fileName=f.name;
-    save('products',products);
+  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
+  const url = await uploadToServer(f, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
+  if(url){
+    document.getElementById('siFileUrl').value=url;
+    if(editSubProdIdx>=0&&editSubItemIdx>=0){ products[editSubProdIdx].items[editSubItemIdx].fileName=f.name; save('products',products); }
     st.style.color='#4ade80';
-    st.textContent='✓ '+f.name+' ('+((f.size/1024)<1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')+') — ready';
+    st.textContent='✓ '+f.name+' — uploaded. Click Save.';
     toast('File Uploaded — Click Save');
-  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+  }
 }
 
 async function uploadIeImg(){
@@ -1369,25 +1398,32 @@ async function uploadIeImg(){
 
 async function uploadPeImg(){
   const f=document.getElementById('peImgFile').files[0]; if(!f){toast('Select image first','err');return;}
-  const b64=await toB64(f);
-  document.getElementById('peImg').value=b64;
-  document.getElementById('peImgThumb').src=b64;
-  document.getElementById('peImgPreview').style.display='block';
-  if(editProdIdx>=0){ products[editProdIdx].img=b64; save('products',products); }
-  toast('Image Ready — Click Save');
+  let url;
+  if(f.size < 500*1024){
+    url = await toB64(f);
+  } else {
+    url = await uploadToServer(f, msg=>toast(msg));
+  }
+  if(url){
+    document.getElementById('peImg').value=url;
+    document.getElementById('peImgThumb').src=url;
+    document.getElementById('peImgPreview').style.display='block';
+    if(editProdIdx>=0){ products[editProdIdx].img=url; save('products',products); }
+    toast('Image Ready — Click Save');
+  }
 }
 async function uploadPeFile(){
   const f=document.getElementById('peProdFile').files[0]; if(!f){toast('Select file first','err');return;}
   const st=document.getElementById('peProdFileStatus');
-  st.textContent='Reading...';
-  try{
-    const b64=await toB64(f);
-    document.getElementById('peProdFileUrl').value=b64;
-    if(editProdIdx>=0){ products[editProdIdx].fileUrl=b64; products[editProdIdx].fileName=f.name; save('products',products); }
+  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
+  const url = await uploadToServer(f, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
+  if(url){
+    document.getElementById('peProdFileUrl').value=url;
+    if(editProdIdx>=0){ products[editProdIdx].fileUrl=url; products[editProdIdx].fileName=f.name; save('products',products); }
     st.style.color='#4ade80';
-    st.textContent='✓ '+f.name+' ('+((f.size/1024)<1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')+') — ready';
+    st.textContent='✓ '+f.name+' — uploaded. Click Save.';
     toast('File Uploaded — Click Save');
-  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+  }
 }
 
 
@@ -1425,20 +1461,15 @@ async function uploadCsFile(){
   const f = document.getElementById('csFileInput').files[0];
   if(!f){ toast('Select File First','err'); return; }
   const st = document.getElementById('csFileStatus');
-  st.textContent = 'Reading...';
-  try{
-    const b64 = await toB64(f);
-    csFileData = b64; csFileName = f.name;
-    // Save to uploadedFiles
-    let uf = ls('uploadedFiles',{ea:null,videos:[],images:[]});
-    if(!uf.strategies) uf.strategies = [];
-    uf.strategies.push({name:f.name, size:f.size, data:b64, date:new Date().toISOString().split('T')[0]});
-    save('uploadedFiles', uf);
+  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
+  const url = await uploadToServer(f, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
+  if(url){
+    csFileData = url; csFileName = f.name;
     st.style.color='#4ade80';
-    st.textContent = '✓ '+f.name+' ('+((f.size/1024)<1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')+') — ready to send';
+    st.textContent='✓ '+f.name+' — uploaded & ready to send';
     updateCsPreview();
     toast('File Ready');
-  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+  }
 }
 
 function getCsMsg(){ return updateCsPreview(); }

@@ -211,6 +211,8 @@ select.inp{cursor:pointer;}
       <button class="sb-item active" onclick="show('products',this)">🎯 Products</button>
       <button class="sb-item" onclick="show('indicators',this)">📈 TV Indicators</button>
       <button class="sb-item" onclick="show('users',this)">👥 Users & Access</button>
+      <button class="sb-item" onclick="show('analytics',this)">📊 Analytics & Revenue</button>
+      <button class="sb-item" onclick="show('uploads',this)">📁 File Uploads</button>
       <button class="sb-item" onclick="show('faq',this)">❓ FAQ</button>
       <button class="sb-item" onclick="show('ticker',this)">📡 Ticker Strip</button>
       <button class="sb-item" onclick="show('contact',this)">📞 Contact Links</button>
@@ -290,6 +292,83 @@ select.inp{cursor:pointer;}
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="tbl"><thead><tr><th>Name</th><th>Contact</th><th>Products</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="usersBody"></tbody></table>
+      </div>
+    </div>
+
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="page-tag">Business</div>
+      <div class="page-title">Analytics <span class="hl">&amp; Revenue</span></div>
+      <div class="page-sub">User Count, Product Breakdown, 7-Day Revenue Estimate.</div>
+
+      <!-- Top Stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="analyticsTopStats"></div>
+
+      <!-- Product Prices (for revenue calc) -->
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">💰 Product Prices (For Revenue Estimate)</div>
+        <div class="card-sub" style="margin-bottom:12px;">Enter price per product — used to calculate 7-day revenue from new users.</div>
+        <div id="productPriceFields" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;"></div>
+        <button class="btn-gold" onclick="savePrices()">Save Prices</button>
+      </div>
+
+      <!-- Product Breakdown -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">📦 Product — User Breakdown</div>
+        <div id="productBreakdown" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- 7 Day New Users -->
+      <div class="card">
+        <div class="card-title">📅 7-Day Activity</div>
+        <div id="sevenDayTable" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- FILE UPLOADS -->
+    <div class="page" id="page-uploads">
+      <div class="page-tag">Files</div>
+      <div class="page-title">File <span class="hl">Uploads</span></div>
+      <div class="page-sub">Upload EA (.ex5), Videos (.mp4), Images — stored in localStorage.</div>
+
+      <!-- EA Upload -->
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">🤖 EA File Upload (.ex5)</div>
+        <div class="card-sub" style="margin-bottom:12px;">Upload your MT5 Expert Advisor file. Users can download via your download link.</div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <input type="file" id="eaFileInput" accept=".ex5,.ex4" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;flex:1;">
+          <button class="btn-gold" onclick="uploadEA()">Upload EA</button>
+        </div>
+        <div id="eaStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
+        <div id="eaFileList" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Video Upload -->
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">🎬 Video Upload (.mp4)</div>
+        <div class="card-sub" style="margin-bottom:12px;">Upload product demo videos. Stored as base64 — use small files (&lt;10MB).</div>
+        <div style="display:grid;gap:10px;margin-bottom:10px;">
+          <div class="field" style="margin:0;"><label class="label">Video Label</label><input class="inp" id="vidLabel" placeholder="e.g. SMC EA Demo"></div>
+          <div class="field" style="margin:0;"><label class="label">Video ID (used in URL)</label><input class="inp" id="vidId" placeholder="e.g. smc_ea"></div>
+          <input type="file" id="vidFileInput" accept="video/mp4,.mp4" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;">
+        </div>
+        <button class="btn-gold" onclick="uploadVideo()">Upload Video</button>
+        <div id="vidStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
+        <div id="vidFileList" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="add-form">
+        <div class="card-title">🖼️ Image Upload (Product / Sub-Item)</div>
+        <div class="card-sub" style="margin-bottom:12px;">Upload images for product cards or sub-items. Stored as base64 data URLs.</div>
+        <div style="display:grid;gap:10px;margin-bottom:10px;">
+          <div class="field" style="margin:0;"><label class="label">Image Name / ID</label><input class="inp" id="imgName" placeholder="e.g. smc-indicator-preview"></div>
+          <input type="file" id="imgFileInput" accept="image/*" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;">
+        </div>
+        <button class="btn-gold" onclick="uploadImg()">Upload Image</button>
+        <div id="imgStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
+        <div id="imgFileList" style="margin-top:12px;"></div>
       </div>
     </div>
 
@@ -531,7 +610,7 @@ function show(name,btn){
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
-  const loaders = {products:renderProds, indicators:renderInds, users:renderUsers, faq:renderFaq, ticker:renderTicker, contact:renderContact, hero:loadHero, about:loadAbout, newsed:loadNews, export:genExport};
+  const loaders = {products:renderProds, indicators:renderInds, users:renderUsers, analytics:renderAnalytics, uploads:renderUploads, faq:renderFaq, ticker:renderTicker, contact:renderContact, hero:loadHero, about:loadAbout, newsed:loadNews, export:genExport};
   if(loaders[name]) loaders[name]();
 }
 
@@ -910,6 +989,217 @@ function delSubItem(prodIdx,itemIdx){
   products[prodIdx].items.splice(itemIdx,1);
   save('products',products); renderProds(); toast('Deleted','err');
 }
+
+
+/* ═══ ANALYTICS ═══ */
+let productPrices = ls('productPrices', {});
+
+function savePrices(){
+  const fields = document.querySelectorAll('.price-inp');
+  fields.forEach(f => { productPrices[f.dataset.pid] = parseFloat(f.value)||0; });
+  save('productPrices', productPrices);
+  toast('Prices Saved');
+  renderAnalytics();
+}
+
+function renderAnalytics(){
+  const now = new Date();
+  const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
+  const thirtyDaysAgo = new Date(now - 30*24*60*60*1000);
+
+  const newLast7 = users.filter(u => u.date && new Date(u.date) >= sevenDaysAgo);
+  const newLast30 = users.filter(u => u.date && new Date(u.date) >= thirtyDaysAgo);
+  const active = users.filter(u => u.status === 'active');
+
+  // Revenue calc (7-day new users × their product prices)
+  let rev7 = 0;
+  newLast7.forEach(u => {
+    (u.products||[]).forEach(pid => { rev7 += productPrices[pid]||0; });
+  });
+
+  // Top stats
+  const topEl = document.getElementById('analyticsTopStats');
+  if(topEl) topEl.innerHTML = [
+    {v: users.length, l: 'Total Users', c: '#fff'},
+    {v: active.length, l: 'Active Users', c: '#4ade80'},
+    {v: newLast7.length, l: '7-Day New Users', c: '#e8b84b'},
+    {v: '₹'+rev7.toLocaleString('en-IN'), l: '7-Day Revenue Est.', c: '#e8b84b'},
+  ].map(s => `<div class="stat-box"><div class="stat-val" style="color:${s.c};font-size:22px;">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
+
+  // Product prices form
+  const allProds = [...products, ...indicators.map(i=>({...i, id:'ind_'+i.id, name:'📊 '+i.name}))];
+  const pfEl = document.getElementById('productPriceFields');
+  if(pfEl) pfEl.innerHTML = allProds.map(p => `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:13px;color:#c8c4d0;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.icon||''} ${p.name}</span>
+      <input class="inp price-inp" data-pid="${p.id}" type="number" min="0" step="100" value="${productPrices[p.id]||0}" placeholder="₹ Price" style="flex:1;">
+    </div>`).join('');
+
+  // Product breakdown
+  const bdEl = document.getElementById('productBreakdown');
+  if(bdEl){
+    const counts = {};
+    allProds.forEach(p => counts[p.id] = {name: (p.icon||'') + ' ' + p.name, count:0});
+    users.forEach(u => (u.products||[]).forEach(pid => { if(counts[pid]) counts[pid].count++; }));
+    const maxC = Math.max(...Object.values(counts).map(x=>x.count), 1);
+    bdEl.innerHTML = Object.values(counts).sort((a,b)=>b.count-a.count).map(x => `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <div style="min-width:160px;font-size:13px;color:#c8c4d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${x.name}</div>
+        <div style="flex:1;background:#1c1824;border-radius:6px;height:8px;overflow:hidden;">
+          <div style="height:100%;width:${maxC?Math.round(x.count/maxC*100):0}%;background:#e8b84b;border-radius:6px;transition:width 0.4s;"></div>
+        </div>
+        <div style="min-width:30px;text-align:right;font-size:13px;font-weight:700;color:#e8b84b;">${x.count}</div>
+      </div>`).join('') || '<div style="color:var(--t3);font-size:13px;">No Users Yet</div>';
+  }
+
+  // 7-day table
+  const tbl = document.getElementById('sevenDayTable');
+  if(tbl){
+    const days = [];
+    for(let i=6;i>=0;i--){
+      const d = new Date(now - i*24*60*60*1000);
+      const ds = d.toISOString().split('T')[0];
+      const cnt = users.filter(u=>u.date===ds).length;
+      days.push({ds, cnt});
+    }
+    tbl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">' +
+      days.map(d => `
+        <div style="text-align:center;background:#141119;border:1px solid #2a2736;border-radius:10px;padding:14px 8px;">
+          <div style="font-size:20px;font-weight:800;color:${d.cnt?'#e8b84b':'#4a4560'};">${d.cnt}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:4px;">${d.ds.slice(5)}</div>
+        </div>`).join('') + '</div>';
+  }
+}
+
+/* ═══ FILE UPLOADS ═══ */
+let uploadedFiles = ls('uploadedFiles', {ea: null, videos: [], images: []});
+
+function renderUploads(){
+  renderEAList();
+  renderVidList();
+  renderImgList();
+}
+
+function toBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function uploadEA(){
+  const file = document.getElementById('eaFileInput').files[0];
+  if(!file){ toast('Select A File First','err'); return; }
+  const st = document.getElementById('eaStatus');
+  st.textContent = 'Reading file...';
+  try{
+    const b64 = await toBase64(file);
+    uploadedFiles.ea = {name: file.name, size: file.size, data: b64, date: new Date().toISOString().split('T')[0]};
+    save('uploadedFiles', uploadedFiles);
+    st.style.color = '#4ade80';
+    st.textContent = 'Uploaded: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+    renderEAList();
+    toast('EA Uploaded: ' + file.name);
+  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+}
+
+function renderEAList(){
+  const el = document.getElementById('eaFileList'); if(!el) return;
+  const ea = uploadedFiles.ea;
+  if(!ea){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No EA Uploaded Yet</div>'; return; }
+  el.innerHTML = `<div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+    <div><div style="font-size:13px;font-weight:700;color:#e8b84b;">🤖 ${ea.name}</div><div style="font-size:11px;color:var(--t3);">${(ea.size/1024).toFixed(1)} KB · Uploaded ${ea.date}</div></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-out" onclick="downloadUploadedEA()" style="font-size:12px;padding:6px 14px;">⬇ Download</button>
+      <button class="btn-icon" onclick="deleteEA()">🗑️</button>
+    </div>
+  </div>`;
+}
+
+function downloadUploadedEA(){
+  const ea = uploadedFiles.ea; if(!ea) return;
+  const a = document.createElement('a'); a.href = ea.data; a.download = ea.name; a.click();
+}
+
+function deleteEA(){ if(!confirm('Delete EA file?')) return; uploadedFiles.ea=null; save('uploadedFiles',uploadedFiles); renderEAList(); toast('EA Deleted','err'); }
+
+async function uploadVideo(){
+  const file = document.getElementById('vidFileInput').files[0];
+  const label = cap(document.getElementById('vidLabel').value.trim());
+  const vidId = document.getElementById('vidId').value.trim().replace(/\s+/g,'_').toLowerCase();
+  if(!file||!label||!vidId){ toast('Fill Label, ID & Select File','err'); return; }
+  const st = document.getElementById('vidStatus');
+  st.textContent = 'Reading file... (large files take a moment)';
+  try{
+    const b64 = await toBase64(file);
+    const existing = uploadedFiles.videos.findIndex(v=>v.id===vidId);
+    const entry = {id:vidId, name:label, size:file.size, data:b64, date:new Date().toISOString().split('T')[0]};
+    if(existing>=0) uploadedFiles.videos[existing] = entry;
+    else uploadedFiles.videos.push(entry);
+    save('uploadedFiles', uploadedFiles);
+    st.style.color='#4ade80';
+    st.textContent = 'Uploaded: ' + label + ' (' + (file.size/1024/1024).toFixed(1) + ' MB)';
+    document.getElementById('vidLabel').value=''; document.getElementById('vidId').value=''; document.getElementById('vidFileInput').value='';
+    renderVidList(); toast('Video Uploaded: '+label);
+  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+}
+
+function renderVidList(){
+  const el = document.getElementById('vidFileList'); if(!el) return;
+  if(!uploadedFiles.videos.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No Videos Uploaded Yet</div>'; return; }
+  el.innerHTML = uploadedFiles.videos.map((v,i)=>`
+    <div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div><div style="font-size:13px;font-weight:700;color:#e8b84b;">🎬 ${v.name}</div><div style="font-size:11px;color:var(--t3);">ID: ${v.id} · ${(v.size/1024/1024).toFixed(1)} MB · ${v.date}</div></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-out" onclick="downloadVid(${i})" style="font-size:12px;padding:6px 14px;">⬇</button>
+        <button class="btn-icon" onclick="deleteVid(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function downloadVid(i){ const v=uploadedFiles.videos[i]; if(!v)return; const a=document.createElement('a');a.href=v.data;a.download=v.id+'.mp4';a.click(); }
+function deleteVid(i){ if(!confirm('Delete video?'))return; uploadedFiles.videos.splice(i,1); save('uploadedFiles',uploadedFiles); renderVidList(); toast('Video Deleted','err'); }
+
+async function uploadImg(){
+  const file = document.getElementById('imgFileInput').files[0];
+  const name = document.getElementById('imgName').value.trim().replace(/\s+/g,'-').toLowerCase();
+  if(!file||!name){ toast('Enter Name & Select Image','err'); return; }
+  const st = document.getElementById('imgStatus');
+  st.textContent = 'Reading image...';
+  try{
+    const b64 = await toBase64(file);
+    const existing = uploadedFiles.images.findIndex(v=>v.id===name);
+    const entry = {id:name, size:file.size, data:b64, date:new Date().toISOString().split('T')[0]};
+    if(existing>=0) uploadedFiles.images[existing] = entry;
+    else uploadedFiles.images.push(entry);
+    save('uploadedFiles', uploadedFiles);
+    st.style.color='#4ade80';
+    st.textContent = 'Uploaded: ' + name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+    document.getElementById('imgName').value=''; document.getElementById('imgFileInput').value='';
+    renderImgList(); toast('Image Uploaded: '+name);
+  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+}
+
+function renderImgList(){
+  const el = document.getElementById('imgFileList'); if(!el) return;
+  if(!uploadedFiles.images.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No Images Uploaded Yet</div>'; return; }
+  el.innerHTML = uploadedFiles.images.map((img,i)=>`
+    <div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="${img.data}" style="width:48px;height:36px;object-fit:cover;border-radius:6px;border:1px solid #2a2736;">
+        <div><div style="font-size:13px;font-weight:700;color:#e8b84b;">🖼️ ${img.id}</div><div style="font-size:11px;color:var(--t3);">${(img.size/1024).toFixed(1)} KB · ${img.date}</div></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-out" onclick="copyImgUrl(${i})" style="font-size:12px;padding:6px 14px;">📋 Copy URL</button>
+        <button class="btn-icon" onclick="deleteImg(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function copyImgUrl(i){ navigator.clipboard.writeText(uploadedFiles.images[i].data); toast('Image URL Copied — Paste In Sub-Item Image Field'); }
+function deleteImg(i){ if(!confirm('Delete image?'))return; uploadedFiles.images.splice(i,1); save('uploadedFiles',uploadedFiles); renderImgList(); toast('Deleted','err'); }
 
 /* ═══ ESC ═══ */
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); document.getElementById('subItemOverlay').classList.remove('open'); } });

@@ -693,6 +693,16 @@ function ls(key,def){ try{ const v=localStorage.getItem('ag_'+key); return v?JSO
 function save(key,val){ try{ localStorage.setItem('ag_'+key,JSON.stringify(val)); }catch(e){} }
 
 let products   = ls('products',   D_PRODS);
+
+// Force fix: Guide/Education stored as modal → convert to page
+(function(){
+  let changed=false;
+  products.forEach(p=>{
+    if(p.id==='guide'&&p.type==='modal'){p.type='page';p.url='guide.html';p.cta='Open Guides →';changed=true;}
+    if(p.id==='education'&&p.type==='modal'){p.type='page';p.url='education.html';p.cta='Open Courses →';changed=true;}
+  });
+  if(changed){save('products',products);}
+})();
 let indicators = ls('indicators', D_INDS);
 let users      = ls('users',      []);
 let faqData    = ls('faq',        D_FAQ);

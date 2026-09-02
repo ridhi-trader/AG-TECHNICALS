@@ -522,6 +522,20 @@ const hero     = load('hero',     D.hero);
 const ticker   = load('ticker',   D.ticker);
 const products = load('products', D.products);
 const faqItems = load('faq',      D.faq);
+
+// ── FORCE FIX: If Guide/Education stored as modal in localStorage, fix it ──
+(function(){
+  try{
+    const stored = JSON.parse(localStorage.getItem('ag_products')||'null');
+    if(!stored) return;
+    let changed = false;
+    stored.forEach(p => {
+      if(p.id==='guide' && p.type==='modal'){ p.type='page'; p.url='guide.html'; p.cta='Open Guides →'; changed=true; }
+      if(p.id==='education' && p.type==='modal'){ p.type='page'; p.url='education.html'; p.cta='Open Courses →'; changed=true; }
+    });
+    if(changed) localStorage.setItem('ag_products', JSON.stringify(stored));
+  }catch(e){}
+})();
 const contact  = load('contact',  D.contact);
 const about    = load('about',    D.about);
 const news     = load('news',     D.news);
@@ -730,7 +744,7 @@ function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet,hasFile,f
   } else { fw.style.display='none'; }
   const btn=document.getElementById('modalBtn');
   // Check if this is a contact/inquiry modal (Custom Strategy or Guide)
-  const isInquiry = ['custom strategy','guide','guides'].includes(title.toLowerCase());
+  const isInquiry = ['custom strategy'].includes(title.toLowerCase());
   const cf=document.getElementById('modalContactForm');
   if(isInquiry){
     cf.style.display='block';

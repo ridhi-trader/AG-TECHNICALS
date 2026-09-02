@@ -244,8 +244,11 @@ const GUIDES = [
   },
 ];
 
-// Swing EMA guide — external full page
-const EXTERNAL_GUIDES=[{id:"swing-ema",icon:"⚡",tag:"EA Guide",level:"All Levels",time:"13 sections",title:"AG Swing + EMA + R:R EA — Complete Guide",desc:"Full EA user guide — Introduction, EMA basics, Swing High/Low, BUY/SELL logic, MT5 setup, inputs, risk, troubleshooting. Hindi & English.",url:"swing-ema-guide.html"}];
+const EXTERNAL_GUIDES=[
+  {icon:"⚡",tag:"EA Guide",level:"All Levels",time:"13 sections",title:"AG Swing + EMA + R:R EA — Complete Guide",desc:"Full EA user guide — Introduction, EMA basics, Swing High/Low, BUY/SELL logic, MT5 setup, inputs, risk, troubleshooting. Hindi & English.",url:"swing-ema-guide.html"},
+  {icon:"📐",tag:"EA Guide",level:"All Levels",time:"Multi-section",title:"AG ATR Grid EA — User Guide",desc:"Complete ATR Grid EA user guide — grid logic, ATR settings, lot sizing, risk management, MT5 setup and troubleshooting.",url:"atr-grid-guide.html"},
+];
+const GUIDES=[];
 
 function renderList(){
   const el = document.getElementById('guideList');

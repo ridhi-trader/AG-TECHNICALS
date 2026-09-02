@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AG Technicals — ATR Grid EA User Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap');
+  :root { --bg:#0A0A0C; --panel:#121214; --gold:#D4AF37; --bull:#00D68F; --bear:#FF4560; --text:#F2F0EA; }
+  * { box-sizing: border-box; user-select: none; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:'Inter','Noto Sans Devanagari',sans-serif; display:flex; min-height:100vh; }
+  .sidebar { width:270px; background:var(--panel); border-right:1px solid rgba(212,175,55,0.3); padding:24px 0; flex-shrink:0; overflow-y:auto; max-height:100vh; }
+  .sidebar h2 { font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:16px; padding:0 20px 16px; margin:0; border-bottom:1px solid rgba(212,175,55,0.2); }
+  .lang-switch { display:flex; gap:6px; padding:14px 20px 16px; border-bottom:1px solid rgba(212,175,55,0.2); }
+  .lang-btn { flex:1; background:var(--bg); border:1px solid rgba(212,175,55,0.3); color:var(--text); font-size:11px; padding:7px 4px; border-radius:6px; cursor:pointer; opacity:0.75; }
+  .lang-btn:hover { opacity:1; }
+  .lang-btn.active { background:var(--gold); color:#1a1400; border-color:var(--gold); opacity:1; font-weight:700; }
+  .nav-item { display:block; width:100%; text-align:left; background:none; border:none; color:var(--text); font-family:'Inter',sans-serif; font-size:12.5px; padding:9px 20px; cursor:pointer; opacity:0.7; border-left:3px solid transparent; }
+  .nav-item:hover { opacity:1; background:rgba(212,175,55,0.06); }
+  .nav-item.active { opacity:1; border-left-color:var(--gold); background:rgba(212,175,55,0.08); color:var(--gold); }
+  .main { flex:1; padding:40px; position:relative; overflow:hidden; }
+  .watermark-bg { position:absolute; inset:0; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><text x="-10" y="130" transform="rotate(-30 120,120)" font-size="20" fill="%23D4AF37" font-family="Inter" opacity="0.32">AG TECHNICALS</text></svg>'); background-repeat:repeat; pointer-events:none; z-index:0; }
+  .chapter { display:none; position:relative; z-index:1; max-width:840px; }
+  .chapter.active { display:block; }
+  .chip { display:inline-block; font-size:12px; color:var(--bg); background:var(--gold); padding:3px 10px; border-radius:20px; margin-bottom:14px; font-weight:600; }
+  h1 { font-family:'Cormorant Garamond',serif; font-weight:600; font-size:25px; color:var(--gold); margin:0 0 12px; }
+  h2.sec { font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:17px; margin:22px 0 10px; }
+  .concept { font-size:13.5px; line-height:1.7; color:rgba(242,240,234,0.85); margin-bottom:18px; }
+  .panel-box { background:var(--panel); border:1px solid rgba(212,175,55,0.35); border-radius:10px; padding:20px; position:relative; overflow:hidden; margin-bottom:18px; }
+  .panel-watermark { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-20deg); font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--gold); opacity:0.16; white-space:nowrap; pointer-events:none; }
+  table.settings { width:100%; border-collapse:collapse; font-size:12px; margin:8px 0 18px; position:relative; z-index:1; }
+  table.settings th, table.settings td { border:1px solid rgba(212,175,55,0.25); padding:6px 8px; text-align:left; vertical-align:top; }
+  table.settings th { background:rgba(212,175,55,0.1); color:var(--gold); font-weight:600; }
+  table.settings td { color:rgba(242,240,234,0.85); }
+  .default { color:var(--gold); font-weight:600; white-space:nowrap; }
+  .warn { border-left:3px solid var(--bear); background:rgba(255,69,96,0.06); padding:8px 12px; font-size:12.5px; margin:10px 0; }
+  .tip { border-left:3px solid var(--bull); background:rgba(0,214,143,0.06); padding:8px 12px; font-size:12.5px; margin:10px 0; }
+  .stamp { position:absolute; bottom:8px; right:14px; font-size:10px; letter-spacing:2px; color:rgba(212,175,55,0.35); z-index:1; }
+  svg text { font-family:'Inter',sans-serif; }
+</style>
+</head>
+<body oncontextmenu="return false">
+  <div class="sidebar">
+    <h2>ATR GRID EA<br>USER GUIDE — v4.0</h2>
+    <div class="lang-switch">
+    <button class="lang-btn active" data-lang="hinglish" onclick="setLang('hinglish',this)">Hinglish</button>
+    <button class="lang-btn" data-lang="hindi" onclick="setLang('hindi',this)">हिंदी</button>
+    <button class="lang-btn" data-lang="english" onclick="setLang('english',this)">English</button>
+    </div>
+    <button class="nav-item active" onclick="showChapter(0,this)">0. AG ATR Grid EA — kaise kaam karta hai</button>
+    <button class="nav-item" onclick="showChapter(1,this)">1. Symbol Detection</button>
+    <button class="nav-item" onclick="showChapter(2,this)">2. ATR Grid System</button>
+    <button class="nav-item" onclick="showChapter(3,this)">3. Lot Sizing & Martingale</button>
+    <button class="nav-item" onclick="showChapter(4,this)">4. Basket Take-Profit</button>
+    <button class="nav-item" onclick="showChapter(5,this)">5. Account Protection</button>
+    <button class="nav-item" onclick="showChapter(6,this)">6. EMA Bias Filter</button>
+    <button class="nav-item" onclick="showChapter(7,this)">7. Time Filter</button>
+    <button class="nav-item" onclick="showChapter(8,this)">8. Max Orders Cap</button>
+    <button class="nav-item" onclick="showChapter(9,this)">9. Daily Profit/Loss Limits</button>
+    <button class="nav-item" onclick="showChapter(10,this)">10. Dashboard & Visual Aids</button>
+  </div>
+
+  <div class="main">
+    <div class="watermark-bg"></div>
+
+    <div class="chapter active" id="ch0">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">START HERE</div>
+        <h1>AG ATR Grid EA — kaise kaam karta hai</h1>
+        <div class="concept">Yeh EA ek ATR-based grid trading system hai. Price ki current volatility (ATR) ke hisaab se grid step calculate hota hai, aur jaise-jaise price against move karta hai, EA naye orders add karta jaata hai. Har basket ka apna profit target aur loss limit hota hai. Yeh guide har setting ko simple bhasha mein samjhata hai.</div>
+        
+        <div class="tip">Neeche sidebar mein har chapter ek specific settings group cover karta hai. Zaroorat ke hisaab se seedha us chapter pe jump kar sakte ho.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">यहां से शुरू करें</div>
+        <h1>AG ATR Grid EA — कैसे काम करता है</h1>
+        <div class="concept">यह EA एक ATR-आधारित ग्रिड ट्रेडिंग सिस्टम है। कीमत की मौजूदा अस्थिरता (ATR) के हिसाब से ग्रिड स्टेप कैलकुलेट होता है, और जैसे-जैसे कीमत विपरीत दिशा में जाती है, EA नए ऑर्डर जोड़ता जाता है। हर बास्केट का अपना प्रॉफिट टारगेट और लॉस लिमिट होता है। यह गाइड हर सेटिंग को आसान भाषा में समझाती है।</div>
+        
+        <div class="tip">नीचे साइडबार में हर चैप्टर एक विशेष सेटिंग्स ग्रुप कवर करता है। ज़रूरत के हिसाब से सीधे उस चैप्टर पर जा सकते हैं।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">START HERE</div>
+        <h1>AG ATR Grid EA — how it works</h1>
+        <div class="concept">This EA is an ATR-based grid trading system. The grid step is calculated from current price volatility (ATR), and as price moves against a position, the EA keeps adding new orders. Each basket has its own profit target and loss limit. This guide explains every setting in plain language.</div>
+        
+        <div class="tip">Each chapter in the sidebar below covers one specific settings group. Jump straight to whichever chapter you need.</div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-watermark">AG TECHNICALS</div>
+        <svg viewBox="0 0 760 190" width="100%" style="position:relative;z-index:1;">
+      <rect x="20" y="20" width="160" height="50" rx="8" fill="rgba(212,175,55,0.08)" stroke="#D4AF37"/>
+      <text x="100" y="40" font-size="12" fill="#F2F0EA" text-anchor="middle">ATR calculate hota hai</text>
+      <text x="100" y="58" font-size="10" fill="#F2F0EA" opacity="0.6" text-anchor="middle">har tick</text>
+      <line x1="180" y1="45" x2="210" y2="45" stroke="#D4AF37" stroke-width="1.5"/>
+
+      <rect x="210" y="20" width="160" height="50" rx="8" fill="rgba(212,175,55,0.08)" stroke="#D4AF37"/>
+      <text x="290" y="40" font-size="12" fill="#F2F0EA" text-anchor="middle">Grid step decide hota hai</text>
+      <text x="290" y="58" font-size="10" fill="#F2F0EA" opacity="0.6" text-anchor="middle">Ch. 2</text>
+      <line x1="370" y1="45" x2="400" y2="45" stroke="#D4AF37" stroke-width="1.5"/>
+
+      <rect x="400" y="20" width="160" height="50" rx="8" fill="rgba(0,214,143,0.08)" stroke="#00D68F"/>
+      <text x="480" y="40" font-size="12" fill="#F2F0EA" text-anchor="middle">Trade khulta hai</text>
+      <text x="480" y="58" font-size="10" fill="#F2F0EA" opacity="0.6" text-anchor="middle">Ch. 3, 6, 7</text>
+      <line x1="560" y1="45" x2="590" y2="45" stroke="#D4AF37" stroke-width="1.5"/>
+
+      <rect x="590" y="20" width="150" height="50" rx="8" fill="rgba(212,175,55,0.08)" stroke="#D4AF37"/>
+      <text x="665" y="40" font-size="12" fill="#F2F0EA" text-anchor="middle">Basket TP/SL</text>
+      <text x="665" y="58" font-size="10" fill="#F2F0EA" opacity="0.6" text-anchor="middle">Ch. 4, 5</text>
+
+      <text x="20" y="110" font-size="11" fill="#D4AF37">Golden rule for new users:</text>
+      <text x="20" y="132" font-size="11" fill="#F2F0EA" opacity="0.8">Ek naye symbol pe pehle 1-2 din <tspan fill="#D4AF37">demo</tspan> pe chalao, defaults se shuru karo.</text>
+      <text x="20" y="152" font-size="11" fill="#F2F0EA" opacity="0.8">Sirf ek group ki settings ek waqt pe change karo, dekho asar kya hota hai.</text>
+    </svg>
+      </div>
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch1">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 1</div>
+        <h1>Symbol Detection</h1>
+        <div class="concept">EA broker ka sahi trading symbol kaise dhundta hai, chahe broker symbol ke aage/peeche kuch bhi prefix ya suffix laga ho (jaise XAUUSDm, XAUUSD.c). Do modes: Auto ya Manual.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpSymbolMode</td><td class="default">Auto</td><td>Auto rakho agar broker symbol naam predictable nahi hai. Manual rakho agar exact prefix/suffix pata hai.</td></tr>
+        <tr><td>InpSymbolName</td><td class="default">XAUUSD</td><td>Base name. Khali chhodoge to chart ka current symbol use hoga.</td></tr>
+        <tr><td>InpSymbolPrefix / Suffix</td><td class="default">""</td><td>Sirf Manual Mode mein kaam karta hai.</td></tr>
+        <tr><td>InpTimeframe</td><td class="default">M5</td><td>Indicators (ATR/EMA) ke liye timeframe.</td></tr>
+      </table>
+        <div class="tip">Beginners ke liye: <b>Auto</b> hi rehne do, aur <code>InpSymbolName</code> mein base symbol (jaise "XAUUSD") daal do — EA khud broker ka exact variant dhund lega.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 1</div>
+        <h1>सिंबल डिटेक्शन</h1>
+        <div class="concept">EA ब्रोकर का सही ट्रेडिंग सिंबल कैसे ढूंढता है, चाहे ब्रोकर सिंबल के आगे/पीछे कुछ भी प्रीफ़िक्स या सफ़िक्स लगा हो (जैसे XAUUSDm, XAUUSD.c)। दो मोड: Auto या Manual।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpSymbolMode</td><td class="default">Auto</td><td>अगर ब्रोकर सिंबल नाम अनुमानित नहीं है तो Auto रखें। अगर exact prefix/suffix पता है तो Manual रखें।</td></tr>
+        <tr><td>InpSymbolName</td><td class="default">XAUUSD</td><td>बेस नेम। खाली छोड़ने पर चार्ट का मौजूदा सिंबल इस्तेमाल होगा।</td></tr>
+        <tr><td>InpSymbolPrefix / Suffix</td><td class="default">""</td><td>सिर्फ़ Manual Mode में काम करता है।</td></tr>
+        <tr><td>InpTimeframe</td><td class="default">M5</td><td>इंडिकेटर्स (ATR/EMA) के लिए टाइमफ़्रेम।</td></tr>
+      </table>
+        <div class="tip">शुरुआती लोगों के लिए: <b>Auto</b> ही रहने दें, और <code>InpSymbolName</code> में base symbol (जैसे "XAUUSD") डालें — EA खुद ब्रोकर का सही variant ढूंढ लेगा।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 1</div>
+        <h1>Symbol Detection</h1>
+        <div class="concept">How the EA finds the broker's exact trading symbol, even if the broker adds a prefix or suffix (like XAUUSDm, XAUUSD.c). Two modes: Auto or Manual.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpSymbolMode</td><td class="default">Auto</td><td>Use Auto if the broker's symbol naming isn't predictable. Use Manual if you know the exact prefix/suffix.</td></tr>
+        <tr><td>InpSymbolName</td><td class="default">XAUUSD</td><td>Base name. Leave blank to use the chart's current symbol.</td></tr>
+        <tr><td>InpSymbolPrefix / Suffix</td><td class="default">""</td><td>Only used in Manual Mode.</td></tr>
+        <tr><td>InpTimeframe</td><td class="default">M5</td><td>Timeframe used for the ATR/EMA indicators.</td></tr>
+      </table>
+        <div class="tip">For beginners: leave it on <b>Auto</b> and just put the base symbol (like "XAUUSD") in <code>InpSymbolName</code> — the EA will find the broker's exact variant on its own.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch2">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 2 · DETAIL MEIN</div>
+        <h1>ATR Grid System</h1>
+        <div class="concept">EA ka core logic. Grid Step = ATR × Multiplier — market jitna volatile, grid utna wide. Choppy market mein grid bahut tight na ho jaaye, iske liye Min/Max Gap ek safety clamp lagate hain.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpEnableGrid</td><td class="default">true</td><td>False = sirf first entry chalti hai, naye grid levels add nahi honge.</td></tr>
+        <tr><td>InpGridATRMult</td><td class="default">0.7</td><td>Grid step = ATR × yeh number. Bada number = wide grid.</td></tr>
+        <tr><td>InpATRPeriod</td><td class="default">14</td><td>ATR kitne bars se calculate ho.</td></tr>
+        <tr><td>InpEnableMinGap</td><td class="default">false</td><td>Choppy market mein grid bahut tight na ho, iske liye minimum floor (pips).</td></tr>
+        <tr><td>InpMinGapPips</td><td class="default">10</td><td>Minimum grid gap (pips).</td></tr>
+        <tr><td>InpEnableMaxGap</td><td class="default">false</td><td>High volatility mein grid bahut wide na ho, iske liye upper cap.</td></tr>
+        <tr><td>InpMaxGapPips</td><td class="default">50</td><td>Maximum grid gap (pips).</td></tr>
+      </table>
+        <div class="warn">Naye users yahi galti karte hain: <code>InpGridATRMult</code> bahut chhota rakh dete hain — isse choppy market mein bahut zyada entries khul jaati hain. Pehle demo pe test karo.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 2 · विस्तार से</div>
+        <h1>ATR ग्रिड सिस्टम</h1>
+        <div class="concept">EA का मुख्य logic। Grid Step = ATR × Multiplier — मार्केट जितना volatile होगा, ग्रिड उतनी ही wide होगी। Choppy मार्केट में ग्रिड बहुत tight न हो जाए, इसके लिए Min/Max Gap एक safety clamp लगाते हैं।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpEnableGrid</td><td class="default">true</td><td>False करने पर सिर्फ़ पहली एंट्री चलेगी, नए ग्रिड लेवल नहीं जुड़ेंगे।</td></tr>
+        <tr><td>InpGridATRMult</td><td class="default">0.7</td><td>ग्रिड स्टेप = ATR × यह नंबर। बड़ा नंबर = wide ग्रिड।</td></tr>
+        <tr><td>InpATRPeriod</td><td class="default">14</td><td>ATR कितने bars से कैलकुलेट हो।</td></tr>
+        <tr><td>InpEnableMinGap</td><td class="default">false</td><td>Choppy मार्केट में ग्रिड बहुत tight न हो, इसके लिए minimum floor (pips)।</td></tr>
+        <tr><td>InpMinGapPips</td><td class="default">10</td><td>न्यूनतम ग्रिड गैप (pips)।</td></tr>
+        <tr><td>InpEnableMaxGap</td><td class="default">false</td><td>ज़्यादा volatility में ग्रिड बहुत wide न हो, इसके लिए upper cap।</td></tr>
+        <tr><td>InpMaxGapPips</td><td class="default">50</td><td>अधिकतम ग्रिड गैप (pips)।</td></tr>
+      </table>
+        <div class="warn">नए users यही गलती करते हैं: <code>InpGridATRMult</code> बहुत छोटा रख देते हैं — इससे choppy मार्केट में बहुत ज़्यादा entries खुल जाती हैं। पहले demo पर टेस्ट करें।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 2 · IN DETAIL</div>
+        <h1>ATR Grid System</h1>
+        <div class="concept">The EA's core logic. Grid Step = ATR × Multiplier — the more volatile the market, the wider the grid. Min/Max Gap act as a safety clamp so the grid never gets too tight in choppy markets.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpEnableGrid</td><td class="default">true</td><td>False = only the first entry runs, no new grid levels get added.</td></tr>
+        <tr><td>InpGridATRMult</td><td class="default">0.7</td><td>Grid step = ATR × this number. Higher number = wider grid.</td></tr>
+        <tr><td>InpATRPeriod</td><td class="default">14</td><td>How many bars ATR is calculated over.</td></tr>
+        <tr><td>InpEnableMinGap</td><td class="default">false</td><td>A floor so the grid never gets too tight in choppy markets (pips).</td></tr>
+        <tr><td>InpMinGapPips</td><td class="default">10</td><td>Minimum grid gap (pips).</td></tr>
+        <tr><td>InpEnableMaxGap</td><td class="default">false</td><td>A ceiling so the grid never gets too wide in high volatility.</td></tr>
+        <tr><td>InpMaxGapPips</td><td class="default">50</td><td>Maximum grid gap (pips).</td></tr>
+      </table>
+        <div class="warn">The most common new-user mistake: setting <code>InpGridATRMult</code> too small — this opens far too many entries in choppy markets. Test on demo first.</div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-watermark">AG TECHNICALS</div>
+        <svg viewBox="0 0 720 200" width="100%" style="position:relative;z-index:1;">
+      <text x="20" y="25" font-size="12" fill="#D4AF37">grid step example</text>
+      <line x1="20" y1="150" x2="700" y2="150" stroke="rgba(242,240,234,0.2)"/>
+      <circle cx="100" cy="90" r="6" fill="#D4AF37"/>
+      <text x="100" y="70" font-size="11" fill="#F2F0EA" text-anchor="middle">Entry 1</text>
+      <line x1="100" y1="90" x2="260" y2="120" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4,4"/>
+      <circle cx="260" cy="120" r="6" fill="#D4AF37"/>
+      <text x="260" y="145" font-size="11" fill="#F2F0EA" text-anchor="middle">Entry 2 (+grid step)</text>
+      <line x1="260" y1="120" x2="420" y2="150" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4,4"/>
+      <circle cx="420" cy="150" r="6" fill="#D4AF37"/>
+      <text x="420" y="175" font-size="11" fill="#F2F0EA" text-anchor="middle">Entry 3 (+grid step)</text>
+      <text x="600" y="40" font-size="11" fill="#00D68F" text-anchor="middle">MaxGap = ceiling</text>
+      <text x="600" y="185" font-size="11" fill="#FF4560" text-anchor="middle">MinGap = floor</text>
+    </svg>
+      </div>
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch3">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 3</div>
+        <h1>Lot Sizing & Martingale</h1>
+        <div class="concept">Har grid level par kitna lot khulega — flat, exponential (Normal), ya linear growth. Normal mode: BaseLot × Factor^level. Linear mode: har N grid steps ke baad lot mein fixed increment.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpBaseLot</td><td class="default">0.01</td><td>Pehle order ka lot size.</td></tr>
+        <tr><td>InpEnableMartingale</td><td class="default">true</td><td>False = hamesha flat BaseLot, chahe mode kuch bhi ho.</td></tr>
+        <tr><td>InpMartingaleMode</td><td class="default">Normal</td><td>Normal (exponential) ya Linear (steady) choose karo.</td></tr>
+        <tr><td>InpMartingaleFactor</td><td class="default">1.0</td><td>Normal mode: multiply factor. 1.0 = koi martingale nahi.</td></tr>
+        <tr><td>InpMartingaleLinearIncrement</td><td class="default">0.01</td><td>Linear mode: lot increment amount.</td></tr>
+        <tr><td>InpMartingaleStepGrids</td><td class="default">1</td><td>Linear mode: har kitne grids baad increment lage.</td></tr>
+        <tr><td>InpMaxLotsPerDirection</td><td class="default">2.0</td><td>Ek direction mein max total lots.</td></tr>
+        <tr><td>InpMaxTotalLots</td><td class="default">3.0</td><td>Dono directions milakar max total lots.</td></tr>
+      </table>
+        <div class="warn">Martingale risk badhata hai. <code>InpMartingaleFactor</code> ko 1.5+ rakhna sirf tabhi karo jab poori tarah samajh ke, aur hamesha <code>InpMaxLotsPerDirection</code> ek tight safety cap ke roop mein set karo.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 3</div>
+        <h1>लॉट साइज़िंग और मार्टिंगेल</h1>
+        <div class="concept">हर ग्रिड लेवल पर कितना lot खुलेगा — flat, exponential (Normal), या linear growth। Normal mode: BaseLot × Factor^level। Linear mode: हर N ग्रिड स्टेप्स के बाद lot में fixed increment।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpBaseLot</td><td class="default">0.01</td><td>पहले ऑर्डर का lot साइज़।</td></tr>
+        <tr><td>InpEnableMartingale</td><td class="default">true</td><td>False = हमेशा flat BaseLot, चाहे mode कुछ भी हो।</td></tr>
+        <tr><td>InpMartingaleMode</td><td class="default">Normal</td><td>Normal (exponential) या Linear (steady) चुनें।</td></tr>
+        <tr><td>InpMartingaleFactor</td><td class="default">1.0</td><td>Normal mode: multiply factor। 1.0 = कोई martingale नहीं।</td></tr>
+        <tr><td>InpMartingaleLinearIncrement</td><td class="default">0.01</td><td>Linear mode: lot increment amount।</td></tr>
+        <tr><td>InpMartingaleStepGrids</td><td class="default">1</td><td>Linear mode: हर कितने grids बाद increment लगे।</td></tr>
+        <tr><td>InpMaxLotsPerDirection</td><td class="default">2.0</td><td>एक दिशा में max total lots।</td></tr>
+        <tr><td>InpMaxTotalLots</td><td class="default">3.0</td><td>दोनों दिशाएं मिलाकर max total lots।</td></tr>
+      </table>
+        <div class="warn">Martingale risk बढ़ाता है। <code>InpMartingaleFactor</code> को 1.5+ रखना सिर्फ़ तभी करें जब पूरी तरह समझ के, और हमेशा <code>InpMaxLotsPerDirection</code> एक tight safety cap के रूप में सेट करें।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 3</div>
+        <h1>Lot Sizing & Martingale</h1>
+        <div class="concept">How much lot opens at each grid level — flat, exponential (Normal), or linear growth. Normal mode: BaseLot × Factor^level. Linear mode: a fixed increment added every N grid steps.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpBaseLot</td><td class="default">0.01</td><td>Lot size of the very first order.</td></tr>
+        <tr><td>InpEnableMartingale</td><td class="default">true</td><td>False = always flat BaseLot, regardless of mode.</td></tr>
+        <tr><td>InpMartingaleMode</td><td class="default">Normal</td><td>Choose Normal (exponential) or Linear (steady).</td></tr>
+        <tr><td>InpMartingaleFactor</td><td class="default">1.0</td><td>Normal mode multiplier. 1.0 = no martingale.</td></tr>
+        <tr><td>InpMartingaleLinearIncrement</td><td class="default">0.01</td><td>Linear mode: lot increment amount.</td></tr>
+        <tr><td>InpMartingaleStepGrids</td><td class="default">1</td><td>Linear mode: increment applied every N grid steps.</td></tr>
+        <tr><td>InpMaxLotsPerDirection</td><td class="default">2.0</td><td>Max total lots in one direction.</td></tr>
+        <tr><td>InpMaxTotalLots</td><td class="default">3.0</td><td>Max total lots across both directions combined.</td></tr>
+      </table>
+        <div class="warn">Martingale increases risk. Only set <code>InpMartingaleFactor</code> above 1.5 if you fully understand the implications, and always keep <code>InpMaxLotsPerDirection</code> as a tight safety cap.</div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-watermark">AG TECHNICALS</div>
+        <svg viewBox="0 0 720 200" width="100%" style="position:relative;z-index:1;">
+      <text x="20" y="20" font-size="12" fill="#D4AF37">Normal (exponential) vs Linear</text>
+      <line x1="20" y1="170" x2="700" y2="170" stroke="rgba(242,240,234,0.2)"/>
+      <rect x="60" y="150" width="30" height="20" fill="#00D68F"/>
+      <rect x="110" y="130" width="30" height="40" fill="#00D68F"/>
+      <rect x="160" y="95" width="30" height="75" fill="#00D68F"/>
+      <rect x="210" y="35" width="30" height="135" fill="#00D68F"/>
+      <text x="150" y="45" font-size="11" fill="#00D68F" text-anchor="middle">Normal: har level pe multiply</text>
+
+      <rect x="380" y="150" width="30" height="20" fill="#D4AF37"/>
+      <rect x="430" y="140" width="30" height="30" fill="#D4AF37"/>
+      <rect x="480" y="130" width="30" height="40" fill="#D4AF37"/>
+      <rect x="530" y="120" width="30" height="50" fill="#D4AF37"/>
+      <text x="470" y="45" font-size="11" fill="#D4AF37" text-anchor="middle">Linear: steady, fixed increment</text>
+    </svg>
+      </div>
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch4">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 4</div>
+        <h1>Basket Take-Profit</h1>
+        <div class="concept">Buy/Sell basket apna profit target 3 tareekon se set kar sakta hai: % of Equity, Fixed Money ($), ya Pips. Chaho to broker-side actual TP bhi laga sakte ho extra safety ke liye.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpEnableBasketTP</td><td class="default">true</td><td>Basket take-profit ON/OFF.</td></tr>
+        <tr><td>InpEnableBrokerTP</td><td class="default">false</td><td>True karne se broker-side actual TP bhi set hoga — EA/VPS disconnect ho jaaye to bhi broker khud close karega.</td></tr>
+        <tr><td>InpBasketTPMode</td><td class="default">% Equity</td><td>% Equity / Money ($) / Pips mein se koi ek.</td></tr>
+        <tr><td>InpBasketCloseTargetPctEq</td><td class="default">0.05</td><td>TP: % of equity (agar mode = % Equity).</td></tr>
+        <tr><td>InpBasketTPMoney</td><td class="default">5.0</td><td>TP: fixed $ (agar mode = Money).</td></tr>
+        <tr><td>InpBasketTPPips</td><td class="default">20</td><td>TP: pips (agar mode = Pips).</td></tr>
+      </table>
+        <div class="tip"><b>InpEnableBrokerTP = true</b> karna recommended hai — ye ek free extra safety layer hai jo internet/VPS disconnect hone par bhi tumhara TP protect karta hai.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 4</div>
+        <h1>बास्केट टेक-प्रॉफ़िट</h1>
+        <div class="concept">Buy/Sell बास्केट अपना profit target 3 तरीकों से सेट कर सकता है: % of Equity, Fixed Money ($), या Pips। चाहें तो broker-side असली TP भी लगा सकते हैं extra safety के लिए।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpEnableBasketTP</td><td class="default">true</td><td>Basket take-profit ON/OFF।</td></tr>
+        <tr><td>InpEnableBrokerTP</td><td class="default">false</td><td>True करने पर broker-side असली TP भी सेट होगा — EA/VPS disconnect होने पर भी broker खुद close करेगा।</td></tr>
+        <tr><td>InpBasketTPMode</td><td class="default">% Equity</td><td>% Equity / Money ($) / Pips में से कोई एक।</td></tr>
+        <tr><td>InpBasketCloseTargetPctEq</td><td class="default">0.05</td><td>TP: % of equity (अगर mode = % Equity)।</td></tr>
+        <tr><td>InpBasketTPMoney</td><td class="default">5.0</td><td>TP: fixed $ (अगर mode = Money)।</td></tr>
+        <tr><td>InpBasketTPPips</td><td class="default">20</td><td>TP: pips (अगर mode = Pips)।</td></tr>
+      </table>
+        <div class="tip"><b>InpEnableBrokerTP = true</b> करना recommended है — यह एक free extra safety layer है जो internet/VPS disconnect होने पर भी आपका TP protect करता है।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 4</div>
+        <h1>Basket Take-Profit</h1>
+        <div class="concept">A buy/sell basket can set its profit target in 3 ways: % of Equity, Fixed Money ($), or Pips. You can optionally also set an actual broker-side TP for extra safety.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpEnableBasketTP</td><td class="default">true</td><td>Basket take-profit ON/OFF.</td></tr>
+        <tr><td>InpEnableBrokerTP</td><td class="default">false</td><td>When true, an actual TP price is also set on each order — the broker will close it even if the EA/VPS disconnects.</td></tr>
+        <tr><td>InpBasketTPMode</td><td class="default">% Equity</td><td>Choose one of: % Equity / Money ($) / Pips.</td></tr>
+        <tr><td>InpBasketCloseTargetPctEq</td><td class="default">0.05</td><td>TP target as % of equity (used if mode = % Equity).</td></tr>
+        <tr><td>InpBasketTPMoney</td><td class="default">5.0</td><td>TP target as fixed $ (used if mode = Money).</td></tr>
+        <tr><td>InpBasketTPPips</td><td class="default">20</td><td>TP target in pips (used if mode = Pips).</td></tr>
+      </table>
+        <div class="tip">Setting <b>InpEnableBrokerTP = true</b> is recommended — it's a free extra safety layer that protects your TP even if the internet or VPS disconnects.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch5">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 5</div>
+        <h1>Account Protection</h1>
+        <div class="concept">4 alag layers: Min Balance (naye trades block), Basket Max-Loss (ek basket band), Floating Loss Protection (dono directions milakar sab band, EA chalti rehti hai), aur Circuit Breaker (permanent halt).</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpEnableMinBalance</td><td class="default">true</td><td>Balance ek threshold se neeche jaaye to naye trades band.</td></tr>
+        <tr><td>InpMinBalance</td><td class="default">50.0</td><td>Wo threshold ($).</td></tr>
+        <tr><td>InpEnableBasketSL</td><td class="default">true</td><td>Har basket ka apna max-loss %.</td></tr>
+        <tr><td>InpMaxLossPctEquity</td><td class="default">10.0</td><td>Basket max loss (% of equity).</td></tr>
+        <tr><td>InpEnableFloatingLossProtection</td><td class="default">false</td><td>Dono directions ka combined floating loss limit — EA chalti rehti hai.</td></tr>
+        <tr><td>InpFloatingLossLimit</td><td class="default">30.0</td><td>Floating loss limit ($).</td></tr>
+        <tr><td>InpEnableCircuitBreaker</td><td class="default">true</td><td>Last-resort — permanent halt (chart se remove/re-add karna padta hai).</td></tr>
+        <tr><td>InpMaxEquityLossPct</td><td class="default">90.0</td><td>Max equity loss % jispe circuit breaker trigger ho.</td></tr>
+      </table>
+        <div class="warn">Circuit Breaker sabse severe hai — <b>permanent halt</b> karta hai. Baaki teeno sirf temporary/partial restrictions hain, EA chalti rehti hai.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 5</div>
+        <h1>अकाउंट प्रोटेक्शन</h1>
+        <div class="concept">4 अलग layers: Min Balance (नए trades block), Basket Max-Loss (एक basket बंद), Floating Loss Protection (दोनों दिशाएं मिलाकर सब बंद, EA चलती रहती है), और Circuit Breaker (permanent halt)।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpEnableMinBalance</td><td class="default">true</td><td>बैलेंस एक threshold से नीचे जाए तो नए trades बंद।</td></tr>
+        <tr><td>InpMinBalance</td><td class="default">50.0</td><td>वह threshold ($)।</td></tr>
+        <tr><td>InpEnableBasketSL</td><td class="default">true</td><td>हर basket का अपना max-loss %।</td></tr>
+        <tr><td>InpMaxLossPctEquity</td><td class="default">10.0</td><td>Basket max loss (% of equity)।</td></tr>
+        <tr><td>InpEnableFloatingLossProtection</td><td class="default">false</td><td>दोनों दिशाओं का combined floating loss limit — EA चलती रहती है।</td></tr>
+        <tr><td>InpFloatingLossLimit</td><td class="default">30.0</td><td>Floating loss limit ($)।</td></tr>
+        <tr><td>InpEnableCircuitBreaker</td><td class="default">true</td><td>Last-resort — permanent halt (chart से remove/re-add करना पड़ता है)।</td></tr>
+        <tr><td>InpMaxEquityLossPct</td><td class="default">90.0</td><td>Max equity loss % जिस पर circuit breaker trigger हो।</td></tr>
+      </table>
+        <div class="warn">Circuit Breaker सबसे severe है — <b>permanent halt</b> करता है। बाकी तीनों सिर्फ़ temporary/partial restrictions हैं, EA चलती रहती है।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 5</div>
+        <h1>Account Protection</h1>
+        <div class="concept">4 separate layers: Min Balance (blocks new trades), Basket Max-Loss (closes one basket), Floating Loss Protection (closes everything, EA keeps running), and Circuit Breaker (permanent halt).</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpEnableMinBalance</td><td class="default">true</td><td>Blocks new trades once balance drops below a threshold.</td></tr>
+        <tr><td>InpMinBalance</td><td class="default">50.0</td><td>That threshold ($).</td></tr>
+        <tr><td>InpEnableBasketSL</td><td class="default">true</td><td>Each basket's own max-loss %.</td></tr>
+        <tr><td>InpMaxLossPctEquity</td><td class="default">10.0</td><td>Basket max loss (% of equity).</td></tr>
+        <tr><td>InpEnableFloatingLossProtection</td><td class="default">false</td><td>Combined floating loss limit across both directions — EA keeps running.</td></tr>
+        <tr><td>InpFloatingLossLimit</td><td class="default">30.0</td><td>Floating loss limit ($).</td></tr>
+        <tr><td>InpEnableCircuitBreaker</td><td class="default">true</td><td>Last resort — permanent halt (requires removing/re-adding the EA to reset).</td></tr>
+        <tr><td>InpMaxEquityLossPct</td><td class="default">90.0</td><td>Max equity loss % that triggers the circuit breaker.</td></tr>
+      </table>
+        <div class="warn">The Circuit Breaker is the most severe — it causes a <b>permanent halt</b>. The other three are only temporary/partial restrictions; the EA keeps running.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch6">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 6</div>
+        <h1>EMA Bias Filter</h1>
+        <div class="concept">EMA Fast/Slow crossover se decide hota hai ki naya basket kis direction mein start ho sakta hai. Ek baar basket start ho jaaye, uska grid-add bias change hone par bhi chalti rehti hai.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpUseEMABias</td><td class="default">true</td><td>False = filter completely off, dono directions hamesha allowed.</td></tr>
+        <tr><td>InpEMAFast</td><td class="default">20</td><td>Fast EMA period.</td></tr>
+        <tr><td>InpEMASlow</td><td class="default">50</td><td>Slow EMA period.</td></tr>
+        <tr><td>InpEMABiasThreshold</td><td class="default">0.0</td><td>Bias confirm karne ka minimum EMA difference.</td></tr>
+      </table>
+        <div class="tip">Yeh sirf <b>naye basket ki first entry</b> ko gate karta hai — taaki already-open basket bina averaging support ke na phas jaaye.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 6</div>
+        <h1>EMA बायस फ़िल्टर</h1>
+        <div class="concept">EMA Fast/Slow crossover से decide होता है कि नया basket किस दिशा में शुरू हो सकता है। एक बार basket शुरू हो जाए, उसका grid-add bias बदलने पर भी चलती रहती है।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpUseEMABias</td><td class="default">true</td><td>False = filter पूरी तरह off, दोनों दिशाएं हमेशा allowed।</td></tr>
+        <tr><td>InpEMAFast</td><td class="default">20</td><td>Fast EMA period।</td></tr>
+        <tr><td>InpEMASlow</td><td class="default">50</td><td>Slow EMA period।</td></tr>
+        <tr><td>InpEMABiasThreshold</td><td class="default">0.0</td><td>Bias confirm करने का minimum EMA difference।</td></tr>
+      </table>
+        <div class="tip">यह सिर्फ़ <b>नए basket की पहली entry</b> को gate करता है — ताकि पहले से खुला basket बिना averaging support के न फंस जाए।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 6</div>
+        <h1>EMA Bias Filter</h1>
+        <div class="concept">EMA Fast/Slow crossover decides which direction a new basket is allowed to start in. Once a basket has started, its grid-add keeps going even if the bias later changes.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpUseEMABias</td><td class="default">true</td><td>False = filter completely off, both directions always allowed.</td></tr>
+        <tr><td>InpEMAFast</td><td class="default">20</td><td>Fast EMA period.</td></tr>
+        <tr><td>InpEMASlow</td><td class="default">50</td><td>Slow EMA period.</td></tr>
+        <tr><td>InpEMABiasThreshold</td><td class="default">0.0</td><td>Minimum EMA difference required to confirm a bias.</td></tr>
+      </table>
+        <div class="tip">This only gates a <b>new basket's first entry</b> — so an already-open basket never gets stuck without averaging support.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch7">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 7</div>
+        <h1>Time Filter</h1>
+        <div class="concept">EA ko sirf specific server-time hours mein hi nayi entries lene do. Already open baskets par koi asar nahi padta.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpEnableTimeFilter</td><td class="default">false</td><td>False = 24/5 trading.</td></tr>
+        <tr><td>InpStartHour</td><td class="default">7</td><td>Server time ke hisaab se window start (0-23).</td></tr>
+        <tr><td>InpEndHour</td><td class="default">22</td><td>Server time ke hisaab se window end (0-23).</td></tr>
+      </table>
+        <div class="tip">Overnight sessions bhi supported hain — jaise 22 se 7 tak, jahan Start > End ho.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 7</div>
+        <h1>टाइम फ़िल्टर</h1>
+        <div class="concept">EA को सिर्फ़ specific server-time hours में ही नई entries लेने दें। पहले से खुले baskets पर कोई असर नहीं पड़ता।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpEnableTimeFilter</td><td class="default">false</td><td>False = 24/5 trading।</td></tr>
+        <tr><td>InpStartHour</td><td class="default">7</td><td>Server time के हिसाब से window start (0-23)।</td></tr>
+        <tr><td>InpEndHour</td><td class="default">22</td><td>Server time के हिसाब से window end (0-23)।</td></tr>
+      </table>
+        <div class="tip">Overnight sessions भी supported हैं — जैसे 22 से 7 तक, जहां Start > End हो।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 7</div>
+        <h1>Time Filter</h1>
+        <div class="concept">Restrict the EA to only take new entries during specific server-time hours. Already open baskets are unaffected.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpEnableTimeFilter</td><td class="default">false</td><td>False = 24/5 trading.</td></tr>
+        <tr><td>InpStartHour</td><td class="default">7</td><td>Window start, server time (0-23).</td></tr>
+        <tr><td>InpEndHour</td><td class="default">22</td><td>Window end, server time (0-23).</td></tr>
+      </table>
+        <div class="tip">Overnight sessions are supported too — e.g. 22 to 7, where Start > End.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch8">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 8</div>
+        <h1>Max Orders Cap</h1>
+        <div class="concept">Ek direction mein kitni grid levels tak jaaya ja sakta hai — position count based cap, jo lot-cap se alag hai.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpEnableMaxOrders</td><td class="default">true</td><td>ON/OFF.</td></tr>
+        <tr><td>InpMaxOrdersPerDirection</td><td class="default">20</td><td>Kitni positions tak allowed, ek direction mein.</td></tr>
+      </table>
+        <div class="tip">Choppy market mein bahut saari chhoti entries khul sakti hain volume-cap tak pahunchne se pehle — yeh setting isse rokti hai.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 8</div>
+        <h1>मैक्स ऑर्डर्स कैप</h1>
+        <div class="concept">एक दिशा में कितनी grid levels तक जाया जा सकता है — position count based cap, जो lot-cap से अलग है।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpEnableMaxOrders</td><td class="default">true</td><td>ON/OFF।</td></tr>
+        <tr><td>InpMaxOrdersPerDirection</td><td class="default">20</td><td>एक दिशा में कितनी positions तक allowed।</td></tr>
+      </table>
+        <div class="tip">Choppy मार्केट में बहुत सारी छोटी entries खुल सकती हैं volume-cap तक पहुंचने से पहले — यह setting इसे रोकती है।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 8</div>
+        <h1>Max Orders Cap</h1>
+        <div class="concept">How many grid levels a direction can reach — a position-count cap, separate from the lot-volume cap.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpEnableMaxOrders</td><td class="default">true</td><td>ON/OFF.</td></tr>
+        <tr><td>InpMaxOrdersPerDirection</td><td class="default">20</td><td>Max positions allowed in one direction.</td></tr>
+      </table>
+        <div class="tip">In choppy markets, many small entries can open before the volume cap is reached — this setting prevents that.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch9">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 9</div>
+        <h1>Daily Profit/Loss Limits</h1>
+        <div class="concept">Din ke liye ek $ profit target ya loss limit — hit hote hi EA us din ke liye pause ho jaata hai, agle din automatically resume.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpEnableDailyLimits</td><td class="default">false</td><td>ON/OFF.</td></tr>
+        <tr><td>InpDailyProfitTarget</td><td class="default">100.0</td><td>Daily profit target ($).</td></tr>
+        <tr><td>InpDailyLossLimit</td><td class="default">50.0</td><td>Daily loss limit ($).</td></tr>
+      </table>
+        <div class="tip">Circuit Breaker se alag hai — yeh <b>permanent nahi</b>, sirf us trading-day tak limited hai.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 9</div>
+        <h1>डेली प्रॉफ़िट/लॉस लिमिट्स</h1>
+        <div class="concept">दिन के लिए एक $ profit target या loss limit — hit होते ही EA उस दिन के लिए pause हो जाता है, अगले दिन automatically resume।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpEnableDailyLimits</td><td class="default">false</td><td>ON/OFF।</td></tr>
+        <tr><td>InpDailyProfitTarget</td><td class="default">100.0</td><td>Daily profit target ($)।</td></tr>
+        <tr><td>InpDailyLossLimit</td><td class="default">50.0</td><td>Daily loss limit ($)।</td></tr>
+      </table>
+        <div class="tip">Circuit Breaker से अलग है — यह <b>permanent नहीं</b>, सिर्फ़ उस trading-day तक limited है।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 9</div>
+        <h1>Daily Profit/Loss Limits</h1>
+        <div class="concept">A daily $ profit target or loss limit — once hit, the EA pauses for that day and automatically resumes the next day.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpEnableDailyLimits</td><td class="default">false</td><td>ON/OFF.</td></tr>
+        <tr><td>InpDailyProfitTarget</td><td class="default">100.0</td><td>Daily profit target ($).</td></tr>
+        <tr><td>InpDailyLossLimit</td><td class="default">50.0</td><td>Daily loss limit ($).</td></tr>
+      </table>
+        <div class="tip">Unlike the Circuit Breaker, this is <b>not permanent</b> — it only applies for that trading day.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+    <div class="chapter" id="ch10">
+      <div class="lang-block" data-lang="hinglish">
+        <div class="chip">SECTION 10</div>
+        <h1>Dashboard & Visual Aids</h1>
+        <div class="concept">Ek gold-bordered on-chart panel jo Balance, Equity, P&L, ATR/Grid, Bias, Circuit Breaker, aur Last Error sab ek jagah dikhata hai.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>Naye user ke liye</th></tr>
+        <tr><td>InpShowDashboard</td><td class="default">true</td><td>Poora panel ON/OFF.</td></tr>
+        <tr><td>InpShowMaxDD</td><td class="default">true</td><td>Max drawdown row dikhao.</td></tr>
+        <tr><td>InpShowAvgTPLine</td><td class="default">true</td><td>Basket TP visual line dikhao.</td></tr>
+        <tr><td>InpDashboardX / Y</td><td class="default">10 / 20</td><td>Panel ki screen position.</td></tr>
+      </table>
+        <div class="tip"><b>Last Trade Error</b> row sabse useful hai — broker ka exact reason (jaise "Market Closed") turant dikhta hai, bina Journal khole.</div>
+      </div>
+      <div class="lang-block" data-lang="hindi" style="display:none">
+        <div class="chip">सेक्शन 10</div>
+        <h1>डैशबोर्ड और विज़ुअल एड्स</h1>
+        <div class="concept">एक gold-bordered on-chart panel जो Balance, Equity, P&L, ATR/Grid, Bias, Circuit Breaker, और Last Error सब एक जगह दिखाता है।</div>
+        <table class="settings">
+        <tr><th>पैरामीटर</th><th>डिफ़ॉल्ट</th><th>नए यूज़र के लिए</th></tr>
+        <tr><td>InpShowDashboard</td><td class="default">true</td><td>पूरा panel ON/OFF।</td></tr>
+        <tr><td>InpShowMaxDD</td><td class="default">true</td><td>Max drawdown row दिखाओ।</td></tr>
+        <tr><td>InpShowAvgTPLine</td><td class="default">true</td><td>Basket TP visual line दिखाओ।</td></tr>
+        <tr><td>InpDashboardX / Y</td><td class="default">10 / 20</td><td>Panel की screen position।</td></tr>
+      </table>
+        <div class="tip"><b>Last Trade Error</b> row सबसे useful है — broker का exact reason (जैसे "Market Closed") तुरंत दिखता है, बिना Journal खोले।</div>
+      </div>
+      <div class="lang-block" data-lang="english" style="display:none">
+        <div class="chip">SECTION 10</div>
+        <h1>Dashboard & Visual Aids</h1>
+        <div class="concept">A gold-bordered on-chart panel showing Balance, Equity, P&L, ATR/Grid, Bias, Circuit Breaker, and Last Error, all in one place.</div>
+        <table class="settings">
+        <tr><th>Parameter</th><th>Default</th><th>For new users</th></tr>
+        <tr><td>InpShowDashboard</td><td class="default">true</td><td>Toggle the whole panel.</td></tr>
+        <tr><td>InpShowMaxDD</td><td class="default">true</td><td>Show the max drawdown row.</td></tr>
+        <tr><td>InpShowAvgTPLine</td><td class="default">true</td><td>Show the basket TP visual line.</td></tr>
+        <tr><td>InpDashboardX / Y</td><td class="default">10 / 20</td><td>Panel's screen position.</td></tr>
+      </table>
+        <div class="tip">The <b>Last Trade Error</b> row is the most useful one — the broker's exact reason (like "Market Closed") shows up instantly, without opening the Journal.</div>
+      </div>
+      
+      <div class="stamp">AG TECHNICALS</div>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && ['c','u','s','p'].includes(e.key.toLowerCase())) { e.preventDefault(); }
+    });
+    function showChapter(n, btn) {
+      document.querySelectorAll('.chapter').forEach(function(c){ c.classList.remove('active'); });
+      document.getElementById('ch' + n).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+    function setLang(lang, btn) {
+      document.querySelectorAll('.lang-block').forEach(function(b){
+        b.style.display = (b.dataset.lang === lang) ? '' : 'none';
+      });
+      document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>

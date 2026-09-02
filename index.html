@@ -781,8 +781,10 @@ function toggleFaq(el){ const o=el.classList.contains('open'); document.querySel
 document.addEventListener('mousemove',e=>{ const g=document.getElementById('mglow'); if(g){ g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px'; } });
 
 /* ── SCROLL REVEAL ── */
-const obs=new IntersectionObserver(entries=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); }); },{threshold:0.12});
+const obs=new IntersectionObserver(entries=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); }); },{threshold:0.05});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+// Immediately make above-fold elements visible
+document.querySelectorAll('.hero .reveal, .hero-left, .chart-panel').forEach(el=>el.classList.add('visible'));
 
 /* ── TRADINGVIEW ── */
 const SYM_MAP={'BTCUSD':'BINANCE:BTCUSDT','BTCUSDT':'BINANCE:BTCUSDT','ETHUSD':'BINANCE:ETHUSDT','XAUUSD':'TVC:GOLD','GOLD':'TVC:GOLD','SILVER':'TVC:SILVER','XAGUSD':'TVC:SILVER','EURUSD':'FX:EURUSD','GBPUSD':'FX:GBPUSD','USDJPY':'FX:USDJPY','AUDUSD':'FX:AUDUSD','USDCAD':'FX:USDCAD','USDCHF':'FX:USDCHF','NZDUSD':'FX:NZDUSD','GBPJPY':'FX:GBPJPY','EURJPY':'FX:EURJPY','NAS100':'NASDAQ:NDX','NASDAQ':'NASDAQ:NDX','SPX500':'SP:SPX','SPX':'SP:SPX','DOW':'DJ:DJI','CRUDE':'TVC:USOIL','OIL':'TVC:USOIL','BNBUSD':'BINANCE:BNBUSDT','SOLUSD':'BINANCE:SOLUSDT','XRPUSD':'BINANCE:XRPUSDT','ADAUSD':'BINANCE:ADAUSDT'};

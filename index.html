@@ -245,6 +245,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         <textarea id="mcfMsg" placeholder="Any specific requirements? (optional)" style="background:#141318;border:1px solid #2a2736;border-radius:8px;padding:10px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;min-height:70px;resize:none;" onfocus="this.style.borderColor='#e8b84b'" onblur="this.style.borderColor='#2a2736'"></textarea>
       </div>
     </div>
+    <div id="modalFileWrap" style="display:none;margin-bottom:12px;">
+      <a id="modalFileBtn" href="#" download style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;background:#141318;border:2px solid #e8b84b;color:#e8b84b;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='rgba(232,184,75,0.1)'" onmouseout="this.style.background='#141318'">⬇ Download File</a>
+    </div>
     <button class="modal-btn" id="modalBtn">Join Waitlist →</button>
     <div class="modal-coming" id="modalComing">Full Page Coming Soon</div>
   </div>
@@ -576,8 +579,8 @@ document.getElementById('prodGrid').innerHTML = visProds.map(p=>{
   } else if(p.type==='page'){
     onclick = "window.location.href='" + p.url + "'";
   } else {
-    const t=p.title.replace(/'/g,"\\'")||'',d=p.desc.replace(/'/g,"\\'")||'',c=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||'');
-    onclick = "openModal('" + t + "','" + d + "','" + p.icon + "','" + v + "','" + c + "','" + cu + "','" + (isBridge?'bridge':'') + "')";
+    const t=p.title.replace(/'/g,"\\'")||'',d=p.desc.replace(/'/g,"\\'")||'',c=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||''),fv=(p.fileUrl?'1':''),fn=(p.fileName||p.name||'').replace(/'/g,"\\'")||'';
+    onclick = "openModal('" + t + "','" + d + "','" + p.icon + "','" + v + "','" + c + "','" + cu + "','" + (isBridge?'bridge':'') + "','" + fv + "','" + fn + "','" + p.id + "')";
   }
   return '<button class="prod-btn" onclick="' + onclick + '">' +
     '<div class="prod-icon-wrap">' + p.icon + '</div>' +
@@ -716,7 +719,7 @@ function doSiteLogin(){
 }
 
 /* ── MODAL ── */
-function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet){
+function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet,hasFile,fileName,prodId){
   document.getElementById('modalTag').textContent   = icon+'  Service';
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalDesc').textContent  = desc;
@@ -724,6 +727,19 @@ function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet){
   if(videoUrl){ vw.style.display='block'; vw.innerHTML=videoEmbed(videoUrl); } else { vw.style.display='none'; vw.innerHTML=''; }
   const cw=document.getElementById('modalCodeWrap');
   if(codeSnippet){ cw.style.display='block'; document.getElementById('modalCodeBlock').textContent=codeSnippet; } else { cw.style.display='none'; }
+  // File download
+  const fw=document.getElementById('modalFileWrap');
+  const fb=document.getElementById('modalFileBtn');
+  if(hasFile==='1' && prodId){
+    const allProds=load('products',D.products);
+    const prod=allProds.find(p=>p.id===prodId);
+    if(prod&&prod.fileUrl){
+      fw.style.display='block';
+      fb.href=prod.fileUrl;
+      fb.download=prod.fileName||fileName||'download';
+      fb.textContent='⬇ Download '+(prod.fileName||fileName||'File');
+    } else { fw.style.display='none'; }
+  } else { fw.style.display='none'; }
   const btn=document.getElementById('modalBtn');
   // Check if this is a contact/inquiry modal (Custom Strategy or Guide)
   const isInquiry = ['custom strategy','guide','guides'].includes(title.toLowerCase());

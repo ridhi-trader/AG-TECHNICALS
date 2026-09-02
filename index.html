@@ -755,12 +755,7 @@ function openModal(title,desc,icon,videoUrl,ctaText,ctaUrl,codeSnippet,hasFile,f
       const msg=document.getElementById('mcfMsg').value.trim();
       const wa=contact.find&&contact.find(c=>c.name==='WhatsApp');
       const waNum=(wa&&wa.url?wa.url.replace('https://wa.me/',''):'919876543210');
-      const text=encodeURIComponent('Hi AG Technicals! I am interested in *'+title+'*.
-
-Name: '+name+'
-Market: '+market+'
-Experience: '+exp+(msg?'
-Message: '+msg:''));
+      const text=encodeURIComponent('Hi AG Technicals! I am interested in *'+title+'*.\n\nName: '+name+'\nMarket: '+market+'\nExperience: '+exp+(msg?'\nMessage: '+msg:''));
       window.open('https://wa.me/'+waNum+'?text='+text,'_blank');
     };
   } else {

@@ -260,5 +260,6 @@ async def chat(req: ChatReq):
     return {"reply": reply}
 
 @app.get("/")
+@app.head("/")
 def root():
     return {"status": "AG Assistant API running"}

@@ -636,7 +636,7 @@ document.getElementById('dossierCard').innerHTML = `
             <span style="font-size:10px;color:#5fcf94;font-weight:600;">LIVE</span>
           </div>
           <div style="font-size:20px;font-weight:700;color:#fdfcf9;margin-bottom:5px;font-family:'Space Grotesk',sans-serif;">${news.dossierTitle||D.news.dossierTitle}</div>
-          <div style="font-size:13px;color:#b0ada0;line-height:1.5;">${news.dossierSub||D.news.dossierSub}</div>
+          <div id="dossierSubText" style="font-size:13px;color:#b0ada0;line-height:1.5;">${news.dossierSub||D.news.dossierSub}</div>
         </div>
       </div>
       <div style="flex-shrink:0;background:rgba(201,162,39,0.15);border:1px solid rgba(201,162,39,0.4);color:#e8c766;font-size:13px;font-weight:700;padding:10px 20px;border-radius:8px;white-space:nowrap;font-family:'Space Grotesk',sans-serif;">Read Dossier →</div>
@@ -808,6 +808,15 @@ document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.k
     }
   }
 
+  function updateDossierCard(prices){
+    // Update dossier card sub-text with live gold price
+    const gold = prices && prices.gold;
+    if(!gold) return;
+    const chg = gold.chg >= 0 ? '▲' : '▼';
+    const sub = document.getElementById('dossierSubText');
+    if(sub) sub.textContent = 'XAU/USD ' + chg + ' $' + gold.price.toFixed(2) + ' · Live COT + DXY + Institutional Flow — Updated';
+  }
+
   async function loadMarketData(){
     try {
       const res = await fetch(API, {signal: AbortSignal.timeout(15000)});
@@ -815,6 +824,7 @@ document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.k
       const data = await res.json();
       if(data.ticker && data.ticker.length) renderTicker(data.ticker);
       if(data.news) renderNews(data.news);
+      if(data.prices) updateDossierCard(data.prices);
     } catch(e){
       // silently fail — static defaults already rendered
     }

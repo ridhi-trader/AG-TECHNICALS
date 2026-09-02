@@ -133,6 +133,24 @@ select.inp{cursor:pointer;}
     <div class="field"><label class="label">Modal Description</label><textarea class="inp" id="peDesc"></textarea></div>
     <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="peCta"></div>
     <div class="field">
+      <label class="label">📷 Product Image (Direct Upload)</label>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+        <input type="file" id="peImgFile" accept="image/*" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
+        <button class="btn-out" onclick="uploadPeImg()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
+      </div>
+      <div id="peImgPreview" style="margin-bottom:6px;display:none;"><img id="peImgThumb" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;border:1px solid #2a2736;"></div>
+      <input class="inp" id="peImg" placeholder="Image URL auto-filled after upload" style="font-size:11px;color:var(--t3);">
+    </div>
+    <div class="field">
+      <label class="label">📎 Downloadable File (EA / PDF / Guide / any)</label>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+        <input type="file" id="peProdFile" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
+        <button class="btn-out" onclick="uploadPeFile()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
+      </div>
+      <div id="peProdFileStatus" style="font-size:11px;color:var(--t3);margin-bottom:4px;"></div>
+      <input class="inp" id="peProdFileUrl" placeholder="File data URL (auto-filled after upload)" style="font-size:11px;color:var(--t3);">
+    </div>
+    <div class="field">
       <label class="label">Action</label>
       <div class="link-toggle">
         <button class="link-opt active" id="peOptModal" onclick="setPeLinkType('modal')">Popup Modal</button>
@@ -241,6 +259,7 @@ select.inp{cursor:pointer;}
       <button class="sb-item" onclick="show('indicators',this)">📈 TV Indicators</button>
       <button class="sb-item" onclick="show('users',this)">👥 Users & Access</button>
       <button class="sb-item" onclick="show('analytics',this)">📊 Analytics & Revenue</button>
+      <button class="sb-item" onclick="show('strategy',this)">⚙️ Custom Strategy Sender</button>
       <button class="sb-item" onclick="show('uploads',this)">📁 File Uploads</button>
       <button class="sb-item" onclick="show('faq',this)">❓ FAQ</button>
       <button class="sb-item" onclick="show('ticker',this)">📡 Ticker Strip</button>
@@ -324,6 +343,56 @@ select.inp{cursor:pointer;}
       </div>
     </div>
 
+
+
+    <!-- CUSTOM STRATEGY SENDER -->
+    <div class="page" id="page-strategy">
+      <div class="page-tag">Custom Strategy</div>
+      <div class="page-title">Custom Strategy <span class="hl">Sender</span></div>
+      <div class="page-sub">Attach Strategy File + Details → Send Directly To User Via WhatsApp Or Telegram.</div>
+
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">📋 Strategy Details</div>
+        <div class="g2" style="margin-bottom:10px;">
+          <div class="field" style="margin:0;"><label class="label">User Name</label><input class="inp" id="csUserName" placeholder="e.g. Rahul Sharma"></div>
+          <div class="field" style="margin:0;"><label class="label">User WhatsApp / Phone</label><input class="inp" id="csUserWa" placeholder="919876543210"></div>
+        </div>
+        <div class="g2" style="margin-bottom:10px;">
+          <div class="field" style="margin:0;"><label class="label">Market / Instrument</label><input class="inp" id="csMarket" placeholder="e.g. XAUUSD, BTCUSD, NIFTY50"></div>
+          <div class="field" style="margin:0;"><label class="label">Timeframe</label><input class="inp" id="csTf" placeholder="e.g. 1H, 4H, Daily"></div>
+        </div>
+        <div class="field"><label class="label">Strategy Notes / Message To User</label><textarea class="inp" id="csNotes" style="min-height:80px;" placeholder="e.g. Hi Rahul, your custom Gold strategy is ready. Use H1 timeframe, entry on SMC OB retest, SL below swing..."></textarea></div>
+      </div>
+
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">📎 Attach Strategy File</div>
+        <div class="card-sub" style="margin-bottom:12px;">Upload PDF, Excel, Word, .ex5 EA or any file — stored here, user gets download link in WhatsApp message.</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="file" id="csFileInput" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;flex:1;">
+          <button class="btn-out" onclick="uploadCsFile()" style="padding:8px 20px;white-space:nowrap;">📤 Upload File</button>
+        </div>
+        <div id="csFileStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
+      </div>
+
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">📱 Send To User</div>
+        <div style="display:grid;gap:10px;margin-bottom:14px;">
+          <div style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:14px;font-size:12px;color:#c8c4d0;line-height:1.7;white-space:pre-wrap;font-family:monospace;" id="csPreviewMsg">Fill in the fields above to preview your message...</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-gold" onclick="sendCsWa()">💬 Send Via WhatsApp</button>
+          <button class="btn-out" onclick="sendCsTg()">✈️ Send Via Telegram</button>
+          <button class="btn-out" onclick="copyCsMsg()">📋 Copy Message</button>
+        </div>
+        <div class="card-sub" style="margin-top:10px;">Note: File is saved in admin. WhatsApp/Telegram will open with pre-filled message. Share the file manually or use the download link in the message.</div>
+      </div>
+
+      <!-- Sent History -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">📜 Sent History</div>
+        <div id="csSentList"><div style="color:var(--t3);font-size:13px;">No strategies sent yet.</div></div>
+      </div>
+    </div>
 
     <!-- ANALYTICS -->
     <div class="page" id="page-analytics">
@@ -639,7 +708,7 @@ function show(name,btn){
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
-  const loaders = {products:renderProds, indicators:renderInds, users:renderUsers, analytics:renderAnalytics, uploads:renderUploads, faq:renderFaq, ticker:renderTicker, contact:renderContact, hero:loadHero, about:loadAbout, newsed:loadNews, export:genExport};
+  const loaders = {products:renderProds, indicators:renderInds, users:renderUsers, analytics:renderAnalytics, uploads:renderUploads, strategy:renderCsPage, faq:renderFaq, ticker:renderTicker, contact:renderContact, hero:loadHero, about:loadAbout, newsed:loadNews, export:genExport};
   if(loaders[name]) loaders[name]();
 }
 
@@ -715,6 +784,15 @@ function openProdEd(i){
   document.getElementById('peUrl').value=p.url||'';
   setPeLinkType(p.type||'modal');
   updatePePreview();
+  // image
+  document.getElementById('peImg').value = p.img||'';
+  const pp=document.getElementById('peImgPreview'), pt=document.getElementById('peImgThumb');
+  if(p.img&&p.img.startsWith('data:')){pp.style.display='block';pt.src=p.img;}else{pp.style.display='none';}
+  document.getElementById('peImgFile').value='';
+  // file
+  document.getElementById('peProdFileUrl').value = p.fileUrl||'';
+  document.getElementById('peProdFileStatus').textContent = p.fileName?'File: '+p.fileName:'';
+  document.getElementById('peProdFile').value='';
   document.getElementById('prodOverlay').classList.add('open');
 }
 function closeProdEd(){ document.getElementById('prodOverlay').classList.remove('open'); editProdIdx=-1; }
@@ -728,6 +806,8 @@ function saveProdEd(){
   p.desc=document.getElementById('peDesc').value||p.desc;
   p.cta=document.getElementById('peCta').value||p.cta;
   p.type=peLinkType; p.url=document.getElementById('peUrl').value||'';
+  const pImg=document.getElementById('peImg').value; if(pImg) p.img=pImg;
+  const pFile=document.getElementById('peProdFileUrl').value; if(pFile) p.fileUrl=pFile;
   save('products',products); renderProds(); closeProdEd(); genExport();
   toast('Saved: '+p.name);
 }
@@ -1285,6 +1365,133 @@ async function uploadIeImg(){
   prev.style.display='block';
   toast('Image Ready — Click Save');
 }
+
+
+async function uploadPeImg(){
+  const f=document.getElementById('peImgFile').files[0]; if(!f){toast('Select image first','err');return;}
+  const b64=await toB64(f);
+  document.getElementById('peImg').value=b64;
+  document.getElementById('peImgThumb').src=b64;
+  document.getElementById('peImgPreview').style.display='block';
+  if(editProdIdx>=0){ products[editProdIdx].img=b64; save('products',products); }
+  toast('Image Ready — Click Save');
+}
+async function uploadPeFile(){
+  const f=document.getElementById('peProdFile').files[0]; if(!f){toast('Select file first','err');return;}
+  const st=document.getElementById('peProdFileStatus');
+  st.textContent='Reading...';
+  try{
+    const b64=await toB64(f);
+    document.getElementById('peProdFileUrl').value=b64;
+    if(editProdIdx>=0){ products[editProdIdx].fileUrl=b64; products[editProdIdx].fileName=f.name; save('products',products); }
+    st.style.color='#4ade80';
+    st.textContent='✓ '+f.name+' ('+((f.size/1024)<1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')+') — ready';
+    toast('File Uploaded — Click Save');
+  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+}
+
+
+/* ═══ CUSTOM STRATEGY SENDER ═══ */
+let csSentHistory = ls('csSentHistory', []);
+let csFileData = null;
+let csFileName = '';
+
+function renderCsPage(){
+  renderCsSent();
+  updateCsPreview();
+}
+
+function updateCsPreview(){
+  const name = document.getElementById('csUserName')?.value.trim()||'[User]';
+  const market = document.getElementById('csMarket')?.value.trim()||'[Market]';
+  const tf = document.getElementById('csTf')?.value.trim()||'[Timeframe]';
+  const notes = document.getElementById('csNotes')?.value.trim()||'';
+  const fileNote = csFileName ? '\n\n📎 File Attached: ' + csFileName + '\n(Download link sent separately)' : '';
+  const msg = `Hi ${name}! 👋\n\nYour Custom Strategy From AG Technicals Is Ready! ✅\n\n📊 Market: ${market}\n⏱ Timeframe: ${tf}\n\n${notes}${fileNote}\n\n— AG Technicals\nhttps://ag-technicals.onrender.com`;
+  const el = document.getElementById('csPreviewMsg');
+  if(el) el.textContent = msg;
+  return msg;
+}
+
+// Live preview on input
+document.addEventListener('DOMContentLoaded', ()=>{
+  ['csUserName','csMarket','csTf','csNotes'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input', updateCsPreview);
+  });
+});
+
+async function uploadCsFile(){
+  const f = document.getElementById('csFileInput').files[0];
+  if(!f){ toast('Select File First','err'); return; }
+  const st = document.getElementById('csFileStatus');
+  st.textContent = 'Reading...';
+  try{
+    const b64 = await toB64(f);
+    csFileData = b64; csFileName = f.name;
+    // Save to uploadedFiles
+    let uf = ls('uploadedFiles',{ea:null,videos:[],images:[]});
+    if(!uf.strategies) uf.strategies = [];
+    uf.strategies.push({name:f.name, size:f.size, data:b64, date:new Date().toISOString().split('T')[0]});
+    save('uploadedFiles', uf);
+    st.style.color='#4ade80';
+    st.textContent = '✓ '+f.name+' ('+((f.size/1024)<1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')+') — ready to send';
+    updateCsPreview();
+    toast('File Ready');
+  }catch(e){ st.style.color='#f26d6d'; st.textContent='Error: '+e.message; }
+}
+
+function getCsMsg(){ return updateCsPreview(); }
+
+function sendCsWa(){
+  const wa = document.getElementById('csUserWa').value.trim().replace(/\D/g,'');
+  if(!wa){ toast('Enter WhatsApp Number','err'); return; }
+  const msg = getCsMsg();
+  logCsSent('WhatsApp', wa);
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(msg), '_blank');
+  toast('WhatsApp Opened!');
+}
+
+function sendCsTg(){
+  const wa = document.getElementById('csUserWa').value.trim();
+  const msg = getCsMsg();
+  logCsSent('Telegram', wa);
+  // If it's a username, open Telegram DM
+  const tg = wa.startsWith('@') ? wa.slice(1) : wa;
+  window.open('https://t.me/'+tg, '_blank');
+  navigator.clipboard.writeText(msg).catch(()=>{});
+  toast('Telegram Opened! Message Copied — Paste & Send');
+}
+
+function copyCsMsg(){
+  navigator.clipboard.writeText(getCsMsg());
+  toast('Message Copied!');
+}
+
+function logCsSent(via, contact){
+  const name = document.getElementById('csUserName').value.trim()||'Unknown';
+  const market = document.getElementById('csMarket').value.trim();
+  csSentHistory.unshift({name, contact, market, via, file:csFileName||'—', date:new Date().toISOString().split('T')[0]});
+  if(csSentHistory.length>50) csSentHistory.pop();
+  save('csSentHistory', csSentHistory);
+  renderCsSent();
+}
+
+function renderCsSent(){
+  const el = document.getElementById('csSentList'); if(!el) return;
+  if(!csSentHistory.length){ el.innerHTML='<div style="color:var(--t3);font-size:13px;">No Strategies Sent Yet.</div>'; return; }
+  el.innerHTML = csSentHistory.slice(0,20).map((s,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1c1824;">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;">${s.name} <span style="font-size:11px;font-weight:400;color:var(--t3);">· ${s.contact||'—'}</span></div>
+        <div style="font-size:11px;color:var(--t3);">${s.market||'—'} · via ${s.via} · ${s.date}</div>
+        <div style="font-size:11px;color:var(--g5);">📎 ${s.file}</div>
+      </div>
+      <button class="btn-icon" onclick="deleteCsSent(${i})">🗑️</button>
+    </div>`).join('');
+}
+
+function deleteCsSent(i){ csSentHistory.splice(i,1); save('csSentHistory',csSentHistory); renderCsSent(); toast('Deleted','err'); }
 
 /* ═══ ESC ═══ */
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); document.getElementById('subItemOverlay').classList.remove('open'); } });

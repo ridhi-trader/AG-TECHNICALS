@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>AG Technicals — Swing + EMA + R:R EA User Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0C; --panel:#121214; --panel-border:#232323;
+    --gold:#D4AF37; --gold-soft:rgba(212,175,55,0.12);
+    --bull:#00D68F; --bear:#FF4560;
+    --text:#F2F0EA; --text-dim:#9C9C9C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter', sans-serif; line-height:1.7;
+    -webkit-user-select:none; user-select:none; display:flex; min-height:100vh;
+  }
+  ::selection{ background:transparent; }
+
+  #sidebar{ width:300px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--panel-border); height:100vh; position:sticky; top:0; overflow-y:auto; padding-bottom:40px; }
+  .brand-block{ padding:22px 24px 18px; border-bottom:1px solid var(--panel-border); margin-bottom:8px; }
+  .brand-mark{ font-family:'Cormorant Garamond', serif; font-size:20px; letter-spacing:2px; color:var(--gold); font-weight:700; }
+  .brand-sub{ font-size:11px; color:var(--text-dim); letter-spacing:1px; margin-top:4px; text-transform:uppercase; }
+
+  .lang-toggle{ display:flex; gap:6px; margin-top:14px; }
+  .lang-btn{ flex:1; background:#1a1a1e; border:1px solid var(--panel-border); color:var(--text-dim); padding:7px 4px; border-radius:4px; font-size:11.5px; cursor:pointer; text-align:center; }
+  .lang-btn.active{ background:var(--gold); color:#1a1400; border-color:var(--gold); font-weight:700; }
+  .lang-btn:hover:not(.active){ border-color:var(--gold); color:var(--gold); }
+
+  .nav-link{ display:block; padding:9px 24px; color:var(--text-dim); text-decoration:none; font-size:13px; line-height:1.4; border-left:2px solid transparent; }
+  .nav-link:hover{ color:var(--text); background:#1a1a1e; }
+  .nav-link.active{ color:var(--gold); border-left:2px solid var(--gold); background:#1a1a1e; }
+
+  #main{ flex:1; min-width:0; }
+  .chapter{ position:relative; min-height:100vh; overflow:hidden; }
+  .watermark-layer{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .watermark{ position:absolute; left:50%; transform:translate(-50%,0) rotate(-40deg); font-size:42px; letter-spacing:10px; color:var(--gold); opacity:.18; white-space:nowrap; font-family:'Cormorant Garamond', serif; font-weight:600; }
+  .chapter-inner{ position:relative; z-index:1; max-width:760px; margin:0 auto; padding:60px 6vw 40px; }
+  .chapter-eyebrow{ font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px; }
+  .chapter-title{ font-family:'Cormorant Garamond', serif; font-weight:600; font-size:28px; line-height:1.3; color:var(--text-dim); margin-bottom:14px; }
+  .chapter-hero-sub{ color:var(--text-dim); font-size:16px; margin-bottom:20px; }
+  .chapter-body h2{ font-family:'Cormorant Garamond', serif; font-size:26px; color:var(--gold); font-weight:600; margin:36px 0 16px; }
+  .chapter-body p{ font-size:16px; margin-bottom:14px; }
+  .chapter-body p.lead{ color:var(--text-dim); }
+  .chapter-body ul, .chapter-body ol{ margin:14px 0 14px 20px; color:var(--text-dim); font-size:15.5px; }
+  .chapter-body li{ margin-bottom:8px; }
+  .chapter-body li b{ color:var(--text); }
+
+  .glossary-chip{ display:inline-block; background:var(--panel); border:1px solid var(--gold); color:var(--gold); padding:3px 10px; border-radius:4px; font-weight:700; font-size:14px; vertical-align:middle; }
+
+  .diagram-box{ background:var(--panel); border:1px solid var(--panel-border); border-radius:6px; padding:20px; margin-top:20px; }
+  .diagram-box svg{ width:100%; height:auto; display:block; }
+  .diagram-caption{ margin-top:12px; font-size:13px; color:var(--text-dim); text-align:center; }
+
+  .callout{ background:var(--gold-soft); border:1px solid rgba(212,175,55,.3); border-radius:6px; padding:16px 20px; margin:18px 0; font-size:14.5px; }
+  .callout b{ color:var(--gold); }
+  .callout.warn{ background:rgba(255,69,96,0.1); border-color:rgba(255,69,96,0.3); }
+  .callout.warn b{ color:var(--bear); }
+
+  .step-box{ background:var(--panel); border:1px solid var(--panel-border); border-left:3px solid var(--gold); border-radius:4px; padding:18px 22px; margin:14px 0; }
+  .step-num{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; background:var(--gold); color:#1a1400; font-weight:700; border-radius:50%; font-size:13px; margin-right:10px; }
+  .step-title{ font-weight:600; font-size:15.5px; }
+  .step-detail{ margin-top:8px; margin-left:36px; color:var(--text-dim); font-size:14.5px; }
+
+  table{ width:100%; border-collapse:collapse; margin:16px 0; }
+  th, td{ text-align:left; padding:9px 12px; font-size:14px; border-bottom:1px solid var(--panel-border); }
+  th{ color:var(--gold); font-weight:600; background:var(--panel); }
+  td.code{ font-family:monospace; color:var(--gold); }
+  code{ background:var(--panel); color:var(--gold); padding:2px 6px; border-radius:3px; font-size:13.5px; }
+
+  .badge{ display:inline-block; font-family:monospace; font-size:11px; padding:3px 9px; border-radius:20px; letter-spacing:0.5px; font-weight:700; }
+  .badge.buy{ background:rgba(0,214,143,0.14); color:var(--bull); border:1px solid rgba(0,214,143,0.35); }
+  .badge.sell{ background:rgba(255,69,96,0.14); color:var(--bear); border:1px solid rgba(255,69,96,0.35); }
+
+  .diagram-box, .step-box, .callout{ position:relative; overflow:hidden; }
+  .diagram-box > *, .step-box > *, .callout > *{ position:relative; z-index:1; }
+  .diagram-box::before, .step-box::before, .callout::before{
+    content:"AG TECHNICALS";
+    position:absolute; top:50%; left:50%; z-index:0;
+    transform:translate(-50%,-50%) rotate(-35deg);
+    font-family:'Cormorant Garamond', serif; font-size:34px; font-weight:700; letter-spacing:5px;
+    color:var(--gold); opacity:.14; white-space:nowrap; pointer-events:none;
+  }
+  .diagram-box::after, .step-box::after, .callout::after{
+    content:"AG TECHNICALS"; z-index:1;
+    position:absolute; bottom:8px; right:8px;
+    font-family:'Cormorant Garamond', serif; font-size:11px; font-weight:600; letter-spacing:1.5px;
+    color:var(--gold); opacity:.85;
+    background:rgba(0,0,0,0.55); padding:3px 8px; border-radius:3px;
+    pointer-events:none;
+  }
+
+  .chapter-footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--panel-border); display:flex; justify-content:space-between; align-items:center; }
+  .footer-brand{ font-size:11px; letter-spacing:1.5px; color:var(--text-dim); text-transform:uppercase; }
+  .footer-nav{ display:flex; gap:10px; }
+  .navbtn{ background:var(--panel); border:1px solid var(--panel-border); color:var(--text); padding:9px 16px; border-radius:4px; font-size:13px; cursor:pointer; }
+  .navbtn:hover{ border-color:var(--gold); color:var(--gold); }
+
+  [id^="chapter-hindi-"]{ font-family:'Noto Sans Devanagari', 'Inter', sans-serif; }
+  [id^="chapter-hindi-"] .chapter-title, [id^="chapter-hindi-"] .chapter-body h2, [id^="chapter-hindi-"] .step-title{ font-family:'Noto Sans Devanagari', 'Cormorant Garamond', serif; }
+  [id^="chapter-hindi-"] p, [id^="chapter-hindi-"] li{ line-height:2; }
+
+  @media(max-width:800px){ body{ flex-direction:column; } #sidebar{ width:100%; height:auto; position:relative; } .chapter-inner{ padding:40px 22px; } .chapter-title{ font-size:24px; } }
+</style>
+</head>
+<body oncontextmenu="return false;">
+<div id="sidebar">
+  <div class="brand-block">
+    <div class="brand-mark">AG TECHNICALS</div>
+    <div class="brand-sub">Swing + EMA + R:R EA — User Guide</div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-hinglish" onclick="setLang('hinglish')">Hinglish</button>
+      <button class="lang-btn" id="btn-hindi" onclick="setLang('hindi')">हिंदी</button>
+      <button class="lang-btn" id="btn-english" onclick="setLang('english')">English</button>
+    </div>
+  </div>
+  <div id="nav-hinglish" class="nav-lang">
+<a href="#" class="nav-link" data-ch="1" onclick="showChapter(1);return false;">1. Introduction</a>
+<a href="#" class="nav-link" data-ch="2" onclick="showChapter(2);return false;">2. EMA Basics</a>
+<a href="#" class="nav-link" data-ch="3" onclick="showChapter(3);return false;">3. Swing High / Low</a>
+<a href="#" class="nav-link" data-ch="4" onclick="showChapter(4);return false;">4. BUY / SELL Logic</a>
+<a href="#" class="nav-link" data-ch="5" onclick="showChapter(5);return false;">5. Master Control</a>
+<a href="#" class="nav-link" data-ch="6" onclick="showChapter(6);return false;">6. Max Trade Control</a>
+<a href="#" class="nav-link" data-ch="7" onclick="showChapter(7);return false;">7. Stoploss Lock</a>
+<a href="#" class="nav-link" data-ch="8" onclick="showChapter(8);return false;">8. Lot Sizing</a>
+<a href="#" class="nav-link" data-ch="9" onclick="showChapter(9);return false;">9. Risk:Reward + Partial Close</a>
+<a href="#" class="nav-link" data-ch="10" onclick="showChapter(10);return false;">10. EMA Timeframe (MTF)</a>
+<a href="#" class="nav-link" data-ch="11" onclick="showChapter(11);return false;">11. Dashboard & Chart Visuals</a>
+<a href="#" class="nav-link" data-ch="12" onclick="showChapter(12);return false;">12. Installation</a>
+<a href="#" class="nav-link" data-ch="13" onclick="showChapter(13);return false;">13. Settings Reference</a>
+  </div>
+  <div id="nav-hindi" class="nav-lang" style="display:none;">
+<a href="#" class="nav-link" data-ch="1" onclick="showChapter(1);return false;">1. परिचय</a>
+<a href="#" class="nav-link" data-ch="2" onclick="showChapter(2);return false;">2. EMA बेसिक्स</a>
+<a href="#" class="nav-link" data-ch="3" onclick="showChapter(3);return false;">3. स्विंग हाई / लो</a>
+<a href="#" class="nav-link" data-ch="4" onclick="showChapter(4);return false;">4. BUY / SELL लॉजिक</a>
+<a href="#" class="nav-link" data-ch="5" onclick="showChapter(5);return false;">5. मास्टर कंट्रोल</a>
+<a href="#" class="nav-link" data-ch="6" onclick="showChapter(6);return false;">6. मैक्स ट्रेड कंट्रोल</a>
+<a href="#" class="nav-link" data-ch="7" onclick="showChapter(7);return false;">7. स्टॉपलॉस लॉक</a>
+<a href="#" class="nav-link" data-ch="8" onclick="showChapter(8);return false;">8. लॉट साइज़िंग</a>
+<a href="#" class="nav-link" data-ch="9" onclick="showChapter(9);return false;">9. रिस्क:रिवॉर्ड + पार्शियल क्लोज़</a>
+<a href="#" class="nav-link" data-ch="10" onclick="showChapter(10);return false;">10. EMA टाइमफ्रेम (MTF)</a>
+<a href="#" class="nav-link" data-ch="11" onclick="showChapter(11);return false;">11. डैशबोर्ड और चार्ट विज़ुअल्स</a>
+<a href="#" class="nav-link" data-ch="12" onclick="showChapter(12);return false;">12. इंस्टॉलेशन</a>
+<a href="#" class="nav-link" data-ch="13" onclick="showChapter(13);return false;">13. सेटिंग्स रेफरेंस</a>
+  </div>
+  <div id="nav-english" class="nav-lang" style="display:none;">
+<a href="#" class="nav-link" data-ch="1" onclick="showChapter(1);return false;">1. Introduction</a>
+<a href="#" class="nav-link" data-ch="2" onclick="showChapter(2);return false;">2. EMA Basics</a>
+<a href="#" class="nav-link" data-ch="3" onclick="showChapter(3);return false;">3. Swing High / Low</a>
+<a href="#" class="nav-link" data-ch="4" onclick="showChapter(4);return false;">4. BUY / SELL Logic</a>
+<a href="#" class="nav-link" data-ch="5" onclick="showChapter(5);return false;">5. Master Control</a>
+<a href="#" class="nav-link" data-ch="6" onclick="showChapter(6);return false;">6. Max Trade Control</a>
+<a href="#" class="nav-link" data-ch="7" onclick="showChapter(7);return false;">7. Stoploss Lock</a>
+<a href="#" class="nav-link" data-ch="8" onclick="showChapter(8);return false;">8. Lot Sizing</a>
+<a href="#" class="nav-link" data-ch="9" onclick="showChapter(9);return false;">9. Risk:Reward + Partial Close</a>
+<a href="#" class="nav-link" data-ch="10" onclick="showChapter(10);return false;">10. EMA Timeframe (MTF)</a>
+<a href="#" class="nav-link" data-ch="11" onclick="showChapter(11);return false;">11. Dashboard & Chart Visuals</a>
+<a href="#" class="nav-link" data-ch="12" onclick="showChapter(12);return false;">12. Installation</a>
+<a href="#" class="nav-link" data-ch="13" onclick="showChapter(13);return false;">13. Settings Reference</a>
+  </div>
+</div>
+
+<div id="main">
+
+<!-- ===================== CHAPTER 1 ===================== -->
+<section class="chapter" id="chapter-hinglish-1" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 01 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Introduction <span class="glossary-chip">Overview</span></h1>
+    <p class="chapter-hero-sub">Is chapter mein hum samjhenge ki AG Swing + EMA + R:R EA kya hai, aur ye kaise kaam karta hai.</p>
+    <div class="chapter-body">
+
+<h2>1. EA Kya Hai</h2>
+<p class="lead">AG Swing + EMA + R:R EA (Expert Advisor) ek <b>full auto-trading</b> MT5 bot hai — jo humare Swing + EMA logic ke saath khud entries leta hai, SL/TP manage karta hai, aur position ko fully automatic control karta hai. Ye <b>real trades</b> place karta hai, real partial close karta hai, aur poora trade management khud handle karta hai — bina kisi manual intervention ke.</p>
+
+<h2>2. Core Logic Same Hai</h2>
+<p class="lead">EA ka core signal logic 2 cheezon pe based hai:</p>
+<ul>
+  <li><b>EMA</b> — trend direction batata hai</li>
+  <li><b>Swing High / Swing Low break</b> — momentum confirmation deta hai</li>
+</ul>
+<p>Jab dono conditions match hoti hain, EA khud <span class="badge buy">BUY</span> ya <span class="badge sell">SELL</span> order place kar deta hai.</p>
+
+<div class="callout">
+  <b>EA Ke Full Feature Set:</b> Master Control (On/Off, Only Buy/Sell), 3 Lot Sizing modes (Fixed/% Risk/$ Risk), Real Partial Close (actual lot close hota hai), EMA Timeframe (higher timeframe trend filter), aur AG Technicals branded dashboard.
+</div>
+
+<h2>3. Kis Liye Bana Hai</h2>
+<p class="lead">Un traders ke liye jo apna trading system fully automate karna chahte hain — bina manually chart dekhe, bina manually order place kiye. EA khud signal detect karta hai, risk calculate karta hai, aur trade execute karta hai.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><span></span><button class="navbtn" onclick="showChapter(2)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 2 ===================== -->
+<section class="chapter" id="chapter-hinglish-2" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 02 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">EMA Basics <span class="glossary-chip">Exponential Moving Average</span></h1>
+    <p class="chapter-hero-sub">EMA kya hai aur EA mein iska role kya hai.</p>
+    <div class="chapter-body">
+
+<h2>1. EMA Kya Hai</h2>
+<p class="lead"><b>EMA (Exponential Moving Average)</b> ek moving average hai jo recent candles ko zyada weight deta hai — isliye price ke sath fast react karta hai. Ye ek smooth trend line hai jo batati hai overall trend kis direction mein hai.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="100" x2="640" y2="100" stroke="#232323" stroke-dasharray="4,4"/>
+    <rect x="40" y="120" width="10" height="30" fill="#00D68F"/>
+    <rect x="90" y="100" width="10" height="35" fill="#00D68F"/>
+    <rect x="140" y="80" width="10" height="35" fill="#00D68F"/>
+    <rect x="190" y="65" width="10" height="30" fill="#FF4560"/>
+    <rect x="240" y="70" width="10" height="30" fill="#00D68F"/>
+    <rect x="290" y="50" width="10" height="30" fill="#00D68F"/>
+    <rect x="340" y="45" width="10" height="25" fill="#FF4560"/>
+    <rect x="390" y="40" width="10" height="25" fill="#00D68F"/>
+    <path d="M45,140 Q95,128 145,108 Q195,95 245,90 Q295,75 345,62 Q372,55 395,50" fill="none" stroke="#D4AF37" stroke-width="3"/>
+    <text x="450" y="42" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37">EMA (smooth, delayed line)</text>
+  </svg>
+  <div class="diagram-caption">EMA price ko follow karta hai lekin thoda smooth/lag ke saath</div>
+</div>
+
+<h2>2. EA Mein EMA Ka Role</h2>
+<ul>
+  <li>Candle <b>close EMA ke upar</b> → bullish bias → sirf BUY consider hoga</li>
+  <li>Candle <b>close EMA ke neeche</b> → bearish bias → sirf SELL consider hoga</li>
+</ul>
+
+<div class="callout">
+  <b>Naya Feature:</b> EA mein EMA ka timeframe bhi <b>alag se choose</b> kar sakte ho (jaise M5 chart pe H1 EMA use karna) — is bare mein detail Chapter 10 mein.
+</div>
+
+<table>
+  <tr><th>Setting Name</th><th>Yeh Kya Karta Hai</th><th>Default</th></tr>
+  <tr><td class="code">EMA Length</td><td>Line ki smoothness</td><td class="code">21</td></tr>
+  <tr><td class="code">EMA Source</td><td>EMA kis price pe calculate ho</td><td class="code">close</td></tr>
+  <tr><td class="code">EMA Timeframe</td><td>EMA kis timeframe se liya jaye (Chapter 10 dekho)</td><td class="code">Current Chart</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(1)">&larr; Previous</button><button class="navbtn" onclick="showChapter(3)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 3 ===================== -->
+<section class="chapter" id="chapter-hinglish-3" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 03 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Swing High / Low <span class="glossary-chip">Break Concept</span></h1>
+    <p class="chapter-hero-sub">Swing detect karne ke 2 tarike — Normal aur Basic.</p>
+    <div class="chapter-body">
+
+<h2>1. Swing High / Low Kya Hai</h2>
+<p class="lead"><b>Swing High</b> wo candle hoti hai jiske dono taraf ke candles usse neeche hon (local peak). <b>Swing Low</b> iska ulta — dono taraf ke candles usse upar hon.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="140" width="10" height="30" fill="#00D68F"/>
+    <rect x="90" y="120" width="10" height="30" fill="#00D68F"/>
+    <rect x="140" y="90" width="10" height="30" fill="#00D68F"/>
+    <rect x="190" y="60" width="10" height="30" fill="#00D68F"/>
+    <rect x="240" y="90" width="10" height="30" fill="#FF4560"/>
+    <rect x="290" y="120" width="10" height="30" fill="#FF4560"/>
+    <circle cx="195" cy="55" r="5" fill="#D4AF37"/>
+    <text x="195" y="38" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" text-anchor="middle">SWING HIGH</text>
+    <line x1="0" y1="60" x2="640" y2="60" stroke="#D4AF37" stroke-dasharray="5,5" stroke-width="1"/>
+
+    <rect x="380" y="60" width="10" height="30" fill="#FF4560"/>
+    <rect x="430" y="90" width="10" height="30" fill="#FF4560"/>
+    <rect x="480" y="120" width="10" height="30" fill="#FF4560"/>
+    <rect x="530" y="150" width="10" height="30" fill="#FF4560"/>
+    <rect x="580" y="120" width="10" height="30" fill="#00D68F"/>
+    <circle cx="535" cy="185" r="5" fill="#D4AF37"/>
+    <text x="535" y="205" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" text-anchor="middle">SWING LOW</text>
+    <line x1="0" y1="180" x2="640" y2="180" stroke="#D4AF37" stroke-dasharray="5,5" stroke-width="1"/>
+  </svg>
+  <div class="diagram-caption">Swing points chart pe "SWH" / "SWL" chip-box ke saath automatically mark hote hain</div>
+</div>
+
+<h2>2. Do Calculation Types (ENUM)</h2>
+<table>
+  <tr><th>Type</th><th>Kaise Kaam Karta Hai</th></tr>
+  <tr><td class="code">Normal</td><td><code>Swing Lookback Length</code> parameter use karta hai — jitna zyada, utni door/major swing (wide SL)</td></tr>
+  <tr><td class="code">Basic</td><td>Fixed <b>2 candle left / 2 candle right</b> classic fractal — jyada frequent, nazdeeki swings (tighter SL)</td></tr>
+</table>
+
+<div class="callout">
+  <b>Kaunsa Choose Karein:</b> Agar SL bahut wide lag raha hai, <code>Basic</code> type try karo — chhoti, jaldi milne wali swings deta hai. Agar zyada reliable/major levels chahiye, <code>Normal</code> rakho aur Lookback Length adjust karo.
+</div>
+
+<h2>3. "Break" Ka Matlab</h2>
+<p class="lead">Candle <b>close</b> se pichhla swing high/low cross hona chahiye — wick se nahi. Isse fake wick spikes se bachav hota hai.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(2)">&larr; Previous</button><button class="navbtn" onclick="showChapter(4)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 4 ===================== -->
+<section class="chapter" id="chapter-hinglish-4" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 04 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">BUY / SELL Logic <span class="glossary-chip">Core Signal</span></h1>
+    <p class="chapter-hero-sub">Jab dono conditions match hon, EA khud order place karta hai.</p>
+    <div class="chapter-body">
+
+<h2>1. Signal Kab Fire Hota Hai</h2>
+<div class="step-box">
+  <span class="step-num">B</span><span class="step-title"><span class="badge buy">BUY</span></span>
+  <div class="step-detail">1. Candle close EMA ke upar<br>2. AND close previous Swing High ko break kare<br>3. → EA turant BUY order place karta hai</div>
+</div>
+<div class="step-box">
+  <span class="step-num">S</span><span class="step-title"><span class="badge sell">SELL</span></span>
+  <div class="step-detail">1. Candle close EMA ke neeche<br>2. AND close previous Swing Low ko break kare<br>3. → EA turant SELL order place karta hai</div>
+</div>
+
+<div class="callout">
+  <b>Alag Magic Numbers:</b> BUY aur SELL trades ke liye EA internally alag-alag magic number use karta hai — isse dono direction ke trades MT5 history mein clearly separate/identify ho sakte hain.
+</div>
+
+<h2>2. Chart Pe Visual</h2>
+<p class="lead">Jis candle pe signal fire hota hai, usi pe green <b>"BUY"</b> ya red <b>"SELL"</b> chip-box + arrow symbol automatically dikhta hai — koi manual marking ki zarurat nahi.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(3)">&larr; Previous</button><button class="navbtn" onclick="showChapter(5)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 5 ===================== -->
+<section class="chapter" id="chapter-hinglish-5" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 05 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Master Control <span class="glossary-chip">On / Off Switch</span></h1>
+    <p class="chapter-hero-sub">Poore EA ko turant on/off karne ka quick switch, plus direction filter.</p>
+    <div class="chapter-body">
+
+<h2>1. Kya Karta Hai</h2>
+<p class="lead">Ye teen simple switches hain jo bina baaki settings chhede EA ka behaviour turant control karte hain:</p>
+
+<table>
+  <tr><th>Parameter</th><th>Kya Karta Hai</th><th>Default</th></tr>
+  <tr><td class="code">Master Enable</td><td><code>false</code> karne se EA <b>koi bhi naya trade nahi lega</b> — poori tarah pause ho jayega (open trades manage hoti rahengi)</td><td class="code">true</td></tr>
+  <tr><td class="code">Only BUY</td><td>Sirf BUY signals lo, SELL block ho jayenge</td><td class="code">false</td></tr>
+  <tr><td class="code">Only SELL</td><td>Sirf SELL signals lo, BUY block ho jayenge</td><td class="code">false</td></tr>
+</table>
+
+<div class="callout">
+  <b>Use Case:</b> Kabhi kabhi market ek hi direction mein strongly trend kar raha hota hai (jaise strong bull run mein) — us time <code>Only BUY</code> on karke counter-trend SELL signals avoid kar sakte ho.
+</div>
+
+<h2>2. Dashboard Pe Status</h2>
+<p class="lead">Dashboard hamesha current mode dikhata hai — <b>"ON (Both)"</b>, <b>"BUY ONLY"</b>, <b>"SELL ONLY"</b>, ya <b>"OFF"</b> (red text mein jab pura EA paused ho).</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(4)">&larr; Previous</button><button class="navbtn" onclick="showChapter(6)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 6 ===================== -->
+<section class="chapter" id="chapter-hinglish-6" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 06 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Max Trade Control <span class="glossary-chip">Same Direction</span></h1>
+    <p class="chapter-hero-sub">Ek hi direction mein lagatar kitne trade allow karne hain.</p>
+    <div class="chapter-body">
+
+<h2>1. Ye Setting Kya Karti Hai</h2>
+<p class="lead">Trending market mein EMA+Swing condition baar-baar match ho sakti hai — lagatar kai BUY (ya SELL) trades khul sakte hain. Ye setting control karti hai ki ek hi direction mein <b>kitne trade lagatar</b> allow honge, opposite signal aane tak.</p>
+
+<div class="callout">
+  Ye counting sirf condition-match pe based hai — <b>stoploss se koi lena dena nahi</b>. Opposite direction ka signal aate hi counter reset ho jata hai.
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>Kya Karta Hai</th><th>Default</th></tr>
+  <tr><td class="code">Enable Max Trade</td><td>Feature on/off</td><td class="code">true</td></tr>
+  <tr><td class="code">Max BUY Trades In A Row</td><td>Lagatar kitne BUY trade, SELL aane tak</td><td class="code">2</td></tr>
+  <tr><td class="code">Max SELL Trades In A Row</td><td>Lagatar kitne SELL trade, BUY aane tak</td><td class="code">2</td></tr>
+</table>
+
+<div class="callout">
+  <b>Default 2 Kyun:</b> EA ka design higher-timeframe EMA trend filter (Chapter 10 dekho) ke saath pyramid/re-enter karne ke liye socha gaya hai — jab tak bada trend intact hai, EA usi direction mein multiple trades le sakta hai.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(5)">&larr; Previous</button><button class="navbtn" onclick="showChapter(7)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 7 ===================== -->
+<section class="chapter" id="chapter-hinglish-7" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 07 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Stoploss Lock <span class="glossary-chip">Global Lock</span></h1>
+    <p class="chapter-hero-sub">Naya trade kab tak wait karega current trade ka SL hit hone tak.</p>
+    <div class="chapter-body">
+
+<h2>1. Ye Feature Kya Karta Hai</h2>
+<p class="lead">Ye ek <b>independent global lock</b> hai — Max Trade Control se alag kaam karta hai. Jab enable ho, naya trade tab tak nahi khulega jab tak current trade close na ho jaye (mode ke hisab se).</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="15" width="170" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="105" y="50" font-family="Inter, sans-serif" font-size="14" fill="#F2F0EA" text-anchor="middle" font-weight="700">Trade Opens</text>
+    <text x="105" y="72" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">SL = swing level</text>
+    <text x="105" y="90" font-family="Inter, sans-serif" font-size="11" fill="#D4AF37" text-anchor="middle">Lock = ACTIVE</text>
+
+    <line x1="190" y1="68" x2="270" y2="68" stroke="#9C9C9C" stroke-width="1.5" marker-end="url(#arrE3)"/>
+
+    <rect x="280" y="15" width="190" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="375" y="50" font-family="Inter, sans-serif" font-size="14" fill="#F2F0EA" text-anchor="middle" font-weight="700">Waiting...</text>
+    <text x="375" y="72" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">Naya trade blocked</text>
+    <text x="375" y="90" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">jab tak trade close na ho</text>
+
+    <line x1="470" y1="68" x2="550" y2="68" stroke="#9C9C9C" stroke-width="1.5" marker-end="url(#arrE3)"/>
+
+    <rect x="560" y="15" width="65" height="105" rx="6" fill="#0A0A0C" stroke="#00D68F"/>
+    <text x="592" y="50" font-family="Inter, sans-serif" font-size="13" fill="#00D68F" text-anchor="middle" font-weight="700">Closed</text>
+    <text x="592" y="72" font-family="Inter, sans-serif" font-size="9.5" fill="#9C9C9C" text-anchor="middle">Lock</text>
+    <text x="592" y="86" font-family="Inter, sans-serif" font-size="9.5" fill="#9C9C9C" text-anchor="middle">release</text>
+
+    <defs><marker id="arrE3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#9C9C9C"/></marker></defs>
+  </svg>
+  <div class="diagram-caption">EA mein lock trade ke fully close hone par release hota hai (SL hit ho ya poori position TP se close ho)</div>
+</div>
+
+<table>
+  <tr><th>Option</th><th>Behaviour</th></tr>
+  <tr><td class="code">Stoploss Hit Only</td><td>Naya trade SIRF tab jab current trade fully close ho jaye</td></tr>
+  <tr><td class="code">Stoploss Hit or New Signal</td><td>Trade close ho, ya naya valid signal aaye (jo bhi pehle ho) — lock release</td></tr>
+</table>
+
+<div class="callout">
+  <b>Dhyan Rahe:</b> Stoploss Lock aur Max Trade Control dono independent hain. Apni trading style ke hisab se dono, ek, ya koi bhi off rakh sakte ho.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(6)">&larr; Previous</button><button class="navbtn" onclick="showChapter(8)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 8 ===================== -->
+<section class="chapter" id="chapter-hinglish-8" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 08 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Lot Sizing <span class="glossary-chip">Risk Management</span></h1>
+    <p class="chapter-hero-sub">Har trade ka lot size kaise calculate hota hai — 3 modes available.</p>
+    <div class="chapter-body">
+
+<h2>1. Teeno Modes</h2>
+<table>
+  <tr><th>Mode</th><th>Kaise Kaam Karta Hai</th></tr>
+  <tr><td class="code">Fixed Lot</td><td>Har trade same fixed lot size (jaise 0.01) — SL distance se koi farak nahi padta</td></tr>
+  <tr><td class="code">% Balance Risk</td><td>Account balance ka fix % risk karo — lot size SL distance ke hisab se <b>auto-calculate</b> hota hai (bada SL = chhota lot, chhota SL = bada lot)</td></tr>
+  <tr><td class="code">Fixed $ Risk</td><td>Har trade pe fixed dollar amount risk karo, lot uske hisab se calculate</td></tr>
+</table>
+
+<div class="callout">
+  <b>Recommended:</b> <code>% Balance Risk</code> zyada professional approach hai kyunki risk hamesha consistent (account ka fix %) rehta hai, chahe SL kitna bhi door/nazdeek ho.
+</div>
+
+<h2>2. Settings</h2>
+<table>
+  <tr><th>Parameter</th><th>Kya Karta Hai</th><th>Default</th></tr>
+  <tr><td class="code">Lot Sizing Mode</td><td>Teeno mein se ek choose karo</td><td class="code">% Balance Risk</td></tr>
+  <tr><td class="code">Fixed Lot Size</td><td>Sirf Fixed mode mein use hota hai</td><td class="code">0.01</td></tr>
+  <tr><td class="code">Risk % of Balance</td><td>Sirf % Risk mode mein use hota hai</td><td class="code">1.0</td></tr>
+  <tr><td class="code">Fixed $ Risk</td><td>Sirf Fixed $ mode mein use hota hai</td><td class="code">10.0</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(7)">&larr; Previous</button><button class="navbtn" onclick="showChapter(9)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 9 ===================== -->
+<section class="chapter" id="chapter-hinglish-9" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 09 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Risk:Reward + Partial Close <span class="glossary-chip">Real Trade Management</span></h1>
+    <p class="chapter-hero-sub">Real trade management — asli partial position close hoti hai, sirf visual nahi.</p>
+    <div class="chapter-body">
+
+<h2>1. R:R Kaise Kaam Karta Hai</h2>
+<p class="lead">Har trade ke saath Entry, SL, aur 3 Take-Profit levels calculate hote hain — R (Risk) multiple ke basis pe. <b>R = Entry se SL tak ka distance.</b></p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="145" x2="590" y2="145" stroke="#F2F0EA" stroke-dasharray="4,4"/>
+    <text x="595" y="149" font-family="Inter, sans-serif" font-size="11" fill="#F2F0EA">ENTRY</text>
+    <line x1="50" y1="172" x2="590" y2="172" stroke="#FF4560" stroke-width="2"/>
+    <text x="595" y="176" font-family="Inter, sans-serif" font-size="11" fill="#FF4560">SL</text>
+    <line x1="50" y1="108" x2="590" y2="108" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="112" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP1 · 1R</text>
+    <line x1="50" y1="72" x2="590" y2="72" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="76" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP2 · 2R</text>
+    <line x1="50" y1="35" x2="590" y2="35" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="39" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP3 · 3R</text>
+    <line x1="70" y1="145" x2="70" y2="172" stroke="#D4AF37" stroke-width="2"/>
+    <text x="30" y="163" font-family="Inter, sans-serif" font-size="10" fill="#D4AF37">1R</text>
+  </svg>
+  <div class="diagram-caption">Chart pe Entry/SL/TP1/TP2/TP3 sabki ray-lines automatically draw hoti hain, symbol ke saath</div>
+</div>
+
+<h2>2. Do TP Modes</h2>
+<table>
+  <tr><th>Mode</th><th>Kaise Kaam Karta Hai</th></tr>
+  <tr><td class="code">Real Partial Close</td><td>TP1 pe position ka X% <b>actually close</b> hota hai, TP2 pe aur close, baaki TP3 pe. Real lot reduction hoti hai.</td></tr>
+  <tr><td class="code">Breakeven-Trail</td><td>Partial close nahi hota — TP1 hit hone pe SL <b>breakeven pe move</b> hota hai, TP2 pe SL TP1 tak trail hota hai. Poori position TP3 tak chalti hai.</td></tr>
+</table>
+
+<div class="callout">
+  <b>Kaunsa Choose Karein:</b> <code>Real Partial Close</code> agar profit lock karna chahte ho jaldi. <code>Breakeven-Trail</code> agar bade moves capture karne hain poori position ke saath, bas risk-free karna hai jaldi.
+</div>
+
+<h2>3. Settings</h2>
+<table>
+  <tr><th>Parameter</th><th>Kya Karta Hai</th><th>Default</th></tr>
+  <tr><td class="code">R:R Master Enable</td><td><code>false</code> karo to koi TP nahi lagega, trade sirf SL pe chalega</td><td class="code">true</td></tr>
+  <tr><td class="code">TP1/TP2/TP3 R Multiple</td><td>Har TP kitne R door ho</td><td class="code">1 / 2 / 3</td></tr>
+  <tr><td class="code">Partial Close Master Enable</td><td><code>false</code> karo to full close sirf final TP pe hoga</td><td class="code">true</td></tr>
+  <tr><td class="code">TP Mode</td><td>Real Partial Close / Breakeven-Trail</td><td class="code">Real Partial Close</td></tr>
+  <tr><td class="code">TP1/TP2/TP3 Close %</td><td>Real Partial mode mein kitna % close ho har TP pe</td><td class="code">33 / 33 / 34</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(8)">&larr; Previous</button><button class="navbtn" onclick="showChapter(10)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 10 ===================== -->
+<section class="chapter" id="chapter-hinglish-10" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 10 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">EMA Timeframe <span class="glossary-chip">Multi-Timeframe Trend</span></h1>
+    <p class="chapter-hero-sub">Chhote chart pe entries lo, bade timeframe ke trend ke saath.</p>
+    <div class="chapter-body">
+
+<h2>1. Concept</h2>
+<p class="lead">Normally EMA usi timeframe se calculate hota hai jis chart pe EA lagi hai. Lekin ab EMA ka timeframe <b>alag se choose</b> kar sakte ho — jaise M5 chart pe trade lo, lekin trend-filter <b>H1 EMA</b> se lo.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="15" width="600" height="70" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="35" y="35" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" font-weight="700">H1 EMA (Higher Timeframe — bada trend)</text>
+    <path d="M40,70 C150,65 250,55 350,50 S500,40 610,35" fill="none" stroke="#D4AF37" stroke-width="3"/>
+    <text x="35" y="78" font-family="Inter, sans-serif" font-size="10" fill="#9C9C9C">Sirf har H1 candle close hone par update hota hai</text>
+
+    <rect x="20" y="100" width="600" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="35" y="120" font-family="Inter, sans-serif" font-size="12" fill="#00D68F" font-weight="700">M5 Chart (Entry Timeframe — chhoti entries)</text>
+    <rect x="40" y="150" width="8" height="25" fill="#00D68F"/>
+    <rect x="60" y="145" width="8" height="25" fill="#00D68F"/>
+    <rect x="80" y="140" width="8" height="25" fill="#00D68F"/>
+    <rect x="105" y="135" width="10" height="28" fill="#00D68F" stroke="#fff"/>
+    <rect x="130" y="150" width="8" height="20" fill="#00D68F"/>
+    <rect x="150" y="145" width="8" height="20" fill="#00D68F"/>
+    <rect x="170" y="140" width="8" height="20" fill="#00D68F"/>
+    <rect x="195" y="135" width="10" height="24" fill="#00D68F" stroke="#fff"/>
+    <text x="105" y="190" font-family="Inter, sans-serif" font-size="10" fill="#00D68F" text-anchor="middle">BUY (1st entry)</text>
+    <text x="200" y="190" font-family="Inter, sans-serif" font-size="10" fill="#00D68F" text-anchor="middle">BUY (re-entry)</text>
+  </svg>
+  <div class="diagram-caption">Bada trend (H1) same rahe jab tak, chhoti TF (M5) pe multiple entries lagti reh sakti hain (Max Trade Row limit ke andar)</div>
+</div>
+
+<h2>2. Kyun Useful Hai</h2>
+<ul>
+  <li>Higher TF EMA se overall trend confirm hota hai — chhoti TF ki fake reversals filter ho jaati hain</li>
+  <li>M5 pe TP hit hone ke baad bhi, jab tak H1 trend wahi hai, EA <b>dobara same direction</b> mein entry le sakta hai</li>
+  <li>Strong trending moves mein zyada capture karta hai jo single-trade approach miss kar deta</li>
+</ul>
+
+<div class="callout warn">
+  <b>Dhyan Rahe:</b> Swing High/Low detection hamesha <b>chart ke apne timeframe</b> pe rehta hai (MTF nahi hota) — sirf EMA trend-filter higher TF se aata hai. Higher TF EMA value tab tak "stale" rehti hai jab tak uska bada candle close na ho jaye (M5 chart pe H1 EMA — value har ghante hi update hogi).
+</div>
+
+<div class="callout">
+  <b>Max Trade Row Ka Role:</b> Kyunki EA ab same-direction re-entries kar sakta hai, <code>Max Trade Row</code> limit (Chapter 6) is design mein aur zaroori ho jata hai — weak/choppy trend periods mein overtrading se bachne ke liye ise reasonable value pe rakho (default 2).
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>Kya Karta Hai</th><th>Default</th></tr>
+  <tr><td class="code">EMA Timeframe</td><td>EMA kis timeframe se calculate ho (Current Chart / M15 / M30 / H1 / H4 / D1 etc.)</td><td class="code">Current Chart</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(9)">&larr; Previous</button><button class="navbtn" onclick="showChapter(11)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 11 ===================== -->
+<section class="chapter" id="chapter-hinglish-11" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 11 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Dashboard & Chart Visuals <span class="glossary-chip">Live Status Panel</span></h1>
+    <p class="chapter-hero-sub">Chart ke top-left corner mein har cheez ek nazar mein.</p>
+    <div class="chapter-body">
+
+<h2>1. Dashboard Kya Dikhata Hai</h2>
+<table>
+  <tr><th>Line</th><th>Matlab</th></tr>
+  <tr><td class="code">Master</td><td>ON (Both) / BUY ONLY / SELL ONLY / OFF</td></tr>
+  <tr><td class="code">R:R / Partial Close</td><td>Dono features ka current on/off status</td></tr>
+  <tr><td class="code">EMA(21)</td><td>Current EMA value</td></tr>
+  <tr><td class="code">Swing High / Low</td><td>Last confirmed swing levels</td></tr>
+  <tr><td class="code">Last Direction</td><td>Aakhri trade kis direction ka tha</td></tr>
+  <tr><td class="code">Buy Row / Sell Row</td><td>Kitne trade lagatar same-direction mein ho chuke hain</td></tr>
+  <tr><td class="code">SL Lock</td><td>Active hai ya free</td></tr>
+  <tr><td class="code">Open Trades (EA)</td><td>Is waqt kitne trade EA ne khole hain</td></tr>
+  <tr><td class="code">License</td><td>Kitne din baaki hain (ya Unlimited)</td></tr>
+</table>
+
+<h2>2. Chart Pe Markers</h2>
+<ul>
+  <li>Gold <b>"SWH"</b> / <b>"SWL"</b> chip-box — jahan bhi swing confirm ho</li>
+  <li>Green <b>"BUY"</b> / Red <b>"SELL"</b> chip-box + arrow — signal candle pe</li>
+  <li>White dashed line — Entry, Red solid + stop symbol — SL, Green dotted — TP1/TP2/TP3</li>
+</ul>
+
+<div class="callout">
+  <b>Auto Cleanup:</b> Jaise hi trade fully close hota hai, uski saari lines/labels chart se automatically delete ho jaati hain — chart pe hamesha sirf active trades ka visual dikhta hai, purana clutter nahi.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(10)">&larr; Previous</button><button class="navbtn" onclick="showChapter(12)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 12 ===================== -->
+<section class="chapter" id="chapter-hinglish-12" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 12 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Installation <span class="glossary-chip">MetaTrader 5 Setup</span></h1>
+    <p class="chapter-hero-sub">MT5 pe EA ko step-by-step attach karna.</p>
+    <div class="chapter-body">
+
+<h2>1. Step-by-Step Setup</h2>
+
+<div class="step-box">
+  <span class="step-num">1</span><span class="step-title">MetaEditor mein file daalo</span>
+  <div class="step-detail">MT5 mein <b>File → Open Data Folder → MQL5 → Experts</b> mein <code>AG_Swing_EMA_RR_EA.mq5</code> file paste karo.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">2</span><span class="step-title">Compile karo</span>
+  <div class="step-detail">MetaEditor mein file open karke <b>F7</b> (Compile) dabao. "0 errors" dikhna chahiye.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">3</span><span class="step-title">Chart pe drag karo</span>
+  <div class="step-detail">MT5 Navigator panel mein Experts ke andar EA milega — jis pair/timeframe pe chahiye us chart pe drag-drop karo.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">4</span><span class="step-title">AutoTrading enable karo</span>
+  <div class="step-detail">Top toolbar mein <b>"Algo Trading"</b> button ON karo (hara ho jana chahiye) — warna EA trade nahi lega.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">5</span><span class="step-title">Settings adjust karo</span>
+  <div class="step-detail">Dialog box mein <b>Inputs</b> tab se apni zarurat ke hisab se parameters set karo (Lot Sizing, R:R, Max Trade waghera).</div>
+</div>
+<div class="step-box">
+  <span class="step-num">6</span><span class="step-title">Common tab check karo</span>
+  <div class="step-detail">Dialog box mein <b>Common</b> tab mein "Allow Algo Trading" checkbox ON hona chahiye.</div>
+</div>
+
+<div class="callout warn">
+  <b>Zaroori:</b> EA ke liye internet connection aur MT5 terminal open rehna zaroori hai jab tak trading chalu rakhni ho. VPS use karna recommended hai 24x7 uptime ke liye.
+</div>
+
+<div class="callout">
+  <b>Tip:</b> Pehle Strategy Tester mein backtest karo ya demo account pe kuch din chalao, phir live account pe use karo.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(11)">&larr; Previous</button><button class="navbtn" onclick="showChapter(13)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CHAPTER 13 ===================== -->
+<section class="chapter" id="chapter-hinglish-13" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 13 / 13 — AG Technicals Swing + EMA + R:R EA — Quick Reference</div>
+    <h1 class="chapter-title">Settings Reference <span class="glossary-chip">All Parameters</span></h1>
+    <p class="chapter-hero-sub">Saari settings ek jagah — quick reference ke liye.</p>
+    <div class="chapter-body">
+
+<h2>1. Complete Settings Table</h2>
+<table>
+  <tr><th>Group</th><th>Parameter</th><th>Default</th></tr>
+  <tr><td>Master Control</td><td class="code">Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Master Control</td><td class="code">Only BUY / Only SELL</td><td class="code">false / false</td></tr>
+  <tr><td>Core</td><td class="code">Swing Calculation Type</td><td class="code">Normal</td></tr>
+  <tr><td>Core</td><td class="code">Swing Lookback Length</td><td class="code">5</td></tr>
+  <tr><td>Core</td><td class="code">EMA Length</td><td class="code">21</td></tr>
+  <tr><td>Core</td><td class="code">EMA Source</td><td class="code">close</td></tr>
+  <tr><td>Core</td><td class="code">EMA Timeframe</td><td class="code">Current Chart</td></tr>
+  <tr><td>Max Trade Control</td><td class="code">Enable Max Trade</td><td class="code">true</td></tr>
+  <tr><td>Max Trade Control</td><td class="code">Max BUY/SELL Trades In A Row</td><td class="code">2 / 2</td></tr>
+  <tr><td>Stoploss Lock</td><td class="code">Enable Stoploss Lock</td><td class="code">true</td></tr>
+  <tr><td>Stoploss Lock</td><td class="code">Lock Release Mode</td><td class="code">Stoploss Hit Only</td></tr>
+  <tr><td>Lot Sizing</td><td class="code">Lot Sizing Mode</td><td class="code">% Balance Risk</td></tr>
+  <tr><td>Lot Sizing</td><td class="code">Fixed Lot / Risk % / Fixed $</td><td class="code">0.01 / 1.0 / 10.0</td></tr>
+  <tr><td>Risk:Reward</td><td class="code">R:R Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Risk:Reward</td><td class="code">TP1/TP2/TP3 R Multiple</td><td class="code">1 / 2 / 3</td></tr>
+  <tr><td>Partial Close</td><td class="code">Partial Close Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Partial Close</td><td class="code">TP Mode</td><td class="code">Real Partial Close</td></tr>
+  <tr><td>Partial Close</td><td class="code">TP1/TP2/TP3 Close %</td><td class="code">33 / 33 / 34</td></tr>
+  <tr><td>Safety</td><td class="code">Max Allowed Spread</td><td class="code">50 pts</td></tr>
+  <tr><td>Display</td><td class="code">Show Dashboard</td><td class="code">true</td></tr>
+</table>
+
+<div class="callout">
+  <b>Key Insight:</b> Master Control, Max Trade Control, Stoploss Lock, R:R, aur Partial Close — sab ek doosre se independent hain. Apni trading style ke hisab se jo chahiye on rakho, baaki off — poora system flexible hai.
+</div>
+
+<div class="callout">
+  <b>Note:</b> Agar aapko manual chart analysis ke liye sirf signal chahiye (bina auto-trading ke), AG Technicals ke paas is EA jaisa hi logic wala <b>Pine Script indicator</b> bhi available hai TradingView ke liye — uska separate user guide milega.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(12)">&larr; Previous</button><span></span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== HINDI CHAPTER 1 ===================== -->
+<section class="chapter" id="chapter-hindi-1" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 01 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">परिचय <span class="glossary-chip">Overview</span></h1>
+    <p class="chapter-hero-sub">इस चैप्टर में हम समझेंगे कि AG Swing + EMA + R:R EA क्या है, और यह कैसे काम करता है।</p>
+    <div class="chapter-body">
+
+<h2>1. EA क्या है</h2>
+<p class="lead">AG Swing + EMA + R:R EA (Expert Advisor) एक <b>फुल ऑटो-ट्रेडिंग</b> MT5 बॉट है — जो हमारे Swing + EMA लॉजिक के साथ खुद एंट्रीज़ लेता है, SL/TP मैनेज करता है, और पोज़िशन को पूरी तरह ऑटोमैटिक कंट्रोल करता है। यह <b>रियल ट्रेड्स</b> प्लेस करता है, रियल पार्शियल क्लोज़ करता है, और पूरा ट्रेड मैनेजमेंट खुद हैंडल करता है — बिना किसी मैनुअल इंटरवेंशन के।</p>
+
+<h2>2. कोर लॉजिक</h2>
+<p class="lead">EA का कोर सिग्नल लॉजिक 2 चीज़ों पर बेस्ड है:</p>
+<ul>
+  <li><b>EMA</b> — ट्रेंड डायरेक्शन बताने के लिए</li>
+  <li><b>Swing High / Swing Low ब्रेक</b> — मोमेंटम कन्फर्मेशन के लिए</li>
+</ul>
+<p>जब दोनों कंडीशन मैच होती हैं, EA खुद <span class="badge buy">BUY</span> या <span class="badge sell">SELL</span> ऑर्डर प्लेस कर देता है।</p>
+
+<div class="callout">
+  <b>EA के फुल फीचर्स:</b> Master Control (On/Off, Only Buy/Sell), 3 Lot Sizing modes (Fixed/% Risk/$ Risk), Real Partial Close (actual lot close होता है), EMA Timeframe (higher timeframe trend filter), और AG Technicals branded dashboard।
+</div>
+
+<h2>3. किसके लिए बना है</h2>
+<p class="lead">उन ट्रेडर्स के लिए जो अपना ट्रेडिंग सिस्टम पूरी तरह ऑटोमेट करना चाहते हैं — बिना मैनुअली चार्ट देखे, बिना मैनुअली ऑर्डर प्लेस किए। EA खुद सिग्नल डिटेक्ट करता है, रिस्क कैलकुलेट करता है, और ट्रेड एग्ज़ीक्यूट करता है।</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><span></span><button class="navbtn" onclick="showChapter(2)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 2 ===================== -->
+<section class="chapter" id="chapter-hindi-2" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 02 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">EMA बेसिक्स <span class="glossary-chip">Exponential Moving Average</span></h1>
+    <p class="chapter-hero-sub">EMA क्या है और EA में इसका रोल क्या है।</p>
+    <div class="chapter-body">
+
+<h2>1. EMA क्या है</h2>
+<p class="lead"><b>EMA (Exponential Moving Average)</b> एक मूविंग एवरेज है जो रीसेंट कैंडल्स को ज़्यादा वेट देता है — इसलिए प्राइस के साथ फास्ट रिएक्ट करता है। यह एक स्मूथ ट्रेंड लाइन है जो बताती है ओवरऑल ट्रेंड किस डायरेक्शन में है।</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="100" x2="640" y2="100" stroke="#232323" stroke-dasharray="4,4"/>
+    <rect x="40" y="120" width="10" height="30" fill="#00D68F"/>
+    <rect x="90" y="100" width="10" height="35" fill="#00D68F"/>
+    <rect x="140" y="80" width="10" height="35" fill="#00D68F"/>
+    <rect x="190" y="65" width="10" height="30" fill="#FF4560"/>
+    <rect x="240" y="70" width="10" height="30" fill="#00D68F"/>
+    <rect x="290" y="50" width="10" height="30" fill="#00D68F"/>
+    <rect x="340" y="45" width="10" height="25" fill="#FF4560"/>
+    <rect x="390" y="40" width="10" height="25" fill="#00D68F"/>
+    <path d="M45,140 Q95,128 145,108 Q195,95 245,90 Q295,75 345,62 Q372,55 395,50" fill="none" stroke="#D4AF37" stroke-width="3"/>
+    <text x="400" y="42" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37">EMA (स्मूथ, डिले लाइन)</text>
+  </svg>
+  <div class="diagram-caption">EMA प्राइस को फॉलो करता है लेकिन थोड़े स्मूथ/लैग के साथ</div>
+</div>
+
+<h2>2. EA में EMA का रोल</h2>
+<ul>
+  <li>कैंडल <b>क्लोज़ EMA के ऊपर</b> → बुलिश बायस → सिर्फ BUY consider होगा</li>
+  <li>कैंडल <b>क्लोज़ EMA के नीचे</b> → बेयरिश बायस → सिर्फ SELL consider होगा</li>
+</ul>
+
+<div class="callout">
+  <b>नया फीचर:</b> EA में EMA का टाइमफ्रेम भी <b>अलग से चुन</b> सकते हो (जैसे M5 चार्ट पर H1 EMA यूज़ करना) — इस बारे में डिटेल Chapter 10 में।
+</div>
+
+<table>
+  <tr><th>सेटिंग नाम</th><th>यह क्या करता है</th><th>डिफ़ॉल्ट</th></tr>
+  <tr><td class="code">EMA Length</td><td>लाइन की स्मूथनेस</td><td class="code">21</td></tr>
+  <tr><td class="code">EMA Source</td><td>EMA किस प्राइस पर कैलकुलेट हो</td><td class="code">close</td></tr>
+  <tr><td class="code">EMA Timeframe</td><td>EMA किस टाइमफ्रेम से लिया जाए (Chapter 10 देखो)</td><td class="code">Current Chart</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(1)">&larr; Previous</button><button class="navbtn" onclick="showChapter(3)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 3 ===================== -->
+<section class="chapter" id="chapter-hindi-3" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 03 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">स्विंग हाई / लो <span class="glossary-chip">Break Concept</span></h1>
+    <p class="chapter-hero-sub">स्विंग डिटेक्ट करने के 2 तरीके — Normal और Basic।</p>
+    <div class="chapter-body">
+
+<h2>1. स्विंग हाई / लो क्या है</h2>
+<p class="lead"><b>Swing High</b> वो कैंडल होती है जिसके दोनों तरफ की कैंडल्स उससे नीचे हों (local peak)। <b>Swing Low</b> इसका उल्टा — दोनों तरफ की कैंडल्स उससे ऊपर हों।</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="140" width="10" height="30" fill="#00D68F"/>
+    <rect x="90" y="120" width="10" height="30" fill="#00D68F"/>
+    <rect x="140" y="90" width="10" height="30" fill="#00D68F"/>
+    <rect x="190" y="60" width="10" height="30" fill="#00D68F"/>
+    <rect x="240" y="90" width="10" height="30" fill="#FF4560"/>
+    <rect x="290" y="120" width="10" height="30" fill="#FF4560"/>
+    <circle cx="195" cy="55" r="5" fill="#D4AF37"/>
+    <text x="195" y="38" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" text-anchor="middle">स्विंग हाई</text>
+    <line x1="0" y1="60" x2="640" y2="60" stroke="#D4AF37" stroke-dasharray="5,5" stroke-width="1"/>
+    <rect x="380" y="60" width="10" height="30" fill="#FF4560"/>
+    <rect x="430" y="90" width="10" height="30" fill="#FF4560"/>
+    <rect x="480" y="120" width="10" height="30" fill="#FF4560"/>
+    <rect x="530" y="150" width="10" height="30" fill="#FF4560"/>
+    <rect x="580" y="120" width="10" height="30" fill="#00D68F"/>
+    <circle cx="535" cy="185" r="5" fill="#D4AF37"/>
+    <text x="535" y="205" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" text-anchor="middle">स्विंग लो</text>
+    <line x1="0" y1="180" x2="640" y2="180" stroke="#D4AF37" stroke-dasharray="5,5" stroke-width="1"/>
+  </svg>
+  <div class="diagram-caption">स्विंग पॉइंट्स चार्ट पर "SWH" / "SWL" चिप-बॉक्स के साथ automatically मार्क होते हैं</div>
+</div>
+
+<h2>2. दो कैलकुलेशन टाइप्स (ENUM)</h2>
+<table>
+  <tr><th>Type</th><th>कैसे काम करता है</th></tr>
+  <tr><td class="code">Normal</td><td><code>Swing Lookback Length</code> पैरामीटर यूज़ करता है — जितना ज़्यादा, उतनी दूर/मेजर स्विंग (वाइड SL)</td></tr>
+  <tr><td class="code">Basic</td><td>फिक्स्ड <b>2 कैंडल लेफ्ट / 2 कैंडल राइट</b> क्लासिक फ्रैक्टल — ज़्यादा फ्रीक्वेंट, नज़दीकी स्विंग्स (टाइट SL)</td></tr>
+</table>
+
+<div class="callout">
+  <b>कौनसा चुनें:</b> अगर SL बहुत वाइड लग रहा है, <code>Basic</code> टाइप ट्राई करो — छोटी, जल्दी मिलने वाली स्विंग्स देता है। अगर ज़्यादा रिलायबल/मेजर लेवल्स चाहिए, <code>Normal</code> रखो और Lookback Length एडजस्ट करो।
+</div>
+
+<h2>3. "ब्रेक" का मतलब</h2>
+<p class="lead">कैंडल <b>close</b> से पिछला स्विंग हाई/लो क्रॉस होना चाहिए — विक से नहीं। इससे फेक विक स्पाइक्स से बचाव होता है।</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(2)">&larr; Previous</button><button class="navbtn" onclick="showChapter(4)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 4 ===================== -->
+<section class="chapter" id="chapter-hindi-4" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 04 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">BUY / SELL लॉजिक <span class="glossary-chip">Core Signal</span></h1>
+    <p class="chapter-hero-sub">जब दोनों कंडीशन मैच हों, EA खुद ऑर्डर प्लेस करता है।</p>
+    <div class="chapter-body">
+
+<h2>1. सिग्नल कब फायर होता है</h2>
+<div class="step-box">
+  <span class="step-num">B</span><span class="step-title"><span class="badge buy">BUY</span></span>
+  <div class="step-detail">1. कैंडल क्लोज़ EMA के ऊपर<br>2. AND क्लोज़ पिछले Swing High को ब्रेक करे<br>3. → EA तुरंत BUY ऑर्डर प्लेस करता है</div>
+</div>
+<div class="step-box">
+  <span class="step-num">S</span><span class="step-title"><span class="badge sell">SELL</span></span>
+  <div class="step-detail">1. कैंडल क्लोज़ EMA के नीचे<br>2. AND क्लोज़ पिछले Swing Low को ब्रेक करे<br>3. → EA तुरंत SELL ऑर्डर प्लेस करता है</div>
+</div>
+
+<div class="callout">
+  <b>अलग Magic Numbers:</b> BUY और SELL ट्रेड्स के लिए EA इंटरनली अलग-अलग मैजिक नंबर यूज़ करता है — इससे दोनों डायरेक्शन के ट्रेड्स MT5 हिस्ट्री में क्लियरली अलग पहचाने जा सकते हैं।
+</div>
+
+<h2>2. चार्ट पे विज़ुअल</h2>
+<p class="lead">जिस कैंडल पर सिग्नल फायर होता है, उसी पर green <b>"BUY"</b> या red <b>"SELL"</b> चिप-बॉक्स + arrow symbol automatically दिखता है — कोई मैनुअल मार्किंग की ज़रूरत नहीं।</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(3)">&larr; Previous</button><button class="navbtn" onclick="showChapter(5)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 5 ===================== -->
+<section class="chapter" id="chapter-hindi-5" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 05 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">मास्टर कंट्रोल <span class="glossary-chip">On / Off Switch</span></h1>
+    <p class="chapter-hero-sub">पूरे EA को तुरंत on/off करने का क्विक स्विच, साथ में डायरेक्शन फ़िल्टर।</p>
+    <div class="chapter-body">
+
+<h2>1. क्या करता है</h2>
+<table>
+  <tr><th>Parameter</th><th>क्या करता है</th><th>डिफ़ॉल्ट</th></tr>
+  <tr><td class="code">Master Enable</td><td><code>false</code> करने से EA <b>कोई नया ट्रेड नहीं लेगा</b> — पूरी तरह पॉज़ हो जाएगा</td><td class="code">true</td></tr>
+  <tr><td class="code">Only BUY</td><td>सिर्फ BUY सिग्नल्स लो, SELL ब्लॉक हो जाएंगे</td><td class="code">false</td></tr>
+  <tr><td class="code">Only SELL</td><td>सिर्फ SELL सिग्नल्स लो, BUY ब्लॉक हो जाएंगे</td><td class="code">false</td></tr>
+</table>
+
+<div class="callout">
+  <b>Use Case:</b> कभी-कभी मार्केट एक ही डायरेक्शन में strongly ट्रेंड कर रहा होता है — उस टाइम <code>Only BUY</code> ऑन करके counter-trend SELL सिग्नल्स avoid कर सकते हो।
+</div>
+
+<h2>2. डैशबोर्ड पर स्टेटस</h2>
+<p class="lead">डैशबोर्ड हमेशा current mode दिखाता है — <b>"ON (Both)"</b>, <b>"BUY ONLY"</b>, <b>"SELL ONLY"</b>, या <b>"OFF"</b>।</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(4)">&larr; Previous</button><button class="navbtn" onclick="showChapter(6)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 6 ===================== -->
+<section class="chapter" id="chapter-hindi-6" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 06 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">मैक्स ट्रेड कंट्रोल <span class="glossary-chip">Same Direction</span></h1>
+    <p class="chapter-hero-sub">एक ही डायरेक्शन में लगातार कितने ट्रेड allow करने हैं।</p>
+    <div class="chapter-body">
+
+<h2>1. यह सेटिंग क्या करती है</h2>
+<p class="lead">ट्रेंडिंग मार्केट में लगातार कई BUY (या SELL) ट्रेड्स खुल सकते हैं। यह सेटिंग कंट्रोल करती है कि एक ही डायरेक्शन में <b>कितने ट्रेड लगातार</b> allow होंगे, opposite सिग्नल आने तक।</p>
+
+<div class="callout">
+  यह काउंटिंग सिर्फ कंडीशन-मैच पर बेस्ड है — <b>स्टॉपलॉस से कोई लेना-देना नहीं</b>।
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>क्या करता है</th><th>डिफ़ॉल्ट</th></tr>
+  <tr><td class="code">Enable Max Trade</td><td>Feature on/off</td><td class="code">true</td></tr>
+  <tr><td class="code">Max BUY Trades In A Row</td><td>लगातार कितने BUY ट्रेड, SELL आने तक</td><td class="code">2</td></tr>
+  <tr><td class="code">Max SELL Trades In A Row</td><td>लगातार कितने SELL ट्रेड, BUY आने तक</td><td class="code">2</td></tr>
+</table>
+
+<div class="callout">
+  <b>डिफ़ॉल्ट 2 क्यों:</b> EA का डिज़ाइन higher-timeframe EMA trend filter (Chapter 10 देखो) के साथ pyramid/re-enter करने के लिए सोचा गया है।
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(5)">&larr; Previous</button><button class="navbtn" onclick="showChapter(7)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 7 ===================== -->
+<section class="chapter" id="chapter-hindi-7" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 07 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">स्टॉपलॉस लॉक <span class="glossary-chip">Global Lock</span></h1>
+    <p class="chapter-hero-sub">नया ट्रेड कब तक वेट करेगा current ट्रेड के close होने तक।</p>
+    <div class="chapter-body">
+
+<h2>1. यह फीचर क्या करता है</h2>
+<p class="lead">यह एक <b>इंडिपेंडेंट ग्लोबल लॉक</b> है — Max Trade Control से अलग काम करता है। जब enable हो, नया ट्रेड तब तक नहीं खुलेगा जब तक current ट्रेड close न हो जाए।</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="15" width="170" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="105" y="50" font-family="Inter, sans-serif" font-size="14" fill="#F2F0EA" text-anchor="middle" font-weight="700">ट्रेड ओपन</text>
+    <text x="105" y="72" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">SL = swing level</text>
+    <text x="105" y="90" font-family="Inter, sans-serif" font-size="11" fill="#D4AF37" text-anchor="middle">Lock = ACTIVE</text>
+    <line x1="190" y1="68" x2="270" y2="68" stroke="#9C9C9C" stroke-width="1.5" marker-end="url(#arrH3)"/>
+    <rect x="280" y="15" width="190" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="375" y="50" font-family="Inter, sans-serif" font-size="14" fill="#F2F0EA" text-anchor="middle" font-weight="700">वेटिंग...</text>
+    <text x="375" y="72" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">नया ट्रेड ब्लॉक्ड</text>
+    <text x="375" y="90" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">जब तक ट्रेड क्लोज़ न हो</text>
+    <line x1="470" y1="68" x2="550" y2="68" stroke="#9C9C9C" stroke-width="1.5" marker-end="url(#arrH3)"/>
+    <rect x="560" y="15" width="65" height="105" rx="6" fill="#0A0A0C" stroke="#00D68F"/>
+    <text x="592" y="50" font-family="Inter, sans-serif" font-size="13" fill="#00D68F" text-anchor="middle" font-weight="700">क्लोज़्ड</text>
+    <text x="592" y="72" font-family="Inter, sans-serif" font-size="9.5" fill="#9C9C9C" text-anchor="middle">लॉक</text>
+    <text x="592" y="86" font-family="Inter, sans-serif" font-size="9.5" fill="#9C9C9C" text-anchor="middle">रिलीज़</text>
+    <defs><marker id="arrH3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#9C9C9C"/></marker></defs>
+  </svg>
+  <div class="diagram-caption">EA में लॉक ट्रेड के fully close होने पर release होता है</div>
+</div>
+
+<table>
+  <tr><th>Option</th><th>Behaviour</th></tr>
+  <tr><td class="code">Stoploss Hit Only</td><td>नया ट्रेड सिर्फ तब जब current ट्रेड fully close हो जाए</td></tr>
+  <tr><td class="code">Stoploss Hit or New Signal</td><td>ट्रेड close हो, या नया वैलिड सिग्नल आए (जो भी पहले हो) — लॉक रिलीज़</td></tr>
+</table>
+
+<div class="callout">
+  <b>ध्यान रहे:</b> Stoploss Lock और Max Trade Control दोनों independent हैं।
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(6)">&larr; Previous</button><button class="navbtn" onclick="showChapter(8)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 8 ===================== -->
+<section class="chapter" id="chapter-hindi-8" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 08 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">लॉट साइज़िंग <span class="glossary-chip">Risk Management</span></h1>
+    <p class="chapter-hero-sub">हर ट्रेड का लॉट साइज़ कैसे कैलकुलेट होता है — 3 modes available।</p>
+    <div class="chapter-body">
+
+<h2>1. तीनों Modes</h2>
+<table>
+  <tr><th>Mode</th><th>कैसे काम करता है</th></tr>
+  <tr><td class="code">Fixed Lot</td><td>हर ट्रेड same fixed lot size — SL distance से कोई फर्क नहीं पड़ता</td></tr>
+  <tr><td class="code">% Balance Risk</td><td>Account balance का fix % risk करो — lot size SL distance के हिसाब से <b>auto-calculate</b> होता है</td></tr>
+  <tr><td class="code">Fixed $ Risk</td><td>हर ट्रेड पर fixed dollar amount risk करो</td></tr>
+</table>
+
+<div class="callout">
+  <b>Recommended:</b> <code>% Balance Risk</code> ज़्यादा प्रोफेशनल एप्रोच है क्योंकि रिस्क हमेशा consistent (account का fix %) रहता है।
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>क्या करता है</th><th>डिफ़ॉल्ट</th></tr>
+  <tr><td class="code">Lot Sizing Mode</td><td>तीनों में से एक चुनो</td><td class="code">% Balance Risk</td></tr>
+  <tr><td class="code">Fixed Lot Size</td><td>सिर्फ Fixed mode में</td><td class="code">0.01</td></tr>
+  <tr><td class="code">Risk % of Balance</td><td>सिर्फ % Risk mode में</td><td class="code">1.0</td></tr>
+  <tr><td class="code">Fixed $ Risk</td><td>सिर्फ Fixed $ mode में</td><td class="code">10.0</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(7)">&larr; Previous</button><button class="navbtn" onclick="showChapter(9)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 9 ===================== -->
+<section class="chapter" id="chapter-hindi-9" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 09 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">रिस्क:रिवॉर्ड + पार्शियल क्लोज़ <span class="glossary-chip">Real Trade Management</span></h1>
+    <p class="chapter-hero-sub">रियल ट्रेड मैनेजमेंट — असली पार्शियल पोज़िशन क्लोज़ होती है, सिर्फ विज़ुअल नहीं।</p>
+    <div class="chapter-body">
+
+<h2>1. R:R कैसे काम करता है</h2>
+<p class="lead">हर ट्रेड के साथ Entry, SL, और 3 Take-Profit levels कैलकुलेट होते हैं — R (Risk) मल्टीपल के बेसिस पर। <b>R = Entry से SL तक का डिस्टेंस।</b></p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="145" x2="590" y2="145" stroke="#F2F0EA" stroke-dasharray="4,4"/>
+    <text x="595" y="149" font-family="Inter, sans-serif" font-size="11" fill="#F2F0EA">ENTRY</text>
+    <line x1="50" y1="172" x2="590" y2="172" stroke="#FF4560" stroke-width="2"/>
+    <text x="595" y="176" font-family="Inter, sans-serif" font-size="11" fill="#FF4560">SL</text>
+    <line x1="50" y1="108" x2="590" y2="108" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="112" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP1 · 1R</text>
+    <line x1="50" y1="72" x2="590" y2="72" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="76" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP2 · 2R</text>
+    <line x1="50" y1="35" x2="590" y2="35" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="39" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP3 · 3R</text>
+    <line x1="70" y1="145" x2="70" y2="172" stroke="#D4AF37" stroke-width="2"/>
+    <text x="30" y="163" font-family="Inter, sans-serif" font-size="10" fill="#D4AF37">1R</text>
+  </svg>
+  <div class="diagram-caption">चार्ट पर Entry/SL/TP1/TP2/TP3 सबकी ray-lines automatically draw होती हैं</div>
+</div>
+
+<h2>2. दो TP Modes</h2>
+<table>
+  <tr><th>Mode</th><th>कैसे काम करता है</th></tr>
+  <tr><td class="code">Real Partial Close</td><td>TP1 पर position का X% <b>actually close</b> होता है, TP2 पर और close, बाकी TP3 पर।</td></tr>
+  <tr><td class="code">Breakeven-Trail</td><td>Partial close नहीं होता — TP1 hit होने पर SL <b>breakeven पर move</b> होता है, TP2 पर SL TP1 तक trail होता है।</td></tr>
+</table>
+
+<div class="callout">
+  <b>कौनसा चुनें:</b> <code>Real Partial Close</code> अगर प्रॉफिट जल्दी लॉक करना है। <code>Breakeven-Trail</code> अगर बड़े moves capture करने हैं पूरी पोज़िशन के साथ।
+</div>
+
+<h2>3. सेटिंग्स</h2>
+<table>
+  <tr><th>Parameter</th><th>क्या करता है</th><th>डिफ़ॉल्ट</th></tr>
+  <tr><td class="code">R:R Master Enable</td><td><code>false</code> करो तो कोई TP नहीं लगेगा</td><td class="code">true</td></tr>
+  <tr><td class="code">TP1/TP2/TP3 R Multiple</td><td>हर TP कितने R दूर हो</td><td class="code">1 / 2 / 3</td></tr>
+  <tr><td class="code">Partial Close Master Enable</td><td><code>false</code> करो तो full close सिर्फ final TP पर होगा</td><td class="code">true</td></tr>
+  <tr><td class="code">TP Mode</td><td>Real Partial Close / Breakeven-Trail</td><td class="code">Real Partial Close</td></tr>
+  <tr><td class="code">TP1/TP2/TP3 Close %</td><td>Real Partial mode में कितना % close हो</td><td class="code">33 / 33 / 34</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(8)">&larr; Previous</button><button class="navbtn" onclick="showChapter(10)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 10 ===================== -->
+<section class="chapter" id="chapter-hindi-10" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 10 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">EMA टाइमफ्रेम <span class="glossary-chip">Multi-Timeframe Trend</span></h1>
+    <p class="chapter-hero-sub">छोटे चार्ट पर एंट्रीज़ लो, बड़े टाइमफ्रेम के ट्रेंड के साथ।</p>
+    <div class="chapter-body">
+
+<h2>1. Concept</h2>
+<p class="lead">EMA का टाइमफ्रेम <b>अलग से चुन</b> सकते हो — जैसे M5 चार्ट पर ट्रेड लो, लेकिन trend-filter <b>H1 EMA</b> से लो।</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="15" width="600" height="70" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="35" y="35" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" font-weight="700">H1 EMA (बड़ा टाइमफ्रेम — बड़ा ट्रेंड)</text>
+    <path d="M40,70 C150,65 250,55 350,50 S500,40 610,35" fill="none" stroke="#D4AF37" stroke-width="3"/>
+    <text x="35" y="78" font-family="Inter, sans-serif" font-size="10" fill="#9C9C9C">सिर्फ हर H1 कैंडल क्लोज़ होने पर अपडेट होता है</text>
+    <rect x="20" y="100" width="600" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="35" y="120" font-family="Inter, sans-serif" font-size="12" fill="#00D68F" font-weight="700">M5 चार्ट (Entry Timeframe — छोटी एंट्रीज़)</text>
+    <rect x="40" y="150" width="8" height="25" fill="#00D68F"/>
+    <rect x="60" y="145" width="8" height="25" fill="#00D68F"/>
+    <rect x="80" y="140" width="8" height="25" fill="#00D68F"/>
+    <rect x="105" y="135" width="10" height="28" fill="#00D68F" stroke="#fff"/>
+    <rect x="130" y="150" width="8" height="20" fill="#00D68F"/>
+    <rect x="150" y="145" width="8" height="20" fill="#00D68F"/>
+    <rect x="170" y="140" width="8" height="20" fill="#00D68F"/>
+    <rect x="195" y="135" width="10" height="24" fill="#00D68F" stroke="#fff"/>
+    <text x="105" y="190" font-family="Inter, sans-serif" font-size="10" fill="#00D68F" text-anchor="middle">BUY (1ली एंट्री)</text>
+    <text x="200" y="190" font-family="Inter, sans-serif" font-size="10" fill="#00D68F" text-anchor="middle">BUY (re-entry)</text>
+  </svg>
+  <div class="diagram-caption">बड़ा ट्रेंड (H1) same रहे जब तक, छोटी TF (M5) पर multiple entries लग सकती हैं</div>
+</div>
+
+<h2>2. क्यों Useful है</h2>
+<ul>
+  <li>Higher TF EMA से overall ट्रेंड कन्फर्म होता है — छोटी TF की fake reversals filter हो जाती हैं</li>
+  <li>M5 पर TP hit होने के बाद भी, जब तक H1 ट्रेंड वही है, EA <b>दोबारा same direction</b> में entry ले सकता है</li>
+  <li>Strong trending moves में ज़्यादा capture करता है</li>
+</ul>
+
+<div class="callout warn">
+  <b>ध्यान रहे:</b> Swing High/Low detection हमेशा <b>चार्ट के अपने टाइमफ्रेम</b> पर रहता है — सिर्फ EMA trend-filter higher TF से आता है। Higher TF EMA value तब तक "stale" रहती है जब तक उसका बड़ा कैंडल क्लोज़ न हो जाए।
+</div>
+
+<div class="callout">
+  <b>Max Trade Row का रोल:</b> चूंकि EA अब same-direction re-entries कर सकता है, <code>Max Trade Row</code> लिमिट (Chapter 6) इस डिज़ाइन में और ज़रूरी हो जाता है।
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>क्या करता है</th><th>डिफ़ॉल्ट</th></tr>
+  <tr><td class="code">EMA Timeframe</td><td>EMA किस टाइमफ्रेम से कैलकुलेट हो</td><td class="code">Current Chart</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(9)">&larr; Previous</button><button class="navbtn" onclick="showChapter(11)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 11 ===================== -->
+<section class="chapter" id="chapter-hindi-11" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 11 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">डैशबोर्ड और चार्ट विज़ुअल्स <span class="glossary-chip">Live Status Panel</span></h1>
+    <p class="chapter-hero-sub">चार्ट के top-left corner में हर चीज़ एक नज़र में।</p>
+    <div class="chapter-body">
+
+<h2>1. डैशबोर्ड क्या दिखाता है</h2>
+<table>
+  <tr><th>Line</th><th>मतलब</th></tr>
+  <tr><td class="code">Master</td><td>ON (Both) / BUY ONLY / SELL ONLY / OFF</td></tr>
+  <tr><td class="code">R:R / Partial Close</td><td>दोनों फीचर्स का current status</td></tr>
+  <tr><td class="code">EMA(21)</td><td>Current EMA value</td></tr>
+  <tr><td class="code">Swing High / Low</td><td>Last confirmed swing levels</td></tr>
+  <tr><td class="code">Last Direction</td><td>आखिरी ट्रेड किस डायरेक्शन का था</td></tr>
+  <tr><td class="code">Buy Row / Sell Row</td><td>कितने ट्रेड लगातार same-direction में हो चुके हैं</td></tr>
+  <tr><td class="code">SL Lock</td><td>Active है या free</td></tr>
+  <tr><td class="code">Open Trades (EA)</td><td>इस वक्त कितने ट्रेड EA ने खोले हैं</td></tr>
+  <tr><td class="code">License</td><td>कितने दिन बाकी हैं (या Unlimited)</td></tr>
+</table>
+
+<h2>2. चार्ट पर मार्कर्स</h2>
+<ul>
+  <li>Gold <b>"SWH"</b> / <b>"SWL"</b> चिप-बॉक्स — जहां भी स्विंग कन्फर्म हो</li>
+  <li>Green <b>"BUY"</b> / Red <b>"SELL"</b> चिप-बॉक्स + arrow — सिग्नल कैंडल पर</li>
+  <li>White dashed line — Entry, Red solid — SL, Green dotted — TP1/TP2/TP3</li>
+</ul>
+
+<div class="callout">
+  <b>Auto Cleanup:</b> जैसे ही ट्रेड fully close होता है, उसकी सारी lines/labels चार्ट से automatically delete हो जाती हैं।
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(10)">&larr; Previous</button><button class="navbtn" onclick="showChapter(12)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 12 ===================== -->
+<section class="chapter" id="chapter-hindi-12" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 12 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">इंस्टॉलेशन <span class="glossary-chip">MetaTrader 5 Setup</span></h1>
+    <p class="chapter-hero-sub">MT5 पर EA को स्टेप-बाय-स्टेप attach करना।</p>
+    <div class="chapter-body">
+
+<h2>1. स्टेप-बाय-स्टेप सेटअप</h2>
+
+<div class="step-box">
+  <span class="step-num">1</span><span class="step-title">MetaEditor में file डालो</span>
+  <div class="step-detail">MT5 में <b>File → Open Data Folder → MQL5 → Experts</b> में <code>AG_Swing_EMA_RR_EA.mq5</code> file paste करो।</div>
+</div>
+<div class="step-box">
+  <span class="step-num">2</span><span class="step-title">Compile करो</span>
+  <div class="step-detail">MetaEditor में file open करके <b>F7</b> (Compile) दबाओ। "0 errors" दिखना चाहिए।</div>
+</div>
+<div class="step-box">
+  <span class="step-num">3</span><span class="step-title">चार्ट पर drag करो</span>
+  <div class="step-detail">MT5 Navigator panel में Experts के अंदर EA मिलेगा — जिस pair/timeframe पर चाहिए उस चार्ट पर drag-drop करो।</div>
+</div>
+<div class="step-box">
+  <span class="step-num">4</span><span class="step-title">AutoTrading enable करो</span>
+  <div class="step-detail">Top toolbar में <b>"Algo Trading"</b> button ON करो — वरना EA trade नहीं लेगा।</div>
+</div>
+<div class="step-box">
+  <span class="step-num">5</span><span class="step-title">सेटिंग्स adjust करो</span>
+  <div class="step-detail">Dialog box में <b>Inputs</b> tab से अपनी ज़रूरत के हिसाब से parameters सेट करो।</div>
+</div>
+<div class="step-box">
+  <span class="step-num">6</span><span class="step-title">Common tab check करो</span>
+  <div class="step-detail">Dialog box में <b>Common</b> tab में "Allow Algo Trading" checkbox ON होना चाहिए।</div>
+</div>
+
+<div class="callout warn">
+  <b>ज़रूरी:</b> EA के लिए internet connection और MT5 terminal open रहना ज़रूरी है। VPS use करना recommended है 24x7 uptime के लिए।
+</div>
+
+<div class="callout">
+  <b>Tip:</b> पहले Strategy Tester में backtest करो या demo account पर कुछ दिन चलाओ, फिर live account पर use करो।
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(11)">&larr; Previous</button><button class="navbtn" onclick="showChapter(13)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HINDI CHAPTER 13 ===================== -->
+<section class="chapter" id="chapter-hindi-13" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 13 / 13 — AG Technicals Swing + EMA + R:R EA — Quick Reference</div>
+    <h1 class="chapter-title">सेटिंग्स रेफरेंस <span class="glossary-chip">All Parameters</span></h1>
+    <p class="chapter-hero-sub">सारी सेटिंग्स एक जगह — quick reference के लिए।</p>
+    <div class="chapter-body">
+
+<h2>1. Complete Settings Table</h2>
+<table>
+  <tr><th>Group</th><th>Parameter</th><th>Default</th></tr>
+  <tr><td>Master Control</td><td class="code">Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Master Control</td><td class="code">Only BUY / Only SELL</td><td class="code">false / false</td></tr>
+  <tr><td>Core</td><td class="code">Swing Calculation Type</td><td class="code">Normal</td></tr>
+  <tr><td>Core</td><td class="code">Swing Lookback Length</td><td class="code">5</td></tr>
+  <tr><td>Core</td><td class="code">EMA Length</td><td class="code">21</td></tr>
+  <tr><td>Core</td><td class="code">EMA Source</td><td class="code">close</td></tr>
+  <tr><td>Core</td><td class="code">EMA Timeframe</td><td class="code">Current Chart</td></tr>
+  <tr><td>Max Trade Control</td><td class="code">Enable Max Trade</td><td class="code">true</td></tr>
+  <tr><td>Max Trade Control</td><td class="code">Max BUY/SELL Trades In A Row</td><td class="code">2 / 2</td></tr>
+  <tr><td>Stoploss Lock</td><td class="code">Enable Stoploss Lock</td><td class="code">true</td></tr>
+  <tr><td>Stoploss Lock</td><td class="code">Lock Release Mode</td><td class="code">Stoploss Hit Only</td></tr>
+  <tr><td>Lot Sizing</td><td class="code">Lot Sizing Mode</td><td class="code">% Balance Risk</td></tr>
+  <tr><td>Lot Sizing</td><td class="code">Fixed Lot / Risk % / Fixed $</td><td class="code">0.01 / 1.0 / 10.0</td></tr>
+  <tr><td>Risk:Reward</td><td class="code">R:R Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Risk:Reward</td><td class="code">TP1/TP2/TP3 R Multiple</td><td class="code">1 / 2 / 3</td></tr>
+  <tr><td>Partial Close</td><td class="code">Partial Close Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Partial Close</td><td class="code">TP Mode</td><td class="code">Real Partial Close</td></tr>
+  <tr><td>Partial Close</td><td class="code">TP1/TP2/TP3 Close %</td><td class="code">33 / 33 / 34</td></tr>
+  <tr><td>Safety</td><td class="code">Max Allowed Spread</td><td class="code">50 pts</td></tr>
+  <tr><td>Display</td><td class="code">Show Dashboard</td><td class="code">true</td></tr>
+</table>
+
+<div class="callout">
+  <b>Key Insight:</b> Master Control, Max Trade Control, Stoploss Lock, R:R, और Partial Close — सब एक दूसरे से independent हैं।
+</div>
+
+<div class="callout">
+  <b>Note:</b> अगर मैनुअल चार्ट एनालिसिस के लिए सिर्फ सिग्नल चाहिए (बिना auto-trading के), AG Technicals के पास इस EA जैसा ही logic वाला <b>Pine Script indicator</b> भी available है TradingView के लिए।
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(12)">&larr; Previous</button><span></span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== ENGLISH CHAPTER 1 ===================== -->
+<section class="chapter" id="chapter-english-1" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 01 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Introduction <span class="glossary-chip">Overview</span></h1>
+    <p class="chapter-hero-sub">In this chapter, we'll understand what the AG Swing + EMA + R:R EA is and how it works.</p>
+    <div class="chapter-body">
+
+<h2>1. What Is This EA</h2>
+<p class="lead">AG Swing + EMA + R:R EA (Expert Advisor) is a <b>fully automated trading</b> MT5 bot — it takes entries on its own using our Swing + EMA logic, manages SL/TP, and controls the position completely automatically. It places <b>real trades</b>, performs real partial closes, and handles the entire trade lifecycle without manual intervention.</p>
+
+<h2>2. Core Logic</h2>
+<p class="lead">The EA's core signal logic is based on 2 things:</p>
+<ul>
+  <li><b>EMA</b> — determines trend direction</li>
+  <li><b>Swing High / Swing Low break</b> — confirms momentum</li>
+</ul>
+<p>Once both conditions match, the EA places a <span class="badge buy">BUY</span> or <span class="badge sell">SELL</span> order on its own.</p>
+
+<div class="callout">
+  <b>Full Feature Set:</b> Master Control (On/Off, Only Buy/Sell), 3 Lot Sizing modes (Fixed/% Risk/$ Risk), Real Partial Close (actual lot reduction), EMA Timeframe (higher timeframe trend filter), and an AG Technicals branded dashboard.
+</div>
+
+<h2>3. Who It's Built For</h2>
+<p class="lead">For traders who want to fully automate their trading system — without manually watching charts or placing orders. The EA detects signals, calculates risk, and executes trades on its own.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><span></span><button class="navbtn" onclick="showChapter(2)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 2 ===================== -->
+<section class="chapter" id="chapter-english-2" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 02 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">EMA Basics <span class="glossary-chip">Exponential Moving Average</span></h1>
+    <p class="chapter-hero-sub">What EMA is and its role in the EA.</p>
+    <div class="chapter-body">
+
+<h2>1. What Is EMA</h2>
+<p class="lead"><b>EMA (Exponential Moving Average)</b> is a moving average that gives more weight to recent candles — so it reacts faster to price. It's a smooth trend line showing which direction the overall trend is moving.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="100" x2="640" y2="100" stroke="#232323" stroke-dasharray="4,4"/>
+    <rect x="40" y="120" width="10" height="30" fill="#00D68F"/>
+    <rect x="90" y="100" width="10" height="35" fill="#00D68F"/>
+    <rect x="140" y="80" width="10" height="35" fill="#00D68F"/>
+    <rect x="190" y="65" width="10" height="30" fill="#FF4560"/>
+    <rect x="240" y="70" width="10" height="30" fill="#00D68F"/>
+    <rect x="290" y="50" width="10" height="30" fill="#00D68F"/>
+    <rect x="340" y="45" width="10" height="25" fill="#FF4560"/>
+    <rect x="390" y="40" width="10" height="25" fill="#00D68F"/>
+    <path d="M45,140 Q95,128 145,108 Q195,95 245,90 Q295,75 345,62 Q372,55 395,50" fill="none" stroke="#D4AF37" stroke-width="3"/>
+    <text x="400" y="42" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37">EMA (smooth, delayed line)</text>
+  </svg>
+  <div class="diagram-caption">EMA follows price with a bit of smoothing/lag</div>
+</div>
+
+<h2>2. EMA's Role In The EA</h2>
+<ul>
+  <li>Candle <b>closes above EMA</b> → bullish bias → only BUY considered</li>
+  <li>Candle <b>closes below EMA</b> → bearish bias → only SELL considered</li>
+</ul>
+
+<div class="callout">
+  <b>New Feature:</b> In the EA, EMA's timeframe can also be set <b>separately</b> (e.g. using an H1 EMA on an M5 chart) — details in Chapter 10.
+</div>
+
+<table>
+  <tr><th>Setting Name</th><th>What It Does</th><th>Default</th></tr>
+  <tr><td class="code">EMA Length</td><td>Smoothness of the line</td><td class="code">21</td></tr>
+  <tr><td class="code">EMA Source</td><td>Which price EMA is calculated on</td><td class="code">close</td></tr>
+  <tr><td class="code">EMA Timeframe</td><td>Which timeframe EMA is taken from (see Chapter 10)</td><td class="code">Current Chart</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(1)">&larr; Previous</button><button class="navbtn" onclick="showChapter(3)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 3 ===================== -->
+<section class="chapter" id="chapter-english-3" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 03 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Swing High / Low <span class="glossary-chip">Break Concept</span></h1>
+    <p class="chapter-hero-sub">Two ways to detect swings — Normal and Basic.</p>
+    <div class="chapter-body">
+
+<h2>1. What Is Swing High / Low</h2>
+<p class="lead">A <b>Swing High</b> is a candle where the candles on both sides are lower (a local peak). A <b>Swing Low</b> is the opposite — candles on both sides are higher.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="140" width="10" height="30" fill="#00D68F"/>
+    <rect x="90" y="120" width="10" height="30" fill="#00D68F"/>
+    <rect x="140" y="90" width="10" height="30" fill="#00D68F"/>
+    <rect x="190" y="60" width="10" height="30" fill="#00D68F"/>
+    <rect x="240" y="90" width="10" height="30" fill="#FF4560"/>
+    <rect x="290" y="120" width="10" height="30" fill="#FF4560"/>
+    <circle cx="195" cy="55" r="5" fill="#D4AF37"/>
+    <text x="195" y="38" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" text-anchor="middle">SWING HIGH</text>
+    <line x1="0" y1="60" x2="640" y2="60" stroke="#D4AF37" stroke-dasharray="5,5" stroke-width="1"/>
+    <rect x="380" y="60" width="10" height="30" fill="#FF4560"/>
+    <rect x="430" y="90" width="10" height="30" fill="#FF4560"/>
+    <rect x="480" y="120" width="10" height="30" fill="#FF4560"/>
+    <rect x="530" y="150" width="10" height="30" fill="#FF4560"/>
+    <rect x="580" y="120" width="10" height="30" fill="#00D68F"/>
+    <circle cx="535" cy="185" r="5" fill="#D4AF37"/>
+    <text x="535" y="205" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" text-anchor="middle">SWING LOW</text>
+    <line x1="0" y1="180" x2="640" y2="180" stroke="#D4AF37" stroke-dasharray="5,5" stroke-width="1"/>
+  </svg>
+  <div class="diagram-caption">Swing points are automatically marked on the chart with an "SWH" / "SWL" chip-box</div>
+</div>
+
+<h2>2. Two Calculation Types (ENUM)</h2>
+<table>
+  <tr><th>Type</th><th>How It Works</th></tr>
+  <tr><td class="code">Normal</td><td>Uses the <code>Swing Lookback Length</code> parameter — larger = further/more major swings (wider SL)</td></tr>
+  <tr><td class="code">Basic</td><td>Fixed <b>2-candle left / 2-candle right</b> classic fractal — more frequent, closer swings (tighter SL)</td></tr>
+</table>
+
+<div class="callout">
+  <b>Which To Choose:</b> If SL looks too wide, try the <code>Basic</code> type — it gives smaller, quicker swings. If you want more reliable/major levels, keep <code>Normal</code> and adjust the Lookback Length.
+</div>
+
+<h2>3. What "Break" Means</h2>
+<p class="lead">A candle's <b>close</b> must cross the previous swing high/low — not the wick. This protects against fake wick spikes.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(2)">&larr; Previous</button><button class="navbtn" onclick="showChapter(4)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 4 ===================== -->
+<section class="chapter" id="chapter-english-4" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 04 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">BUY / SELL Logic <span class="glossary-chip">Core Signal</span></h1>
+    <p class="chapter-hero-sub">When both conditions match, the EA places the order itself.</p>
+    <div class="chapter-body">
+
+<h2>1. When A Signal Fires</h2>
+<div class="step-box">
+  <span class="step-num">B</span><span class="step-title"><span class="badge buy">BUY</span></span>
+  <div class="step-detail">1. Candle closes above EMA<br>2. AND close breaks the previous Swing High<br>3. → EA immediately places a BUY order</div>
+</div>
+<div class="step-box">
+  <span class="step-num">S</span><span class="step-title"><span class="badge sell">SELL</span></span>
+  <div class="step-detail">1. Candle closes below EMA<br>2. AND close breaks the previous Swing Low<br>3. → EA immediately places a SELL order</div>
+</div>
+
+<div class="callout">
+  <b>Separate Magic Numbers:</b> The EA internally uses different magic numbers for BUY and SELL trades — so both directions can be clearly identified/filtered in MT5 history.
+</div>
+
+<h2>2. Chart Visual</h2>
+<p class="lead">On the candle where the signal fires, a green <b>"BUY"</b> or red <b>"SELL"</b> chip-box + arrow symbol appears automatically — no manual marking needed.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(3)">&larr; Previous</button><button class="navbtn" onclick="showChapter(5)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 5 ===================== -->
+<section class="chapter" id="chapter-english-5" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 05 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Master Control <span class="glossary-chip">On / Off Switch</span></h1>
+    <p class="chapter-hero-sub">A quick switch to turn the whole EA on/off, plus a direction filter.</p>
+    <div class="chapter-body">
+
+<h2>1. What It Does</h2>
+<table>
+  <tr><th>Parameter</th><th>What It Does</th><th>Default</th></tr>
+  <tr><td class="code">Master Enable</td><td>Setting to <code>false</code> means the EA <b>takes no new trades</b> — fully paused</td><td class="code">true</td></tr>
+  <tr><td class="code">Only BUY</td><td>Only take BUY signals, SELL gets blocked</td><td class="code">false</td></tr>
+  <tr><td class="code">Only SELL</td><td>Only take SELL signals, BUY gets blocked</td><td class="code">false</td></tr>
+</table>
+
+<div class="callout">
+  <b>Use Case:</b> Sometimes the market is strongly trending in one direction — you can turn on <code>Only BUY</code> to avoid counter-trend SELL signals.
+</div>
+
+<h2>2. Dashboard Status</h2>
+<p class="lead">The dashboard always shows the current mode — <b>"ON (Both)"</b>, <b>"BUY ONLY"</b>, <b>"SELL ONLY"</b>, or <b>"OFF"</b>.</p>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(4)">&larr; Previous</button><button class="navbtn" onclick="showChapter(6)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 6 ===================== -->
+<section class="chapter" id="chapter-english-6" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 06 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Max Trade Control <span class="glossary-chip">Same Direction</span></h1>
+    <p class="chapter-hero-sub">Controlling how many trades in a row are allowed in the same direction.</p>
+    <div class="chapter-body">
+
+<h2>1. What This Setting Does</h2>
+<p class="lead">In a trending market, several BUY (or SELL) trades can open in a row. This setting controls <b>how many trades in a row</b> are allowed in the same direction, until an opposite signal appears.</p>
+
+<div class="callout">
+  This counting is purely condition-match based — <b>it has nothing to do with stoploss</b>.
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>What It Does</th><th>Default</th></tr>
+  <tr><td class="code">Enable Max Trade</td><td>Feature on/off</td><td class="code">true</td></tr>
+  <tr><td class="code">Max BUY Trades In A Row</td><td>How many BUY trades in a row, until a SELL appears</td><td class="code">2</td></tr>
+  <tr><td class="code">Max SELL Trades In A Row</td><td>How many SELL trades in a row, until a BUY appears</td><td class="code">2</td></tr>
+</table>
+
+<div class="callout">
+  <b>Why Default 2:</b> The EA is designed to pyramid/re-enter alongside a higher-timeframe EMA trend filter (see Chapter 10).
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(5)">&larr; Previous</button><button class="navbtn" onclick="showChapter(7)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 7 ===================== -->
+<section class="chapter" id="chapter-english-7" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 07 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Stoploss Lock <span class="glossary-chip">Global Lock</span></h1>
+    <p class="chapter-hero-sub">How long a new trade waits for until the current trade closes.</p>
+    <div class="chapter-body">
+
+<h2>1. What This Feature Does</h2>
+<p class="lead">This is an <b>independent global lock</b> — it works separately from Max Trade Control. When enabled, no new trade opens until the current trade closes.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="15" width="170" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="105" y="50" font-family="Inter, sans-serif" font-size="14" fill="#F2F0EA" text-anchor="middle" font-weight="700">Trade Opens</text>
+    <text x="105" y="72" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">SL = swing level</text>
+    <text x="105" y="90" font-family="Inter, sans-serif" font-size="11" fill="#D4AF37" text-anchor="middle">Lock = ACTIVE</text>
+    <line x1="190" y1="68" x2="270" y2="68" stroke="#9C9C9C" stroke-width="1.5" marker-end="url(#arrE3)"/>
+    <rect x="280" y="15" width="190" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="375" y="50" font-family="Inter, sans-serif" font-size="14" fill="#F2F0EA" text-anchor="middle" font-weight="700">Waiting...</text>
+    <text x="375" y="72" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">New trade blocked</text>
+    <text x="375" y="90" font-family="Inter, sans-serif" font-size="11" fill="#9C9C9C" text-anchor="middle">until trade closes</text>
+    <line x1="470" y1="68" x2="550" y2="68" stroke="#9C9C9C" stroke-width="1.5" marker-end="url(#arrE3)"/>
+    <rect x="560" y="15" width="65" height="105" rx="6" fill="#0A0A0C" stroke="#00D68F"/>
+    <text x="592" y="50" font-family="Inter, sans-serif" font-size="13" fill="#00D68F" text-anchor="middle" font-weight="700">Closed</text>
+    <text x="592" y="72" font-family="Inter, sans-serif" font-size="9.5" fill="#9C9C9C" text-anchor="middle">Lock</text>
+    <text x="592" y="86" font-family="Inter, sans-serif" font-size="9.5" fill="#9C9C9C" text-anchor="middle">release</text>
+    <defs><marker id="arrE3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#9C9C9C"/></marker></defs>
+  </svg>
+  <div class="diagram-caption">In the EA, the lock releases once the trade fully closes</div>
+</div>
+
+<table>
+  <tr><th>Option</th><th>Behaviour</th></tr>
+  <tr><td class="code">Stoploss Hit Only</td><td>A new trade only comes once the current trade fully closes</td></tr>
+  <tr><td class="code">Stoploss Hit or New Signal</td><td>Trade closes, or a new valid signal appears (whichever comes first) — lock releases</td></tr>
+</table>
+
+<div class="callout">
+  <b>Keep In Mind:</b> Stoploss Lock and Max Trade Control are both independent.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(6)">&larr; Previous</button><button class="navbtn" onclick="showChapter(8)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 8 ===================== -->
+<section class="chapter" id="chapter-english-8" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 08 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Lot Sizing <span class="glossary-chip">Risk Management</span></h1>
+    <p class="chapter-hero-sub">How the lot size for each trade is calculated — 3 modes available.</p>
+    <div class="chapter-body">
+
+<h2>1. The Three Modes</h2>
+<table>
+  <tr><th>Mode</th><th>How It Works</th></tr>
+  <tr><td class="code">Fixed Lot</td><td>Every trade uses the same fixed lot size — SL distance doesn't matter</td></tr>
+  <tr><td class="code">% Balance Risk</td><td>Risk a fixed % of account balance — lot size is <b>auto-calculated</b> based on SL distance</td></tr>
+  <tr><td class="code">Fixed $ Risk</td><td>Risk a fixed dollar amount per trade</td></tr>
+</table>
+
+<div class="callout">
+  <b>Recommended:</b> <code>% Balance Risk</code> is the more professional approach since risk stays consistent (a fixed % of the account) regardless of how far/close the SL is.
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>What It Does</th><th>Default</th></tr>
+  <tr><td class="code">Lot Sizing Mode</td><td>Choose one of the three</td><td class="code">% Balance Risk</td></tr>
+  <tr><td class="code">Fixed Lot Size</td><td>Used only in Fixed mode</td><td class="code">0.01</td></tr>
+  <tr><td class="code">Risk % of Balance</td><td>Used only in % Risk mode</td><td class="code">1.0</td></tr>
+  <tr><td class="code">Fixed $ Risk</td><td>Used only in Fixed $ mode</td><td class="code">10.0</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(7)">&larr; Previous</button><button class="navbtn" onclick="showChapter(9)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 9 ===================== -->
+<section class="chapter" id="chapter-english-9" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:117%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 09 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Risk:Reward + Partial Close <span class="glossary-chip">Real Trade Management</span></h1>
+    <p class="chapter-hero-sub">Real trade management — actual partial position closes happen, not just visuals.</p>
+    <div class="chapter-body">
+
+<h2>1. How R:R Works</h2>
+<p class="lead">With every trade, Entry, SL, and 3 Take-Profit levels are calculated based on R (Risk) multiples. <b>R = the distance from Entry to SL.</b></p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+    <line x1="50" y1="145" x2="590" y2="145" stroke="#F2F0EA" stroke-dasharray="4,4"/>
+    <text x="595" y="149" font-family="Inter, sans-serif" font-size="11" fill="#F2F0EA">ENTRY</text>
+    <line x1="50" y1="172" x2="590" y2="172" stroke="#FF4560" stroke-width="2"/>
+    <text x="595" y="176" font-family="Inter, sans-serif" font-size="11" fill="#FF4560">SL</text>
+    <line x1="50" y1="108" x2="590" y2="108" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="112" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP1 · 1R</text>
+    <line x1="50" y1="72" x2="590" y2="72" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="76" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP2 · 2R</text>
+    <line x1="50" y1="35" x2="590" y2="35" stroke="#00D68F" stroke-dasharray="2,3"/>
+    <text x="595" y="39" font-family="Inter, sans-serif" font-size="11" fill="#00D68F">TP3 · 3R</text>
+    <line x1="70" y1="145" x2="70" y2="172" stroke="#D4AF37" stroke-width="2"/>
+    <text x="30" y="163" font-family="Inter, sans-serif" font-size="10" fill="#D4AF37">1R</text>
+  </svg>
+  <div class="diagram-caption">Entry/SL/TP1/TP2/TP3 rays are all drawn on the chart automatically</div>
+</div>
+
+<h2>2. Two TP Modes</h2>
+<table>
+  <tr><th>Mode</th><th>How It Works</th></tr>
+  <tr><td class="code">Real Partial Close</td><td>X% of the position <b>actually closes</b> at TP1, more closes at TP2, the rest at TP3.</td></tr>
+  <tr><td class="code">Breakeven-Trail</td><td>No partial closing — SL <b>moves to breakeven</b> when TP1 is hit, trails to TP1 when TP2 is hit.</td></tr>
+</table>
+
+<div class="callout">
+  <b>Which To Choose:</b> <code>Real Partial Close</code> if you want to lock in profit early. <code>Breakeven-Trail</code> if you want to capture bigger moves with the full position, just making it risk-free early on.
+</div>
+
+<h2>3. Settings</h2>
+<table>
+  <tr><th>Parameter</th><th>What It Does</th><th>Default</th></tr>
+  <tr><td class="code">R:R Master Enable</td><td>Set to <code>false</code> and no TP applies, trade runs on SL only</td><td class="code">true</td></tr>
+  <tr><td class="code">TP1/TP2/TP3 R Multiple</td><td>How many R away each TP sits</td><td class="code">1 / 2 / 3</td></tr>
+  <tr><td class="code">Partial Close Master Enable</td><td>Set to <code>false</code> and full close only happens at the final TP</td><td class="code">true</td></tr>
+  <tr><td class="code">TP Mode</td><td>Real Partial Close / Breakeven-Trail</td><td class="code">Real Partial Close</td></tr>
+  <tr><td class="code">TP1/TP2/TP3 Close %</td><td>How much % closes at each TP in Real Partial mode</td><td class="code">33 / 33 / 34</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(8)">&larr; Previous</button><button class="navbtn" onclick="showChapter(10)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 10 ===================== -->
+<section class="chapter" id="chapter-english-10" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:91%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:104%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 10 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">EMA Timeframe <span class="glossary-chip">Multi-Timeframe Trend</span></h1>
+    <p class="chapter-hero-sub">Take entries on a small chart, aligned with a bigger timeframe's trend.</p>
+    <div class="chapter-body">
+
+<h2>1. The Concept</h2>
+<p class="lead">EMA's timeframe can now be set <b>separately</b> — e.g. trade on an M5 chart, but use an <b>H1 EMA</b> as the trend filter.</p>
+
+<div class="diagram-box">
+  <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="15" width="600" height="70" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="35" y="35" font-family="Inter, sans-serif" font-size="12" fill="#D4AF37" font-weight="700">H1 EMA (Higher Timeframe — the big trend)</text>
+    <path d="M40,70 C150,65 250,55 350,50 S500,40 610,35" fill="none" stroke="#D4AF37" stroke-width="3"/>
+    <text x="35" y="78" font-family="Inter, sans-serif" font-size="10" fill="#9C9C9C">Only updates once each H1 candle closes</text>
+    <rect x="20" y="100" width="600" height="105" rx="6" fill="#0A0A0C" stroke="#232323"/>
+    <text x="35" y="120" font-family="Inter, sans-serif" font-size="12" fill="#00D68F" font-weight="700">M5 Chart (Entry Timeframe — small entries)</text>
+    <rect x="40" y="150" width="8" height="25" fill="#00D68F"/>
+    <rect x="60" y="145" width="8" height="25" fill="#00D68F"/>
+    <rect x="80" y="140" width="8" height="25" fill="#00D68F"/>
+    <rect x="105" y="135" width="10" height="28" fill="#00D68F" stroke="#fff"/>
+    <rect x="130" y="150" width="8" height="20" fill="#00D68F"/>
+    <rect x="150" y="145" width="8" height="20" fill="#00D68F"/>
+    <rect x="170" y="140" width="8" height="20" fill="#00D68F"/>
+    <rect x="195" y="135" width="10" height="24" fill="#00D68F" stroke="#fff"/>
+    <text x="105" y="190" font-family="Inter, sans-serif" font-size="10" fill="#00D68F" text-anchor="middle">BUY (1st entry)</text>
+    <text x="200" y="190" font-family="Inter, sans-serif" font-size="10" fill="#00D68F" text-anchor="middle">BUY (re-entry)</text>
+  </svg>
+  <div class="diagram-caption">As long as the bigger trend (H1) holds, multiple entries can fire on the smaller TF (M5)</div>
+</div>
+
+<h2>2. Why It's Useful</h2>
+<ul>
+  <li>The higher TF EMA confirms the overall trend — filtering out fake reversals on the smaller TF</li>
+  <li>Even after a TP hits on M5, as long as the H1 trend holds, the EA can <b>re-enter the same direction</b></li>
+  <li>Captures more of strong trending moves that a single-trade approach would miss</li>
+</ul>
+
+<div class="callout warn">
+  <b>Keep In Mind:</b> Swing High/Low detection always stays on the <b>chart's own timeframe</b> — only the EMA trend filter comes from the higher TF. The higher TF EMA value stays "stale" until its own larger candle closes.
+</div>
+
+<div class="callout">
+  <b>Max Trade Row's Role:</b> Since the EA can now re-enter the same direction, the <code>Max Trade Row</code> limit (Chapter 6) becomes even more important in this design.
+</div>
+
+<table>
+  <tr><th>Parameter</th><th>What It Does</th><th>Default</th></tr>
+  <tr><td class="code">EMA Timeframe</td><td>Which timeframe EMA is calculated on</td><td class="code">Current Chart</td></tr>
+</table>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(9)">&larr; Previous</button><button class="navbtn" onclick="showChapter(11)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 11 ===================== -->
+<section class="chapter" id="chapter-english-11" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 11 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Dashboard & Chart Visuals <span class="glossary-chip">Live Status Panel</span></h1>
+    <p class="chapter-hero-sub">Everything at a glance in the chart's top-left corner.</p>
+    <div class="chapter-body">
+
+<h2>1. What The Dashboard Shows</h2>
+<table>
+  <tr><th>Line</th><th>Meaning</th></tr>
+  <tr><td class="code">Master</td><td>ON (Both) / BUY ONLY / SELL ONLY / OFF</td></tr>
+  <tr><td class="code">R:R / Partial Close</td><td>Current on/off status of both features</td></tr>
+  <tr><td class="code">EMA(21)</td><td>Current EMA value</td></tr>
+  <tr><td class="code">Swing High / Low</td><td>Last confirmed swing levels</td></tr>
+  <tr><td class="code">Last Direction</td><td>Direction of the most recent trade</td></tr>
+  <tr><td class="code">Buy Row / Sell Row</td><td>How many trades in a row in the same direction</td></tr>
+  <tr><td class="code">SL Lock</td><td>Active or free</td></tr>
+  <tr><td class="code">Open Trades (EA)</td><td>How many trades the EA has open right now</td></tr>
+  <tr><td class="code">License</td><td>Days remaining (or Unlimited)</td></tr>
+</table>
+
+<h2>2. Chart Markers</h2>
+<ul>
+  <li>Gold <b>"SWH"</b> / <b>"SWL"</b> chip-box — wherever a swing is confirmed</li>
+  <li>Green <b>"BUY"</b> / Red <b>"SELL"</b> chip-box + arrow — on the signal candle</li>
+  <li>White dashed line — Entry, Red solid — SL, Green dotted — TP1/TP2/TP3</li>
+</ul>
+
+<div class="callout">
+  <b>Auto Cleanup:</b> As soon as a trade fully closes, all its lines/labels are automatically removed from the chart.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(10)">&larr; Previous</button><button class="navbtn" onclick="showChapter(12)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 12 ===================== -->
+<section class="chapter" id="chapter-english-12" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 12 / 13 — AG Technicals Swing + EMA + R:R EA</div>
+    <h1 class="chapter-title">Installation <span class="glossary-chip">MetaTrader 5 Setup</span></h1>
+    <p class="chapter-hero-sub">Step-by-step guide to attaching the EA on MT5.</p>
+    <div class="chapter-body">
+
+<h2>1. Step-by-Step Setup</h2>
+
+<div class="step-box">
+  <span class="step-num">1</span><span class="step-title">Place the file in MetaEditor</span>
+  <div class="step-detail">In MT5, go to <b>File → Open Data Folder → MQL5 → Experts</b> and paste the <code>AG_Swing_EMA_RR_EA.mq5</code> file.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">2</span><span class="step-title">Compile</span>
+  <div class="step-detail">Open the file in MetaEditor and press <b>F7</b> (Compile). You should see "0 errors".</div>
+</div>
+<div class="step-box">
+  <span class="step-num">3</span><span class="step-title">Drag onto a chart</span>
+  <div class="step-detail">Find the EA under Experts in the MT5 Navigator panel — drag-drop it onto the chart of the pair/timeframe you want.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">4</span><span class="step-title">Enable AutoTrading</span>
+  <div class="step-detail">Turn ON the <b>"Algo Trading"</b> button in the top toolbar — otherwise the EA won't take trades.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">5</span><span class="step-title">Adjust settings</span>
+  <div class="step-detail">In the dialog box, set your parameters under the <b>Inputs</b> tab as needed.</div>
+</div>
+<div class="step-box">
+  <span class="step-num">6</span><span class="step-title">Check the Common tab</span>
+  <div class="step-detail">In the dialog box's <b>Common</b> tab, "Allow Algo Trading" must be checked ON.</div>
+</div>
+
+<div class="callout warn">
+  <b>Important:</b> The EA needs an internet connection and the MT5 terminal to stay open. Using a VPS is recommended for 24x7 uptime.
+</div>
+
+<div class="callout">
+  <b>Tip:</b> Backtest in Strategy Tester first, or run it on a demo account for a few days, before using it live.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(11)">&larr; Previous</button><button class="navbtn" onclick="showChapter(13)">Next &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ENGLISH CHAPTER 13 ===================== -->
+<section class="chapter" id="chapter-english-13" style="display:none;">
+  <div class="watermark-layer">
+    <div class="watermark" style="top:0%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:13%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:26%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:39%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:52%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:65%;">AG TECHNICALS</div>
+    <div class="watermark" style="top:78%;">AG TECHNICALS</div>
+  </div>
+  <div class="chapter-inner">
+    <div class="chapter-eyebrow">Section 13 / 13 — AG Technicals Swing + EMA + R:R EA — Quick Reference</div>
+    <h1 class="chapter-title">Settings Reference <span class="glossary-chip">All Parameters</span></h1>
+    <p class="chapter-hero-sub">All settings in one place, for quick reference.</p>
+    <div class="chapter-body">
+
+<h2>1. Complete Settings Table</h2>
+<table>
+  <tr><th>Group</th><th>Parameter</th><th>Default</th></tr>
+  <tr><td>Master Control</td><td class="code">Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Master Control</td><td class="code">Only BUY / Only SELL</td><td class="code">false / false</td></tr>
+  <tr><td>Core</td><td class="code">Swing Calculation Type</td><td class="code">Normal</td></tr>
+  <tr><td>Core</td><td class="code">Swing Lookback Length</td><td class="code">5</td></tr>
+  <tr><td>Core</td><td class="code">EMA Length</td><td class="code">21</td></tr>
+  <tr><td>Core</td><td class="code">EMA Source</td><td class="code">close</td></tr>
+  <tr><td>Core</td><td class="code">EMA Timeframe</td><td class="code">Current Chart</td></tr>
+  <tr><td>Max Trade Control</td><td class="code">Enable Max Trade</td><td class="code">true</td></tr>
+  <tr><td>Max Trade Control</td><td class="code">Max BUY/SELL Trades In A Row</td><td class="code">2 / 2</td></tr>
+  <tr><td>Stoploss Lock</td><td class="code">Enable Stoploss Lock</td><td class="code">true</td></tr>
+  <tr><td>Stoploss Lock</td><td class="code">Lock Release Mode</td><td class="code">Stoploss Hit Only</td></tr>
+  <tr><td>Lot Sizing</td><td class="code">Lot Sizing Mode</td><td class="code">% Balance Risk</td></tr>
+  <tr><td>Lot Sizing</td><td class="code">Fixed Lot / Risk % / Fixed $</td><td class="code">0.01 / 1.0 / 10.0</td></tr>
+  <tr><td>Risk:Reward</td><td class="code">R:R Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Risk:Reward</td><td class="code">TP1/TP2/TP3 R Multiple</td><td class="code">1 / 2 / 3</td></tr>
+  <tr><td>Partial Close</td><td class="code">Partial Close Master Enable</td><td class="code">true</td></tr>
+  <tr><td>Partial Close</td><td class="code">TP Mode</td><td class="code">Real Partial Close</td></tr>
+  <tr><td>Partial Close</td><td class="code">TP1/TP2/TP3 Close %</td><td class="code">33 / 33 / 34</td></tr>
+  <tr><td>Safety</td><td class="code">Max Allowed Spread</td><td class="code">50 pts</td></tr>
+  <tr><td>Display</td><td class="code">Show Dashboard</td><td class="code">true</td></tr>
+</table>
+
+<div class="callout">
+  <b>Key Insight:</b> Master Control, Max Trade Control, Stoploss Lock, R:R, and Partial Close are all independent of each other.
+</div>
+
+<div class="callout">
+  <b>Note:</b> If you just want signals for manual chart analysis (without auto-trading), AG Technicals also has a <b>Pine Script indicator</b> with similar logic for TradingView, available with its own separate guide.
+</div>
+
+    </div>
+    <div class="chapter-footer">
+      <div class="footer-brand">&copy; AG Technicals</div>
+      <div class="footer-nav"><button class="navbtn" onclick="showChapter(12)">&larr; Previous</button><span></span></div>
+    </div>
+  </div>
+</section>
+
+
+</div>
+<script>
+  let currentLang = 'hinglish';
+  let currentChapter = 1;
+  const totalChapters = 13;
+
+  function setLang(lang){
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('btn-'+lang).classList.add('active');
+    document.querySelectorAll('.nav-lang').forEach(el=>el.style.display='none');
+    document.getElementById('nav-'+lang).style.display='block';
+    showChapter(currentChapter);
+  }
+
+  function showChapter(n){
+    if(n < 1 || n > totalChapters) return;
+    currentChapter = n;
+    document.querySelectorAll('.chapter').forEach(el=>el.style.display='none');
+    document.querySelectorAll('.nav-link').forEach(el=>el.classList.remove('active'));
+    document.getElementById('chapter-'+currentLang+'-'+n).style.display='block';
+    const link = document.querySelector('#nav-'+currentLang+' .nav-link[data-ch="'+n+'"]');
+    if(link) link.classList.add('active');
+    window.scrollTo(0,0);
+    location.hash = currentLang+'-ch'+n;
+  }
+
+  document.addEventListener('copy', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if((e.ctrlKey || e.metaKey) && ['c','u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+  });
+
+  const hash = location.hash.replace('#','');
+  const hm = hash.match(/^(hinglish|hindi|english)-ch(\d+)$/);
+  if(hm){ currentLang = hm[1]; setLang(currentLang); showChapter(parseInt(hm[2])); }
+  else { showChapter(1); }
+</script>
+</body>
+</html>

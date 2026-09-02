@@ -92,18 +92,23 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(232,184,75,0.5),0 2px 8px rgba(0
 .sec-sub{font-size:15px;color:#c8c4d0;line-height:1.75;max-width:500px;margin-bottom:40px;}
 .divider{height:1px;background:linear-gradient(90deg,transparent,#2a2536 20%,#2a2536 80%,transparent);margin:0 48px;}
 /* PRODUCTS */
-.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:48px;}
-.prod-btn{background:var(--card);border:1px solid rgba(42,39,54,0.9);border-radius:14px;padding:22px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);text-decoration:none;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.4);}
-.prod-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,150,12,0.07) 0%,transparent 55%);opacity:0;transition:opacity 0.3s;}
-.prod-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.03) 0%,transparent 50%);pointer-events:none;}
-.prod-btn:hover{border-color:rgba(232,184,75,0.5);transform:translateY(-5px);box-shadow:0 0 30px rgba(201,150,12,0.25),0 16px 40px rgba(0,0,0,0.5);}
-.prod-btn:hover::before{opacity:1;}
-.prod-icon-wrap{width:44px;height:44px;background:rgba(201,150,12,0.1);border:1px solid rgba(232,184,75,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all 0.3s;}
-.prod-btn:hover .prod-icon-wrap{background:rgba(201,150,12,0.18);border-color:rgba(232,184,75,0.4);box-shadow:0 0 16px rgba(201,150,12,0.3);}
-.prod-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-0.2px;}
-.prod-sub{font-size:11px;color:#9a96a8;}
-.prod-arrow{margin-left:auto;color:var(--t3);font-size:14px;transition:all 0.25s;flex-shrink:0;}
-.prod-btn:hover .prod-arrow{color:var(--g5);transform:translateX(4px);}
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:48px;}
+@media(max-width:1100px){.prod-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:760px){.prod-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.prod-grid{grid-template-columns:1fr;}}
+.prod-btn{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:border-color 0.2s,transform 0.25s,box-shadow 0.25s;text-decoration:none;display:flex;flex-direction:column;text-align:left;padding:0;}
+.prod-btn:hover{border-color:rgba(232,184,75,0.6);transform:translateY(-6px);box-shadow:0 0 28px rgba(201,150,12,0.2),0 16px 40px rgba(0,0,0,0.5);}
+.prod-img-wrap{position:relative;width:100%;height:140px;background:linear-gradient(135deg,#1a1620 0%,#0f0e14 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.prod-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform 0.3s;}
+.prod-btn:hover .prod-img-wrap img{transform:scale(1.04);}
+.prod-img-icon{font-size:48px;opacity:0.85;}
+.prod-badge{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+.prod-body{padding:16px 16px 18px;}
+.prod-pid{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:2px;margin-bottom:6px;}
+.prod-name{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.prod-desc{font-size:12px;color:var(--t3);line-height:1.55;margin-bottom:14px;}
+.prod-cta{display:inline-flex;align-items:center;gap:6px;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;transition:all 0.2s;font-family:'Space Grotesk',sans-serif;}
+.prod-btn:hover .prod-cta{background:var(--g5);color:#000;}
 /* NEWS */
 .news-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 .news-col{background:var(--card);border:1px solid rgba(42,39,54,0.9);border-radius:12px;padding:22px;transition:border-color 0.25s,box-shadow 0.25s;}
@@ -338,7 +343,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-tag">Products &amp; Services</div>
   <div class="sec-h" id="prodSecH">All We Have — All You Need</div>
   <div class="sec-sub" id="prodSecSub">Click Any Service To Learn More.</div>
-  <div class="prod-grid" id="prodGrid" style="grid-template-columns:repeat(4,1fr);"></div>
+  <div class="prod-grid" id="prodGrid"></div>
 </section>
 <div class="divider"></div>
 
@@ -571,8 +576,7 @@ document.getElementById('tickerTrack').innerHTML = pills+pills; // duplicate for
 const visProds = products.filter(p=>!p.hidden);
 
 
-document.getElementById('prodGrid').innerHTML = visProds.map(p=>{
-  const isBridge = false; // bridge now page-only, no code snippet
+document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   const hasItems = (p.items||[]).filter(it=>!it.hidden).length > 0;
   let onclick;
   if(hasItems){
@@ -580,13 +584,25 @@ document.getElementById('prodGrid').innerHTML = visProds.map(p=>{
   } else if(p.type==='page'){
     onclick = "window.location.href='" + p.url + "'";
   } else {
-    const t=p.title.replace(/'/g,"\\'")||'',d=p.desc.replace(/'/g,"\\'")||'',c=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||''),fv=(p.fileUrl?'1':''),fn=(p.fileName||p.name||'').replace(/'/g,"\\'")||'';
-    onclick = "openModal('" + t + "','" + d + "','" + p.icon + "','" + v + "','" + c + "','" + cu + "','" + (isBridge?'bridge':'') + "','" + fv + "','" + fn + "','" + p.id + "')";
+    const t=p.title.replace(/'/g,"\\'")||'',d=p.desc.replace(/'/g,"\\'")||'',ct=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||''),fv=(p.fileUrl?'1':''),fn=(p.fileName||p.name||'').replace(/'/g,"\\'")||'';
+    onclick = "openModal('" + t + "','" + d + "','" + p.icon + "','" + v + "','" + ct + "','" + cu + "','','" + fv + "','" + fn + "','" + p.id + "')";
   }
+  // Image section — use uploaded img or icon
+  const imgHtml = p.img
+    ? '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">'
+    : '<div class="prod-img-icon">' + p.icon + '</div>';
+  const badge = p.badge || p.sub || 'SERVICE';
+  const pid = p.pid || ('PRD-' + String(idx+1).padStart(4,'0'));
+  const desc = p.desc || p.shortDesc || '';
+  const cta = p.cta || 'Learn More →';
   return '<button class="prod-btn" onclick="' + onclick + '">' +
-    '<div class="prod-icon-wrap">' + p.icon + '</div>' +
-    '<div class="prod-text"><div class="prod-name">' + p.name + '</div><div class="prod-sub">' + p.sub + '</div></div>' +
-    '<div class="prod-arrow">' + (hasItems ? '⊞' : '→') + '</div>' +
+    '<div class="prod-img-wrap">' + imgHtml + '<span class="prod-badge">' + badge + '</span></div>' +
+    '<div class="prod-body">' +
+      '<div class="prod-pid">' + pid + ' · ' + p.sub + '</div>' +
+      '<div class="prod-name">' + p.name + '</div>' +
+      '<div class="prod-desc">' + desc.slice(0,90) + (desc.length>90?'...':'') + '</div>' +
+      '<div class="prod-cta">' + cta + ' →</div>' +
+    '</div>' +
     '</button>';
 }).join('');
 

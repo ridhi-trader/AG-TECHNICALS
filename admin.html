@@ -82,7 +82,7 @@ select.inp{cursor:pointer;}
 .badge-live{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
 .badge-hidden{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
 /* OVERLAY */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(4px);}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(4px);}
 .overlay.open{opacity:1;pointer-events:all;}
 .editor-box{background:#18151f;border:1px solid rgba(232,184,75,0.2);border-radius:16px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;transform:scale(0.95);transition:transform 0.2s;box-shadow:0 0 60px rgba(201,150,12,0.1),0 24px 60px rgba(0,0,0,0.7);}
 .overlay.open .editor-box{transform:scale(1);}

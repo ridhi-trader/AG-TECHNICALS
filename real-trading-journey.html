@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AG Technicals — The Real Trading Journey — Basic to Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0C; --panel:#121214; --panel-border:#232323;
+    --gold:#D4AF37; --gold-soft:rgba(212,175,55,0.12);
+    --bull:#00D68F; --bear:#FF4560;
+    --text:#F2F0EA; --text-dim:#D6D6D6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter', sans-serif; line-height:1.7;
+    -webkit-user-select:none; user-select:none; display:flex; min-height:100vh; flex-wrap:wrap;
+  }
+  ::selection{ background:transparent; }
+  #sidebar{ width:300px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--panel-border); min-height:100vh; overflow-y:auto; padding-bottom:40px; }
+  .brand-block{ padding:22px 24px 18px; border-bottom:1px solid var(--panel-border); margin-bottom:8px; }
+  .brand-mark{ font-family:'Cormorant Garamond', serif; font-size:20px; letter-spacing:2px; color:var(--gold); font-weight:700; }
+  .brand-sub{ font-size:11px; color:var(--text-dim); letter-spacing:1px; margin-top:4px; text-transform:uppercase; }
+  .progress-badge{ display:inline-block; margin-top:12px; background:var(--gold-soft); border:1px solid rgba(212,175,55,.4); color:var(--gold); font-size:10.5px; padding:6px 10px; border-radius:4px; letter-spacing:.5px; text-transform:uppercase; font-weight:700; }
+  .nav-section-label{ padding:16px 24px 6px; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); font-weight:700; opacity:.85; }
+  .nav-link{ display:block; padding:7px 24px 7px 30px; color:var(--text-dim); text-decoration:none; font-size:12.5px; line-height:1.4; border-left:2px solid transparent; }
+  .nav-link:hover{ color:var(--text); background:#1a1a1e; }
+  .nav-link.active{ color:var(--gold); border-left:2px solid var(--gold); background:#1a1a1e; }
+  .nav-link .n{ display:inline-block; width:22px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; font-size:11px; }
+  .nav-link.active .n{ color:var(--gold); }
+  .nav-link.hackline{ color:var(--gold); }
+  #main{ flex:1; min-width:0; }
+  .chapter{ position:relative; min-height:100vh; overflow:hidden; }
+  .watermark-layer{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .watermark{ position:absolute; left:50%; transform:translate(-50%,0) rotate(-40deg); font-size:42px; letter-spacing:10px; color:var(--gold); opacity:.10; white-space:nowrap; font-family:'Cormorant Garamond', serif; font-weight:600; }
+  .chapter-inner{ position:relative; z-index:1; max-width:840px; margin:0 auto; padding:60px 6vw 40px; }
+  .chapter-eyebrow{ font-size:13px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px; }
+  .chapter-title{ font-family:'Cormorant Garamond', serif; font-weight:600; font-size:30px; line-height:1.3; color:var(--text-dim); margin-bottom:14px; }
+  .glossary-chip{ display:inline-block; background:var(--panel); border:1px solid var(--gold); color:var(--gold); padding:3px 10px; border-radius:4px; font-weight:700; font-size:12px; vertical-align:middle; margin-left:8px; }
+  .chapter-hero-sub{ color:var(--text-dim); font-size:16px; margin-bottom:20px; }
+  .chapter-body p{ font-size:16px; margin-bottom:14px; color:var(--text); }
+  .callout{ background:var(--gold-soft); border:1px solid rgba(212,175,55,.3); border-radius:6px; padding:14px 18px; margin:18px 0; font-size:13.5px; color:var(--text-dim); }
+  .callout b{ color:var(--gold); }
+  .fire-box{ background:var(--panel); border:1px solid var(--panel-border); border-radius:6px; padding:16px 20px; margin:10px 0 18px; }
+  .fire-box .fb-label{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:6px; }
+  .fire-box p{ font-size:14.5px; margin:0; color:var(--text); }
+  .caution-box{ background:rgba(255,69,96,.06); border:1px solid rgba(255,69,96,.3); border-radius:6px; padding:16px 20px; margin:10px 0 18px; }
+  .caution-box .fb-label{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--bear); font-weight:700; margin-bottom:6px; }
+  .caution-box p{ font-size:14.5px; margin:0; color:var(--text); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; }
+  th, td{ text-align:left; padding:9px 12px; font-size:13.5px; border-bottom:1px solid var(--panel-border); vertical-align:top; }
+  th{ color:var(--gold); font-weight:600; background:var(--panel); }
+  code{ background:var(--panel); color:var(--gold); padding:2px 6px; border-radius:3px; font-size:13.5px; }
+  .badge{ display:inline-block; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; letter-spacing:.3px; margin-left:8px; vertical-align:middle; }
+  .badge.hack{ background:rgba(0,214,143,.15); color:var(--bull); border:1px solid rgba(0,214,143,.4); }
+  .stat-strip{ display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--panel-border); border-bottom:1px solid var(--panel-border); margin:22px 0 26px; }
+  .stat-strip .s{ padding:14px 24px 14px 0; margin-right:24px; border-right:1px solid var(--panel-border); }
+  .stat-strip .s:last-child{ border-right:none; }
+  .stat-strip .s .num{ font-family:'Cormorant Garamond', serif; font-size:22px; color:var(--gold); font-weight:700; }
+  .stat-strip .s .lab{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--text-dim); letter-spacing:.05em; margin-top:2px; }
+  .fail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--panel-border); border:1px solid var(--panel-border); border-radius:6px; overflow:hidden; margin:18px 0; }
+  .fail-col{ background:var(--panel); padding:18px 20px; }
+  .fail-col .col-label{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em; color:var(--text-dim); margin-bottom:12px; text-transform:uppercase; }
+  .fail-col.right .col-label{ color:var(--bull); }
+  .fail-col ul{ margin:0; padding:0; list-style:none; }
+  .fail-col li{ font-size:13.5px; color:var(--text); padding:8px 0; border-top:1px solid var(--panel-border); }
+  .fail-col li:first-child{ border-top:none; }
+  @media(max-width:640px){ .fail-grid{ grid-template-columns:1fr; } }
+  .chapter-footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--panel-border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  .footer-brand{ font-size:11px; letter-spacing:1.5px; color:var(--text-dim); text-transform:uppercase; }
+  .footer-nav{ display:flex; gap:10px; }
+  .navbtn{ background:var(--panel); border:1px solid var(--panel-border); color:var(--text); padding:9px 16px; border-radius:4px; font-size:13px; cursor:pointer; }
+  .navbtn:hover{ border-color:var(--gold); color:var(--gold); }
+  .navbtn:disabled{ opacity:.35; cursor:default; }
+  noscript div{ padding:16px 24px; background:var(--gold-soft); color:var(--gold); font-size:13px; border-bottom:1px solid var(--panel-border); }
+  #browser-banner{
+    display:none; align-items:center; justify-content:space-between; gap:12px;
+    background:var(--gold-soft); border-bottom:1px solid rgba(212,175,55,.4);
+    color:var(--gold); font-size:12.5px; padding:10px 16px;
+    position:sticky; top:0; z-index:50; width:100%;
+  }
+  #browser-banner.show{ display:flex; }
+  #browser-banner span{ line-height:1.4; }
+  #browser-banner button{
+    background:var(--gold); color:var(--bg); border:none; border-radius:4px;
+    font-size:11.5px; font-weight:700; padding:6px 12px; cursor:pointer; flex-shrink:0;
+    text-transform:uppercase; letter-spacing:.03em;
+  }
+  #browser-banner .bb-dismiss{
+    background:transparent; color:var(--gold); border:1px solid rgba(212,175,55,.5);
+    padding:6px 10px; margin-left:6px;
+  }
+  @media(max-width:800px){
+    body{ flex-direction:column; }
+    #sidebar{ width:100%; min-height:auto; max-height:40vh; }
+    .chapter-inner{ padding:40px 22px; }
+    .chapter-title{ font-size:24px; }
+  }
+</style>
+</head>
+<body oncontextmenu="return false;">
+<div id="browser-banner">
+  <span>For the smoothest experience, open this page in <strong>Chrome</strong> or <strong>Safari</strong>.</span>
+  <span style="flex-shrink:0;">
+    <button id="bb-copy">Copy Link</button>
+    <button class="bb-dismiss" id="bb-dismiss">Dismiss</button>
+  </span>
+</div>
+<noscript><div>JavaScript is off in this browser, so chapter navigation is limited — scroll down to read every lesson in order.</div></noscript>
+<div id="sidebar">
+  <div class="brand-block">
+    <div class="brand-mark">AG TECHNICALS</div>
+    <div class="brand-sub">The Real Trading Journey</div>
+    <div class="progress-badge">BASIC TO PRO</div>
+  </div>
+  <div id="nav">
+<a href="#" class="nav-link active" data-ch="1"><span class="n">—</span>Course Introduction</a>
+  <div class="nav-section-label">Section 1 — The Foundation</div>
+  <a href="#" class="nav-link" data-ch="2"><span class="n">01</span>What A Chart Actually Is</a>
+  <a href="#" class="nav-link" data-ch="3"><span class="n">02</span>The Language Of A Candlestick</a>
+  <a href="#" class="nav-link" data-ch="4"><span class="n">03</span>Timeframes — Same Chart, Different Story</a>
+  <a href="#" class="nav-link" data-ch="5"><span class="n">04</span>What A Trend Actually Is</a>
+  <a href="#" class="nav-link" data-ch="6"><span class="n">05</span>Support And Resistance — The Market's Walls</a>
+  <a href="#" class="nav-link" data-ch="7"><span class="n">06</span>What An Indicator Is, And Why It Can't Predict The Future</a>
+  <a href="#" class="nav-link" data-ch="8"><span class="n">07</span>Letting Go Of "The Perfect Indicator"</a>
+  <div class="nav-section-label">Section 2 — Making Sense Of Chaos</div>
+  <a href="#" class="nav-link" data-ch="9"><span class="n">01</span>Market Structure — Reading Highs And Lows</a>
+  <a href="#" class="nav-link" data-ch="10"><span class="n">02</span>Breakout Vs. Fakeout</a>
+  <a href="#" class="nav-link" data-ch="11"><span class="n">03</span>The Five Most-Used Indicators, Explained Honestly</a>
+  <a href="#" class="nav-link" data-ch="12"><span class="n">04</span>Five Tools Every Trader Should Actually Have</a>
+  <a href="#" class="nav-link" data-ch="13"><span class="n">05</span>Five Common Strategies — And Their Real Limits</a>
+  <a href="#" class="nav-link hackline" data-ch="14"><span class="n">06</span>The Number Underneath 90% Of Indicators <span class="badge hack">HACK</span></a>
+  <a href="#" class="nav-link" data-ch="15"><span class="n">07</span>One Chart, Two Traders, Two Opinions</a>
+  <a href="#" class="nav-link" data-ch="16"><span class="n">08</span>What Demo Trading Doesn't Prepare You For</a>
+  <a href="#" class="nav-link" data-ch="17"><span class="n">09</span>Your First Real Loss, And What To Take From It</a>
+  <div class="nav-section-label">Section 3 — The Reality Check</div>
+  <a href="#" class="nav-link" data-ch="18"><span class="n">01</span>Backtest Vs. Live — Why The Numbers Diverge</a>
+  <a href="#" class="nav-link" data-ch="19"><span class="n">02</span>Overfitting — When A Strategy Looks Too Perfect</a>
+  <a href="#" class="nav-link" data-ch="20"><span class="n">03</span>What Risk Actually Means, Beyond Money</a>
+  <a href="#" class="nav-link" data-ch="21"><span class="n">04</span>Position Sizing — The Most Ignored Topic In Trading</a>
+  <a href="#" class="nav-link" data-ch="22"><span class="n">05</span>Keeping A Trade Journal You Can't Lie To</a>
+  <a href="#" class="nav-link" data-ch="23"><span class="n">06</span>Revenge Trading — The Costliest Reaction To A Loss</a>
+  <div class="nav-section-label">Section 4 — Building Real Discipline</div>
+  <a href="#" class="nav-link" data-ch="24"><span class="n">01</span>Choosing One Strategy, And Staying With It</a>
+  <a href="#" class="nav-link" data-ch="25"><span class="n">02</span>Why 10 Trades Tell You Nothing And 100 Start To</a>
+  <a href="#" class="nav-link" data-ch="26"><span class="n">03</span>Reading Drawdown As Data, Not Failure</a>
+  <a href="#" class="nav-link" data-ch="27"><span class="n">04</span>Reading The Market's Mood — Trending, Ranging, Choppy</a>
+  <a href="#" class="nav-link" data-ch="28"><span class="n">05</span>Writing Rules So Emotion Doesn't Have To Decide</a>
+  <a href="#" class="nav-link" data-ch="29"><span class="n">06</span>What Automation Actually Replaces</a>
+  <div class="nav-section-label">Section 5 — Thinking Like A Professional</div>
+  <a href="#" class="nav-link" data-ch="30"><span class="n">01</span>One Strategy Vs. A Portfolio Of Strategies</a>
+  <a href="#" class="nav-link" data-ch="31"><span class="n">02</span>Correlation — When Strategies Fail Together</a>
+  <a href="#" class="nav-link" data-ch="32"><span class="n">03</span>Capital Allocation — How Much Goes Where, And Why</a>
+  <a href="#" class="nav-link" data-ch="33"><span class="n">04</span>Risk Of Ruin — How One Mistake Can End Everything</a>
+  <a href="#" class="nav-link" data-ch="34"><span class="n">05</span>Order Flow And Liquidity, Beyond Retail Charts</a>
+  <a href="#" class="nav-link" data-ch="35"><span class="n">06</span>Regime Change — When The Market's Rules Quietly Shift</a>
+  <div class="nav-section-label">Section 6 — The Business Of Trading</div>
+  <a href="#" class="nav-link" data-ch="36"><span class="n">01</span>From Trader To Business Owner — The Mindset Shift</a>
+  <a href="#" class="nav-link" data-ch="37"><span class="n">02</span>What Consistency Really Looks Like</a>
+  <a href="#" class="nav-link" data-ch="38"><span class="n">03</span>Scaling — When It's Safe To Size Up, And When It Isn't</a>
+  <a href="#" class="nav-link" data-ch="39"><span class="n">04</span>The Long Game — Why This Is A Marathon, Not A Sprint</a>
+
+  </div>
+</div>
+<div id="main">
+  <section class="chapter" id="chapter-1">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Course Introduction &nbsp;&middot;&nbsp; 1 / 39</div>
+      <h1 class="chapter-title">The Real Trading Journey<span class="glossary-chip">Basic to Pro</span></h1>
+      <p class="chapter-hero-sub">A market-agnostic path from your first chart to trading like a professional.</p>
+      <div class="chapter-body"><p>This course isn't built around gold, forex, stocks, or any single market. It's built around the one thing that stays the same no matter what you trade: the gap between what most education teaches, and what actually determines whether a trader survives.</p>
+  <div class="stat-strip">
+    <div class="s"><div class="num">38</div><div class="lab">LESSONS</div></div>
+    <div class="s"><div class="num">6</div><div class="lab">SECTIONS</div></div>
+    <div class="s"><div class="num">01</div><div class="lab">FRAMEWORK, ANY MARKET</div></div>
+  </div>
+  <div class="chapter-eyebrow" style="margin-top:8px;">Before You Start</div>
+  <h2 style="font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--text-dim); margin-bottom:10px;">Why most trading education doesn't change outcomes</h2>
+  <p>This isn't a criticism of any one course — it's a pattern worth naming plainly, because it explains how this one is structured.</p>
+  <div class="fail-grid">
+    <div class="fail-col">
+      <div class="col-label">What most education measures</div>
+      <ul><li>Lessons watched or completed</li><li>Indicators and patterns memorized</li><li>Strategies collected</li><li>Hours spent studying charts</li></ul>
+    </div>
+    <div class="fail-col right">
+      <div class="col-label">What actually determines results</div>
+      <ul><li>How much is risked per decision</li><li>Behavior after a loss, not after a win</li><li>Whether rules hold when no one is watching</li><li>Consistency over hundreds of trades</li></ul>
+    </div>
+  </div>
+  <p>A course can hand you the left column in a weekend. The right column is only built through repetition, review, and time — which is why this series is sequenced as one connected path, not a library to browse in any order.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="0" disabled>&larr; Previous</button>
+          <button class="navbtn" data-target="2">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-2" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 1 of 7 &nbsp;&middot;&nbsp; 2 / 39</div>
+      <h1 class="chapter-title">What A Chart Actually Is</h1>
+      <p class="chapter-hero-sub">Price, time, and why the lines move at all.</p>
+      <div class="chapter-body"><p>Every chart, no matter how complicated it looks, is telling you one thing: how price moved over time. That's it. There's no hidden code in the lines themselves — the complexity comes later, from how you read them.</p>
+      <p>Price moves for exactly one reason: the balance between buyers and sellers shifts. When more people want to buy than sell at a given moment, price rises. When more want to sell than buy, it falls. Every candle on your chart is the result of that tug of war for one small slice of time.</p>
+      <div class="fire-box"><div class="fb-label">Key Idea</div><p>A chart shows you the <b style="color:var(--gold)">result</b> of buyer/seller balance, not the reason behind it. Reading a chart well means judging who is winning right now — not predicting the future.</p></div></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="1">&larr; Previous</button>
+          <button class="navbtn" data-target="3">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-3" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 2 of 7 &nbsp;&middot;&nbsp; 3 / 39</div>
+      <h1 class="chapter-title">The Language Of A Candlestick</h1>
+      <p class="chapter-hero-sub">What one box and two wicks are actually telling you.</p>
+      <div class="chapter-body"><p>A single candle records four numbers: where price opened, where it closed, and the highest and lowest points it touched in between. The body shows the open-to-close range; the wicks show how far price tried to go before being pushed back.</p>
+      <p>Long wicks usually mean rejection — price tried to go further and got refused. A large body with small wicks means one side was in control the whole period, with little resistance. Learning to read this at a glance is the first real skill in this course.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="2">&larr; Previous</button>
+          <button class="navbtn" data-target="4">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-4" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 3 of 7 &nbsp;&middot;&nbsp; 4 / 39</div>
+      <h1 class="chapter-title">Timeframes — Same Chart, Different Story</h1>
+      <p class="chapter-hero-sub">Why a 5-minute chart and a daily chart can disagree completely.</p>
+      <div class="chapter-body"><p>The exact same instrument, at the exact same moment, can look bullish on one timeframe and bearish on another. Neither is wrong — they're just answering different questions. A 5-minute chart shows the next few hours. A daily chart shows the next few weeks.</p>
+      <p>New traders often jump between timeframes looking for the one that agrees with what they want to see. A disciplined trader instead picks a primary timeframe for decisions and a higher one for context, and stays consistent.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="3">&larr; Previous</button>
+          <button class="navbtn" data-target="5">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-5" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 4 of 7 &nbsp;&middot;&nbsp; 5 / 39</div>
+      <h1 class="chapter-title">What A Trend Actually Is</h1>
+      <p class="chapter-hero-sub">Market is either moving with intent, or it isn't.</p>
+      <div class="chapter-body"><p>A trend simply means price is making progress in one direction over time — not moving in a straight line, but leaving a trail of higher lows in an uptrend, or lower highs in a downtrend. Most of the time, markets aren't trending at all — they're moving sideways, testing both sides.</p>
+      <p>Knowing which state the market is in changes which tools even make sense to use. Trend tools fail badly in sideways markets, and range tools fail badly in trending ones.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="4">&larr; Previous</button>
+          <button class="navbtn" data-target="6">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-6" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 5 of 7 &nbsp;&middot;&nbsp; 6 / 39</div>
+      <h1 class="chapter-title">Support And Resistance — The Market's Walls</h1>
+      <p class="chapter-hero-sub">Price levels where the fight tends to repeat.</p>
+      <div class="chapter-body"><p>Support and resistance are price zones where buying or selling pressure has shown up before, and tends to show up again — not because the level is magic, but because enough participants remember it and react near it.</p>
+      <p>These zones get weaker each time price tests them, and are best treated as areas of interest rather than exact lines. Precision here is an illusion many newcomers chase for far too long.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="5">&larr; Previous</button>
+          <button class="navbtn" data-target="7">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-7" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 6 of 7 &nbsp;&middot;&nbsp; 7 / 39</div>
+      <h1 class="chapter-title">What An Indicator Is, And Why It Can't Predict The Future</h1>
+      <p class="chapter-hero-sub">Every indicator is math run on price that already happened.</p>
+      <div class="chapter-body"><p>An indicator takes past price data and transforms it into a line, a band, or a number. No matter how advanced the formula, it is still describing what already occurred. It cannot see tomorrow's news, tomorrow's order flow, or tomorrow's decision by a large participant.</p>
+      <p>This doesn't make indicators useless — it makes them a summary tool, not a forecasting tool. The distinction matters more than almost anything else taught in this section.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="6">&larr; Previous</button>
+          <button class="navbtn" data-target="8">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-8" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 1 — The Foundation &middot; Lesson 7 of 7 &nbsp;&middot;&nbsp; 8 / 39</div>
+      <h1 class="chapter-title">Letting Go Of "The Perfect Indicator"</h1>
+      <p class="chapter-hero-sub">Why the search itself is the first trap.</p>
+      <div class="chapter-body"><p>Most newcomers spend their first months hunting for one indicator that "just works." It doesn't exist, because indicators describe price differently, not better or worse. Swapping indicators without changing anything else in your process rarely changes your results.</p>
+      <div class="caution-box"><div class="fb-label">Common Mistake</div><p>Blaming the indicator after a loss, and replacing it, instead of examining the decision that was actually made around it.</p></div></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="7">&larr; Previous</button>
+          <button class="navbtn" data-target="9">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-9" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 1 of 9 &nbsp;&middot;&nbsp; 9 / 39</div>
+      <h1 class="chapter-title">Market Structure — Reading Highs And Lows</h1>
+      <p class="chapter-hero-sub">The skeleton underneath every trend.</p>
+      <div class="chapter-body"><p>Market structure is the sequence of swing highs and swing lows that make up a trend. Higher highs and higher lows define an uptrend; lower highs and lower lows define a downtrend. When that sequence breaks, structure is changing.</p>
+      <p>This is arguably the single most transferable skill in trading — it works identically on forex, gold, stocks, or crypto, because it isn't about the instrument, it's about how participants behave.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="8">&larr; Previous</button>
+          <button class="navbtn" data-target="10">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-10" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 2 of 9 &nbsp;&middot;&nbsp; 10 / 39</div>
+      <h1 class="chapter-title">Breakout Vs. Fakeout</h1>
+      <p class="chapter-hero-sub">Telling a real move from a trap.</p>
+      <div class="chapter-body"><p>A breakout is price moving decisively past a known level with follow-through. A fakeout looks identical in the first few candles, then reverses hard, often trapping traders who entered on the initial move.</p>
+      <p>There's no indicator that reliably tells the two apart in advance. What helps is context: volume, the strength of the level being broken, and whether the broader structure supports the move.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="9">&larr; Previous</button>
+          <button class="navbtn" data-target="11">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-11" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 3 of 9 &nbsp;&middot;&nbsp; 11 / 39</div>
+      <h1 class="chapter-title">The Five Most-Used Indicators, Explained Honestly</h1>
+      <p class="chapter-hero-sub">What EMA, RSI, MACD, Bollinger Bands, and Stochastic each actually measure.</p>
+      <div class="chapter-body"><p><b>EMA (Exponential Moving Average):</b> a smoothed average of price that reacts faster to recent moves than a simple average. Useful for gauging trend direction, not for predicting reversals.</p>
+      <p><b>RSI:</b> measures the speed and size of recent price changes to flag when a move looks stretched. It can stay "overbought" for a long time during a strong trend — it is not a sell signal by itself.</p>
+      <p><b>MACD:</b> the relationship between two EMAs, used to gauge momentum shifts. It lags, because it's built entirely from moving averages.</p>
+      <p><b>Bollinger Bands:</b> bands that widen and narrow based on volatility, centered on a moving average.</p>
+      <p><b>Stochastic:</b> compares the close to the recent high-low range, another momentum read.</p>
+      <div class="callout"><b>Notice a pattern?</b> Most of these are volatility or moving-average based under the hood — a theme this section returns to directly in Lesson 13.</div></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="10">&larr; Previous</button>
+          <button class="navbtn" data-target="12">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-12" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 4 of 9 &nbsp;&middot;&nbsp; 12 / 39</div>
+      <h1 class="chapter-title">Five Tools Every Trader Should Actually Have</h1>
+      <p class="chapter-hero-sub">Beyond indicators — the practical kit.</p>
+      <div class="chapter-body"><p>A reliable charting platform, an economic calendar (to know when volatility is scheduled), a position size calculator, a trade journal, and a backtesting method. None of these generate signals — they support decision quality, which is where results actually come from.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="11">&larr; Previous</button>
+          <button class="navbtn" data-target="13">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-13" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 5 of 9 &nbsp;&middot;&nbsp; 13 / 39</div>
+      <h1 class="chapter-title">Five Common Strategies — And Their Real Limits</h1>
+      <p class="chapter-hero-sub">Trend following, breakout trading, mean reversion, scalping, and grid/martingale approaches.</p>
+      <div class="chapter-body"><p>Trend following works well in strong trends and poorly in chop. Breakout trading works when volatility expands and produces frequent fakeouts when it doesn't. Mean reversion works in range-bound markets and can be dangerous in trending ones. Scalping demands low costs and fast execution. Grid and martingale approaches can look smooth on a curve while carrying hidden, unbounded risk.</p>
+      <p>No strategy on this list is universally good or bad — each is a tool matched to a specific market condition, covered further in Section 4.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="12">&larr; Previous</button>
+          <button class="navbtn" data-target="14">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-14" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 6 of 9 &nbsp;&middot;&nbsp; 14 / 39</div>
+      <h1 class="chapter-title">The Number Underneath 90% Of Indicators<span class="badge hack" style="margin-left:10px;">MARKET HACK</span></h1>
+      <p class="chapter-hero-sub">Bollinger Bands, Supertrend, Keltner Channels, trailing stops, and most position-sizing formulas — different names, one shared input.</p>
+      <div class="chapter-body"><p>Bollinger Bands, Supertrend, Keltner Channel, trailing stops, and most volatility-based position-sizing formulas — different names, different colors on the chart, but underneath, almost all of them run on the same volatility number: <b style="color:var(--gold)">ATR (Average True Range)</b>.</p>
+      <p>That's why stacking five indicators for "confirmation" so often fails. If four of those five are secretly built from the same input, nothing has actually been confirmed — the same signal has just been repeated four times and mistaken for agreement.</p>
+      <p>The traders who stop losing aren't the ones who found a sixth indicator. They're the ones who understood the one number underneath most of them, and started reading volatility directly instead of through five different filters pointed at the same thing.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="13">&larr; Previous</button>
+          <button class="navbtn" data-target="15">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-15" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 7 of 9 &nbsp;&middot;&nbsp; 15 / 39</div>
+      <h1 class="chapter-title">One Chart, Two Traders, Two Opinions</h1>
+      <p class="chapter-hero-sub">Why chart reading is a skill, not a lookup table.</p>
+      <div class="chapter-body"><p>Show the same chart to ten experienced traders and you'll get several different reads on where price is headed next. This isn't a flaw in technical analysis — it's a reminder that price action is interpreted, not decoded. Consistency in your own framework matters more than finding "the" correct read.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="14">&larr; Previous</button>
+          <button class="navbtn" data-target="16">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-16" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 8 of 9 &nbsp;&middot;&nbsp; 16 / 39</div>
+      <h1 class="chapter-title">What Demo Trading Doesn't Prepare You For</h1>
+      <p class="chapter-hero-sub">The gap that only shows up with real money.</p>
+      <div class="chapter-body"><p>Demo accounts remove the one variable that determines most trading outcomes: consequence. Execution, patience, and rule-following all change once real money is on the line. Demo trading is useful for learning mechanics — it is not evidence that a strategy or a trader is ready.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="15">&larr; Previous</button>
+          <button class="navbtn" data-target="17">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-17" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 2 — Making Sense Of Chaos &middot; Lesson 9 of 9 &nbsp;&middot;&nbsp; 17 / 39</div>
+      <h1 class="chapter-title">Your First Real Loss, And What To Take From It</h1>
+      <p class="chapter-hero-sub">The moment that actually starts the journey.</p>
+      <div class="chapter-body"><p>The first live loss is not a sign something went wrong — it's the first honest data point about how you behave under real pressure. What matters is whether the loss followed your plan, and what you do in the next few trades afterward.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="16">&larr; Previous</button>
+          <button class="navbtn" data-target="18">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-18" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 3 — The Reality Check &middot; Lesson 1 of 6 &nbsp;&middot;&nbsp; 18 / 39</div>
+      <h1 class="chapter-title">Backtest Vs. Live — Why The Numbers Diverge</h1>
+      <p class="chapter-hero-sub">Spread, slippage, and a different version of you.</p>
+      <div class="chapter-body"><p>A backtest assumes perfect fills at exact prices. Live trading includes spread, slippage, latency, and — most importantly — a trader who feels every loss in real time. The gap between the two is rarely about the strategy's logic; it's about everything the backtest couldn't simulate.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="17">&larr; Previous</button>
+          <button class="navbtn" data-target="19">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-19" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 3 — The Reality Check &middot; Lesson 2 of 6 &nbsp;&middot;&nbsp; 19 / 39</div>
+      <h1 class="chapter-title">Overfitting — When A Strategy Looks Too Perfect</h1>
+      <p class="chapter-hero-sub">A 90% backtest win rate is usually a warning, not a win.</p>
+      <div class="chapter-body"><p>Overfitting happens when a strategy is tuned so precisely to past data that it has effectively memorized it, rather than found a repeatable edge. The tell is often a suspiciously smooth equity curve on the exact data it was built on, and a very different one on anything new.</p>
+      <div class="fail-grid">
+        <div class="fail-col"><div class="col-label">Sign of overfitting</div><ul><li>Dozens of tuned parameters</li><li>Near-perfect backtest, poor live results</li><li>Rules that only make sense in hindsight</li></ul></div>
+        <div class="fail-col right"><div class="col-label">Sign of a real edge</div><ul><li>Performs across multiple periods</li><li>Simple, explainable rules</li><li>Consistent across similar instruments</li></ul></div>
+      </div></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="18">&larr; Previous</button>
+          <button class="navbtn" data-target="20">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-20" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 3 — The Reality Check &middot; Lesson 3 of 6 &nbsp;&middot;&nbsp; 20 / 39</div>
+      <h1 class="chapter-title">What Risk Actually Means, Beyond Money</h1>
+      <p class="chapter-hero-sub">It's a decision, made before the trade — not a feeling during it.</p>
+      <div class="chapter-body"><p>Risk isn't just the amount that could be lost — it's every decision that determines how much can be lost: position size, stop placement, and what happens if several trades go wrong in a row. Treating risk as a plan rather than an afterthought is what separates this stage from the last.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="19">&larr; Previous</button>
+          <button class="navbtn" data-target="21">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-21" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 3 — The Reality Check &middot; Lesson 4 of 6 &nbsp;&middot;&nbsp; 21 / 39</div>
+      <h1 class="chapter-title">Position Sizing — The Most Ignored Topic In Trading</h1>
+      <p class="chapter-hero-sub">Sized correctly, an average strategy can survive. Sized wrong, a great one can't.</p>
+      <div class="chapter-body"><p>Position sizing determines how much of your capital is exposed on any single trade. Most new traders size based on how confident they feel, not on a fixed percentage of account risk. That single habit does more damage over a year than almost any indicator choice.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="20">&larr; Previous</button>
+          <button class="navbtn" data-target="22">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-22" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 3 — The Reality Check &middot; Lesson 5 of 6 &nbsp;&middot;&nbsp; 22 / 39</div>
+      <h1 class="chapter-title">Keeping A Trade Journal You Can't Lie To</h1>
+      <p class="chapter-hero-sub">Tracking decisions, not just outcomes.</p>
+      <div class="chapter-body"><p>A useful journal records the reasoning behind a trade, not just whether it won or lost. Over time, this is the only reliable way to see your own patterns — where you break your own rules, and under what conditions you tend to do it.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="21">&larr; Previous</button>
+          <button class="navbtn" data-target="23">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-23" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 3 — The Reality Check &middot; Lesson 6 of 6 &nbsp;&middot;&nbsp; 23 / 39</div>
+      <h1 class="chapter-title">Revenge Trading — The Costliest Reaction To A Loss</h1>
+      <p class="chapter-hero-sub">The mistake that turns one loss into several.</p>
+      <div class="chapter-body"><p>Revenge trading is entering a new trade, outside the plan, specifically to "win back" a previous loss. It replaces a rule-based decision with an emotional one, usually at the worst possible moment — right after judgment has already been compromised.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="22">&larr; Previous</button>
+          <button class="navbtn" data-target="24">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-24" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 4 — Building Real Discipline &middot; Lesson 1 of 6 &nbsp;&middot;&nbsp; 24 / 39</div>
+      <h1 class="chapter-title">Choosing One Strategy, And Staying With It</h1>
+      <p class="chapter-hero-sub">Strategy-hopping resets the clock every time.</p>
+      <div class="chapter-body"><p>Every strategy has losing streaks. Switching strategies after each one means never finding out whether a strategy actually works, because no approach is given enough trades to prove itself either way.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="23">&larr; Previous</button>
+          <button class="navbtn" data-target="25">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-25" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 4 — Building Real Discipline &middot; Lesson 2 of 6 &nbsp;&middot;&nbsp; 25 / 39</div>
+      <h1 class="chapter-title">Why 10 Trades Tell You Nothing And 100 Start To</h1>
+      <p class="chapter-hero-sub">Sample size, not screenshots.</p>
+      <div class="chapter-body"><p>A handful of trades can go well or badly by pure chance. Statistical confidence in a strategy only starts to form after enough repetitions that variance evens out — which is closer to a hundred trades than to ten.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="24">&larr; Previous</button>
+          <button class="navbtn" data-target="26">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-26" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 4 — Building Real Discipline &middot; Lesson 3 of 6 &nbsp;&middot;&nbsp; 26 / 39</div>
+      <h1 class="chapter-title">Reading Drawdown As Data, Not Failure</h1>
+      <p class="chapter-hero-sub">Expected variance, not a signal to quit.</p>
+      <div class="chapter-body"><p>Every strategy with a real edge still has periods of losing money — that's what a drawdown is. The question isn't whether drawdown happens, it's whether it stays within the range the strategy's own history predicts.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="25">&larr; Previous</button>
+          <button class="navbtn" data-target="27">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-27" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 4 — Building Real Discipline &middot; Lesson 4 of 6 &nbsp;&middot;&nbsp; 27 / 39</div>
+      <h1 class="chapter-title">Reading The Market's Mood — Trending, Ranging, Choppy</h1>
+      <p class="chapter-hero-sub">Matching the tool to the condition.</p>
+      <div class="chapter-body"><p>Markets shift between trending, ranging, and choppy, low-conviction conditions. A strategy built for one condition will consistently underperform in another — this is often mistaken for a broken strategy when it's really a mismatched one.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="26">&larr; Previous</button>
+          <button class="navbtn" data-target="28">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-28" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 4 — Building Real Discipline &middot; Lesson 5 of 6 &nbsp;&middot;&nbsp; 28 / 39</div>
+      <h1 class="chapter-title">Writing Rules So Emotion Doesn't Have To Decide</h1>
+      <p class="chapter-hero-sub">Discipline is a system, not a personality trait.</p>
+      <div class="chapter-body"><p>Discipline isn't something a trader either has or doesn't. It's the output of rules specific enough that no decision has to be made in the heat of the moment — the decision was already made in advance, calmly.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="27">&larr; Previous</button>
+          <button class="navbtn" data-target="29">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-29" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 4 — Building Real Discipline &middot; Lesson 6 of 6 &nbsp;&middot;&nbsp; 29 / 39</div>
+      <h1 class="chapter-title">What Automation Actually Replaces</h1>
+      <p class="chapter-hero-sub">Not the thinking — the execution.</p>
+      <div class="chapter-body"><p>Automation removes hesitation, emotion, and inconsistency from execution. It does not replace the judgment that goes into designing and monitoring the strategy in the first place — a common misunderstanding about what an EA or bot is actually for.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="28">&larr; Previous</button>
+          <button class="navbtn" data-target="30">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-30" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 5 — Thinking Like A Professional &middot; Lesson 1 of 6 &nbsp;&middot;&nbsp; 30 / 39</div>
+      <h1 class="chapter-title">One Strategy Vs. A Portfolio Of Strategies</h1>
+      <p class="chapter-hero-sub">The real difference at the professional level.</p>
+      <div class="chapter-body"><p>Professionals rarely run one strategy at full size. They run several, each sized by how much it can lose before it's unacceptable — so no single bad stretch threatens the whole account.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="29">&larr; Previous</button>
+          <button class="navbtn" data-target="31">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-31" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 5 — Thinking Like A Professional &middot; Lesson 2 of 6 &nbsp;&middot;&nbsp; 31 / 39</div>
+      <h1 class="chapter-title">Correlation — When Strategies Fail Together</h1>
+      <p class="chapter-hero-sub">Different names, same underlying risk.</p>
+      <div class="chapter-body"><p>Two strategies can look completely different and still lose money at the same time, if they're both exposed to the same underlying driver. Genuine diversification means checking for that overlap, not just running more than one system.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="30">&larr; Previous</button>
+          <button class="navbtn" data-target="32">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-32" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 5 — Thinking Like A Professional &middot; Lesson 3 of 6 &nbsp;&middot;&nbsp; 32 / 39</div>
+      <h1 class="chapter-title">Capital Allocation — How Much Goes Where, And Why</h1>
+      <p class="chapter-hero-sub">Sizing the portfolio, not just the trade.</p>
+      <div class="chapter-body"><p>Capital allocation decides how much of total capital each strategy or instrument gets, based on its risk profile and how it behaves relative to the others — a level up from position sizing within a single trade.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="31">&larr; Previous</button>
+          <button class="navbtn" data-target="33">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-33" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 5 — Thinking Like A Professional &middot; Lesson 4 of 6 &nbsp;&middot;&nbsp; 33 / 39</div>
+      <h1 class="chapter-title">Risk Of Ruin — How One Mistake Can End Everything</h1>
+      <p class="chapter-hero-sub">Why a good strategy can still wipe an account out.</p>
+      <div class="chapter-body"><p>Risk of ruin measures the probability that a losing streak, combined with position sizing, wipes out an account entirely. A strategy can have a genuine edge and still carry a dangerously high risk of ruin if sized incorrectly.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="32">&larr; Previous</button>
+          <button class="navbtn" data-target="34">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-34" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 5 — Thinking Like A Professional &middot; Lesson 5 of 6 &nbsp;&middot;&nbsp; 34 / 39</div>
+      <h1 class="chapter-title">Order Flow And Liquidity, Beyond Retail Charts</h1>
+      <p class="chapter-hero-sub">Where price is actually being filled.</p>
+      <div class="chapter-body"><p>Retail charts show price. Order flow and liquidity concepts look at where large orders are likely resting, and how price tends to move toward areas where those orders can be filled — a different lens on the same market.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="33">&larr; Previous</button>
+          <button class="navbtn" data-target="35">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-35" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 5 — Thinking Like A Professional &middot; Lesson 6 of 6 &nbsp;&middot;&nbsp; 35 / 39</div>
+      <h1 class="chapter-title">Regime Change — When The Market's Rules Quietly Shift</h1>
+      <p class="chapter-hero-sub">Detecting when a working system stops working.</p>
+      <div class="chapter-body"><p>Markets move between different regimes — periods where volatility, correlation, or trend behavior shift meaningfully. A system built for one regime can degrade in another without any single dramatic event marking the change.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="34">&larr; Previous</button>
+          <button class="navbtn" data-target="36">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-36" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 6 — The Business Of Trading &middot; Lesson 1 of 4 &nbsp;&middot;&nbsp; 36 / 39</div>
+      <h1 class="chapter-title">From Trader To Business Owner — The Mindset Shift</h1>
+      <p class="chapter-hero-sub">Capital as inventory, strategies as products.</p>
+      <div class="chapter-body"><p>At the professional level, trading starts to resemble running a business: capital is allocated like inventory, each strategy is evaluated like a product line, and decisions are made on expected value over time, not on how any single trade feels.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="35">&larr; Previous</button>
+          <button class="navbtn" data-target="37">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-37" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 6 — The Business Of Trading &middot; Lesson 2 of 4 &nbsp;&middot;&nbsp; 37 / 39</div>
+      <h1 class="chapter-title">What Consistency Really Looks Like</h1>
+      <p class="chapter-hero-sub">Boring trades, repeated well — not hero trades.</p>
+      <div class="chapter-body"><p>Consistency rarely looks exciting. It looks like the same process, applied the same way, trade after trade, regardless of how the last one went. The traders with the longest careers are rarely the ones with the most dramatic single wins.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="36">&larr; Previous</button>
+          <button class="navbtn" data-target="38">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-38" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 6 — The Business Of Trading &middot; Lesson 3 of 4 &nbsp;&middot;&nbsp; 38 / 39</div>
+      <h1 class="chapter-title">Scaling — When It's Safe To Size Up, And When It Isn't</h1>
+      <p class="chapter-hero-sub">Growth without breaking the system.</p>
+      <div class="chapter-body"><p>Scaling position size should follow a proven track record and enough data to trust the strategy at the new size — not confidence after a good month. Increasing size too early is one of the most common ways a working system gets broken.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="37">&larr; Previous</button>
+          <button class="navbtn" data-target="39">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="chapter" id="chapter-39" style="display:none;">
+    <div class="watermark-layer"><div class="watermark" style="top:0%;">AG TECHNICALS</div><div class="watermark" style="top:13%;">AG TECHNICALS</div><div class="watermark" style="top:26%;">AG TECHNICALS</div><div class="watermark" style="top:39%;">AG TECHNICALS</div><div class="watermark" style="top:52%;">AG TECHNICALS</div><div class="watermark" style="top:65%;">AG TECHNICALS</div><div class="watermark" style="top:78%;">AG TECHNICALS</div><div class="watermark" style="top:91%;">AG TECHNICALS</div><div class="watermark" style="top:104%;">AG TECHNICALS</div><div class="watermark" style="top:117%;">AG TECHNICALS</div><div class="watermark" style="top:130%;">AG TECHNICALS</div><div class="watermark" style="top:143%;">AG TECHNICALS</div></div>
+    <div class="chapter-inner">
+      <div class="chapter-eyebrow">Section 6 — The Business Of Trading &middot; Lesson 4 of 4 &nbsp;&middot;&nbsp; 39 / 39</div>
+      <h1 class="chapter-title">The Long Game — Why This Is A Marathon, Not A Sprint</h1>
+      <p class="chapter-hero-sub">Closing thought for the journey.</p>
+      <div class="chapter-body"><p>Every stage in this course exists because trading rewards patience over speed. There is no final lesson that makes someone a finished trader — only a framework that keeps getting refined, trade after trade, for as long as the markets keep changing.</p></div>
+      <div class="chapter-footer">
+        <div class="footer-brand">&copy; AG Technicals</div>
+        <div class="footer-nav">
+          <button class="navbtn" data-target="38">&larr; Previous</button>
+          <button class="navbtn" data-target="40" disabled>Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+var totalChapters = 39;
+var currentChapter = 1;
+function showChapter(n){
+  n = parseInt(n, 10);
+  if(!n || n < 1 || n > totalChapters) return;
+  currentChapter = n;
+  var chapters = document.querySelectorAll('.chapter');
+  for(var i=0;i<chapters.length;i++){ chapters[i].style.display = 'none'; }
+  var links = document.querySelectorAll('.nav-link');
+  for(var i=0;i<links.length;i++){ links[i].classList.remove('active'); }
+  var target = document.getElementById('chapter-'+n);
+  if(target) target.style.display = 'block';
+  var link = document.querySelector('.nav-link[data-ch="'+n+'"]');
+  if(link){
+    link.classList.add('active');
+    try{ if(link.scrollIntoView) link.scrollIntoView({block:'nearest'}); }catch(e){}
+  }
+  try{ window.scrollTo(0,0); }catch(e){}
+  try{ history.replaceState(null, '', '#ch'+n); }catch(e){}
+}
+
+function bindNavigation(){
+  var links = document.querySelectorAll('.nav-link[data-ch]');
+  for(var i=0;i<links.length;i++){
+    links[i].addEventListener('click', function(e){
+      e.preventDefault();
+      showChapter(this.getAttribute('data-ch'));
+    });
+  }
+  var btns = document.querySelectorAll('.navbtn[data-target]');
+  for(var i=0;i<btns.length;i++){
+    btns[i].addEventListener('click', function(e){
+      e.preventDefault();
+      if(this.disabled) return;
+      showChapter(this.getAttribute('data-target'));
+    });
+  }
+}
+
+function checkBrowserBanner(){
+  try{
+    var ua = (navigator.userAgent || '').toLowerCase();
+    var isInApp = /fban|fbav|instagram|line\/|micromessenger|tiktok|musical_ly|snapchat|linkedinapp/.test(ua);
+    var isSmallScreen = window.innerWidth <= 800;
+    var dismissed = false;
+    try{ dismissed = localStorage.getItem('agt_banner_dismissed') === '1'; }catch(e){}
+    var banner = document.getElementById('browser-banner');
+    if(banner && !dismissed && (isInApp || isSmallScreen)){
+      banner.classList.add('show');
+      if(isInApp){
+        banner.querySelector('span').innerHTML = 'This looks like an in-app browser. For full navigation, open in <strong>Chrome</strong> or <strong>Safari</strong>.';
+      }
+    }
+    var copyBtn = document.getElementById('bb-copy');
+    var dismissBtn = document.getElementById('bb-dismiss');
+    if(copyBtn){
+      copyBtn.addEventListener('click', function(){
+        try{
+          navigator.clipboard.writeText(location.href);
+          copyBtn.textContent = 'Copied!';
+          setTimeout(function(){ copyBtn.textContent = 'Copy Link'; }, 1500);
+        }catch(e){}
+      });
+    }
+    if(dismissBtn){
+      dismissBtn.addEventListener('click', function(){
+        if(banner) banner.classList.remove('show');
+        try{ localStorage.setItem('agt_banner_dismissed', '1'); }catch(e){}
+      });
+    }
+  }catch(e){}
+}
+
+function init(){
+  try{ bindNavigation(); }catch(e){}
+  try{ checkBrowserBanner(); }catch(e){}
+  try{
+    document.addEventListener('copy', function(e){ e.preventDefault(); });
+    document.addEventListener('keydown', function(e){
+      var k = e.key ? e.key.toLowerCase() : '';
+      if((e.ctrlKey || e.metaKey) && (k==='c'||k==='u'||k==='s'||k==='p')) e.preventDefault();
+    });
+  }catch(e){}
+  try{
+    var hash = location.hash.replace('#','');
+    var hm = hash.match(/^ch(\d+)$/);
+    if(hm){ showChapter(hm[1]); }
+  }catch(e){}
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+}else{
+  init();
+}
+</script>
+</body>
+</html>

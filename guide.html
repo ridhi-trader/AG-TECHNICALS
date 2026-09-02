@@ -7,80 +7,74 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0d0d0f; --card:#141318; --d2:#121114;
-  --g5:#e8b84b; --g4:#c9960c;
-  --t1:#ffffff; --t2:#c8c4d0; --t3:#a0a0b8;
-  --border:#2a2736; --red:#f26d6d; --green:#4ade80;
-}
+:root{--bg:#0d0d0f;--card:#141318;--g5:#e8b84b;--g4:#c9960c;--t1:#ffffff;--t2:#c8c4d0;--t3:#a0a0b8;--border:#2a2736;--red:#f26d6d;--green:#4ade80;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;
-  -webkit-user-select:none;-moz-user-select:none;user-select:none;}
-
-/* NAV */
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;-webkit-user-select:none;-moz-user-select:none;user-select:none;}
 nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--border);}
 .nav-logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--g5);text-decoration:none;letter-spacing:1px;}
 .nav-back{display:flex;align-items:center;gap:8px;color:var(--t3);font-size:13px;text-decoration:none;transition:color .2s;}
 .nav-back:hover{color:var(--g5);}
 .nav-back svg{width:16px;height:16px;}
+@media(max-width:600px){nav{padding:14px 20px;}}
 
 /* HERO */
-.hero{text-align:center;padding:64px 24px 40px;}
+.hero{text-align:center;padding:72px 24px 40px;}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(232,184,75,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:24px;}
 .hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--g5);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.1;margin-bottom:16px;}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.1;margin-bottom:14px;}
 .hero h1 span{color:var(--g5);}
-.hero p{font-size:16px;color:var(--t3);max-width:500px;margin:0 auto;line-height:1.7;}
+.hero p{font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;line-height:1.7;}
 
-/* LAYOUT */
-.wrap{max-width:940px;margin:0 auto;padding:8px 24px 80px;display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:start;}
-@media(max-width:700px){.wrap{grid-template-columns:1fr;} .sidebar{display:none;}}
+/* GUIDE LIST */
+.section{max-width:860px;margin:0 auto;padding:8px 24px 80px;}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:20px;}
 
-/* SIDEBAR */
-.sidebar{position:sticky;top:24px;}
-.sb-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px;padding-left:4px;}
-.sb-item{display:block;padding:10px 14px;border-radius:9px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;transition:all .15s;margin-bottom:2px;}
-.sb-item:hover{background:rgba(255,255,255,0.05);color:#fff;}
-.sb-item.active{background:rgba(232,184,75,0.12);color:var(--g5);font-weight:700;}
-.sb-item .sb-num{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-right:6px;}
+.guide-card{display:flex;align-items:center;gap:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px 28px;margin-bottom:16px;transition:border-color .2s,transform .2s;cursor:pointer;position:relative;overflow:hidden;}
+.guide-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,184,75,0.04) 0%,transparent 60%);opacity:0;transition:opacity .3s;}
+.guide-card:hover{border-color:rgba(232,184,75,0.4);transform:translateY(-2px);}
+.guide-card:hover::before{opacity:1;}
+.guide-icon{font-size:30px;flex-shrink:0;width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:rgba(232,184,75,0.08);border-radius:13px;border:1px solid rgba(232,184,75,0.15);}
+.guide-meta{flex:1;}
+.guide-tags{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);}
+.tag.gold{color:var(--g5);}
+.tag-dot{color:var(--t3);font-size:10px;}
+.guide-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.guide-desc{font-size:13px;color:var(--t3);line-height:1.6;max-width:560px;}
+.guide-btn{flex-shrink:0;background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);color:var(--g5);font-size:14px;font-weight:600;padding:11px 22px;border-radius:10px;white-space:nowrap;transition:all .2s;font-family:'Space Grotesk',sans-serif;}
+.guide-card:hover .guide-btn{background:var(--g5);color:#0d0d0f;}
 
-/* GUIDE CONTENT */
-.guide-area{min-height:60vh;}
-.guide-header{margin-bottom:32px;}
-.guide-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g5);margin-bottom:10px;}
-.guide-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:10px;line-height:1.2;}
-.guide-meta{display:flex;gap:16px;font-size:12px;color:var(--t3);}
-.guide-meta span{display:flex;align-items:center;gap:4px;}
-
-/* GUIDE BODY */
-.guide-body{font-size:15px;color:var(--t2);line-height:1.85;}
-.guide-body h2{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#fff;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.guide-body h3{font-size:15px;font-weight:700;color:var(--g5);margin:22px 0 8px;}
-.guide-body p{margin-bottom:14px;}
-.guide-body ul,.guide-body ol{padding-left:20px;margin-bottom:14px;}
-.guide-body li{margin-bottom:7px;}
-.guide-body strong{color:#fff;font-weight:700;}
-.guide-body .highlight{background:rgba(232,184,75,0.08);border-left:3px solid var(--g5);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px;}
-.guide-body .warn{background:rgba(242,109,109,0.06);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px;color:#f8c4c4;}
-.guide-body .tip{background:rgba(74,222,128,0.06);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px;color:#b8f5d0;}
-.guide-body .rule-box{background:#141318;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:16px 0;}
-.guide-body .rule-box .rule-title{font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
-
-/* EMPTY */
-.empty-state{text-align:center;padding:80px 24px;color:var(--t3);}
-.empty-state h2{font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--t2);margin-bottom:8px;}
-
-/* WA CTA */
-.wa-cta{margin-top:48px;background:linear-gradient(135deg,rgba(232,184,75,0.06),rgba(201,150,12,0.03));border:1px solid rgba(232,184,75,0.2);border-radius:14px;padding:28px 24px;text-align:center;}
+/* READER OVERLAY */
+.reader-overlay{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;}
+.reader-overlay.open{display:block;}
+.reader-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10;}
+.reader-back{display:flex;align-items:center;gap:8px;color:var(--t3);font-size:13px;cursor:pointer;border:none;background:none;transition:color .2s;}
+.reader-back:hover{color:var(--g5);}
+.reader-wrap{max-width:760px;margin:0 auto;padding:48px 24px 80px;}
+.reader-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g5);margin-bottom:10px;}
+.reader-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,4vw,38px);font-weight:800;color:#fff;margin-bottom:12px;line-height:1.2;}
+.reader-meta{display:flex;gap:16px;font-size:12px;color:var(--t3);margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.reader-body{font-size:15px;color:var(--t2);line-height:1.9;}
+.reader-body h2{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;color:#fff;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.reader-body h3{font-size:15px;font-weight:700;color:var(--g5);margin:22px 0 8px;}
+.reader-body p{margin-bottom:14px;}
+.reader-body ul,.reader-body ol{padding-left:20px;margin-bottom:14px;}
+.reader-body li{margin-bottom:8px;}
+.reader-body strong{color:#fff;font-weight:700;}
+.hl-box{background:rgba(232,184,75,0.07);border-left:3px solid var(--g5);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px;}
+.warn-box{background:rgba(242,109,109,0.06);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px;color:#f8c4c4;}
+.tip-box{background:rgba(74,222,128,0.06);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;font-size:14px;color:#b8f5d0;}
+.rule-box{background:#141318;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:16px 0;}
+.rule-box .rule-title{font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.wa-cta{margin-top:48px;background:rgba(232,184,75,0.05);border:1px solid rgba(232,184,75,0.18);border-radius:14px;padding:28px 24px;text-align:center;}
 .wa-cta h3{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:6px;}
 .wa-cta p{font-size:13px;color:var(--t3);margin-bottom:16px;}
-.wa-cta a{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;font-weight:700;font-size:14px;padding:11px 24px;border-radius:9px;text-decoration:none;transition:all .2s;}
+.wa-cta a{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;font-weight:700;font-size:14px;padding:11px 24px;border-radius:9px;text-decoration:none;transition:all .2s;pointer-events:all;}
 .wa-cta a:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(201,150,12,0.4);}
-
-/* PREVENT COPY */
-.guide-body{pointer-events:none;}
-.guide-body a{pointer-events:all;}
+.reader-body *{pointer-events:none;}
+.reader-body a{pointer-events:all;}
+@media(max-width:600px){.guide-card{flex-wrap:wrap;}.guide-btn{width:100%;text-align:center;}.reader-nav{padding:14px 20px;}.reader-wrap{padding:32px 16px 60px;}}
 </style>
 </head>
 <body>
@@ -96,52 +90,56 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <div class="hero">
   <div class="hero-badge"><span class="hero-badge-dot"></span>Written Playbooks</div>
   <h1>AG <span>Guides</span></h1>
-  <p>Step-by-step written guides — built from real screen time. Read on-site only.</p>
+  <p>Step-by-step written guides built from 9+ years of real screen time. Read on-site only — fully private.</p>
 </div>
 
-<div class="wrap">
-  <div class="sidebar" id="sidebar">
-    <div class="sb-label">All Guides</div>
-    <div id="sbList"></div>
+<div class="section">
+  <div class="section-label">All Guides</div>
+  <div id="guideList"></div>
+</div>
+
+<!-- READER OVERLAY -->
+<div class="reader-overlay" id="readerOverlay">
+  <div class="reader-nav">
+    <button class="reader-back" onclick="closeReader()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M10 12L6 8l4-4"/></svg>
+      All Guides
+    </button>
+    <span style="font-size:12px;color:var(--t3);">AG Technicals · Private</span>
   </div>
-  <div class="guide-area" id="guideArea">
-    <div class="empty-state"><h2>Select A Guide →</h2><p>Choose from the list on the left.</p></div>
+  <div class="reader-wrap">
+    <div class="reader-tag" id="rTag"></div>
+    <div class="reader-title" id="rTitle"></div>
+    <div class="reader-meta" id="rMeta"></div>
+    <div class="reader-body" id="rBody"></div>
   </div>
 </div>
 
 <script>
-/* ── GUIDES DATA — edit here or expand via admin later ── */
 const GUIDES = [
   {
-    id: 'order-flow',
-    title: 'How To Read Order Flow',
-    tag: 'Market Structure',
-    level: 'Intermediate',
-    time: '12 min read',
-    body: `
+    id:'order-flow', icon:'📊', tag:'Market Structure', level:'Intermediate', time:'12 min',
+    title:'How To Read Order Flow',
+    desc:'Understand what institutions are actually doing — delta, absorption, and volume profile explained.',
+    body:`
       <h2>What Is Order Flow?</h2>
       <p>Order flow is the real-time record of buy and sell orders entering the market. Unlike price action which shows you <strong>what happened</strong>, order flow shows you <strong>who is doing it and how aggressively</strong>.</p>
-      <div class="highlight">💡 Think of price as the scoreboard — order flow is the actual game being played on the field.</div>
-
+      <div class="hl-box">💡 Think of price as the scoreboard — order flow is the actual game being played on the field.</div>
       <h2>Why It Matters</h2>
       <p>Retail traders trade on what price <em>looks like</em>. Institutions leave footprints in order flow. Learning to read those footprints puts you on the right side of the trade.</p>
       <ul>
         <li><strong>Absorption</strong> — Large sellers absorb buyer pressure without price falling. Sign of strong hands.</li>
         <li><strong>Exhaustion</strong> — Price moves but volume dries up. Move is running out of fuel.</li>
-        <li><strong>Imbalance</strong> — More aggressive buyers than sellers (or vice versa) — price accelerates.</li>
+        <li><strong>Imbalance</strong> — More aggressive buyers than sellers — price accelerates.</li>
       </ul>
-
       <h2>Key Concepts</h2>
       <h3>1. Delta</h3>
       <p>Delta = (Buying volume) − (Selling volume) on each candle. Positive delta = more aggressive buyers. Negative delta = more aggressive sellers. Watch when delta diverges from price.</p>
       <div class="rule-box"><div class="rule-title">AG Rule</div>Price makes new high but delta makes lower high → bearish divergence. High probability reversal setup.</div>
-
       <h3>2. Volume Profile</h3>
       <p>Shows price levels where the most volume traded. High volume nodes = strong support/resistance. Low volume nodes = price moves through fast.</p>
-
       <h3>3. POC (Point Of Control)</h3>
       <p>The price level with the highest volume in a session. Institutions defend POC. Price often returns to it. Use it as a magnet for targets.</p>
-
       <h2>How To Apply On Chart</h2>
       <ol>
         <li>Mark the previous session's POC on your chart every day.</li>
@@ -149,196 +147,148 @@ const GUIDES = [
         <li>If delta diverges at a key level — take the trade.</li>
         <li>Use volume profile to identify where stop hunts are likely to end.</li>
       </ol>
-
-      <div class="tip">✅ Best markets for order flow: Gold (XAU/USD), NAS100, BTC/USD — high volume, clear institutional footprints.</div>
-      <div class="warn">⚠️ Order flow is a confirmation tool — not a standalone entry trigger. Always combine with structure and context.</div>
-    `
+      <div class="tip-box">✅ Best markets: Gold (XAU/USD), NAS100, BTC/USD — high volume, clear institutional footprints.</div>
+      <div class="warn-box">⚠️ Order flow is a confirmation tool — not a standalone entry trigger. Always combine with structure and context.</div>
+      <div class="wa-cta"><h3>Want Custom Analysis?</h3><p>Our analysts read order flow on your charts — contact us.</p><a href="https://wa.me/919876543210" target="_blank">💬 Message On WhatsApp</a></div>`
   },
   {
-    id: 'stop-loss',
-    title: 'How To Set A Stop Loss',
-    tag: 'Risk Management',
-    level: 'Beginner',
-    time: '8 min read',
-    body: `
+    id:'stop-loss', icon:'🎯', tag:'Risk Management', level:'Beginner', time:'8 min',
+    title:'How To Set A Stop Loss',
+    desc:'Structure-based stops, ATR stops, and why fixed pip stops get you hunted every time.',
+    body:`
       <h2>Why Most Traders Get Stopped Out Early</h2>
-      <p>The #1 reason traders lose money isn't the entry — it's placing the stop loss in the wrong place. A stop that's too tight gets hunted. A stop that's too wide destroys your risk-reward.</p>
-
+      <p>The #1 reason traders lose money isn't the entry — it's placing the stop loss in the wrong place. Too tight = hunted. Too wide = destroys risk-reward.</p>
       <h2>The 3 Types Of Stop Loss</h2>
       <h3>1. Structure-Based SL (Best)</h3>
       <p>Place your stop <strong>beyond a significant structural level</strong> — the last major swing high (for sells) or swing low (for buys). If that level breaks, your thesis is wrong. Get out.</p>
-      <div class="highlight">💡 Rule: SL goes where the market has to go to prove you wrong — not where your account can afford.</div>
-
+      <div class="hl-box">💡 Rule: SL goes where the market has to go to prove you wrong — not where your account can afford.</div>
       <h3>2. ATR-Based SL</h3>
-      <p>Use Average True Range to set a dynamic stop. Place SL at 1.5x–2x ATR from entry. Adapts to market volatility — wider in volatile conditions, tighter in calm ones.</p>
-
+      <p>Use Average True Range to set a dynamic stop. Place SL at 1.5x–2x ATR from entry. Adapts to market volatility.</p>
       <h3>3. Fixed Pip SL (Avoid)</h3>
-      <p>Fixed 20-pip or 30-pip stops ignore market structure. The market doesn't care about your pip count. This is the fastest way to get consistently hunted.</p>
-
+      <p>Fixed 20-pip or 30-pip stops ignore market structure. The market doesn't care about your pip count. Fastest way to get consistently hunted.</p>
       <h2>The Stop Hunt Reality</h2>
-      <p>Smart money knows exactly where retail traders place their stops — just below round numbers, just below obvious swing lows. Price sweeps those levels, triggers stops, then reverses. This is not random — it's deliberate liquidity collection.</p>
-      <div class="rule-box"><div class="rule-title">AG Rule</div>Add 3–5 pips (or equivalent) buffer beyond the structural level. Don't place your stop exactly at the swing low — place it just below it.</div>
-
+      <p>Smart money knows exactly where retail places stops — just below round numbers, just below obvious swing lows. Price sweeps those levels, triggers stops, then reverses.</p>
+      <div class="rule-box"><div class="rule-title">AG Rule</div>Add 3–5 pips buffer beyond the structural level. Don't place your stop exactly at the swing low — place it just below it.</div>
       <h2>Risk Per Trade</h2>
       <ul>
         <li>Never risk more than <strong>1–2% of your account</strong> per trade.</li>
         <li>Calculate lot size backwards from your SL distance and risk amount.</li>
         <li>Formula: Lot = (Account × Risk%) ÷ (SL in pips × pip value)</li>
       </ul>
-      <div class="tip">✅ A 1% risk account will survive 100 consecutive losses. Focus on surviving first, then thriving.</div>
-    `
+      <div class="tip-box">✅ A 1% risk account will survive 100 consecutive losses. Focus on surviving first.</div>
+      <div class="wa-cta"><h3>Want A Custom Risk Plan?</h3><p>We build personalised risk frameworks for your account size and style.</p><a href="https://wa.me/919876543210" target="_blank">💬 Message On WhatsApp</a></div>`
   },
   {
-    id: 'sessions',
-    title: 'Trading Session Timing Guide',
-    tag: 'Market Timing',
-    level: 'Beginner',
-    time: '7 min read',
-    body: `
+    id:'sessions', icon:'🕐', tag:'Market Timing', level:'Beginner', time:'7 min',
+    title:'Trading Session Timing Guide',
+    desc:'When to trade, when to sleep — London, New York, Asian session breakdown for Indian traders.',
+    body:`
       <h2>The 3 Major Sessions</h2>
-      <p>Forex and most markets run 24 hours — but not all hours are equal. Most institutional volume happens in three windows. Trade in these windows. Sleep during the rest.</p>
-
+      <p>Forex and most markets run 24 hours — but not all hours are equal. Most institutional volume happens in three windows. Trade in these. Sleep during the rest.</p>
       <h3>1. Asian Session (Tokyo)</h3>
-      <p><strong>Time:</strong> 2:30 AM – 11:30 AM IST<br>
-      <strong>Character:</strong> Low volatility, range-bound. Price sets up the liquidity that London will hunt.<br>
-      <strong>Best pairs:</strong> JPY pairs, AUD pairs.<br>
-      <strong>AG Take:</strong> Mark the Asian high and low every day — London will target them.</p>
-
+      <p><strong>Time (IST):</strong> 2:30 AM – 11:30 AM<br><strong>Character:</strong> Low volatility, range-bound. Price sets up the liquidity that London will hunt.<br><strong>AG Take:</strong> Mark the Asian high and low every day — London will target them.</p>
       <h3>2. London Session</h3>
-      <p><strong>Time:</strong> 1:30 PM – 5:30 PM IST<br>
-      <strong>Character:</strong> Highest volume. Major moves initiate here. Stop hunts happen in the first 30 minutes.<br>
-      <strong>Best pairs:</strong> EUR/USD, GBP/USD, Gold.<br>
-      <strong>AG Take:</strong> Wait for the first 15-minute candle to close, then look for the direction.</p>
-
+      <p><strong>Time (IST):</strong> 1:30 PM – 5:30 PM<br><strong>Character:</strong> Highest volume. Major moves initiate here. Stop hunts in first 30 minutes.<br><strong>AG Take:</strong> Wait for the first 15-minute candle to close, then look for direction.</p>
       <h3>3. New York Session</h3>
-      <p><strong>Time:</strong> 6:30 PM – 11:00 PM IST<br>
-      <strong>Character:</strong> Overlaps with London for 2 hours — peak volatility. News releases here.<br>
-      <strong>Best pairs:</strong> EUR/USD, USD pairs, Gold, NAS100.<br>
-      <strong>AG Take:</strong> Best setups happen in the first 2 hours of NY. After 9 PM IST, volume drops.</p>
-
-      <div class="rule-box"><div class="rule-title">AG Session Rules</div>
-        <ul style="padding-left:16px;margin-top:4px;">
-          <li>Mark Asian high/low before London opens.</li>
-          <li>First 30 min of London = stop hunt time. Don't enter blindly.</li>
-          <li>Best entries: London open + NY open overlap (6:30–8:30 PM IST).</li>
-          <li>Avoid trading 30 min before major news releases.</li>
-        </ul>
-      </div>
-
-      <h2>Avoiding Low-Volume Periods</h2>
-      <p>Between NY close and Asian open (11 PM – 2:30 AM IST) the market is dead. Spreads widen, price moves are random, and there's no institutional participation. Avoid these hours entirely.</p>
-      <div class="tip">✅ Trading only during London and NY open will cut your losing trades by 30% — simply by being in the right time zone.</div>
-    `
+      <p><strong>Time (IST):</strong> 6:30 PM – 11:00 PM<br><strong>Character:</strong> Overlaps with London for 2 hours — peak volatility. News releases here.<br><strong>AG Take:</strong> Best setups in first 2 hours of NY. After 9 PM IST volume drops sharply.</p>
+      <div class="rule-box"><div class="rule-title">AG Session Rules</div><ul style="padding-left:16px;margin-top:4px;"><li>Mark Asian high/low before London opens.</li><li>First 30 min of London = stop hunt time. Don't enter blindly.</li><li>Best entries: London open + NY open overlap (6:30–8:30 PM IST).</li><li>Avoid 30 min before major news releases.</li></ul></div>
+      <h2>Avoid Dead Hours</h2>
+      <p>Between NY close and Asian open (11 PM – 2:30 AM IST) the market is dead. Spreads widen, moves are random, no institutional participation.</p>
+      <div class="tip-box">✅ Trading only London and NY open will cut your losing trades by 30% — simply by being in the right time window.</div>
+      <div class="wa-cta"><h3>Need A Custom Session Plan?</h3><p>We map sessions to your specific market and style.</p><a href="https://wa.me/919876543210" target="_blank">💬 Message On WhatsApp</a></div>`
   },
   {
-    id: 'prop-firm',
-    title: 'Prop Firm Rules — How To Pass',
-    tag: 'Prop Trading',
-    level: 'Intermediate',
-    time: '10 min read',
-    body: `
+    id:'prop-firm', icon:'🏆', tag:'Prop Trading', level:'Intermediate', time:'10 min',
+    title:'Prop Firm Rules — How To Pass',
+    desc:'Daily loss limits, drawdown rules, news restrictions — everything you need to pass FTMO and similar challenges.',
+    body:`
       <h2>What Is A Prop Firm?</h2>
       <p>Prop firms give you capital to trade — you keep 70–90% of profits. In exchange, you must follow strict rules. Break them once — account terminated.</p>
-
-      <h2>The Standard Rules (Most Firms)</h2>
-      <div class="rule-box"><div class="rule-title">Common Prop Firm Rules</div>
-        <ul style="padding-left:16px;margin-top:4px;">
-          <li><strong>Daily Loss Limit:</strong> Usually 4–5% of account. Hit it = day over.</li>
-          <li><strong>Max Drawdown:</strong> Usually 8–10% total. Hit it = account terminated.</li>
-          <li><strong>Minimum Trading Days:</strong> Must trade at least 4–5 days in evaluation.</li>
-          <li><strong>No News Trading:</strong> Many firms ban trading 2 min before/after high-impact news.</li>
-          <li><strong>No Weekend Holding:</strong> Close all positions before Friday close.</li>
-          <li><strong>Profit Target:</strong> Usually 8–10% to pass Phase 1, 5% for Phase 2.</li>
-        </ul>
-      </div>
-
+      <div class="rule-box"><div class="rule-title">Common Prop Firm Rules</div><ul style="padding-left:16px;margin-top:4px;"><li><strong>Daily Loss Limit:</strong> Usually 4–5%. Hit it = day over.</li><li><strong>Max Drawdown:</strong> Usually 8–10% total. Hit it = account terminated.</li><li><strong>Min Trading Days:</strong> 4–5 days in evaluation phase.</li><li><strong>No News Trading:</strong> Many firms ban trading 2 min before/after high-impact news.</li><li><strong>No Weekend Holding:</strong> Close all positions before Friday close.</li><li><strong>Profit Target:</strong> 8–10% Phase 1, 5% Phase 2.</li></ul></div>
       <h2>The Mindset Shift Required</h2>
-      <p>Most traders fail prop firm challenges not because they can't trade — but because they approach it like a casino. <strong>The goal is capital preservation first, profit second.</strong></p>
-
+      <p>Most traders fail not because they can't trade — but because they approach it like a casino. <strong>Capital preservation first, profit second.</strong></p>
       <h3>Daily Loss Limit Management</h3>
-      <p>If you're at 50% of your daily loss limit — stop trading for the day. Most accounts blow from revenge trading after hitting early losses.</p>
-
-      <h3>Compound Small, Win Big</h3>
-      <p>You don't need 10% in 10 days. You need 0.5–1% consistent daily return. The math works. The greed kills.</p>
-
+      <p>If you're at 50% of your daily loss limit — stop trading for the day. Most accounts blow from revenge trading after early losses.</p>
       <h2>AG's Prop Firm Strategy</h2>
       <ol>
         <li>Start with 0.5% risk per trade — no exceptions.</li>
         <li>Trade only London and NY open — ignore Asian session.</li>
         <li>Max 2 losses in a row → stop for the day. Mandatory.</li>
-        <li>News trading: close positions 5 min before, re-enter after candle close post-news.</li>
+        <li>News trading: close 5 min before, re-enter after candle close post-news.</li>
         <li>Friday 8 PM IST: close everything. No weekend holds.</li>
       </ol>
-
-      <div class="tip">✅ AG Technicals has helped members pass FTMO, MyForexFunds, and E8 challenges using these exact rules.</div>
-      <div class="warn">⚠️ Not financial advice. Prop firm rules vary — always read your specific firm's terms before trading.</div>
-    `
+      <div class="tip-box">✅ AG Technicals has helped members pass FTMO, MyForexFunds, and E8 challenges using these exact rules.</div>
+      <div class="warn-box">⚠️ Not financial advice. Prop firm rules vary — always read your specific firm's terms.</div>
+      <div class="wa-cta"><h3>Want Prop Firm Coaching?</h3><p>We guide you through the full challenge process.</p><a href="https://wa.me/919876543210" target="_blank">💬 Message On WhatsApp</a></div>`
+  },
+  {
+    id:'gold-trading', icon:'✨', tag:'Gold / XAU', level:'Intermediate', time:'9 min',
+    title:'Gold (XAU/USD) Trading Guide',
+    desc:'How AG Technicals trades gold — sessions, key levels, COT data, and DXY relationship.',
+    body:`
+      <h2>Why Gold Is Our Primary Market</h2>
+      <p>Gold is the most institutionally driven market in the world. Clear structure, strong trends, and predictable reactions to macro events make it ideal for the AG methodology.</p>
+      <h2>Gold's Unique Characteristics</h2>
+      <ul>
+        <li><strong>Inverse DXY Relationship:</strong> Dollar strengthens → Gold usually falls. Dollar weakens → Gold usually rises. Track DXY every session.</li>
+        <li><strong>Safe Haven Demand:</strong> Geopolitical events, market fear → Gold spikes. Learn to identify these events before they move price.</li>
+        <li><strong>COT Data:</strong> Managed Money (hedge funds) positioning tells you where smart money is leaning. We publish this in our Gold Dossier.</li>
+      </ul>
+      <h2>Best Times To Trade Gold</h2>
+      <p><strong>London Open (1:30–3:30 PM IST):</strong> Highest gold volume. Most valid setups.<br><strong>NY Open (6:30–8:30 PM IST):</strong> Second best. US data releases move gold here.<br><strong>Asian session:</strong> Usually range-bound for gold. Use for planning, not execution.</p>
+      <div class="rule-box"><div class="rule-title">AG Gold Rules</div><ul style="padding-left:16px;margin-top:4px;"><li>Always check DXY direction before entering gold.</li><li>Key round numbers ($2600, $2650, $2700) = stop hunt magnets.</li><li>Don't hold gold over major Fed announcements without a wide SL.</li><li>COT net long > 150k contracts = crowded long = watch for reversal.</li></ul></div>
+      <h2>Structure On Gold Charts</h2>
+      <p>Gold respects H4 and Daily structure more than most pairs. Build your bias on Daily, refine on H4, execute on H1 or M15. Never trade gold on M1 or M5 — noise only.</p>
+      <div class="tip-box">✅ Read the AG Gold Dossier every week — it gives you the full institutional picture before you trade.</div>
+      <div class="wa-cta"><h3>Get Gold Signals From AG</h3><p>Our analysts post live gold setups. Join the community.</p><a href="https://wa.me/919876543210" target="_blank">💬 Message On WhatsApp</a></div>`
   },
 ];
 
-/* ── RENDER SIDEBAR ── */
-function renderSidebar(){
-  const el = document.getElementById('sbList');
-  if(!GUIDES.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);padding:8px 4px;">No guides yet.</div>'; return; }
+function renderList(){
+  const el = document.getElementById('guideList');
   el.innerHTML = GUIDES.map((g,i)=>`
-    <button class="sb-item" onclick="showGuide('${g.id}')" id="sb_${g.id}">
-      <span class="sb-num">0${i+1}</span>${g.title}
-    </button>`).join('');
-}
-
-/* ── SHOW GUIDE ── */
-function showGuide(id){
-  const g = GUIDES.find(x=>x.id===id);
-  if(!g) return;
-  // Update sidebar active
-  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
-  const btn = document.getElementById('sb_'+id);
-  if(btn) btn.classList.add('active');
-  // Render content
-  document.getElementById('guideArea').innerHTML = `
-    <div class="guide-header">
-      <div class="guide-tag">${g.tag}</div>
-      <div class="guide-title">${g.title}</div>
+    <div class="guide-card" onclick="openReader('${g.id}')">
+      <div class="guide-icon">${g.icon}</div>
       <div class="guide-meta">
-        <span>📚 ${g.level}</span>
-        <span>⏱ ${g.time}</span>
+        <div class="guide-tags">
+          <span class="tag gold">${g.tag}</span>
+          <span class="tag-dot">·</span>
+          <span class="tag">${g.level}</span>
+          <span class="tag-dot">·</span>
+          <span class="tag">⏱ ${g.time}</span>
+        </div>
+        <div class="guide-title">${g.title}</div>
+        <div class="guide-desc">${g.desc}</div>
       </div>
-    </div>
-    <div class="guide-body">${g.body}</div>
-    <div class="wa-cta">
-      <h3>Want A Custom Strategy?</h3>
-      <p>Our analysts build personalised strategies — tailored to your market, risk, and timeframe.</p>
-      <a href="https://wa.me/919876543210" target="_blank">💬 Message Us On WhatsApp</a>
-    </div>`;
+      <div class="guide-btn">Read Guide →</div>
+    </div>`).join('');
 }
 
-// Init
-renderSidebar();
-if(GUIDES.length) showGuide(GUIDES[0].id);
+function openReader(id){
+  const g = GUIDES.find(x=>x.id===id); if(!g) return;
+  document.getElementById('rTag').textContent = g.tag + ' · AG Technicals';
+  document.getElementById('rTitle').textContent = g.title;
+  document.getElementById('rMeta').innerHTML = `<span>📚 ${g.level}</span><span>⏱ ${g.time} read</span><span>🔒 Private — On-Site Only</span>`;
+  document.getElementById('rBody').innerHTML = g.body;
+  const ov = document.getElementById('readerOverlay');
+  ov.classList.add('open');
+  ov.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
 
-// Block right-click and keyboard shortcuts
-document.addEventListener('contextmenu', e=>e.preventDefault());
+function closeReader(){
+  document.getElementById('readerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 document.addEventListener('keydown', e=>{
-  if((e.ctrlKey||e.metaKey) && ['c','u','s','a','p'].includes(e.key.toLowerCase())) e.preventDefault();
+  if(e.key==='Escape') closeReader();
+  if((e.ctrlKey||e.metaKey) && ['c','u','s','a','p','i'].includes(e.key.toLowerCase())) e.preventDefault();
 });
-</script>
+document.addEventListener('contextmenu', e=>e.preventDefault());
 
-<script>
-/* LIVE TICKER */
-(function(){
-  const API = 'https://ag-assistant-api.onrender.com/api/market-data';
-  async function refresh(){
-    try{
-      const res = await fetch(API, {signal: AbortSignal.timeout(15000)});
-      if(!res.ok) return;
-      const data = await res.json();
-    } catch(e){}
-  }
-  refresh();
-  setInterval(refresh, 5 * 60 * 1000);
-})();
+renderList();
 </script>
-
 <script src="ag-assistant.js"></script>
 </body>
 </html>

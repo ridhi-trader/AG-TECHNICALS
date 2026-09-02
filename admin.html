@@ -692,17 +692,19 @@ const D_FAQ = [{q:'What Markets Does AG Technicals Cover?',a:'We cover Forex (al
 function ls(key,def){ try{ const v=localStorage.getItem('ag_'+key); return v?JSON.parse(v):JSON.parse(JSON.stringify(def)); }catch(e){ return JSON.parse(JSON.stringify(def)); } }
 function save(key,val){ try{ localStorage.setItem('ag_'+key,JSON.stringify(val)); }catch(e){} }
 
-let products   = ls('products',   D_PRODS);
-
-// Force fix: Guide/Education stored as modal → convert to page
+// Force fix BEFORE load
 (function(){
-  let changed=false;
-  products.forEach(p=>{
-    if(p.id==='guide'&&p.type==='modal'){p.type='page';p.url='guide.html';p.cta='Open Guides →';changed=true;}
-    if(p.id==='education'&&p.type==='modal'){p.type='page';p.url='education.html';p.cta='Open Courses →';changed=true;}
-  });
-  if(changed){save('products',products);}
+  try{
+    const s=JSON.parse(localStorage.getItem('ag_products')||'null'); if(!s) return;
+    let ch=false;
+    s.forEach(p=>{
+      if(p.id==='guide'){p.type='page';p.url='guide.html';p.cta='Open Guides →';p.fileUrl='';p.fileName='';ch=true;}
+      if(p.id==='education'){p.type='page';p.url='education.html';p.cta='Open Courses →';ch=true;}
+    });
+    if(ch) localStorage.setItem('ag_products',JSON.stringify(s));
+  }catch(e){}
 })();
+let products   = ls('products',   D_PRODS);
 let indicators = ls('indicators', D_INDS);
 let users      = ls('users',      []);
 let faqData    = ls('faq',        D_FAQ);

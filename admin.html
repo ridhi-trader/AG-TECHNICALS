@@ -392,6 +392,13 @@ select.inp{cursor:pointer;}
         <div class="card-title" style="margin-bottom:12px;">📜 Sent History</div>
         <div id="csSentList"><div style="color:var(--t3);font-size:13px;">No strategies sent yet.</div></div>
       </div>
+
+      <!-- SERVER FILES LIST -->
+      <div class="add-form">
+        <div class="card-title">🌐 All Files On Server</div>
+        <div class="card-sub" style="margin-bottom:12px;">All uploaded files — copy URL to use in product file field.</div>
+        <div id="serverFileList"><div style="font-size:12px;color:var(--t3);">Loading...</div></div>
+      </div>
     </div>
 
     <!-- ANALYTICS -->
@@ -1198,6 +1205,28 @@ function renderUploads(){
   renderEAList();
   renderVidList();
   renderImgList();
+  fetchServerFiles();
+}
+
+async function fetchServerFiles(){
+  try{
+    const res = await fetch('https://ag-assistant-api.onrender.com/api/uploads/list');
+    const data = await res.json();
+    const el = document.getElementById('serverFileList');
+    if(!el) return;
+    if(!data.files || !data.files.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No Files On Server Yet.</div>'; return; }
+    el.innerHTML = data.files.map(f=>`
+      <div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#e8b84b;">${f.name}</div>
+          <div style="font-size:11px;color:var(--t3);">${(f.size/1024 < 1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-out" onclick="navigator.clipboard.writeText('${f.url}');toast('URL Copied!')" style="font-size:11px;padding:5px 12px;">📋 Copy URL</button>
+          <a href="${f.url}" target="_blank" class="btn-out" style="font-size:11px;padding:5px 12px;text-decoration:none;">⬇ Open</a>
+        </div>
+      </div>`).join('');
+  }catch(e){ const el=document.getElementById('serverFileList'); if(el) el.innerHTML='<div style="font-size:12px;color:var(--red);">Could not reach server.</div>'; }
 }
 
 function toBase64(file){
@@ -1524,6 +1553,17 @@ function renderCsSent(){
 
 function deleteCsSent(i){ csSentHistory.splice(i,1); save('csSentHistory',csSentHistory); renderCsSent(); toast('Deleted','err'); }
 
+
+async function clearNewsCache(){
+  const el = document.getElementById('cacheClearMsg');
+  if(el) el.textContent = 'Clearing...';
+  try{
+    const res = await fetch('https://ag-assistant-api.onrender.com/api/cache/clear');
+    const data = await res.json();
+    if(el) el.textContent = data.ok ? '✓ Done — news will refresh on next page load' : '✗ Failed';
+    setTimeout(()=>{ if(el) el.textContent=''; }, 4000);
+  }catch(e){ if(el) el.textContent='✗ Server unreachable'; }
+}
 /* ═══ ESC ═══ */
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); document.getElementById('subItemOverlay').classList.remove('open'); } });
 

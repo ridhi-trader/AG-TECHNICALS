@@ -137,7 +137,8 @@ Use actual prices. Make headlines specific and realistic."""
 async def market_data():
     global _market_cache
     now = time.time()
-    if _market_cache["data"] and (now - _market_cache["ts"]) < CACHE_TTL:
+    cache_ttl = _market_cache.get("ttl", CACHE_TTL)
+    if _market_cache["data"] and (now - _market_cache["ts"]) < cache_ttl:
         return _market_cache["data"]
     prices = await fetch_prices()
     news_ai = await fetch_news_ai(prices)
@@ -169,7 +170,9 @@ async def market_data():
         },
         "cached_at": int(now),
     }
-    _market_cache = {"data": result, "ts": now}
+    # Short TTL if news AI failed — retry sooner
+    has_news = bool(news_ai and news_ai.get("latest"))
+    _market_cache = {"data": result, "ts": now, "ttl": CACHE_TTL if has_news else 600}
     return result
 
 # ── FILE UPLOAD SYSTEM ─────────────────────────────────────────────────────────
@@ -262,6 +265,13 @@ async def chat(req: ChatReq):
         )
     reply = r.json().get("content", [{}])[0].get("text", "Sorry, please try again.")
     return {"reply": reply}
+
+@app.get("/api/cache/clear")
+async def clear_cache():
+    """Force refresh market data cache"""
+    global _market_cache
+    _market_cache = {"data": None, "ts": 0}
+    return {"ok": True, "msg": "Cache cleared — next request will fetch fresh data"}
 
 @app.get("/")
 @app.head("/")

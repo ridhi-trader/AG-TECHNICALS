@@ -442,6 +442,30 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   setInterval(tick, 5000);
 })();
 </script>
+
+<script>
+/* ── LIVE MARKET DATA AUTO-UPDATE ── */
+(function(){
+  const API = 'https://ag-assistant-api.onrender.com/api/market-data';
+  async function refresh(){
+    try{
+      const res = await fetch(API, {signal: AbortSignal.timeout(15000)});
+      if(!res.ok) return;
+      const data = await res.json();
+      if(!data.ticker || !data.ticker.length) return;
+      const track = document.getElementById('tickerTrack');
+      if(!track) return;
+      // Build pills matching index.html style
+      const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',default:'ti'};
+      const pills = data.ticker.map(t=>'<span class="ti '+(typeClass[t.type]||'ti')+'"><b>'+t.text+'</b></span>').join('');
+      track.innerHTML = pills + pills;
+    } catch(e){}
+  }
+  refresh();
+  setInterval(refresh, 5 * 60 * 1000);
+})();
+</script>
+
 <script src="ag-assistant.js"></script>
 </body>
 </html>

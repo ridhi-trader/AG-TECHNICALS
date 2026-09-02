@@ -223,7 +223,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="modal-tag" id="modalTag">Service</div>
     <div class="modal-title" id="modalTitle">Title</div>
     <div class="modal-desc" id="modalDesc">Description</div>
-    <div id="modalCodeWrap" style="display:none;margin-bottom:16px;">
+    <div id="modalCodeWrap" style="display:none !important;margin-bottom:16px;">
       <div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">How It Works — Integration</div>
       <pre style="background:#0a090e;border:1px solid #2a2736;border-radius:8px;padding:14px;font-size:11px;color:#8affc1;overflow-x:auto;line-height:1.7;font-family:'JetBrains Mono',monospace;" id="modalCodeBlock"></pre>
     </div>
@@ -556,22 +556,10 @@ document.getElementById('tickerTrack').innerHTML = pills+pills; // duplicate for
 
 /* ── PRODUCTS ── */
 const visProds = products.filter(p=>!p.hidden);
-const BRIDGE_CODE = `from bridge_module import bridge_router, add_strategy, add_license, subscribe
 
-# 1. Register your strategy (TV webhook fires here)
-add_strategy("mystrategy", secret="your-secret", name="AG SMC")
-
-# 2. Register a user license (30 days)
-add_license("LIC-0001", days=30)
-
-# 3. Subscribe license to strategy
-subscribe("LIC-0001", "mystrategy")
-
-# TradingView webhook → POST /master/mystrategy
-# MT5 EA polls  → GET  /api/pull/LIC-0001`;
 
 document.getElementById('prodGrid').innerHTML = visProds.map(p=>{
-  const isBridge = p.id === 'bridge';
+  const isBridge = false; // bridge now page-only, no code snippet
   const hasItems = (p.items||[]).filter(it=>!it.hidden).length > 0;
   let onclick;
   if(hasItems){
@@ -845,7 +833,7 @@ document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.k
 
   // Load immediately + refresh every 15 min
   loadMarketData();
-  setInterval(loadMarketData, 15 * 60 * 1000);
+  setInterval(loadMarketData, 5 * 60 * 1000);
 })();
 
 </script>

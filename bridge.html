@@ -111,10 +111,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 
 <div class="hero">
   <div class="hero-badge"><span class="live-dot"></span> TradingView to MT5 · Live</div>
-  <h1>Your Strategy,<br><span>Auto-Traded</span> On MT5</h1>
-  <p>AG Bridge carries your TradingView signals straight to MetaTrader 5. Set up once — trades execute automatically, around the clock.</p>
+  <h1>TV To <span>MT5</span></h1>
+  <p>Professionalism Comes From Knowledge. Set up once — your TradingView signals execute automatically on MT5, around the clock.</p>
   <div class="hero-cta">
-    <a href="https://wa.me/919876543210?text=Hi!+I%27m+interested+in+AG+Bridge+(TV+to+MT5)" target="_blank" class="btn-gold">💬 Get Bridge Access</a>
+    <a href="bridge-guide.html" class="btn-gold">📋 View Setup Guide</a>
     <a href="index.html#contact" class="btn-out">Contact Us</a>
   </div>
 </div>
@@ -178,40 +178,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     <div class="feat"><div class="feat-icon">🎚️</div><div class="feat-title">You Stay In Control</div><div class="feat-desc">Turn auto-trading on or off anytime. Choose your own risk settings.</div></div>
     <div class="feat"><div class="feat-icon">📡</div><div class="feat-title">Any TV Strategy</div><div class="feat-desc">Works with any TradingView Pine Script strategy that sends alerts.</div></div>
     <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Multi-Symbol</div><div class="feat-desc">Trade Gold, Forex, Crypto, Indices — any symbol available on your MT5 broker.</div></div>
-  </div>
-
-  <!-- ENDPOINTS -->
-  <div class="sec-eyebrow">API Endpoints</div>
-  <div class="sec-title">Bridge <span>Integration</span></div>
-  <div class="endpoints">
-    <div class="endpoint">
-      <span class="ep-method post">POST</span>
-      <div>
-        <div class="ep-path">/master/{strategy_id}</div>
-        <div class="ep-desc">TradingView webhook URL. Send your alert here with secret, action, symbol, and price.</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <span class="ep-method get">GET</span>
-      <div>
-        <div class="ep-path">/api/pull/{license_id}</div>
-        <div class="ep-desc">MT5 EA polls this endpoint every few seconds to pick up queued signals.</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <span class="ep-method get">GET</span>
-      <div>
-        <div class="ep-path">/api/bridge/status</div>
-        <div class="ep-desc">Check bridge server status and uptime.</div>
-      </div>
-    </div>
-    <div class="endpoint">
-      <span class="ep-method get">GET</span>
-      <div>
-        <div class="ep-path">/download/ea</div>
-        <div class="ep-desc">Download the MT5 EA file (requires valid license).</div>
-      </div>
-    </div>
   </div>
 
   <!-- GUIDE LINK -->

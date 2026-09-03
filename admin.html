@@ -116,7 +116,7 @@ select.inp{cursor:pointer;}
 .pw-hint{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.5;}
 </style>
 </head>
-<body>
+<body style="visibility:hidden;">
 
 <div id="loginWall" style="position:fixed;inset:0;background:#0d0d0f;z-index:9999;display:flex;align-items:center;justify-content:center;">
   <div style="background:#141318;border:1px solid #2a2736;border-radius:20px;padding:48px 40px;width:100%;max-width:380px;text-align:center;">
@@ -125,28 +125,106 @@ select.inp{cursor:pointer;}
     <div style="font-size:13px;color:#a0a0b8;margin-bottom:32px;">Admin Panel — Authorised Access Only</div>
     <input type="password" id="loginInp" placeholder="Enter Password" onkeydown="if(event.key==='Enter')checkLogin()" style="width:100%;background:#0d0d0f;border:1px solid #2a2736;border-radius:10px;padding:13px 16px;color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:'Inter',sans-serif;" autocomplete="current-password">
     <div id="loginErr" style="font-size:12px;color:#f26d6d;min-height:18px;margin-bottom:12px;"></div>
-    <button onclick="checkLogin()" style="width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;">Enter Admin</button>
+    <button onclick="checkLogin()" style="width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-bottom:10px;">Enter Admin</button>
+    <button id="bioBtn" onclick="tryBioLogin()" style="display:none;width:100%;background:rgba(232,184,75,0.08);border:1px solid rgba(232,184,75,0.25);color:#e8b84b;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;">🪪 Use Biometric / Fingerprint</button>
   </div>
 </div>
 <script>
 (function(){
+  const PASS = 'ridhima2307';
+  const wall = document.getElementById('loginWall');
+
+  function unlock(){
+    sessionStorage.setItem('ag_auth','ok');
+    wall.style.display='none';
+    document.body.style.visibility='visible';
+  }
+
   function checkLogin(){
     var v=document.getElementById('loginInp').value;
-    if(v==='ridhima2307'){
-      sessionStorage.setItem('ag_auth','ok');
-      document.getElementById('loginWall').style.display='none';
-    } else {
+    if(v===PASS){ unlock(); }
+    else {
       var e=document.getElementById('loginErr');
-      e.textContent='Wrong password.';
+      e.textContent='Wrong password. Try again.';
+      document.getElementById('loginInp').value='';
       setTimeout(function(){e.textContent='';},2500);
     }
   }
   window.checkLogin=checkLogin;
-  if(sessionStorage.getItem('ag_auth')!=='ok'){
-    document.getElementById('loginWall').style.display='flex';
-  } else {
-    document.getElementById('loginWall').style.display='none';
+
+  // Biometric via WebAuthn (fingerprint / face ID)
+  async function tryBiometric(){
+    try {
+      const cred = localStorage.getItem('ag_biometric_id');
+      if(!cred) return false;
+      const challenge = new Uint8Array(32);
+      crypto.getRandomValues(challenge);
+      await navigator.credentials.get({
+        publicKey:{
+          challenge,
+          timeout:30000,
+          allowCredentials:[{id:Uint8Array.from(atob(cred),c=>c.charCodeAt(0)),type:'public-key'}],
+          userVerification:'required'
+        }
+      });
+      return true;
+    } catch(e){ return false; }
   }
+
+  async function registerBiometric(){
+    try {
+      const challenge = new Uint8Array(32);
+      crypto.getRandomValues(challenge);
+      const cred = await navigator.credentials.create({
+        publicKey:{
+          challenge,
+          rp:{name:'AG Technicals Admin'},
+          user:{id:new Uint8Array(16),name:'admin',displayName:'AG Admin'},
+          pubKeyCredParams:[{alg:-7,type:'public-key'},{alg:-257,type:'public-key'}],
+          timeout:30000,
+          authenticatorSelection:{userVerification:'required'},
+          attestation:'none'
+        }
+      });
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+      localStorage.setItem('ag_biometric_id', b64);
+      return true;
+    } catch(e){ return false; }
+  }
+
+  window.setupBiometric = async function(){
+    const btn = document.getElementById('bioSetupBtn');
+    if(btn) btn.textContent = 'Setting up...';
+    const ok = await registerBiometric();
+    if(btn) btn.textContent = ok ? '✅ Biometric Registered!' : '❌ Failed — Use Password';
+  };
+
+  // On load
+  async function init(){
+    if(sessionStorage.getItem('ag_auth')==='ok'){
+      wall.style.display='none';
+      document.body.style.visibility='visible';
+      return;
+    }
+    // Try biometric first if registered
+    if(localStorage.getItem('ag_biometric_id')){
+      const bio = document.getElementById('bioBtn');
+      if(bio) bio.style.display='inline-block';
+    }
+    wall.style.display='flex';
+    document.body.style.visibility='visible';
+  }
+
+  window.tryBioLogin = async function(){
+    const e = document.getElementById('loginErr');
+    e.style.color='#e8b84b';
+    e.textContent='Verifying biometric...';
+    const ok = await tryBiometric();
+    if(ok){ e.textContent=''; unlock(); }
+    else { e.style.color='#f26d6d'; e.textContent='Biometric failed — use password.'; }
+  };
+
+  init();
 })();
 </script>
 
@@ -686,6 +764,12 @@ select.inp{cursor:pointer;}
     <div class="page" id="page-password">
       <div class="page-tag">Settings</div>
       <div class="page-title">Change <span class="hl">Password</span></div>
+      <div class="add-form" style="margin-bottom:20px;">
+        <div class="card-title">🪪 Biometric / Fingerprint Login</div>
+        <div class="card-sub" style="margin-bottom:12px;">Register your device fingerprint or face ID — login without typing password next time. Works on phones and laptops with biometric support.</div>
+        <button class="btn-gold" id="bioSetupBtn" onclick="setupBiometric()">Set Up Biometric Login</button>
+        <div class="card-sub" style="margin-top:8px;">Note: Biometric is device-specific. Register separately on each device you use.</div>
+      </div>
       <div class="page-sub">Currently No Password Set. Set One Below.</div>
       <div class="card">
         <div class="field"><label class="label">New Password</label><input class="inp" id="pwNew" type="password" placeholder="New Password (Min 8 Chars)"><div class="pw-hint">Note: Password Is Stored In This HTML File. After Setting, Export And Push To GitHub.</div></div>

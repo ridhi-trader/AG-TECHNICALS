@@ -528,15 +528,18 @@ function load(key, fallback){ try{ const v=localStorage.getItem('ag_'+key); retu
 
 const hero     = load('hero',     D.hero);
 const ticker   = load('ticker',   D.ticker);
-// ── FORCE FIX BEFORE LOAD: Fix Guide/Education stored as modal ──
+// ── FORCE FIX BEFORE LOAD ──
 (function(){
   try{
     const stored = JSON.parse(localStorage.getItem('ag_products')||'null');
     if(!stored) return;
     let changed = false;
     stored.forEach(p => {
-      if(p.id==='guide'){ p.type='page'; p.url='guide.html'; p.cta='Open Guides →'; p.fileUrl=''; p.fileName=''; changed=true; }
-      if(p.id==='education'){ p.type='page'; p.url='education.html'; p.cta='Open Courses →'; changed=true; }
+      if(p.id==='guide'){    p.type='page'; p.url='guide.html';      p.cta='Open Guides →';   p.fileUrl=''; p.fileName=''; p.hidden=false; changed=true; }
+      if(p.id==='education'){p.type='page'; p.url='education.html';  p.cta='Open Courses →';  p.hidden=false; changed=true; }
+      if(p.id==='bridge'){   p.type='page'; p.url='bridge.html';     p.cta='Get Bridge Access →'; p.hidden=false; changed=true; }
+      if(p.id==='algo'){     p.type='page'; p.url='algo.html';       p.hidden=false; changed=true; }
+      if(p.id==='tv-indicators'||p.id==='indicator'){p.type='page';  p.url='tv-indicators.html'; p.hidden=false; changed=true; }
     });
     if(changed) localStorage.setItem('ag_products', JSON.stringify(stored));
   }catch(e){}

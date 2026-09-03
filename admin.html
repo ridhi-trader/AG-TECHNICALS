@@ -699,7 +699,13 @@ function renderProds(){
       <div class="prod-row-icon">${p.img?`<img src="${p.img}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;">`:p.icon}</div>
       <div class="prod-row-info" style="flex:1;">
         <div class="prod-row-name">${p.name}<span class="prod-row-badge ${p.hidden?'badge-hidden':'badge-live'}">${p.hidden?'HIDDEN':'LIVE'}</span><span class="prod-row-badge ${p.type==='page'?'badge-page':'badge-modal'}">${p.type.toUpperCase()}</span></div>
-        <div class="prod-row-sub">${p.sub} ${p.url?'→ '+p.url:''} ${items.length?'· '+items.length+' sub-items':''}</div>
+        <div class="prod-row-sub" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span>${p.sub}</span>
+          ${p.url?'<span style="color:var(--bd);">·</span><span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--g5);">→ '+p.url+'</span>':''}
+          ${items.length?'<span style="background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.2);color:var(--g5);font-size:10px;font-weight:700;padding:1px 7px;border-radius:4px;">'+items.length+' items</span>':'<span style="background:var(--c3);border:1px solid var(--bd);color:var(--t3);font-size:10px;padding:1px 7px;border-radius:4px;">0 items</span>'}
+          ${p.fileUrl?'<span style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);font-size:10px;padding:1px 7px;border-radius:4px;">📎 file</span>':''}
+          ${p.img?'<span style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);color:#a78bfa;font-size:10px;padding:1px 7px;border-radius:4px;">🖼️ image</span>':''}
+        </div>
         ${itemsHtml}
       </div>
       <div class="btns" style="flex-shrink:0;align-self:flex-start;">

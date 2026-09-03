@@ -213,6 +213,7 @@ select.inp{cursor:pointer;}
         <div class="ph-title">Products <span>&amp;</span> Services</div>
         <div class="ph-sub">Manage all products shown on the site. Click Edit to change details, image, file, or sub-items.</div>
       </div>
+      <div id="prodSummary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;"></div>
       <div id="prodList"></div>
       <button class="btn-gold" onclick="openAddProd()">+ Add New Product</button>
     </div>
@@ -680,6 +681,20 @@ let _peTab = 'page';
 
 function renderProds(){
   const el=document.getElementById('prodList'); if(!el) return;
+  // Summary stats
+  const sum=document.getElementById('prodSummary');
+  if(sum){
+    const total=products.length;
+    const live=products.filter(p=>!p.hidden).length;
+    const totalItems=products.reduce((a,p)=>a+(p.items||[]).length,0);
+    const withFile=products.filter(p=>p.fileUrl).length;
+    sum.innerHTML=[
+      {v:total,l:'Total Products',c:'#fff'},
+      {v:live,l:'Live / Visible',c:'var(--green)'},
+      {v:totalItems,l:'Total Sub-Items',c:'var(--g5)'},
+      {v:withFile,l:'With File Attached',c:'#a78bfa'},
+    ].map(s=>`<div class="stat"><div class="stat-val" style="color:${s.c};font-size:22px;">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
+  }
   if(!products.length){el.innerHTML='<div class="empty">No products. Add one below.</div>';return;}
   el.innerHTML = products.map((p,i)=>{
     const items = (p.items||[]);

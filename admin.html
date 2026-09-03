@@ -2,1702 +2,1041 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AG Admin Panel</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AG Technicals — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --dark:#0d0d0f;--d2:#111013;--card:#17151c;--card2:#1e1b26;
-  --g5:#e8b84b;--g4:#c9960c;--border:#2a2736;
-  --t1:#ffffff;--t2:#e0dce8;--t3:#b0acbf;--red:#f26d6d;--green:#5fcf94;
+  --bg:#0d0d0f; --c1:#121116; --c2:#181620; --c3:#1f1d28;
+  --g5:#e8b84b; --g4:#c9960c; --g1:rgba(232,184,75,0.08);
+  --t1:#ffffff; --t2:#c8c4d0; --t3:#7e7a90;
+  --bd:rgba(255,255,255,0.07); --red:#f26d6d; --green:#4ade80;
+  --r:10px; --r2:14px;
 }
-html{scroll-behavior:smooth;}
-body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);min-height:100vh;overflow-x:hidden;}
-/* LAYOUT */
-.layout{display:flex;min-height:100vh;}
-/* SIDEBAR */
-.sidebar{width:220px;flex-shrink:0;background:var(--d2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
-.sb-logo{padding:20px;border-bottom:1px solid var(--border);}
-.sb-logo-text{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:var(--g5);}
-.sb-logo-sub{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
-.sb-nav{flex:1;padding:12px 8px;overflow-y:auto;}
-.sb-section{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;padding:0 10px;margin:14px 0 5px;}
-.sb-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;text-align:left;margin-bottom:1px;}
-.sb-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
-.sb-item.active{background:rgba(232,184,75,0.12);color:var(--g5);font-weight:600;}
-.sb-bottom{padding:12px;border-top:1px solid var(--border);}
-.sb-logout{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--t3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;width:100%;}
-.sb-logout:hover{background:rgba(242,109,109,0.1);color:var(--red);}
-/* MAIN */
-.main{flex:1;padding:28px 32px;overflow-y:auto;max-width:980px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;visibility:hidden;}
+button,input,textarea,select{font-family:inherit;}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--c1);border-right:1px solid var(--bd);padding:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-logo{padding:20px 16px 12px;border-bottom:1px solid var(--bd);}
+.sb-logo-text{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:var(--g5);letter-spacing:.5px;}
+.sb-logo-sub{font-size:10px;color:var(--t3);margin-top:2px;}
+.sb-nav{padding:10px 8px;flex:1;}
+.sb-group{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--t3);padding:14px 8px 6px;text-transform:uppercase;}
+.sb-btn{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--t2);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;transition:all .15s;}
+.sb-btn:hover{background:rgba(255,255,255,.05);color:#fff;}
+.sb-btn.active{background:var(--g1);color:var(--g5);font-weight:700;}
+.sb-btn .sb-icon{font-size:14px;flex-shrink:0;}
+.sb-foot{padding:10px 8px;border-top:1px solid var(--bd);}
+.sb-logout{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-size:12px;color:var(--t3);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;transition:all .15s;}
+.sb-logout:hover{color:var(--red);background:rgba(242,109,109,.08);}
+
+/* ── MAIN ── */
+.main{padding:32px 36px;min-height:100vh;}
 .page{display:none;}
 .page.active{display:block;}
-/* TYPOGRAPHY */
-.page-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
-.page-title{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
-.page-sub{font-size:13px;color:var(--t3);margin-top:3px;margin-bottom:20px;}
-.hl{color:var(--g5);font-weight:700;}
-/* TOAST */
-#toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--card2);border:1px solid rgba(95,207,148,0.4);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--green);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);pointer-events:none;}
-#toast.show{transform:translateY(0);opacity:1;}
-#toast.err{border-color:rgba(242,109,109,0.4);color:var(--red);}
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
-.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
-.stat-val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--g5);margin-bottom:3px;}
+
+/* ── PAGE HEADER ── */
+.ph{margin-bottom:28px;}
+.ph-tag{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:6px;}
+.ph-title{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:#fff;}
+.ph-title span{color:var(--g5);}
+.ph-sub{font-size:13px;color:var(--t3);margin-top:4px;}
+
+/* ── STAT BOXES ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r2);padding:18px 20px;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;margin-bottom:4px;}
 .stat-label{font-size:11px;color:var(--t3);}
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;}
-.card-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
-.card-sub{font-size:12px;color:var(--t3);margin-bottom:14px;}
-/* ADD FORM */
-.add-form{background:var(--card);border:1px solid rgba(232,184,75,0.12);border-radius:14px;padding:18px;margin-bottom:16px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 80px;gap:10px;}
-/* FORM */
+
+/* ── CARDS ── */
+.card{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r2);padding:20px 22px;margin-bottom:16px;}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.card-sub{font-size:12px;color:var(--t3);line-height:1.6;}
+.card-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);}
+.card-row:last-child{border-bottom:none;}
+
+/* ── FORM ── */
+.form-box{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r2);padding:20px 22px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 .field{margin-bottom:12px;}
-.label{display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
-.inp{width:100%;background:#0c0b10;border:1px solid var(--border);color:#fff;padding:10px 13px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;}
-.inp:focus{border-color:var(--g5);}
-.inp::placeholder{color:#5a5570;}
-textarea.inp{resize:vertical;min-height:75px;line-height:1.6;}
+.label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.inp{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;color:#fff;font-size:13px;outline:none;transition:border-color .15s;}
+.inp:focus{border-color:rgba(232,184,75,.5);}
+textarea.inp{min-height:70px;resize:vertical;}
 select.inp{cursor:pointer;}
-/* BUTTONS */
-.btn-gold{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;box-shadow:0 3px 12px rgba(232,184,75,0.3);}
-.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,75,0.45);}
-.btn-out{background:transparent;color:var(--t2);border:1px solid var(--border);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+
+/* ── BUTTONS ── */
+.btn-gold{background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:opacity .15s;}
+.btn-gold:hover{opacity:.88;}
+.btn-out{background:transparent;border:1px solid var(--bd);color:var(--t2);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
 .btn-out:hover{border-color:var(--g5);color:var(--g5);}
-.btn-icon{background:transparent;border:none;cursor:pointer;padding:5px 7px;border-radius:6px;font-size:15px;transition:background 0.15s;line-height:1;}
-.btn-icon:hover{background:rgba(255,255,255,0.08);}
-/* ITEM ROWS */
-.item-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:11px;margin-bottom:7px;transition:border-color 0.15s;}
-.item-row:hover{border-color:rgba(232,184,75,0.2);}
-.item-row.hidden-item{opacity:0.4;}
-.item-icon{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
-.item-info{flex:1;min-width:0;}
-.item-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.item-sub{font-size:11px;color:var(--t3);margin-top:2px;}
-.item-actions{display:flex;align-items:center;gap:3px;flex-shrink:0;}
-.badge-live{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
-.badge-hidden{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;}
-/* OVERLAY */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(4px);}
-.overlay.open{opacity:1;pointer-events:all;}
-.editor-box{background:#18151f;border:1px solid rgba(232,184,75,0.2);border-radius:16px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;transform:scale(0.95);transition:transform 0.2s;box-shadow:0 0 60px rgba(201,150,12,0.1),0 24px 60px rgba(0,0,0,0.7);}
-.overlay.open .editor-box{transform:scale(1);}
-.ed-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.ed-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;color:#fff;}
-.ed-close{background:transparent;border:none;color:var(--t3);font-size:20px;cursor:pointer;transition:color 0.15s;line-height:1;}
-.ed-close:hover{color:#fff;}
-.link-toggle{display:flex;gap:6px;margin-bottom:8px;}
-.link-opt{flex:1;padding:8px;border-radius:7px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;transition:all 0.15s;background:transparent;font-family:'Inter',sans-serif;text-align:center;}
-.link-opt.active{background:rgba(232,184,75,0.1);border-color:rgba(232,184,75,0.4);color:var(--g5);}
-.preview-box{background:#0a090e;border:1px solid var(--border);border-radius:9px;padding:14px;margin-top:10px;}
-.prev-tag{font-size:10px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.prev-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:#fff;margin-bottom:5px;}
-/* USERS TABLE */
-.tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.8px;padding:9px 13px;text-align:left;border-bottom:1px solid var(--border);}
-.tbl td{padding:11px 13px;font-size:13px;color:var(--t2);border-bottom:1px solid rgba(42,39,54,0.5);vertical-align:middle;}
-.tbl tr:hover td{background:rgba(255,255,255,0.02);}
-.tbl td:first-child{color:#fff;font-weight:600;}
-.ptag{display:inline-block;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.22);color:var(--g5);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;margin:1px;}
-.stag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;}
-.s-active{background:rgba(95,207,148,0.1);border:1px solid rgba(95,207,148,0.3);color:var(--green);}
-.s-expired{background:rgba(242,109,109,0.1);border:1px solid rgba(242,109,109,0.3);color:var(--red);}
-.pcheck-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
-.pcheck-item{display:flex;align-items:center;gap:5px;background:#0c0b10;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;}
-.pcheck-item input{accent-color:var(--g5);}
-.pcheck-item label{font-size:12px;color:var(--t2);cursor:pointer;}
-/* EXPORT */
-.exp-code{width:100%;background:#0a090e;border:1px solid var(--border);color:#c8c4d0;padding:14px;border-radius:9px;font-family:'JetBrains Mono',monospace;font-size:12px;min-height:240px;resize:vertical;outline:none;line-height:1.7;}
-/* PW */
-.pw-hint{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.5;}
+.btn-danger{background:rgba(242,109,109,.1);border:1px solid rgba(242,109,109,.2);color:var(--red);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;transition:all .15s;}
+.btn-danger:hover{background:rgba(242,109,109,.2);}
+.btn-icon{background:transparent;border:none;cursor:pointer;padding:6px;border-radius:6px;font-size:14px;transition:background .15s;}
+.btn-icon:hover{background:rgba(255,255,255,.06);}
+.btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* ── PRODUCT ROWS ── */
+.prod-row{background:var(--c2);border:1px solid var(--bd);border-radius:var(--r2);padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;transition:border-color .15s;}
+.prod-row:hover{border-color:rgba(232,184,75,.2);}
+.prod-row-icon{font-size:22px;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--g1);border-radius:8px;border:1px solid rgba(232,184,75,.15);}
+.prod-row-info{flex:1;}
+.prod-row-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px;}
+.prod-row-sub{font-size:11px;color:var(--t3);}
+.prod-row-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid;margin-left:6px;}
+.badge-live{color:var(--green);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.08);}
+.badge-hidden{color:var(--t3);border-color:var(--bd);background:var(--c3);}
+.badge-page{color:var(--g5);border-color:rgba(232,184,75,.3);background:var(--g1);}
+.badge-modal{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08);}
+
+/* ── SUB-ITEMS ── */
+.sub-items-wrap{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);}
+.sub-item-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;border:1px solid var(--bd);}
+.sub-item-name{flex:1;font-size:12px;color:var(--t2);}
+.sub-item-badge{font-size:10px;color:var(--g5);font-family:'JetBrains Mono',monospace;}
+
+/* ── OVERLAY ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;overflow-y:auto;padding:40px 16px;}
+.overlay.open{display:flex;align-items:flex-start;justify-content:center;}
+.modal{background:var(--c1);border:1px solid var(--bd);border-radius:20px;width:100%;max-width:580px;padding:28px;}
+.modal-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{background:transparent;border:none;color:var(--t3);font-size:20px;cursor:pointer;transition:color .15s;}
+.modal-close:hover{color:#fff;}
+
+/* ── FILE INPUT ── */
+.file-inp{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;color:var(--t2);font-size:12px;width:100%;cursor:pointer;}
+.file-status{font-size:11px;margin-top:5px;min-height:16px;color:var(--t3);}
+
+/* ── TYPE TABS ── */
+.type-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.type-tab{flex:1;padding:8px;border:1px solid var(--bd);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--t3);text-align:center;transition:all .15s;}
+.type-tab.active{background:var(--g1);border-color:rgba(232,184,75,.4);color:var(--g5);}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;pointer-events:none;}
+.toast-msg{background:#1c1824;border:1px solid var(--bd);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:600;color:#fff;margin-top:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:toastIn .25s ease;display:flex;align-items:center;gap:8px;}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── USER PILL ── */
+.user-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--c2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:600;color:#fff;}
+.user-meta{font-size:11px;color:var(--t3);}
+.product-chip{display:inline-block;background:var(--g1);border:1px solid rgba(232,184,75,.2);color:var(--g5);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin:2px;}
+
+/* ── MISC ── */
+.divider{border:none;border-top:1px solid var(--bd);margin:20px 0;}
+.hl{color:var(--g5);}
+.tag-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--t2);margin:3px;}
+.bar-wrap{background:var(--c3);border-radius:4px;height:6px;flex:1;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:var(--g5);transition:width .4s;}
+.empty{text-align:center;padding:40px;color:var(--t3);font-size:13px;}
+.warn{color:var(--red);font-size:12px;margin-top:4px;}
+.ok{color:var(--green);font-size:12px;margin-top:4px;}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .main{padding:20px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .g2,.g3{grid-template-columns:1fr;}
+}
 </style>
 </head>
-<body style="visibility:hidden;">
+<body>
 
-<div id="loginWall" style="position:fixed;inset:0;background:#0d0d0f;z-index:9999;display:flex;align-items:center;justify-content:center;">
-  <div style="background:#141318;border:1px solid #2a2736;border-radius:20px;padding:48px 40px;width:100%;max-width:380px;text-align:center;">
-    <div style="font-size:32px;margin-bottom:16px;">🔐</div>
-    <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;">AG Technicals</div>
-    <div style="font-size:13px;color:#a0a0b8;margin-bottom:32px;">Admin Panel — Authorised Access Only</div>
-    <input type="password" id="loginInp" placeholder="Enter Password" onkeydown="if(event.key==='Enter')checkLogin()" style="width:100%;background:#0d0d0f;border:1px solid #2a2736;border-radius:10px;padding:13px 16px;color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:'Inter',sans-serif;" autocomplete="current-password">
-    <div id="loginErr" style="font-size:12px;color:#f26d6d;min-height:18px;margin-bottom:12px;"></div>
-    <button onclick="checkLogin()" style="width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;margin-bottom:10px;">Enter Admin</button>
-    <button id="bioBtn" onclick="tryBioLogin()" style="display:none;width:100%;background:rgba(232,184,75,0.08);border:1px solid rgba(232,184,75,0.25);color:#e8b84b;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;">🪪 Use Biometric / Fingerprint</button>
+<!-- LOGIN WALL -->
+<div id="loginWall" style="position:fixed;inset:0;background:var(--bg,#0d0d0f);z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#141318;border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:48px 40px;width:100%;max-width:380px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:14px;">🔐</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;">AG Technicals</div>
+    <div style="font-size:12px;color:#7e7a90;margin-bottom:28px;">Admin Panel — Authorised Only</div>
+    <input type="password" id="loginInp" placeholder="Enter Password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()"
+      style="width:100%;background:#0d0d0f;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 16px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;font-family:'Inter',sans-serif;">
+    <div id="loginErr" style="font-size:12px;color:#f26d6d;min-height:16px;margin-bottom:10px;"></div>
+    <button onclick="doLogin()" style="width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;">Enter Admin</button>
+    <button id="bioBtn" onclick="doBioLogin()" style="display:none;width:100%;background:rgba(232,184,75,.08);border:1px solid rgba(232,184,75,.2);color:#e8b84b;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;">🪪 Use Biometric</button>
   </div>
 </div>
-<script>
-(function(){
-  const PASS = 'ridhima2307';
-  const wall = document.getElementById('loginWall');
-
-  function unlock(){
-    sessionStorage.setItem('ag_auth','ok');
-    wall.style.display='none';
-    document.body.style.visibility='visible';
-  }
-
-  function checkLogin(){
-    var v=document.getElementById('loginInp').value;
-    if(v===PASS){ unlock(); }
-    else {
-      var e=document.getElementById('loginErr');
-      e.textContent='Wrong password. Try again.';
-      document.getElementById('loginInp').value='';
-      setTimeout(function(){e.textContent='';},2500);
-    }
-  }
-  window.checkLogin=checkLogin;
-
-  // Biometric via WebAuthn (fingerprint / face ID)
-  async function tryBiometric(){
-    try {
-      const cred = localStorage.getItem('ag_biometric_id');
-      if(!cred) return false;
-      const challenge = new Uint8Array(32);
-      crypto.getRandomValues(challenge);
-      await navigator.credentials.get({
-        publicKey:{
-          challenge,
-          timeout:30000,
-          allowCredentials:[{id:Uint8Array.from(atob(cred),c=>c.charCodeAt(0)),type:'public-key'}],
-          userVerification:'required'
-        }
-      });
-      return true;
-    } catch(e){ return false; }
-  }
-
-  async function registerBiometric(){
-    try {
-      const challenge = new Uint8Array(32);
-      crypto.getRandomValues(challenge);
-      const cred = await navigator.credentials.create({
-        publicKey:{
-          challenge,
-          rp:{name:'AG Technicals Admin'},
-          user:{id:new Uint8Array(16),name:'admin',displayName:'AG Admin'},
-          pubKeyCredParams:[{alg:-7,type:'public-key'},{alg:-257,type:'public-key'}],
-          timeout:30000,
-          authenticatorSelection:{userVerification:'required'},
-          attestation:'none'
-        }
-      });
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
-      localStorage.setItem('ag_biometric_id', b64);
-      return true;
-    } catch(e){ return false; }
-  }
-
-  window.setupBiometric = async function(){
-    const btn = document.getElementById('bioSetupBtn');
-    if(btn) btn.textContent = 'Setting up...';
-    const ok = await registerBiometric();
-    if(btn) btn.textContent = ok ? '✅ Biometric Registered!' : '❌ Failed — Use Password';
-  };
-
-  // On load
-  async function init(){
-    if(sessionStorage.getItem('ag_auth')==='ok'){
-      wall.style.display='none';
-      document.body.style.visibility='visible';
-      return;
-    }
-    // Try biometric first if registered
-    if(localStorage.getItem('ag_biometric_id')){
-      const bio = document.getElementById('bioBtn');
-      if(bio) bio.style.display='inline-block';
-    }
-    wall.style.display='flex';
-    document.body.style.visibility='visible';
-  }
-
-  window.tryBioLogin = async function(){
-    const e = document.getElementById('loginErr');
-    e.style.color='#e8b84b';
-    e.textContent='Verifying biometric...';
-    const ok = await tryBiometric();
-    if(ok){ e.textContent=''; unlock(); }
-    else { e.style.color='#f26d6d'; e.textContent='Biometric failed — use password.'; }
-  };
-
-  init();
-})();
-</script>
 
 <div id="toast"></div>
 
-<!-- PRODUCT EDITOR -->
-<div class="overlay" id="prodOverlay">
-  <div class="editor-box">
-    <div class="ed-hdr">
-      <div class="ed-title" id="pedTitle">Edit Product</div>
-      <button class="ed-close" onclick="closeProdEd()">✕</button>
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-text">AG Technicals</div>
+      <div class="sb-logo-sub">Admin Panel</div>
     </div>
-    <div class="field"><label class="label">Name</label><input class="inp" id="peName"></div>
-    <div class="field"><label class="label">Icon</label><input class="inp" id="peIcon" style="width:80px;"></div>
-    <div class="field"><label class="label">Sub-Label</label><input class="inp" id="peSub"></div>
-    <div class="field"><label class="label">Modal Title</label><input class="inp" id="peTitle"></div>
-    <div class="field"><label class="label">Modal Description</label><textarea class="inp" id="peDesc"></textarea></div>
+    <nav class="sb-nav">
+      <div class="sb-group">Products</div>
+      <button class="sb-btn active" onclick="nav('products',this)"><span class="sb-icon">🎯</span>Products & Services</button>
+      <button class="sb-btn" onclick="nav('indicators',this)"><span class="sb-icon">📈</span>TV Indicators</button>
+
+      <div class="sb-group">Users</div>
+      <button class="sb-btn" onclick="nav('users',this)"><span class="sb-icon">👥</span>Users & Access</button>
+      <button class="sb-btn" onclick="nav('analytics',this)"><span class="sb-icon">📊</span>Analytics & Revenue</button>
+      <button class="sb-btn" onclick="nav('strategy',this)"><span class="sb-icon">⚙️</span>Custom Strategy Sender</button>
+
+      <div class="sb-group">Content</div>
+      <button class="sb-btn" onclick="nav('hero',this)"><span class="sb-icon">🏠</span>Hero Section</button>
+      <button class="sb-btn" onclick="nav('ticker',this)"><span class="sb-icon">📡</span>Ticker Strip</button>
+      <button class="sb-btn" onclick="nav('contact',this)"><span class="sb-icon">📞</span>Contact Links</button>
+      <button class="sb-btn" onclick="nav('about',this)"><span class="sb-icon">👤</span>About Us</button>
+      <button class="sb-btn" onclick="nav('faq',this)"><span class="sb-icon">❓</span>FAQ</button>
+      <button class="sb-btn" onclick="nav('newsed',this)"><span class="sb-icon">📰</span>News & Dossier</button>
+
+      <div class="sb-group">Files & System</div>
+      <button class="sb-btn" onclick="nav('uploads',this)"><span class="sb-icon">📁</span>File Uploads</button>
+      <button class="sb-btn" onclick="nav('export',this)"><span class="sb-icon">📦</span>Export / Backup</button>
+      <button class="sb-btn" onclick="nav('password',this)"><span class="sb-icon">🔐</span>Security</button>
+    </nav>
+    <div class="sb-foot">
+      <button class="sb-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ══ PRODUCTS ══ -->
+    <div class="page active" id="page-products">
+      <div class="ph">
+        <div class="ph-tag">Content Editor</div>
+        <div class="ph-title">Products <span>&amp;</span> Services</div>
+        <div class="ph-sub">Manage all products shown on the site. Click Edit to change details, image, file, or sub-items.</div>
+      </div>
+      <div id="prodList"></div>
+      <button class="btn-gold" onclick="openAddProd()">+ Add New Product</button>
+    </div>
+
+    <!-- ══ TV INDICATORS ══ -->
+    <div class="page" id="page-indicators">
+      <div class="ph">
+        <div class="ph-tag">TradingView Indicators</div>
+        <div class="ph-title">TV <span>Indicators</span></div>
+        <div class="ph-sub">Add, edit, hide or delete indicators shown on tv-indicators.html</div>
+      </div>
+      <div id="indStats" class="stats"></div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:14px;">+ Add New Indicator</div>
+        <div class="g2">
+          <div class="field"><label class="label">Indicator Name</label><input class="inp" id="indName" placeholder="e.g. AG SMC Indicator"></div>
+          <div class="field"><label class="label">PID (e.g. TVI-0006)</label><input class="inp" id="indPid" placeholder="TVI-0006"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="label">Image File Name</label><input class="inp" id="indImg" placeholder="img-smc.png"></div>
+          <div class="field"><label class="label">Badge (e.g. PREMIUM)</label><input class="inp" id="indBadge" placeholder="PREMIUM"></div>
+        </div>
+        <button class="btn-gold" onclick="addInd()">Add Indicator</button>
+      </div>
+      <div id="indList"></div>
+    </div>
+
+    <!-- ══ USERS ══ -->
+    <div class="page" id="page-users">
+      <div class="ph">
+        <div class="ph-tag">Access Management</div>
+        <div class="ph-title">Users <span>&amp;</span> Access</div>
+        <div class="ph-sub">Track users and assign product access.</div>
+      </div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:14px;">+ Add User</div>
+        <div class="g2">
+          <div class="field"><label class="label">Name</label><input class="inp" id="uName" placeholder="User Name"></div>
+          <div class="field"><label class="label">WhatsApp / Contact</label><input class="inp" id="uContact" placeholder="91XXXXXXXXXX"></div>
+        </div>
+        <div class="field"><label class="label">Products Purchased</label>
+          <div id="uProdPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
+        </div>
+        <div class="g2" style="margin-top:8px;">
+          <div class="field"><label class="label">Join Date</label><input class="inp" type="date" id="uDate"></div>
+          <div class="field"><label class="label">Status</label>
+            <select class="inp" id="uStatus"><option value="active">Active</option><option value="expired">Expired</option><option value="trial">Trial</option></select>
+          </div>
+        </div>
+        <button class="btn-gold" onclick="addUser()">Add User</button>
+      </div>
+      <div id="userList"></div>
+    </div>
+
+    <!-- ══ ANALYTICS ══ -->
+    <div class="page" id="page-analytics">
+      <div class="ph">
+        <div class="ph-tag">Business</div>
+        <div class="ph-title">Analytics <span>&amp; Revenue</span></div>
+        <div class="ph-sub">User count, product breakdown, 7-day revenue estimate.</div>
+      </div>
+      <div class="stats" id="analyticsStats"></div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:12px;">💰 Product Prices (For Revenue Estimate)</div>
+        <div id="priceFlds" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+        <div style="margin-top:12px;"><button class="btn-gold" onclick="savePrices()">Save Prices</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;">📦 Product — User Breakdown</div>
+        <div id="prodBreakdown"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;">📅 7-Day Activity</div>
+        <div id="sevenDay"></div>
+      </div>
+    </div>
+
+    <!-- ══ CUSTOM STRATEGY ══ -->
+    <div class="page" id="page-strategy">
+      <div class="ph">
+        <div class="ph-tag">Custom Strategy</div>
+        <div class="ph-title">Strategy <span>Sender</span></div>
+        <div class="ph-sub">Build and send a custom strategy to a user via WhatsApp or Telegram.</div>
+      </div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:14px;">📋 Strategy Details</div>
+        <div class="g2">
+          <div class="field"><label class="label">User Name</label><input class="inp" id="csName" placeholder="Rahul Sharma" oninput="previewMsg()"></div>
+          <div class="field"><label class="label">WhatsApp / Telegram</label><input class="inp" id="csContact" placeholder="919XXXXXXXXX or @handle"></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="label">Market / Instrument</label><input class="inp" id="csMarket" placeholder="XAUUSD, BTCUSD, NIFTY50" oninput="previewMsg()"></div>
+          <div class="field"><label class="label">Timeframe</label><input class="inp" id="csTf" placeholder="H1, H4, Daily" oninput="previewMsg()"></div>
+        </div>
+        <div class="field"><label class="label">Strategy Notes</label><textarea class="inp" id="csNotes" oninput="previewMsg()"></textarea></div>
+      </div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:10px;">📎 Attach File (Optional)</div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="file" class="file-inp" id="csFile">
+          <button class="btn-out" onclick="uploadCsFile()">Upload</button>
+        </div>
+        <div class="file-status" id="csFileStatus"></div>
+      </div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:10px;">📱 Message Preview</div>
+        <div id="csPreview" style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:14px;font-size:12px;color:var(--t2);font-family:'JetBrains Mono',monospace;white-space:pre-wrap;min-height:80px;"></div>
+      </div>
+      <div class="btns">
+        <button class="btn-gold" onclick="sendWa()">💬 Send via WhatsApp</button>
+        <button class="btn-out" onclick="sendTg()">✈️ Send via Telegram</button>
+        <button class="btn-out" onclick="copyMsg()">📋 Copy Message</button>
+      </div>
+      <hr class="divider">
+      <div class="card-title" style="margin-bottom:12px;">📜 Sent History</div>
+      <div id="csSent"></div>
+    </div>
+
+    <!-- ══ HERO ══ -->
+    <div class="page" id="page-hero">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">Hero <span>Section</span></div></div>
+      <div class="form-box">
+        <div class="g2">
+          <div class="field"><label class="label">Badge Text</label><input class="inp" id="heroBadge"></div>
+          <div class="field"><label class="label">Button Text</label><input class="inp" id="heroBtn"></div>
+        </div>
+        <div class="field"><label class="label">Headline (H1)</label><input class="inp" id="heroH1"></div>
+        <div class="field"><label class="label">Sub-text</label><textarea class="inp" id="heroSub"></textarea></div>
+        <div class="field"><label class="label">Background Video URL (optional)</label><input class="inp" id="heroVid" placeholder="https://..."></div>
+        <button class="btn-gold" onclick="saveHero()">Save Hero</button>
+      </div>
+    </div>
+
+    <!-- ══ TICKER ══ -->
+    <div class="page" id="page-ticker">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">Ticker <span>Strip</span></div></div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:14px;">+ Add Ticker Pill</div>
+        <div class="g3">
+          <div class="field"><label class="label">Text</label><input class="inp" id="tkText" placeholder="BTC: $68,200 ▲ 2.1%"></div>
+          <div class="field"><label class="label">Type / Color</label>
+            <select class="inp" id="tkType">
+              <option value="default">Default (White)</option>
+              <option value="gold">Gold</option>
+              <option value="jh">Blue</option>
+              <option value="cot">Purple</option>
+              <option value="dxy">Orange</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end;"><button class="btn-gold" onclick="addTicker()">Add Pill</button></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:12px;">Current Pills</div><div id="tickerList"></div></div>
+      <button class="btn-gold" onclick="saveTicker()">Save Ticker</button>
+    </div>
+
+    <!-- ══ CONTACT ══ -->
+    <div class="page" id="page-contact">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">Contact <span>Links</span></div></div>
+      <div class="form-box">
+        <div class="g2">
+          <div class="field"><label class="label">Platform Name</label><input class="inp" id="ctName" placeholder="WhatsApp"></div>
+          <div class="field"><label class="label">URL</label><input class="inp" id="ctUrl" placeholder="https://wa.me/91..."></div>
+        </div>
+        <div class="g2">
+          <div class="field"><label class="label">Icon (emoji)</label><input class="inp" id="ctIcon" placeholder="💬"></div>
+          <div class="field"><label class="label">Username / Handle</label><input class="inp" id="ctHandle" placeholder="@agtechnical"></div>
+        </div>
+        <button class="btn-gold" onclick="addContact()">Add Contact</button>
+      </div>
+      <div id="contactList"></div>
+      <div style="margin-top:12px;"><button class="btn-gold" onclick="saveContact()">Save All</button></div>
+    </div>
+
+    <!-- ══ ABOUT ══ -->
+    <div class="page" id="page-about">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">About <span>Us</span></div></div>
+      <div class="form-box">
+        <div class="field"><label class="label">Section Title</label><input class="inp" id="aboutTitle"></div>
+        <div class="field"><label class="label">Who We Are Text</label><textarea class="inp" id="aboutWho" style="min-height:100px;"></textarea></div>
+        <div class="g2">
+          <div class="field"><label class="label">Markets We Cover</label><input class="inp" id="aboutMarkets" placeholder="Forex, Crypto, Gold, Indices"></div>
+          <div class="field"><label class="label">Video URL (optional)</label><input class="inp" id="aboutVid" placeholder="https://..."></div>
+        </div>
+        <button class="btn-gold" onclick="saveAbout()">Save About</button>
+      </div>
+    </div>
+
+    <!-- ══ FAQ ══ -->
+    <div class="page" id="page-faq">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">FAQ</div></div>
+      <div class="form-box">
+        <div class="field"><label class="label">Question</label><input class="inp" id="faqQ" placeholder="What is..."></div>
+        <div class="field"><label class="label">Answer</label><textarea class="inp" id="faqA"></textarea></div>
+        <button class="btn-gold" onclick="addFaq()">Add FAQ</button>
+      </div>
+      <div id="faqList"></div>
+      <div style="margin-top:12px;"><button class="btn-gold" onclick="saveFaq()">Save FAQ</button></div>
+    </div>
+
+    <!-- ══ NEWS ══ -->
+    <div class="page" id="page-newsed">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">News <span>&amp; Dossier</span></div></div>
+      <div class="btns" style="margin-bottom:20px;">
+        <button class="btn-gold" onclick="clearNewsCache()">🔄 Force Refresh Live News</button>
+        <span id="newsCacheMsg" style="font-size:12px;color:var(--t3);"></span>
+      </div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:12px;">Dossier Card</div>
+        <div class="g2">
+          <div class="field"><label class="label">Dossier Title</label><input class="inp" id="ndTitle"></div>
+          <div class="field"><label class="label">Dossier URL</label><input class="inp" id="ndUrl" placeholder="gold-dossier.html"></div>
+        </div>
+        <div class="field"><label class="label">Sub Text</label><input class="inp" id="ndSub"></div>
+        <button class="btn-gold" onclick="saveNews()">Save Dossier Settings</button>
+      </div>
+    </div>
+
+    <!-- ══ UPLOADS ══ -->
+    <div class="page" id="page-uploads">
+      <div class="ph"><div class="ph-tag">Files</div><div class="ph-title">File <span>Uploads</span></div></div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:10px;">📤 Upload Any File</div>
+        <div class="card-sub" style="margin-bottom:12px;">Upload to server — PDF, EA .ex5, MP4, HTML, image. Get a URL to use anywhere in admin.</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="file" class="file-inp" id="globalFile" style="flex:1;">
+          <button class="btn-gold" onclick="uploadGlobal()">Upload</button>
+        </div>
+        <div class="file-status" id="globalFileStatus"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">🌐 Files On Server</div>
+        <div id="serverFiles"><div class="empty">Loading...</div></div>
+        <div style="margin-top:10px;"><button class="btn-out" onclick="loadServerFiles()">🔄 Refresh List</button></div>
+      </div>
+    </div>
+
+    <!-- ══ EXPORT ══ -->
+    <div class="page" id="page-export">
+      <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Export <span>/ Backup</span></div></div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:8px;">Export All Data</div>
+        <div class="card-sub" style="margin-bottom:14px;">Download all localStorage data as a JSON file for backup.</div>
+        <button class="btn-gold" onclick="exportData()">⬇ Download Backup JSON</button>
+      </div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:8px;">Import Backup</div>
+        <div class="card-sub" style="margin-bottom:12px;">Restore from a previously downloaded backup JSON.</div>
+        <input type="file" class="file-inp" id="importFile" accept=".json" style="margin-bottom:10px;">
+        <button class="btn-out" onclick="importData()">↑ Import JSON</button>
+      </div>
+    </div>
+
+    <!-- ══ SECURITY ══ -->
+    <div class="page" id="page-password">
+      <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Security</div></div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:10px;">🪪 Biometric / Fingerprint Login</div>
+        <div class="card-sub" style="margin-bottom:12px;">Register your device biometric — next time use fingerprint or face to log in.</div>
+        <button class="btn-gold" id="bioSetupBtn" onclick="setupBiometric()">Set Up Biometric</button>
+        <div class="file-status" id="bioSetupMsg"></div>
+      </div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:10px;">🔑 Change Password</div>
+        <div class="field"><label class="label">Current Password</label><input class="inp" type="password" id="pwCur"></div>
+        <div class="field"><label class="label">New Password</label><input class="inp" type="password" id="pwNew"></div>
+        <div class="field"><label class="label">Confirm New Password</label><input class="inp" type="password" id="pwConf"></div>
+        <button class="btn-gold" onclick="changePass()">Change Password</button>
+        <div class="file-status" id="pwMsg"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- PRODUCT EDITOR OVERLAY -->
+<div class="overlay" id="prodOverlay">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title">
+      <span id="peTitle">Edit Product</span>
+      <button class="modal-close" onclick="closeProdEd()">✕</button>
+    </div>
+    <input type="hidden" id="peId">
+    <div class="g2">
+      <div class="field"><label class="label">Name</label><input class="inp" id="peName"></div>
+      <div class="field"><label class="label">Icon (emoji)</label><input class="inp" id="peIcon" style="font-size:20px;"></div>
+    </div>
+    <div class="field"><label class="label">Sub-label (shown under name)</label><input class="inp" id="peSub"></div>
+    <div class="field"><label class="label">Badge (card top label)</label><input class="inp" id="peBadge" placeholder="PREMIUM, SERVICE, NEW..."></div>
+    <div class="field"><label class="label">Description</label><textarea class="inp" id="peDesc" style="min-height:80px;"></textarea></div>
     <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="peCta"></div>
     <div class="field">
-      <label class="label">📷 Product Image (Direct Upload)</label>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-        <input type="file" id="peImgFile" accept="image/*" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
-        <button class="btn-out" onclick="uploadPeImg()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
+      <label class="label">Action Type</label>
+      <div class="type-tabs">
+        <button class="type-tab active" id="tab-page" onclick="setTab('page')">🔗 Go To Page</button>
+        <button class="type-tab" id="tab-modal" onclick="setTab('modal')">💬 Open Modal</button>
+        <button class="type-tab" id="tab-link" onclick="setTab('link')">↗ External Link</button>
       </div>
-      <div id="peImgPreview" style="margin-bottom:6px;display:none;"><img id="peImgThumb" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;border:1px solid #2a2736;"></div>
-      <input class="inp" id="peImg" placeholder="Image URL auto-filled after upload" style="font-size:11px;color:var(--t3);">
+      <input class="inp" id="peUrl" placeholder="e.g. bridge.html or https://...">
     </div>
     <div class="field">
-      <label class="label">📎 Downloadable File (EA / PDF / Guide / any)</label>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-        <input type="file" id="peProdFile" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
-        <button class="btn-out" onclick="uploadPeFile()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
+      <label class="label">📷 Product Image</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input type="file" class="file-inp" id="peImgFile" accept="image/*" style="flex:1;">
+        <button class="btn-out" onclick="uploadPeImg()">Upload</button>
       </div>
-      <div id="peProdFileStatus" style="font-size:11px;color:var(--t3);margin-bottom:4px;"></div>
-      <input class="inp" id="peProdFileUrl" placeholder="File data URL (auto-filled after upload)" style="font-size:11px;color:var(--t3);">
+      <div id="peImgPreview" style="display:none;margin-bottom:6px;"><img id="peImgThumb" style="width:100%;max-height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--bd);"></div>
+      <input class="inp" id="peImgUrl" placeholder="Image URL (auto-filled after upload)" style="font-size:11px;">
     </div>
     <div class="field">
-      <label class="label">Action</label>
-      <div class="link-toggle">
-        <button class="link-opt active" id="peOptModal" onclick="setPeLinkType('modal')">Popup Modal</button>
-        <button class="link-opt" id="peOptPage" onclick="setPeLinkType('page')">Go To Page</button>
+      <label class="label">📎 Downloadable File (PDF, EA, guide, any)</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input type="file" class="file-inp" id="peProdFile" style="flex:1;">
+        <button class="btn-out" onclick="uploadPeFile()">Upload</button>
       </div>
-      <div id="peUrlWrap" style="display:none;"><input class="inp" id="peUrl" placeholder="e.g. tv-indicators.html"></div>
-    </div>
-    <div class="field"><label class="label">Preview</label>
-      <div class="preview-box">
-        <div class="prev-tag" id="pePrevTag">📦  Service</div>
-        <div class="prev-title" id="pePrevTitle">Title</div>
-        <div id="pePrevDesc" style="font-size:12px;color:#a09cb0;line-height:1.5;margin-bottom:10px;">Description</div>
-        <div style="display:inline-block;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:700;" id="pePrevCta">CTA</div>
-      </div>
+      <div class="file-status" id="peProdFileStatus"></div>
+      <input class="inp" id="peProdFileUrl" placeholder="File URL (auto-filled after upload)" style="font-size:11px;margin-top:4px;">
     </div>
     <div style="display:flex;gap:8px;margin-top:4px;">
-      <button class="btn-gold" onclick="saveProdEd()">Save Changes</button>
+      <button class="btn-gold" onclick="saveProd()">Save Product</button>
       <button class="btn-out" onclick="closeProdEd()">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- INDICATOR EDITOR -->
-<div class="overlay" id="indOverlay">
-  <div class="editor-box">
-    <div class="ed-hdr">
-      <div class="ed-title" id="iedTitle">Edit Indicator</div>
-      <button class="ed-close" onclick="closeIndEd()">✕</button>
-    </div>
-    <div class="field"><label class="label">Name</label><input class="inp" id="ieName"></div>
-    <div class="field"><label class="label">PID</label><input class="inp" id="iePid" placeholder="e.g. TVI-0003"></div>
-    <div class="field"><label class="label">Short Description (Card)</label><input class="inp" id="ieShort"></div>
-    <div class="field"><label class="label">Full Description (Modal)</label><textarea class="inp" id="ieDesc" style="min-height:90px;"></textarea></div>
-    <div class="field">
-      <label class="label">📷 Indicator Image (Direct Upload)</label>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-        <input type="file" id="ieImgFile" accept="image/*" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
-        <button class="btn-out" onclick="uploadIeImg()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
-      </div>
-      <div id="ieImgPreview" style="margin-bottom:6px;display:none;">
-        <img id="ieImgThumb" style="width:100%;max-height:100px;object-fit:cover;border-radius:8px;border:1px solid #2a2736;">
-      </div>
-      <input class="inp" id="ieImg" placeholder="Or paste image URL" style="font-size:11px;color:var(--t3);">
-    </div>
-    <div class="field"><label class="label">WhatsApp Number</label><input class="inp" id="ieWa" placeholder="e.g. 919876543210"></div>
-    <div class="field"><label class="label">Badge</label><input class="inp" id="ieBadge" placeholder="PREMIUM"></div>
-    <div style="display:flex;gap:8px;margin-top:4px;">
-      <button class="btn-gold" onclick="saveIndEd()">Save Changes</button>
-      <button class="btn-out" onclick="closeIndEd()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- LAYOUT -->
 <!-- SUB-ITEM EDITOR OVERLAY -->
-<div class="overlay" id="subItemOverlay" onclick="if(event.target===this)closeSubItemEd()">
-  <div class="editor-box" style="max-width:520px;max-height:90vh;overflow-y:auto;">
-    <div class="ed-hdr">
-      <div class="ed-title" id="subEdTitle">Edit Item</div>
-      <button class="ed-close" onclick="closeSubItemEd()">✕</button>
+<div class="overlay" id="siOverlay">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="siTitle">Edit Sub-Item</span>
+      <button class="modal-close" onclick="closeSiEd()">✕</button>
     </div>
-    <div class="field"><label class="label">Item Name</label><input class="inp" id="siName" placeholder="e.g. SMC Algo Gold"></div>
-    <div class="field"><label class="label">ID / PID</label><input class="inp" id="siPid" placeholder="e.g. ALG-0001"></div>
-    <div class="field"><label class="label">Short Description</label><input class="inp" id="siShortDesc" placeholder="One line shown on card"></div>
-    <div class="field"><label class="label">Full Description</label><textarea class="inp" id="siDesc" style="min-height:80px;" placeholder="Detailed description for modal/popup"></textarea></div>
-    <div class="field">
-      <label class="label">📷 Product Image (Direct Upload)</label>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-        <input type="file" id="siImgFile" accept="image/*" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
-        <button class="btn-out" onclick="uploadSiImg()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
-      </div>
-      <div id="siImgPreview" style="margin-bottom:6px;display:none;">
-        <img id="siImgThumb" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;border:1px solid #2a2736;">
-      </div>
-      <input class="inp" id="siImg" placeholder="Or paste image URL / data URL" style="font-size:11px;color:var(--t3);">
+    <input type="hidden" id="siProdId">
+    <input type="hidden" id="siIdx">
+    <div class="g2">
+      <div class="field"><label class="label">Item Name</label><input class="inp" id="siName"></div>
+      <div class="field"><label class="label">ID / PID</label><input class="inp" id="siPid" placeholder="TVI-0001"></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label class="label">Badge</label><input class="inp" id="siBadge" placeholder="PREMIUM"></div>
+      <div class="field"><label class="label">Description</label><input class="inp" id="siDesc" placeholder="Short description"></div>
     </div>
     <div class="field">
-      <label class="label">📎 Downloadable File (EA .ex5 / PDF / any)</label>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-        <input type="file" id="siFileInput" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:6px 10px;color:#c8c4d0;font-size:12px;flex:1;">
-        <button class="btn-out" onclick="uploadSiFile()" style="font-size:12px;padding:6px 14px;white-space:nowrap;">Upload</button>
+      <label class="label">📷 Image</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input type="file" class="file-inp" id="siImgFile" accept="image/*" style="flex:1;">
+        <button class="btn-out" onclick="uploadSiImg()">Upload</button>
       </div>
-      <div id="siFileStatus" style="font-size:11px;color:var(--t3);"></div>
-      <input class="inp" id="siFileUrl" placeholder="File download URL (auto-filled after upload)" style="font-size:11px;color:var(--t3);margin-top:6px;">
+      <div id="siImgPrev" style="display:none;margin-bottom:6px;"><img id="siImgThumb" style="width:100%;max-height:60px;object-fit:cover;border-radius:8px;"></div>
+      <input class="inp" id="siImgUrl" placeholder="Image URL" style="font-size:11px;">
     </div>
-    <div class="field"><label class="label">WhatsApp Number</label><input class="inp" id="siWa" placeholder="919876543210"></div>
-    <div class="field"><label class="label">Badge</label><input class="inp" id="siBadge" placeholder="e.g. PREMIUM"></div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="btn-gold" onclick="saveSubItemEd()">Save Changes</button>
-      <button class="btn-out" onclick="closeSubItemEd()">Cancel</button>
+    <div class="field">
+      <label class="label">📎 Downloadable File</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input type="file" class="file-inp" id="siFileInput" style="flex:1;">
+        <button class="btn-out" onclick="uploadSiFile()">Upload</button>
+      </div>
+      <div class="file-status" id="siFileStatus"></div>
+      <input class="inp" id="siFileUrl" placeholder="File URL" style="font-size:11px;margin-top:4px;">
+    </div>
+    <div class="field"><label class="label">Video URL (embed / YouTube)</label><input class="inp" id="siVid" placeholder="https://..."></div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn-gold" onclick="saveSi()">Save Item</button>
+      <button class="btn-out" onclick="closeSiEd()">Cancel</button>
     </div>
   </div>
 </div>
-
-<div class="layout">
-
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sb-logo">
-      <div class="sb-logo-text">AG <span style="color:var(--t2)">Admin</span></div>
-      <div class="sb-logo-sub">Control Panel</div>
-    </div>
-    <div class="sb-nav">
-      <div class="sb-section">Content</div>
-      <button class="sb-item active" onclick="show('products',this)">🎯 Products</button>
-      <button class="sb-item" onclick="show('indicators',this)">📈 TV Indicators</button>
-      <button class="sb-item" onclick="show('users',this)">👥 Users & Access</button>
-      <button class="sb-item" onclick="show('analytics',this)">📊 Analytics & Revenue</button>
-      <button class="sb-item" onclick="show('strategy',this)">⚙️ Custom Strategy Sender</button>
-      <button class="sb-item" onclick="show('uploads',this)">📁 File Uploads</button>
-      <button class="sb-item" onclick="show('faq',this)">❓ FAQ</button>
-      <button class="sb-item" onclick="show('ticker',this)">📡 Ticker Strip</button>
-      <button class="sb-item" onclick="show('contact',this)">📞 Contact Links</button>
-      <button class="sb-item" onclick="show('hero',this)">🏠 Hero Section</button>
-      <button class="sb-item" onclick="show('about',this)">👤 About Us</button>
-      <button class="sb-item" onclick="show('newsed',this)">📰 News & Videos</button>
-      <div class="sb-section">Tools</div>
-      <button class="sb-item" onclick="show('export',this)">📦 Export Code</button>
-      <button class="sb-item" onclick="show('password',this)">🔐 Change Password</button>
-    </div>
-    <div class="sb-bottom">
-      <button class="sb-logout" onclick="sessionStorage.removeItem('ag_admin_auth');location.reload();">🚪 Logout</button>
-    </div>
-  </div>
-
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- PRODUCTS -->
-    <div class="page active" id="page-products">
-      <div class="page-tag">Content Editor</div>
-      <div class="page-title">Products <span class="hl">&</span> Services</div>
-      <div class="page-sub">Add, Edit, Hide Or Delete Product Cards. Hidden Products Won't Show On Site.</div>
-      <div class="stats" id="prodStats"></div>
-      <div class="add-form">
-        <div class="card-title">➕ Add New Product</div>
-        <div class="card-sub">Quick Add — Edit Full Details After.</div>
-        <div class="g3" style="margin-bottom:10px;">
-          <input class="inp" id="newProdName" placeholder="Product Name">
-          <input class="inp" id="newProdSub" placeholder="Sub-Label">
-          <input class="inp" id="newProdIcon" placeholder="Icon" style="text-align:center;">
-        </div>
-        <button class="btn-gold" onclick="addProduct()">Add Product</button>
-      </div>
-      <div id="prodList"></div>
-    </div>
-
-    <!-- INDICATORS -->
-    <div class="page" id="page-indicators">
-      <div class="page-tag">TradingView Indicators</div>
-      <div class="page-title">TV <span class="hl">Indicators</span></div>
-      <div class="page-sub">Add, Edit, Hide Or Delete Indicators On tv-indicators.html Page.</div>
-      <div class="stats" id="indStats"></div>
-      <div class="add-form">
-        <div class="card-title">➕ Add New Indicator</div>
-        <div class="g2" style="margin-bottom:8px;">
-          <input class="inp" id="newIndName" placeholder="Indicator Name">
-          <input class="inp" id="newIndPid" placeholder="PID (e.g. TVI-0006)">
-        </div>
-        <div class="g2" style="margin-bottom:10px;">
-          <input class="inp" id="newIndImg" placeholder="Image file (e.g. img-new.png)">
-          <input class="inp" id="newIndBadge" placeholder="Badge (e.g. PREMIUM)">
-        </div>
-        <button class="btn-gold" onclick="addIndicator()">Add Indicator</button>
-      </div>
-      <div id="indList"></div>
-    </div>
-
-    <!-- USERS -->
-    <div class="page" id="page-users">
-      <div class="page-tag">Access Management</div>
-      <div class="page-title">Users <span class="hl">&</span> Access</div>
-      <div class="page-sub">Track Which Users Have Access To Which Products Or Indicators.</div>
-      <div class="add-form">
-        <div class="card-title">➕ Add New User</div>
-        <div class="g2" style="margin-bottom:8px;">
-          <div class="field" style="margin:0;"><label class="label">Name</label><input class="inp" id="uName" placeholder="Full Name"></div>
-          <div class="field" style="margin:0;"><label class="label">Contact</label><input class="inp" id="uContact" placeholder="+91 98765 43210"></div>
-        </div>
-        <div class="g2" style="margin-bottom:10px;">
-          <div class="field" style="margin:0;"><label class="label">Join Date</label><input class="inp" id="uDate" type="date"></div>
-          <div class="field" style="margin:0;"><label class="label">Status</label><select class="inp" id="uStatus"><option value="active">Active</option><option value="expired">Expired</option></select></div>
-        </div>
-        <div class="field" style="margin-bottom:12px;"><label class="label">Assigned Products / Indicators</label><div class="pcheck-wrap" id="uProductCheck"></div></div>
-        <button class="btn-gold" onclick="addUser()">Add User</button>
-      </div>
-      <div class="card" style="padding:0;overflow:hidden;">
-        <table class="tbl"><thead><tr><th>Name</th><th>Contact</th><th>Products</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="usersBody"></tbody></table>
-      </div>
-    </div>
-
-
-
-    <!-- CUSTOM STRATEGY SENDER -->
-    <div class="page" id="page-strategy">
-      <div class="page-tag">Custom Strategy</div>
-      <div class="page-title">Custom Strategy <span class="hl">Sender</span></div>
-      <div class="page-sub">Attach Strategy File + Details → Send Directly To User Via WhatsApp Or Telegram.</div>
-
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">📋 Strategy Details</div>
-        <div class="g2" style="margin-bottom:10px;">
-          <div class="field" style="margin:0;"><label class="label">User Name</label><input class="inp" id="csUserName" placeholder="e.g. Rahul Sharma"></div>
-          <div class="field" style="margin:0;"><label class="label">User WhatsApp / Phone</label><input class="inp" id="csUserWa" placeholder="919876543210"></div>
-        </div>
-        <div class="g2" style="margin-bottom:10px;">
-          <div class="field" style="margin:0;"><label class="label">Market / Instrument</label><input class="inp" id="csMarket" placeholder="e.g. XAUUSD, BTCUSD, NIFTY50"></div>
-          <div class="field" style="margin:0;"><label class="label">Timeframe</label><input class="inp" id="csTf" placeholder="e.g. 1H, 4H, Daily"></div>
-        </div>
-        <div class="field"><label class="label">Strategy Notes / Message To User</label><textarea class="inp" id="csNotes" style="min-height:80px;" placeholder="e.g. Hi Rahul, your custom Gold strategy is ready. Use H1 timeframe, entry on SMC OB retest, SL below swing..."></textarea></div>
-      </div>
-
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">📎 Attach Strategy File</div>
-        <div class="card-sub" style="margin-bottom:12px;">Upload PDF, Excel, Word, .ex5 EA or any file — stored here, user gets download link in WhatsApp message.</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <input type="file" id="csFileInput" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;flex:1;">
-          <button class="btn-out" onclick="uploadCsFile()" style="padding:8px 20px;white-space:nowrap;">📤 Upload File</button>
-        </div>
-        <div id="csFileStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
-      </div>
-
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">📱 Send To User</div>
-        <div style="display:grid;gap:10px;margin-bottom:14px;">
-          <div style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:14px;font-size:12px;color:#c8c4d0;line-height:1.7;white-space:pre-wrap;font-family:monospace;" id="csPreviewMsg">Fill in the fields above to preview your message...</div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn-gold" onclick="sendCsWa()">💬 Send Via WhatsApp</button>
-          <button class="btn-out" onclick="sendCsTg()">✈️ Send Via Telegram</button>
-          <button class="btn-out" onclick="copyCsMsg()">📋 Copy Message</button>
-        </div>
-        <div class="card-sub" style="margin-top:10px;">Note: File is saved in admin. WhatsApp/Telegram will open with pre-filled message. Share the file manually or use the download link in the message.</div>
-      </div>
-
-      <!-- Sent History -->
-      <div class="card">
-        <div class="card-title" style="margin-bottom:12px;">📜 Sent History</div>
-        <div id="csSentList"><div style="color:var(--t3);font-size:13px;">No strategies sent yet.</div></div>
-      </div>
-
-      <!-- SERVER FILES LIST -->
-      <div class="add-form">
-        <div class="card-title">🌐 All Files On Server</div>
-        <div class="card-sub" style="margin-bottom:12px;">All uploaded files — copy URL to use in product file field.</div>
-        <div id="serverFileList"><div style="font-size:12px;color:var(--t3);">Loading...</div></div>
-      </div>
-    </div>
-
-    <!-- ANALYTICS -->
-    <div class="page" id="page-analytics">
-      <div class="page-tag">Business</div>
-      <div class="page-title">Analytics <span class="hl">&amp; Revenue</span></div>
-      <div class="page-sub">User Count, Product Breakdown, 7-Day Revenue Estimate.</div>
-
-      <!-- Top Stats -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="analyticsTopStats"></div>
-
-      <!-- Product Prices (for revenue calc) -->
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">💰 Product Prices (For Revenue Estimate)</div>
-        <div class="card-sub" style="margin-bottom:12px;">Enter price per product — used to calculate 7-day revenue from new users.</div>
-        <div id="productPriceFields" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;"></div>
-        <button class="btn-gold" onclick="savePrices()">Save Prices</button>
-      </div>
-
-      <!-- Product Breakdown -->
-      <div class="card" style="margin-bottom:20px;">
-        <div class="card-title">📦 Product — User Breakdown</div>
-        <div id="productBreakdown" style="margin-top:12px;"></div>
-      </div>
-
-      <!-- 7 Day New Users -->
-      <div class="card">
-        <div class="card-title">📅 7-Day Activity</div>
-        <div id="sevenDayTable" style="margin-top:12px;"></div>
-      </div>
-    </div>
-
-    <!-- FILE UPLOADS -->
-    <div class="page" id="page-uploads">
-      <div class="page-tag">Files</div>
-      <div class="page-title">File <span class="hl">Uploads</span></div>
-      <div class="page-sub">Upload EA (.ex5), Videos (.mp4), Images — stored in localStorage.</div>
-
-      <!-- EA Upload -->
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">🤖 EA File Upload (.ex5)</div>
-        <div class="card-sub" style="margin-bottom:12px;">Upload your MT5 Expert Advisor file. Users can download via your download link.</div>
-        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-          <input type="file" id="eaFileInput" accept=".ex5,.ex4" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;flex:1;">
-          <button class="btn-gold" onclick="uploadEA()">Upload EA</button>
-        </div>
-        <div id="eaStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
-        <div id="eaFileList" style="margin-top:12px;"></div>
-      </div>
-
-      <!-- Video Upload -->
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">🎬 Video Upload (.mp4)</div>
-        <div class="card-sub" style="margin-bottom:12px;">Upload product demo videos. Stored as base64 — use small files (&lt;10MB).</div>
-        <div style="display:grid;gap:10px;margin-bottom:10px;">
-          <div class="field" style="margin:0;"><label class="label">Video Label</label><input class="inp" id="vidLabel" placeholder="e.g. SMC EA Demo"></div>
-          <div class="field" style="margin:0;"><label class="label">Video ID (used in URL)</label><input class="inp" id="vidId" placeholder="e.g. smc_ea"></div>
-          <input type="file" id="vidFileInput" accept="video/mp4,.mp4" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;">
-        </div>
-        <button class="btn-gold" onclick="uploadVideo()">Upload Video</button>
-        <div id="vidStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
-        <div id="vidFileList" style="margin-top:12px;"></div>
-      </div>
-
-      <!-- Image Upload -->
-      <div class="add-form">
-        <div class="card-title">🖼️ Image Upload (Product / Sub-Item)</div>
-        <div class="card-sub" style="margin-bottom:12px;">Upload images for product cards or sub-items. Stored as base64 data URLs.</div>
-        <div style="display:grid;gap:10px;margin-bottom:10px;">
-          <div class="field" style="margin:0;"><label class="label">Image Name / ID</label><input class="inp" id="imgName" placeholder="e.g. smc-indicator-preview"></div>
-          <input type="file" id="imgFileInput" accept="image/*" style="background:#0d0c11;border:1px solid #2a2736;border-radius:8px;padding:8px 12px;color:#c8c4d0;font-size:13px;">
-        </div>
-        <button class="btn-gold" onclick="uploadImg()">Upload Image</button>
-        <div id="imgStatus" style="font-size:12px;color:var(--t3);margin-top:8px;"></div>
-        <div id="imgFileList" style="margin-top:12px;"></div>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="page" id="page-faq">
-      <div class="page-tag">FAQ</div>
-      <div class="page-title">FAQ <span class="hl">Questions</span></div>
-      <div class="page-sub">Add, Edit, Hide Or Delete FAQ Items.</div>
-      <div class="add-form">
-        <div class="card-title">➕ Add FAQ Item</div>
-        <div class="field" style="margin-bottom:8px;"><input class="inp" id="newFaqQ" placeholder="Question"></div>
-        <div class="field" style="margin-bottom:10px;"><textarea class="inp" id="newFaqA" placeholder="Answer" style="min-height:55px;"></textarea></div>
-        <button class="btn-gold" onclick="addFaq()">Add Question</button>
-      </div>
-      <div id="faqList"></div>
-    </div>
-
-    <!-- TICKER -->
-    <div class="page" id="page-ticker">
-      <div class="page-tag">Ticker Strip</div>
-      <div class="page-title">Ticker <span class="hl">Items</span></div>
-      <div class="page-sub">Add, Hide Or Delete Scrolling Ticker Pills.</div>
-      <div class="add-form">
-        <div class="card-title">➕ Add Ticker Item</div>
-        <div class="g2" style="margin-bottom:10px;">
-          <input class="inp" id="newTickText" placeholder="Text (e.g. EURUSD  1.0842  ▲ 0.18%)">
-          <select class="inp" id="newTickType">
-            <option value="default">White (Default)</option>
-            <option value="price">Gold Price</option>
-            <option value="dxy">Blue (DXY)</option>
-            <option value="jh">Orange (Event)</option>
-            <option value="cot">Green (COT)</option>
-            <option value="gold">Gold (AG Intel)</option>
-          </select>
-        </div>
-        <button class="btn-gold" onclick="addTicker()">Add Item</button>
-      </div>
-      <div id="tickerList"></div>
-    </div>
-
-    <!-- CONTACT -->
-    <div class="page" id="page-contact">
-      <div class="page-tag">Contact Links</div>
-      <div class="page-title">Contact <span class="hl">Cards</span></div>
-      <div class="page-sub">Edit Telegram, WhatsApp, Instagram And Other Contact Links.</div>
-      <div class="add-form">
-        <div class="card-title">➕ Add Contact</div>
-        <div class="g3" style="margin-bottom:8px;">
-          <input class="inp" id="newCName" placeholder="Name (e.g. Telegram)">
-          <input class="inp" id="newCUrl" placeholder="URL (e.g. https://t.me/...)">
-          <input class="inp" id="newCIcon" placeholder="Icon" style="text-align:center;">
-        </div>
-        <input class="inp" id="newCSub" placeholder="Sub-Label (e.g. @agtechnical)" style="margin-bottom:10px;">
-        <button class="btn-gold" onclick="addContact()">Add Contact</button>
-      </div>
-      <div id="contactList"></div>
-    </div>
-
-    <!-- HERO -->
-    <div class="page" id="page-hero">
-      <div class="page-tag">Hero Section</div>
-      <div class="page-title">Hero <span class="hl">Content</span></div>
-      <div class="page-sub">Edit Main Hero Text, CTA Button, And Optional Video.</div>
-      <div class="card">
-        <div class="field"><label class="label">Badge Text</label><input class="inp" id="heroBadge"></div>
-        <div class="field"><label class="label">Headline (HTML: use &lt;span class="g"&gt;text&lt;/span&gt; for gold)</label><textarea class="inp" id="heroH1" style="min-height:55px;"></textarea></div>
-        <div class="field"><label class="label">Subheading</label><textarea class="inp" id="heroSub"></textarea></div>
-        <div class="field"><label class="label">CTA Button Text</label><input class="inp" id="heroBtnText"></div>
-        <div class="field"><label class="label">Video URL (YouTube/Vimeo — Optional)</label><input class="inp" id="heroVideoUrl" placeholder="https://youtube.com/watch?v=..."></div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-gold" onclick="saveHero()">Save Hero</button>
-          <button class="btn-out" onclick="resetSection('hero')">Reset</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ABOUT -->
-    <div class="page" id="page-about">
-      <div class="page-tag">About Us</div>
-      <div class="page-title">About <span class="hl">Section</span></div>
-      <div class="page-sub">Edit All About Us Text, Markets Grid, And Optional Video.</div>
-      <div class="card">
-        <div class="field"><label class="label">Headline</label><input class="inp" id="aboutH"></div>
-        <div class="field"><label class="label">Sub</label><input class="inp" id="aboutSub"></div>
-        <div class="field"><label class="label">Who We Are Text</label><textarea class="inp" id="aboutWho" style="min-height:80px;"></textarea></div>
-        <div class="field"><label class="label">What We Do (one per line: "Title — description")</label><textarea class="inp" id="aboutDo" style="min-height:90px;"></textarea></div>
-        <div class="field"><label class="label">Markets Subtitle</label><input class="inp" id="aboutMktSub"></div>
-        <div class="field"><label class="label">Markets (one per line: "emoji|Label" or "TEXT|Label|isText")</label><textarea class="inp" id="aboutMkts" style="min-height:70px;"></textarea></div>
-        <div class="field"><label class="label">Video URL (Optional)</label><input class="inp" id="aboutVideo" placeholder="https://youtube.com/watch?v=..."></div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-gold" onclick="saveAbout()">Save About</button>
-          <button class="btn-out" onclick="resetSection('about')">Reset</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- NEWS & VIDEOS -->
-    <div class="page" id="page-newsed">
-      <div class="page-tag">News & Videos</div>
-      <div class="page-title">News <span class="hl">&</span> Videos</div>
-      <div class="page-sub">Edit Dossier Card, News Items, Sentiment, And Add Videos.</div>
-      <div class="card" style="margin-bottom:12px;">
-        <div class="card-title">📁 Featured Dossier Card</div>
-        <div class="field"><label class="label">Title</label><input class="inp" id="nDossierTitle"></div>
-        <div class="field"><label class="label">Subtitle</label><input class="inp" id="nDossierSub"></div>
-        <div class="field"><label class="label">Link URL</label><input class="inp" id="nDossierUrl"></div>
-        <button class="btn-gold" onclick="saveDossier()">Save Dossier</button>
-      </div>
-      <div class="card" style="margin-bottom:12px;">
-        <div class="card-title">🎬 Videos</div>
-        <div class="g2" style="margin-bottom:8px;">
-          <input class="inp" id="newVidLabel" placeholder="Label (e.g. Weekly Analysis)">
-          <input class="inp" id="newVidUrl" placeholder="https://youtube.com/watch?v=...">
-        </div>
-        <button class="btn-gold" onclick="addVideo()">Add Video</button>
-        <div id="videoList" style="margin-top:10px;"></div>
-      </div>
-      <div class="card" style="margin-bottom:12px;">
-        <div class="card-title">📰 Latest News</div>
-        <div class="g2" style="margin-bottom:8px;">
-          <input class="inp" id="newLatestTitle" placeholder="Headline">
-          <input class="inp" id="newLatestTime" placeholder="2h ago · Forex">
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px;">
-          <button class="link-opt active" id="latestDirUp" onclick="setDir('latestDir','Up',this)">▲ Bullish</button>
-          <button class="link-opt" id="latestDirDn" onclick="setDir('latestDir','Dn',this)">▼ Bearish</button>
-        </div>
-        <button class="btn-gold" onclick="addNewsItem('latest')">Add</button>
-        <div id="latestList" style="margin-top:10px;"></div>
-      </div>
-      <div class="card" style="margin-bottom:12px;">
-        <div class="card-title">📊 AG Analysis</div>
-        <div class="g2" style="margin-bottom:8px;">
-          <input class="inp" id="newAnalysisTitle" placeholder="Headline">
-          <input class="inp" id="newAnalysisTime" placeholder="1h ago · AG Analysis">
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px;">
-          <button class="link-opt active" id="analysisDirUp" onclick="setDir('analysisDir','Up',this)">▲ Bullish</button>
-          <button class="link-opt" id="analysisDirDn" onclick="setDir('analysisDir','Dn',this)">▼ Bearish</button>
-        </div>
-        <button class="btn-gold" onclick="addNewsItem('analysis')">Add</button>
-        <div id="analysisList" style="margin-top:10px;"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">🎯 Sentiment</div>
-        <div id="sentimentList" style="margin-bottom:10px;"></div>
-        <div class="g2" style="margin-bottom:8px;">
-          <input class="inp" id="newSentLabel" placeholder="Market (e.g. Forex)">
-          <input class="inp" id="newSentPct" type="number" min="0" max="100" placeholder="Bull % (0-100)">
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px;">
-          <button class="link-opt active" id="sentDirUp" onclick="setDir('sentDir','Up',this)">▲ Bull</button>
-          <button class="link-opt" id="sentDirDn" onclick="setDir('sentDir','Dn',this)">▼ Bear</button>
-          <button class="link-opt" id="sentDirNeutral" onclick="setDir('sentDir','Neutral',this)">— Neutral</button>
-        </div>
-        <button class="btn-gold" onclick="addSentiment()">Add</button>
-      </div>
-    </div>
-
-    <!-- EXPORT -->
-    <div class="page" id="page-export">
-      <div class="page-tag">Export</div>
-      <div class="page-title">Export <span class="hl">Code</span></div>
-      <div class="page-sub">Copy Generated onclick= Calls → Paste Into index.html Product Buttons.</div>
-      <div class="card">
-        <div class="card-title">Generated Product Button Code</div>
-        <div class="card-sub">Replace onclick= In Your .prod-btn Elements With These.</div>
-        <textarea class="exp-code" id="exportArea" readonly></textarea>
-        <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn-gold" onclick="copyExport()">Copy To Clipboard</button>
-          <button class="btn-out" onclick="genExport()">Regenerate</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASSWORD -->
-    <div class="page" id="page-password">
-      <div class="page-tag">Settings</div>
-      <div class="page-title">Change <span class="hl">Password</span></div>
-      <div class="add-form" style="margin-bottom:20px;">
-        <div class="card-title">🪪 Biometric / Fingerprint Login</div>
-        <div class="card-sub" style="margin-bottom:12px;">Register your device fingerprint or face ID — login without typing password next time. Works on phones and laptops with biometric support.</div>
-        <button class="btn-gold" id="bioSetupBtn" onclick="setupBiometric()">Set Up Biometric Login</button>
-        <div class="card-sub" style="margin-top:8px;">Note: Biometric is device-specific. Register separately on each device you use.</div>
-      </div>
-      <div class="page-sub">Currently No Password Set. Set One Below.</div>
-      <div class="card">
-        <div class="field"><label class="label">New Password</label><input class="inp" id="pwNew" type="password" placeholder="New Password (Min 8 Chars)"><div class="pw-hint">Note: Password Is Stored In This HTML File. After Setting, Export And Push To GitHub.</div></div>
-        <div class="field"><label class="label">Confirm New Password</label><input class="inp" id="pwConfirm" type="password" placeholder="Confirm Password"></div>
-        <button class="btn-gold" onclick="setPassword()">Set Password</button>
-        <div id="pwMsg" style="font-size:12px;margin-top:8px;min-height:16px;"></div>
-      </div>
-    </div>
-
-  </div><!-- /main -->
-</div><!-- /layout -->
 
 <script>
-/* ═══ DATA DEFAULTS ═══ */
+'use strict';
+const API = 'https://ag-assistant-api.onrender.com';
+const PASS_KEY = 'ag_admin_pass';
+let _pass = localStorage.getItem(PASS_KEY) || 'ridhima2307';
+
+/* ── AUTH ── */
+(function(){
+  const wall = document.getElementById('loginWall');
+  function unlock(){ sessionStorage.setItem('ag_auth','1'); wall.style.display='none'; document.body.style.visibility='visible'; }
+  window.doLogin = function(){
+    const v = document.getElementById('loginInp').value;
+    if(v === _pass){ unlock(); document.getElementById('loginInp').value=''; }
+    else { const e=document.getElementById('loginErr'); e.textContent='Wrong password.'; document.getElementById('loginInp').value=''; setTimeout(()=>e.textContent='',2500); }
+  };
+  window.logout = function(){ sessionStorage.removeItem('ag_auth'); location.reload(); };
+  if(sessionStorage.getItem('ag_auth')==='1'){ wall.style.display='none'; document.body.style.visibility='visible'; }
+  else { wall.style.display='flex'; document.body.style.visibility='visible'; }
+  // biometric
+  if(localStorage.getItem('ag_bio_id')) document.getElementById('bioBtn').style.display='block';
+  window.doBioLogin = async function(){
+    const e=document.getElementById('loginErr');
+    e.style.color='#e8b84b'; e.textContent='Verifying biometric...';
+    try {
+      const ch=new Uint8Array(32); crypto.getRandomValues(ch);
+      await navigator.credentials.get({publicKey:{challenge:ch,timeout:30000,allowCredentials:[{id:Uint8Array.from(atob(localStorage.getItem('ag_bio_id')),c=>c.charCodeAt(0)),type:'public-key'}],userVerification:'required'}});
+      e.textContent=''; unlock();
+    } catch(err){ e.style.color='#f26d6d'; e.textContent='Biometric failed — use password.'; }
+  };
+})();
+
+/* ── HELPERS ── */
+function ls(k,d){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d;}catch(e){return d;} }
+function save(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+function cap(s){ return s?s.replace(/\b\w/g,c=>c.toUpperCase()):s; }
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  const d=document.createElement('div');
+  d.className='toast-msg';
+  d.innerHTML=(type==='err'?'❌ ':'✅ ')+msg;
+  el.appendChild(d);
+  setTimeout(()=>d.remove(),3200);
+}
+function toB64(file){ return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);}); }
+async function uploadToServer(file, onProg){
+  const fd=new FormData(); fd.append('file',file); fd.append('category','admin');
+  if(onProg) onProg('Uploading '+file.name+'...');
+  try{
+    const res=await fetch(API+'/api/upload',{method:'POST',body:fd});
+    const data=await res.json();
+    if(data.ok){ if(onProg) onProg('✓ '+file.name+' uploaded'); return data.url; }
+    else{ if(onProg) onProg('✗ '+( data.error||'Upload failed')); return null; }
+  }catch(e){ if(onProg) onProg('✗ Network error'); return null; }
+}
+
+/* ── NAV ── */
+function nav(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{}};
+  if(loaders[id]) loaders[id]();
+}
+
+/* ══════════════ PRODUCTS ══════════════ */
 const D_PRODS = [
-  {id:'bridge',      name:'Bridge',               icon:'🌉', sub:'TradingView → MT5 Connector',  title:'AG Bridge — TradingView To MT5', desc:'The AG Bridge is a live signal relay engine that carries your TradingView alerts straight to MetaTrader 5 — automatically, 24/7. Drop one file into your FastAPI project, enter your License ID in the MT5 EA, and your trades open the moment TradingView fires. No manual intervention. Signals are validated before reaching your account. One license locks to one MT5 account.', cta:'Get Bridge Access →', type:'modal', url:'', hidden:false},
-  {id:'algo',        name:'Algo (MT5)',            icon:'🤖', sub:'Auto Trading System (MT5)',    title:'Algo (MT5)',            desc:'Fully automated MT5 trading algorithm built on AG Technicals strategy — runs 24/7 on MetaTrader 5, executes entries and exits without you watching the screen.', cta:'Join Waitlist →', type:'modal', url:'', hidden:false},
-  {id:'tvindicator', name:'TradingView Indicator', icon:'📈', sub:'Custom TradingView Indicator', title:'TradingView Indicator', desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.', cta:'View Indicators →', type:'page', url:'tv-indicators.html', hidden:false},
-  {id:'education',   name:'Education',            icon:'🧠', sub:'Courses & Academy',           title:'Education',            desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.', cta:'Open Courses →', type:'page', url:'education.html', hidden:false},
-  {id:'guide',       name:'Guide',                icon:'📖', sub:'Written Playbooks',           title:'Guides',               desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.', cta:'Open Guides →', type:'page', url:'guide.html', hidden:false},
-  {id:'strategy',    name:'Custom Strategy',      icon:'⚙️', sub:'Built For You',               title:'Custom Strategy',      desc:'Your own personalised trading strategy built by AG Technicals analysts — tailored to your risk profile, timeframe, and market preference.', cta:'Join Waitlist →', type:'modal', url:'', hidden:false},
-  {id:'news',        name:'News',                 icon:'📰', sub:'Live Market Feed',            title:'News',                 desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow breakdowns.', cta:'Read Dossier →', type:'page', url:'gold-dossier.html', hidden:false},
+  {id:'bridge',      name:'Bridge',               icon:'🌉', sub:'TradingView → MT5 Connector',  badge:'PREMIUM', desc:'The AG Bridge connects TradingView alerts straight to MetaTrader 5 — 24/7 automated. One license, one MT5 account.', cta:'Get Bridge Access →', type:'page', url:'bridge.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'algo',        name:'Algo (MT5)',            icon:'🤖', sub:'Auto Trading System (MT5)',    badge:'PREMIUM', desc:'Fully automated MT5 trading algorithm — runs 24/7, executes entries and exits without manual input.', cta:'View Algo →', type:'page', url:'algo.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'tvindicator', name:'TradingView Indicator', icon:'📈', sub:'Custom TradingView Indicator', badge:'PREMIUM', desc:'3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Auto-detect key levels in real time.', cta:'View Indicators →', type:'page', url:'tv-indicators.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'education',   name:'Education',             icon:'🧠', sub:'Courses & Academy',           badge:'FREE + PAID', desc:'Structured courses from beginner to advanced — SMC, ICT, risk management, trading psychology.', cta:'Open Courses →', type:'page', url:'education.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'guide',       name:'Guide',                 icon:'📖', sub:'Written Playbooks',           badge:'PREMIUM', desc:'Step-by-step written guides — order flow, stop loss, session timing, prop firm rules and more.', cta:'Open Guides →', type:'page', url:'guide.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'custom',      name:'Custom Strategy',       icon:'⚙️', sub:'Built For You',               badge:'CUSTOM', desc:'Your own personalised trading strategy — tailored to your market, risk, and timeframe by AG analysts.', cta:'Contact Us →', type:'modal', url:'', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'news',        name:'News',                  icon:'📰', sub:'Live Market Feed',            badge:'LIVE', desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow.', cta:'Read Dossier →', type:'page', url:'gold-dossier.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
 ];
-const D_INDS = [
-  {id:'smc',       name:'AG SMC Indicator',            pid:'TVI-0003', shortDesc:'Smart Money Concepts on your chart — order blocks, FVG, BOS/CHoCH, liquidity sweeps and a live confluence dashboard.', desc:'The AG SMC Indicator marks Smart Money Concepts directly on your TradingView chart — order blocks, fair value gaps, BOS/CHoCH and liquidity sweeps, all auto-detected. A live dashboard shows trend, multi-timeframe bias and a confluence score.', img:'img-smc.png', waNum:'919876543210', badge:'PREMIUM', hidden:false},
-  {id:'orderflow', name:'AG Order Flow',               pid:'TVI-0004', shortDesc:'Institutional order-flow on your chart — strong buying/selling, absorption, imbalance breaks, delta and live signals.', desc:'The AG Order Flow indicator reads the market like institutions do — flagging strong buying/selling, absorption zones, imbalance breaks and exhaustion right on your chart, with a live status panel and suggested stop loss.', img:'img-orderflow.png', waNum:'919876543210', badge:'PREMIUM', hidden:false},
-  {id:'esb',       name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', shortDesc:'Swing + EMA break signal — BUY/SELL signals, R:R levels and a live dashboard.', desc:'The AG-ESB indicator fires BUY/SELL signals when price closes beyond an EMA(21) and breaks the previous swing high/low. A live dashboard shows trend, streaks, active trade, entry/SL and R:R targets (1R/2R/3R).', img:'img-esb.png', waNum:'919876543210', badge:'PREMIUM', hidden:false},
-];
-const D_HERO = {badge:'Live Market Intelligence — 24/7', h1:'No Prediction.<br><span class="g">Follow Price Action.</span>', sub:'AG Technicals delivers institutional-grade analysis, live signals, and real-time charts — everything you need to trade Forex, Crypto, Indices, and Commodities with confidence.', btnText:'Join The Community →', videoUrl:''};
-const D_ABOUT = {h:'Traders First. Always.', sub:'9+ years of real screen time across every major market.', whoText:'AG Technicals is born from 9+ years of real trading experience (2017–2026) in global financial markets. We\'re not just software developers — we\'re traders first.', doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop MT5 Algorithms — manual trading into automated machines','Custom TradingView Indicators — built from real institutional data','Automate Everything — signal to execution, complete pipeline'], marketsSubtitle:"Whatever you trade, we've traded it for the last 9 years.", markets:[{icon:'IN',label:'Indian Markets',isText:true},{icon:'🔄',label:'Forex'},{icon:'₿',label:'Bitcoin & Crypto'},{icon:'✨',label:'Gold'},{icon:'⚪',label:'Silver'},{icon:'🌐',label:'And More...'}], videoUrl:''};
-const D_NEWS = {dossierTitle:'Gold Dossier — Jackson Hole Week', dossierSub:'XAU/USD at $4,645 · Institutions crowded long · Full COT + DXY breakdown inside', dossierUrl:'gold-dossier.html', videos:[], latest:[{title:'Fed holds rates — dollar softens across majors',time:'2h ago · Forex',dir:'up'},{title:'BTC reclaims $68K — bulls eye $72K resistance',time:'3h ago · Crypto',dir:'up'}], analysis:[{title:'EUR/USD: Bullish structure holds above 1.0820',time:'1h ago · AG Analysis',dir:'up'},{title:'XAU/USD: Rejection at $2340 — short setup forming',time:'4h ago · AG Analysis',dir:'dn'}], sentiment:[{label:'Forex',pct:72,dir:'up'},{label:'Crypto',pct:81,dir:'up'},{label:'Gold',pct:38,dir:'dn'},{label:'Indices',pct:68,dir:'up'}]};
-const D_CONTACT = [{icon:'✈️',name:'Telegram',sub:'@agtechnical',url:'https://t.me/agtechnical',hidden:false},{icon:'💬',name:'WhatsApp',sub:'Message Us Directly',url:'https://wa.me/919876543210',hidden:false},{icon:'📸',name:'Instagram',sub:'@agtechnical',url:'https://instagram.com/agtechnical',hidden:false}];
-const D_TICKER = [{text:'XAU/USD  $4,645.00',type:'price'},{text:'DXY WATCH · Dollar Softness Fueling The Rally',type:'dxy'},{text:'BTCUSD  67,420  ▲ 2.41%',type:'default'},{text:'JACKSON HOLE · Fed Speaks — All Eyes On Warsh Keynote',type:'jh'},{text:'EURUSD  1.0842  ▲ 0.18%',type:'default'},{text:'COT · Managed Money Net Long 130,766 Contracts',type:'cot'},{text:'NAS100  18,920  ▲ 1.20%',type:'default'},{text:'AG INTEL · Gold Dossier: Jackson Hole — Read ↗',type:'gold'}];
-const D_FAQ = [{q:'What Markets Does AG Technicals Cover?',a:'We cover Forex (all major & minor pairs), Gold & Silver, Bitcoin & Crypto, Indian Markets (NSE/BSE), Indices (NAS100, SPX500, US30) and Crude Oil.',hidden:false},{q:'Is This Financial Advice?',a:'No. AG Technicals provides market analysis and educational content only. Nothing on this platform constitutes financial advice.',hidden:false},{q:'How Do The TV Indicators Work?',a:'Our custom TradingView indicators are Pine Script-based scripts added directly to your chart. They auto-detect key levels, signals, and zones in real time.',hidden:false},{q:'What Is The Bridge / Copy Trading?',a:'The Bridge connects your broker account to our signal source. When a trade fires on our end, it automatically executes on your MT4/MT5 account.',hidden:false}];
 
-/* ═══ STATE ═══ */
-function ls(key,def){ try{ const v=localStorage.getItem('ag_'+key); return v?JSON.parse(v):JSON.parse(JSON.stringify(def)); }catch(e){ return JSON.parse(JSON.stringify(def)); } }
-function save(key,val){ try{ localStorage.setItem('ag_'+key,JSON.stringify(val)); }catch(e){} }
-
-// Force fix BEFORE load
+// Force-fix stale localStorage
 (function(){
   try{
     const s=JSON.parse(localStorage.getItem('ag_products')||'null'); if(!s) return;
     let ch=false;
     s.forEach(p=>{
-      if(p.id==='guide'){p.type='page';p.url='guide.html';p.cta='Open Guides →';p.fileUrl='';p.fileName='';ch=true;}
-      if(p.id==='education'){p.type='page';p.url='education.html';p.cta='Open Courses →';ch=true;}
+      if(p.id==='guide'){p.type='page';p.url='guide.html';p.hidden=false;p.fileUrl='';ch=true;}
+      if(p.id==='education'){p.type='page';p.url='education.html';p.hidden=false;ch=true;}
+      if(p.id==='bridge'){p.type='page';p.url='bridge.html';p.hidden=false;ch=true;}
+      if(p.id==='algo'){p.type='page';p.url='algo.html';p.hidden=false;ch=true;}
     });
     if(ch) localStorage.setItem('ag_products',JSON.stringify(s));
   }catch(e){}
 })();
-let products   = ls('products',   D_PRODS);
-let indicators = ls('indicators', D_INDS);
-let users      = ls('users',      []);
-let faqData    = ls('faq',        D_FAQ);
-let tickerData = ls('ticker',     D_TICKER);
-let contactData= ls('contact',    D_CONTACT);
-let newsData   = ls('news',       D_NEWS);
-let dirState   = {latestDir:'up', analysisDir:'up', sentDir:'up'};
-let editProdIdx=-1, editIndIdx=-1;
-let peLinkType = 'modal';
 
-/* ═══ UTILS ═══ */
-function cap(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
-function uid(){ return 'p'+Date.now()+'_'+Math.random().toString(36).slice(2,5); }
-function toast(msg,type='ok'){ const t=document.getElementById('toast'); t.textContent=(type==='ok'?'✓ ':'✕ ')+msg; t.className='show'+(type==='err'?' err':''); setTimeout(()=>t.className='',2800); }
-function setDir(key,dir,btn){ dirState[key]=dir.toLowerCase(); document.querySelectorAll('[id^="'+key+'"]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+let products = ls('products', D_PRODS);
+let _editProdIdx = -1;
+let _editSiProdIdx = -1;
+let _editSiIdx = -1;
+let _peTab = 'page';
 
-/* ═══ PAGE NAV ═══ */
-function show(name,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  btn.classList.add('active');
-  const loaders = {products:renderProds, indicators:renderInds, users:renderUsers, analytics:renderAnalytics, uploads:renderUploads, strategy:renderCsPage, faq:renderFaq, ticker:renderTicker, contact:renderContact, hero:loadHero, about:loadAbout, newsed:loadNews, export:genExport};
-  if(loaders[name]) loaders[name]();
-}
-
-/* ═══ PRODUCTS ═══ */
-function renderProdStats(){
-  const live=products.filter(p=>!p.hidden).length, hid=products.filter(p=>p.hidden).length;
-  const el=document.getElementById('prodStats'); if(!el) return;
-  el.innerHTML=`<div class="stat-box"><div class="stat-val">${products.length}</div><div class="stat-label">Total</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div><div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div><div class="stat-box"><div class="stat-val">${users.length}</div><div class="stat-label">Users</div></div>`;
-}
 function renderProds(){
-  renderProdStats();
   const el=document.getElementById('prodList'); if(!el) return;
-  el.innerHTML=products.map(function(p,i){
-    const itemCount=(p.items||[]).length;
-    const liveCount=(p.items||[]).filter(function(it){return !it.hidden;}).length;
-    const itemBadge=itemCount?'<span style="background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);color:var(--g5);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">'+liveCount+'/'+itemCount+' Items</span>':'';
-    const subRows=(p.items||[]).map(function(it,j){
-      return '<div class="item-row '+(it.hidden?'hidden-item':'')+'" style="margin-bottom:6px;padding:10px 14px;">'+
-        '<div class="item-icon" style="font-size:14px;">'+(it.img?'🖼':'📄')+'</div>'+
-        '<div class="item-info"><div class="item-name" style="font-size:13px;">'+it.name+'</div><div class="item-sub">'+(it.pid||'')+' '+(it.badge?'· '+it.badge:'')+'</div></div>'+
-        '<div class="item-actions">'+
-          '<span class="'+(it.hidden?'badge-hidden':'badge-live')+'">'+(it.hidden?'Hidden':'Live')+'</span>'+
-          '<button class="btn-icon" onclick="openSubItemEd('+i+','+j+')">✏️</button>'+
-          '<button class="btn-icon" onclick="toggleSubItem('+i+','+j+')">'+(it.hidden?'👁':'🙈')+'</button>'+
-          '<button class="btn-icon" onclick="delSubItem('+i+','+j+')">🗑️</button>'+
-        '</div>'+
-      '</div>';
-    }).join('');
-    return '<div style="margin-bottom:8px;">'+
-      '<div class="item-row '+(p.hidden?'hidden-item':'')+'" style="border-radius:'+(itemCount?'12px 12px 0 0':'12px')+'">'+
-        '<div class="item-icon">'+p.icon+'</div>'+
-        '<div class="item-info"><div class="item-name">'+p.name+'</div><div class="item-sub">'+p.sub+'</div></div>'+
-        '<div class="item-actions">'+
-          '<button class="btn-icon" onclick="toggleSubPanel('+i+')" title="Sub-Items" style="font-size:12px;color:var(--g5);border:1px solid rgba(232,184,75,0.3);border-radius:6px;padding:4px 9px;">'+itemCount+' Items ▾</button>'+
-          itemBadge+
-          '<button class="btn-icon" onclick="openProdEd('+i+')" title="Edit">✏️</button>'+
-          '<button class="btn-icon" onclick="toggleProd('+i+')">'+(p.hidden?'👁':'🙈')+'</button>'+
-          '<button class="btn-icon" onclick="delProd('+i+')">🗑️</button>'+
-        '</div>'+
-      '</div>'+
-      '<div id="subpanel_'+i+'" style="background:#0f0d14;border:1px solid #2a2736;border-top:none;border-radius:0 0 12px 12px;padding:14px 16px;display:none;">'+
-        '<div style="font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📦 Sub-Items (Shown Inside This Product)</div>'+
-        '<div id="subitems_'+i+'" style="margin-bottom:10px;">'+subRows+'</div>'+
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">'+
-          '<input class="inp" id="newSub_name_'+i+'" placeholder="Item Name" style="flex:1;min-width:120px;padding:8px 12px;font-size:12px;">'+
-          '<input class="inp" id="newSub_pid_'+i+'" placeholder="ID/PID" style="width:100px;padding:8px 12px;font-size:12px;">'+
-          '<input class="inp" id="newSub_badge_'+i+'" placeholder="Badge" style="width:90px;padding:8px 12px;font-size:12px;">'+
-          '<button class="btn-gold" style="padding:8px 16px;font-size:12px;white-space:nowrap;" onclick="addSubItem('+i+')">+ Add</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
+  if(!products.length){el.innerHTML='<div class="empty">No products. Add one below.</div>';return;}
+  el.innerHTML = products.map((p,i)=>{
+    const items = (p.items||[]);
+    const itemsHtml = items.length ? `
+      <div class="sub-items-wrap">
+        ${items.map((it,j)=>`
+          <div class="sub-item-row">
+            ${it.img?`<img src="${it.img}" style="width:28px;height:28px;border-radius:5px;object-fit:cover;border:1px solid var(--bd);">`:'<span style="font-size:16px;">📄</span>'}
+            <div class="sub-item-name">${it.name||'Unnamed'}</div>
+            <div class="sub-item-badge">${it.pid||it.badge||''}</div>
+            <button class="btn-icon" onclick="openSiEd(${i},${j})" title="Edit">✏️</button>
+            <button class="btn-icon" onclick="deleteSi(${i},${j})" title="Delete">🗑️</button>
+          </div>`).join('')}
+        <button class="btn-out" style="font-size:11px;padding:6px 12px;margin-top:4px;" onclick="openAddSi(${i})">+ Add Sub-Item</button>
+      </div>` : `<div style="margin-top:10px;"><button class="btn-out" style="font-size:11px;padding:6px 12px;" onclick="openAddSi(${i})">+ Add Sub-Item</button></div>`;
+    return `<div class="prod-row">
+      <div class="prod-row-icon">${p.img?`<img src="${p.img}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;">`:p.icon}</div>
+      <div class="prod-row-info" style="flex:1;">
+        <div class="prod-row-name">${p.name}<span class="prod-row-badge ${p.hidden?'badge-hidden':'badge-live'}">${p.hidden?'HIDDEN':'LIVE'}</span><span class="prod-row-badge ${p.type==='page'?'badge-page':'badge-modal'}">${p.type.toUpperCase()}</span></div>
+        <div class="prod-row-sub">${p.sub} ${p.url?'→ '+p.url:''} ${items.length?'· '+items.length+' sub-items':''}</div>
+        ${itemsHtml}
+      </div>
+      <div class="btns" style="flex-shrink:0;align-self:flex-start;">
+        <button class="btn-out" onclick="openProdEd(${i})" style="font-size:11px;padding:6px 12px;">✏️ Edit</button>
+        <button class="btn-out" onclick="toggleHide(${i})" style="font-size:11px;padding:6px 12px;">${p.hidden?'Show':'Hide'}</button>
+        <button class="btn-danger" onclick="deleteProd(${i})" style="font-size:11px;padding:6px 10px;">🗑️</button>
+      </div>
+    </div>`;
   }).join('');
 }
-function addProduct(){
-  const name=document.getElementById('newProdName').value.trim();
-  if(!name){toast('Enter A Product Name','err');return;}
-  const sub=document.getElementById('newProdSub').value.trim()||'New Product';
-  const icon=document.getElementById('newProdIcon').value.trim()||'📦';
-  products.push({id:uid(),name:cap(name),icon,sub:cap(sub),title:cap(name),desc:'Add Description In Editor.',cta:'Join Waitlist →',type:'modal',url:'',hidden:false});
-  save('products',products); renderProds();
-  ['newProdName','newProdSub','newProdIcon'].forEach(id=>document.getElementById(id).value='');
-  toast('Product Added — Click ✏️ To Edit');
-}
+
+function toggleHide(i){ products[i].hidden=!products[i].hidden; save('products',products); renderProds(); toast((products[i].hidden?'Hidden: ':'Visible: ')+products[i].name); }
+function deleteProd(i){ if(!confirm('Delete '+products[i].name+'?')) return; products.splice(i,1); save('products',products); renderProds(); toast('Deleted','err'); }
+
+function openAddProd(){ _editProdIdx=-1; document.getElementById('peTitle').textContent='Add New Product'; clearPeForm(); document.getElementById('prodOverlay').classList.add('open'); }
 function openProdEd(i){
-  editProdIdx=i; const p=products[i];
-  document.getElementById('pedTitle').textContent='Edit: '+p.name;
+  _editProdIdx=i; const p=products[i];
+  document.getElementById('peTitle').textContent='Edit: '+p.name;
+  document.getElementById('peId').value=p.id||'';
   document.getElementById('peName').value=p.name||'';
   document.getElementById('peIcon').value=p.icon||'';
   document.getElementById('peSub').value=p.sub||'';
-  document.getElementById('peTitle').value=p.title||'';
+  document.getElementById('peBadge').value=p.badge||'';
   document.getElementById('peDesc').value=p.desc||'';
   document.getElementById('peCta').value=p.cta||'';
   document.getElementById('peUrl').value=p.url||'';
-  setPeLinkType(p.type||'modal');
-  updatePePreview();
-  // image
-  document.getElementById('peImg').value = p.img||'';
-  const pp=document.getElementById('peImgPreview'), pt=document.getElementById('peImgThumb');
-  if(p.img&&p.img.startsWith('data:')){pp.style.display='block';pt.src=p.img;}else{pp.style.display='none';}
-  document.getElementById('peImgFile').value='';
-  // file
-  document.getElementById('peProdFileUrl').value = p.fileUrl||'';
-  document.getElementById('peProdFileStatus').textContent = p.fileName?'File: '+p.fileName:'';
-  document.getElementById('peProdFile').value='';
+  document.getElementById('peImgUrl').value=p.img||'';
+  document.getElementById('peProdFileUrl').value=p.fileUrl||'';
+  document.getElementById('peProdFileStatus').textContent=p.fileName?'Current file: '+p.fileName:'';
+  const thumb=document.getElementById('peImgThumb'), prev=document.getElementById('peImgPreview');
+  if(p.img){thumb.src=p.img;prev.style.display='block';}else{prev.style.display='none';}
+  setTab(p.type||'page');
   document.getElementById('prodOverlay').classList.add('open');
 }
-function closeProdEd(){ document.getElementById('prodOverlay').classList.remove('open'); editProdIdx=-1; }
-function saveProdEd(){
-  if(editProdIdx<0)return;
-  const p=products[editProdIdx];
-  p.name=cap(document.getElementById('peName').value)||p.name;
-  p.icon=document.getElementById('peIcon').value||p.icon;
-  p.sub=cap(document.getElementById('peSub').value)||p.sub;
-  p.title=cap(document.getElementById('peTitle').value)||p.title;
-  p.desc=document.getElementById('peDesc').value||p.desc;
-  p.cta=document.getElementById('peCta').value||p.cta;
-  p.type=peLinkType; p.url=document.getElementById('peUrl').value||'';
-  const pImg=document.getElementById('peImg').value; if(pImg) p.img=pImg;
-  const pFile=document.getElementById('peProdFileUrl').value; if(pFile) p.fileUrl=pFile;
-  save('products',products); renderProds(); closeProdEd(); genExport();
-  toast('Saved: '+p.name);
+function clearPeForm(){
+  ['peId','peName','peIcon','peSub','peBadge','peDesc','peCta','peUrl','peImgUrl','peProdFileUrl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('peProdFileStatus').textContent='';
+  document.getElementById('peImgPreview').style.display='none';
+  setTab('page');
 }
-function toggleProd(i){ products[i].hidden=!products[i].hidden; save('products',products); renderProds(); toast(products[i].name+(products[i].hidden?' Hidden':' Now Live')); }
-function delProd(i){ if(!confirm('Delete "'+products[i].name+'"?'))return; products.splice(i,1); save('products',products); renderProds(); toast('Deleted','err'); }
-function setPeLinkType(t){
-  peLinkType=t;
-  document.getElementById('peOptModal').classList.toggle('active',t==='modal');
-  document.getElementById('peOptPage').classList.toggle('active',t==='page');
-  document.getElementById('peUrlWrap').style.display=t==='page'?'block':'none';
-}
-function updatePePreview(){
-  const icon=document.getElementById('peIcon')?.value||'📦';
-  const title=document.getElementById('peTitle')?.value||'Title';
-  const desc=document.getElementById('peDesc')?.value||'Description';
-  const cta=document.getElementById('peCta')?.value||'CTA';
-  document.getElementById('pePrevTag').textContent=icon+'  Service';
-  document.getElementById('pePrevTitle').textContent=title;
-  document.getElementById('pePrevDesc').textContent=desc;
-  document.getElementById('pePrevCta').textContent=cta;
-}
-['peTitle','peDesc','peIcon','peCta'].forEach(id=>{
-  document.getElementById(id)?.addEventListener('input',updatePePreview);
-});
+function closeProdEd(){ document.getElementById('prodOverlay').classList.remove('open'); }
 
-/* ═══ INDICATORS ═══ */
-function renderIndStats(){
-  const live=indicators.filter(i=>!i.hidden).length, hid=indicators.filter(i=>i.hidden).length;
-  const el=document.getElementById('indStats'); if(!el) return;
-  el.innerHTML=`<div class="stat-box"><div class="stat-val">${indicators.length}</div><div class="stat-label">Total</div></div><div class="stat-box"><div class="stat-val" style="color:var(--green)">${live}</div><div class="stat-label">Live</div></div><div class="stat-box"><div class="stat-val" style="color:var(--red)">${hid}</div><div class="stat-label">Hidden</div></div><div class="stat-box"><div class="stat-val" style="color:var(--g5);font-size:14px;padding-top:4px;">${indicators.length?indicators[indicators.length-1].pid:'—'}</div><div class="stat-label">Latest PID</div></div>`;
-}
-function renderInds(){
-  renderIndStats();
-  const el=document.getElementById('indList'); if(!el) return;
-  el.innerHTML=indicators.map((ind,i)=>`
-    <div class="item-row ${ind.hidden?'hidden-item':''}">
-      <div class="item-icon">📊</div>
-      <div class="item-info"><div class="item-name">${ind.name}</div><div class="item-sub">${ind.pid} · ${ind.badge||'PREMIUM'}</div></div>
-      <div class="item-actions">
-        <span class="${ind.hidden?'badge-hidden':'badge-live'}">${ind.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="openIndEd(${i})">✏️</button>
-        <button class="btn-icon" onclick="toggleInd(${i})">${ind.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="delInd(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-  buildUserChecks();
-}
-function addIndicator(){
-  const name=document.getElementById('newIndName').value.trim();
-  if(!name){toast('Enter Indicator Name','err');return;}
-  const pid=document.getElementById('newIndPid').value.trim()||'TVI-NEW';
-  const img=document.getElementById('newIndImg').value.trim()||'';
-  const badge=document.getElementById('newIndBadge').value.trim()||'PREMIUM';
-  indicators.push({id:uid(),name:cap(name),pid,shortDesc:'Add Short Description.',desc:'Add Full Description.',img,waNum:'919876543210',badge,hidden:false});
-  save('indicators',indicators); renderInds();
-  ['newIndName','newIndPid','newIndImg','newIndBadge'].forEach(id=>document.getElementById(id).value='');
-  toast('Indicator Added — Click ✏️ To Edit');
-}
-function openIndEd(i){
-  editIndIdx=i; const ind=indicators[i];
-  document.getElementById('iedTitle').textContent='Edit: '+ind.name;
-  document.getElementById('ieName').value=ind.name||'';
-  document.getElementById('iePid').value=ind.pid||'';
-  document.getElementById('ieShort').value=ind.shortDesc||'';
-  document.getElementById('ieDesc').value=ind.desc||'';
-  document.getElementById('ieImg').value=ind.img||'';
-  document.getElementById('ieWa').value=ind.waNum||'919876543210';
-  document.getElementById('ieBadge').value=ind.badge||'PREMIUM';
-  document.getElementById('indOverlay').classList.add('open');
-}
-function closeIndEd(){ document.getElementById('indOverlay').classList.remove('open'); editIndIdx=-1; }
-function saveIndEd(){
-  if(editIndIdx<0)return;
-  const ind=indicators[editIndIdx];
-  ind.name=cap(document.getElementById('ieName').value)||ind.name;
-  ind.pid=document.getElementById('iePid').value||ind.pid;
-  ind.shortDesc=document.getElementById('ieShort').value||ind.shortDesc;
-  ind.desc=document.getElementById('ieDesc').value||ind.desc;
-  ind.img=document.getElementById('ieImg').value||ind.img;
-  ind.waNum=document.getElementById('ieWa').value||ind.waNum;
-  ind.badge=document.getElementById('ieBadge').value||ind.badge;
-  save('indicators',indicators); renderInds(); closeIndEd();
-  toast('Saved: '+ind.name);
-}
-function toggleInd(i){ indicators[i].hidden=!indicators[i].hidden; save('indicators',indicators); renderInds(); toast(indicators[i].name+(indicators[i].hidden?' Hidden':' Now Live')); }
-function delInd(i){ if(!confirm('Delete "'+indicators[i].name+'"?'))return; indicators.splice(i,1); save('indicators',indicators); renderInds(); toast('Deleted','err'); }
-
-/* ═══ USERS ═══ */
-function buildUserChecks(){
-  const el=document.getElementById('uProductCheck'); if(!el) return;
-  const all=[...products.filter(p=>!p.hidden).map(p=>({id:p.id,label:p.icon+' '+p.name})),...indicators.filter(i=>!i.hidden).map(i=>({id:'ind_'+i.id,label:'📊 '+i.name}))];
-  el.innerHTML=all.map(x=>`<div class="pcheck-item"><input type="checkbox" id="uc_${x.id}" value="${x.id}"><label for="uc_${x.id}">${x.label}</label></div>`).join('');
-}
-function addUser(){
-  const name=cap(document.getElementById('uName').value.trim());
-  if(!name){toast('Enter User Name','err');return;}
-  const contact=document.getElementById('uContact').value.trim();
-  const date=document.getElementById('uDate').value;
-  const status=document.getElementById('uStatus').value;
-  const prods=[...document.querySelectorAll('#uProductCheck input:checked')].map(c=>c.value);
-  users.push({id:uid(),name,contact,date,status,products:prods});
-  save('users',users); renderUsers();
-  document.getElementById('uName').value=''; document.getElementById('uContact').value=''; document.getElementById('uDate').value='';
-  document.querySelectorAll('#uProductCheck input').forEach(c=>c.checked=false);
-  toast('User Added: '+name);
-}
-function renderUsers(){
-  buildUserChecks(); renderProdStats();
-  const tbody=document.getElementById('usersBody'); if(!tbody) return;
-  if(!users.length){ tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:28px;">No Users Added Yet</td></tr>`; return; }
-  const allItems=[...products,...indicators.map(ind=>({id:'ind_'+ind.id,name:ind.name,icon:'📊'}))];
-  tbody.innerHTML=users.map((u,i)=>{
-    const tags=(u.products||[]).map(pid=>{ const item=allItems.find(x=>x.id===pid); return item?`<span class="ptag">${item.icon||''} ${item.name}</span>`:''; }).join('');
-    return `<tr><td>${u.name}</td><td>${u.contact||'—'}</td><td>${tags||'<span style="color:var(--t3);font-size:11px;">None</span>'}</td><td style="color:var(--t3)">${u.date||'—'}</td><td><span class="stag ${u.status==='active'?'s-active':'s-expired'}">${u.status==='active'?'Active':'Expired'}</span></td><td><button class="btn-icon" onclick="toggleUser(${i})">${u.status==='active'?'⏸':'▶️'}</button><button class="btn-icon" onclick="delUser(${i})">🗑️</button></td></tr>`;
-  }).join('');
-}
-function toggleUser(i){ users[i].status=users[i].status==='active'?'expired':'active'; save('users',users); renderUsers(); toast('Status Updated'); }
-function delUser(i){ if(!confirm('Delete User "'+users[i].name+'"?'))return; users.splice(i,1); save('users',users); renderUsers(); toast('Deleted','err'); }
-
-/* ═══ FAQ ═══ */
-function renderFaq(){
-  const el=document.getElementById('faqList'); if(!el) return;
-  el.innerHTML=faqData.map((f,i)=>`
-    <div class="item-row ${f.hidden?'hidden-item':''}">
-      <div class="item-info"><div class="item-name">${f.q}</div><div class="item-sub">${f.a.slice(0,80)}...</div></div>
-      <div class="item-actions">
-        <span class="${f.hidden?'badge-hidden':'badge-live'}">${f.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="editFaq(${i})">✏️</button>
-        <button class="btn-icon" onclick="toggleFaq(${i})">${f.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="delFaq(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function addFaq(){
-  const q=document.getElementById('newFaqQ').value.trim(), a=document.getElementById('newFaqA').value.trim();
-  if(!q||!a){toast('Enter Question And Answer','err');return;}
-  faqData.push({q,a,hidden:false}); save('faq',faqData); renderFaq();
-  document.getElementById('newFaqQ').value=''; document.getElementById('newFaqA').value='';
-  toast('FAQ Added');
-}
-function editFaq(i){ const f=faqData[i]; const nq=prompt('Question:',f.q); if(nq===null)return; const na=prompt('Answer:',f.a); if(na===null)return; f.q=nq; f.a=na; save('faq',faqData); renderFaq(); toast('FAQ Updated'); }
-function toggleFaq(i){ faqData[i].hidden=!faqData[i].hidden; save('faq',faqData); renderFaq(); }
-function delFaq(i){ if(!confirm('Delete?'))return; faqData.splice(i,1); save('faq',faqData); renderFaq(); toast('Deleted','err'); }
-
-/* ═══ TICKER ═══ */
-function renderTicker(){
-  const el=document.getElementById('tickerList'); if(!el) return;
-  el.innerHTML=tickerData.map((t,i)=>`
-    <div class="item-row ${t.hidden?'hidden-item':''}">
-      <div class="item-info"><div class="item-name">${t.text}</div><div class="item-sub">Type: ${t.type}</div></div>
-      <div class="item-actions">
-        <span class="${t.hidden?'badge-hidden':'badge-live'}">${t.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="toggleTicker(${i})">${t.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="delTicker(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function addTicker(){
-  const text=document.getElementById('newTickText').value.trim(), type=document.getElementById('newTickType').value;
-  if(!text){toast('Enter Text','err');return;}
-  tickerData.push({text,type,hidden:false}); save('ticker',tickerData); renderTicker();
-  document.getElementById('newTickText').value=''; toast('Ticker Added');
-}
-function toggleTicker(i){ tickerData[i].hidden=!tickerData[i].hidden; save('ticker',tickerData); renderTicker(); }
-function delTicker(i){ tickerData.splice(i,1); save('ticker',tickerData); renderTicker(); toast('Deleted','err'); }
-
-/* ═══ CONTACT ═══ */
-function renderContact(){
-  const el=document.getElementById('contactList'); if(!el) return;
-  el.innerHTML=contactData.map((c,i)=>`
-    <div class="item-row ${c.hidden?'hidden-item':''}">
-      <div class="item-icon">${c.icon}</div>
-      <div class="item-info"><div class="item-name">${c.name}</div><div class="item-sub">${c.sub} · ${c.url}</div></div>
-      <div class="item-actions">
-        <span class="${c.hidden?'badge-hidden':'badge-live'}">${c.hidden?'Hidden':'Live'}</span>
-        <button class="btn-icon" onclick="editContact(${i})">✏️</button>
-        <button class="btn-icon" onclick="toggleContact(${i})">${c.hidden?'👁':'🙈'}</button>
-        <button class="btn-icon" onclick="delContact(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function addContact(){
-  const name=document.getElementById('newCName').value.trim(), url=document.getElementById('newCUrl').value.trim();
-  if(!name||!url){toast('Enter Name And URL','err');return;}
-  const icon=document.getElementById('newCIcon').value.trim()||'💬', sub=document.getElementById('newCSub').value.trim()||name;
-  contactData.push({icon,name,sub,url,hidden:false}); save('contact',contactData); renderContact();
-  ['newCName','newCUrl','newCIcon','newCSub'].forEach(id=>document.getElementById(id).value='');
-  toast('Contact Added');
-}
-function editContact(i){ const c=contactData[i]; const nn=prompt('Name:',c.name); if(nn===null)return; const nu=prompt('URL:',c.url); if(nu===null)return; const ns=prompt('Sub-label:',c.sub); if(ns===null)return; const ni=prompt('Icon:',c.icon); if(ni===null)return; c.name=nn;c.url=nu;c.sub=ns;c.icon=ni; save('contact',contactData); renderContact(); toast('Updated'); }
-function toggleContact(i){ contactData[i].hidden=!contactData[i].hidden; save('contact',contactData); renderContact(); }
-function delContact(i){ if(!confirm('Delete?'))return; contactData.splice(i,1); save('contact',contactData); renderContact(); toast('Deleted','err'); }
-
-/* ═══ HERO ═══ */
-function loadHero(){ const h=ls('hero',D_HERO); document.getElementById('heroBadge').value=h.badge||''; document.getElementById('heroH1').value=h.h1||''; document.getElementById('heroSub').value=h.sub||''; document.getElementById('heroBtnText').value=h.btnText||''; document.getElementById('heroVideoUrl').value=h.videoUrl||''; }
-function saveHero(){ save('hero',{badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtnText').value,videoUrl:document.getElementById('heroVideoUrl').value}); toast('Hero Saved'); }
-
-/* ═══ ABOUT ═══ */
-function loadAbout(){ const a=ls('about',D_ABOUT); document.getElementById('aboutH').value=a.h||''; document.getElementById('aboutSub').value=a.sub||''; document.getElementById('aboutWho').value=a.whoText||''; document.getElementById('aboutDo').value=(a.doList||[]).join('\n'); document.getElementById('aboutMktSub').value=a.marketsSubtitle||''; document.getElementById('aboutMkts').value=(a.markets||[]).map(m=>m.isText?`${m.icon}|${m.label}|isText`:`${m.icon}|${m.label}`).join('\n'); document.getElementById('aboutVideo').value=a.videoUrl||''; }
-function saveAbout(){ const doList=document.getElementById('aboutDo').value.split('\n').filter(l=>l.trim()); const markets=document.getElementById('aboutMkts').value.split('\n').filter(l=>l.trim()).map(l=>{const p=l.split('|');return{icon:p[0],label:p[1]||p[0],isText:p[2]==='isText'};}); save('about',{h:document.getElementById('aboutH').value,sub:document.getElementById('aboutSub').value,whoText:document.getElementById('aboutWho').value,doList,marketsSubtitle:document.getElementById('aboutMktSub').value,markets,videoUrl:document.getElementById('aboutVideo').value}); toast('About Saved'); }
-
-/* ═══ NEWS ═══ */
-function loadNews(){ newsData=ls('news',D_NEWS); document.getElementById('nDossierTitle').value=newsData.dossierTitle||''; document.getElementById('nDossierSub').value=newsData.dossierSub||''; document.getElementById('nDossierUrl').value=newsData.dossierUrl||''; renderVideoList(); renderNewsItems('latest'); renderNewsItems('analysis'); renderSentiment(); }
-function saveDossier(){ newsData.dossierTitle=document.getElementById('nDossierTitle').value; newsData.dossierSub=document.getElementById('nDossierSub').value; newsData.dossierUrl=document.getElementById('nDossierUrl').value; save('news',newsData); toast('Dossier Saved'); }
-function addVideo(){ const label=document.getElementById('newVidLabel').value.trim(),url=document.getElementById('newVidUrl').value.trim(); if(!url){toast('Enter URL','err');return;} if(!newsData.videos)newsData.videos=[]; newsData.videos.push({label:label||'Video',url,hidden:false}); save('news',newsData); renderVideoList(); document.getElementById('newVidLabel').value='';document.getElementById('newVidUrl').value=''; toast('Video Added'); }
-function renderVideoList(){ const el=document.getElementById('videoList'); if(!el)return; el.innerHTML=(newsData.videos||[]).map((v,i)=>`<div class="item-row ${v.hidden?'hidden-item':''}"><div class="item-info"><div class="item-name">${v.label}</div><div class="item-sub">${v.url.slice(0,50)}</div></div><div class="item-actions"><span class="${v.hidden?'badge-hidden':'badge-live'}">${v.hidden?'Hidden':'Live'}</span><button class="btn-icon" onclick="toggleVideo(${i})">${v.hidden?'👁':'🙈'}</button><button class="btn-icon" onclick="delVideo(${i})">🗑️</button></div></div>`).join(''); }
-function toggleVideo(i){ newsData.videos[i].hidden=!newsData.videos[i].hidden; save('news',newsData); renderVideoList(); }
-function delVideo(i){ newsData.videos.splice(i,1); save('news',newsData); renderVideoList(); toast('Deleted','err'); }
-function addNewsItem(section){ const t=document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Title').value.trim(); const time=document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Time').value.trim(); const dir=dirState[section+'Dir']||'up'; if(!t){toast('Enter Headline','err');return;} if(!newsData[section])newsData[section]=[]; newsData[section].unshift({title:t,time:time||'Just Now',dir}); save('news',newsData); renderNewsItems(section); document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Title').value=''; document.getElementById('new'+section.charAt(0).toUpperCase()+section.slice(1)+'Time').value=''; toast('Added'); }
-function renderNewsItems(section){ const el=document.getElementById(section+'List'); if(!el)return; el.innerHTML=(newsData[section]||[]).map((n,i)=>`<div class="item-row" style="padding:9px 14px;margin-bottom:5px;"><div class="item-info"><div class="item-name" style="font-size:13px;">${n.dir==='up'?'▲ ':'▼ '}${n.title}</div><div class="item-sub">${n.time}</div></div><div class="item-actions"><button class="btn-icon" onclick="delNewsItem('${section}',${i})">🗑️</button></div></div>`).join(''); }
-function delNewsItem(section,i){ newsData[section].splice(i,1); save('news',newsData); renderNewsItems(section); toast('Deleted','err'); }
-function addSentiment(){ const label=document.getElementById('newSentLabel').value.trim(),pct=parseInt(document.getElementById('newSentPct').value)||50,dir=dirState['sentDir']||'up'; if(!label){toast('Enter Label','err');return;} if(!newsData.sentiment)newsData.sentiment=[]; newsData.sentiment.push({label,pct,dir}); save('news',newsData); renderSentiment(); document.getElementById('newSentLabel').value='';document.getElementById('newSentPct').value=''; toast('Sentiment Added'); }
-function renderSentiment(){ const el=document.getElementById('sentimentList'); if(!el)return; el.innerHTML=(newsData.sentiment||[]).map((s,i)=>`<div class="item-row" style="padding:9px 14px;margin-bottom:5px;"><div class="item-info"><div class="item-name" style="font-size:13px;">${s.label} — ${s.pct}% Bull (${s.dir})</div></div><div class="item-actions"><button class="btn-icon" onclick="editSent(${i})">✏️</button><button class="btn-icon" onclick="delSent(${i})">🗑️</button></div></div>`).join(''); }
-function editSent(i){ const s=newsData.sentiment[i]; const np=prompt('Bull %:',s.pct); if(np===null)return; s.pct=parseInt(np)||s.pct; const nd=prompt('Direction (up/dn/neutral):',s.dir); if(nd===null)return; s.dir=nd; save('news',newsData); renderSentiment(); toast('Updated'); }
-function delSent(i){ newsData.sentiment.splice(i,1); save('news',newsData); renderSentiment(); toast('Deleted','err'); }
-
-/* ═══ RESET ═══ */
-function resetSection(key){ if(!confirm('Reset To Default?'))return; localStorage.removeItem('ag_'+key); if(key==='hero')loadHero(); if(key==='about')loadAbout(); toast('Reset Done'); }
-
-/* ═══ EXPORT ═══ */
-function genExport(){
-  const el=document.getElementById('exportArea'); if(!el)return;
-  el.value=products.filter(p=>!p.hidden).map(p=>{
-    if(p.type==='page') return `<!-- ${p.name} -->\nonclick="window.location.href='${p.url}'"`;
-    return `<!-- ${p.name} -->\nonclick="openModal('${p.title.replace(/'/g,"\\'")}','${p.desc.replace(/'/g,"\\'")}','${p.icon}','','${p.cta.replace(/'/g,"\\'")}')"`; 
-  }).join('\n\n');
-}
-function copyExport(){ const ta=document.getElementById('exportArea'); if(!ta)return; ta.select(); navigator.clipboard.writeText(ta.value).then(()=>toast('Copied!')).catch(()=>{document.execCommand('copy');toast('Copied!');}); }
-
-/* ═══ PASSWORD ═══ */
-function setPassword(){ const nw=document.getElementById('pwNew').value, cf=document.getElementById('pwConfirm').value, msg=document.getElementById('pwMsg'); if(nw.length<8){msg.style.color='var(--red)';msg.textContent='Min 8 Characters.';return;} if(nw!==cf){msg.style.color='var(--red)';msg.textContent='Passwords Do Not Match.';return;} msg.style.color='var(--green)';msg.textContent='Password Set! To Enforce It, Add A Login Check Back To The admin.html File.'; }
-
-/* ═══ SUB-ITEMS ═══ */
-let editSubProdIdx=-1, editSubItemIdx=-1;
-
-function toggleSubPanel(i){
-  const panel=document.getElementById('subpanel_'+i);
-  if(!panel) return;
-  panel.style.display=panel.style.display==='none'?'block':'none';
+function setTab(t){
+  _peTab=t;
+  ['page','modal','link'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('active',x===t));
 }
 
-function addSubItem(prodIdx){
-  const name=document.getElementById('newSub_name_'+prodIdx)?.value.trim();
-  const pid=document.getElementById('newSub_pid_'+prodIdx)?.value.trim()||'';
-  const badge=document.getElementById('newSub_badge_'+prodIdx)?.value.trim()||'PREMIUM';
-  if(!name){toast('Enter Item Name','err');return;}
-  if(!products[prodIdx].items) products[prodIdx].items=[];
-  products[prodIdx].items.push({id:uid(),name:cap(name),pid,shortDesc:'Add Short Description.',desc:'Add Full Description.',img:'',waNum:'919876543210',badge,hidden:false});
-  save('products',products); renderProds();
-  toast('Item Added To '+products[prodIdx].name+' — Click ✏️ To Edit');
+function saveProd(){
+  const p = {
+    id: document.getElementById('peId').value||('prod_'+Date.now()),
+    name: document.getElementById('peName').value||'New Product',
+    icon: document.getElementById('peIcon').value||'📦',
+    sub: document.getElementById('peSub').value||'',
+    badge: document.getElementById('peBadge').value||'',
+    desc: document.getElementById('peDesc').value||'',
+    cta: document.getElementById('peCta').value||'Learn More →',
+    url: document.getElementById('peUrl').value||'',
+    type: _peTab,
+    img: document.getElementById('peImgUrl').value||'',
+    fileUrl: document.getElementById('peProdFileUrl').value||'',
+    fileName: document.getElementById('peProdFileStatus').textContent.replace('Current file: ','').replace('✓ ','').split(' ')[0]||'',
+    hidden: _editProdIdx>=0?products[_editProdIdx].hidden:false,
+    items: _editProdIdx>=0?(products[_editProdIdx].items||[]):[],
+  };
+  if(_editProdIdx>=0) products[_editProdIdx]=p;
+  else products.push(p);
+  save('products',products); renderProds(); closeProdEd(); toast('Saved: '+p.name);
 }
-
-function openSubItemEd(prodIdx,itemIdx){
-  editSubProdIdx=prodIdx; editSubItemIdx=itemIdx;
-  const it=products[prodIdx].items[itemIdx];
-  document.getElementById('subEdTitle').textContent='Edit: '+it.name+' ('+products[prodIdx].name+')';
-  document.getElementById('siName').value=it.name||'';
-  document.getElementById('siPid').value=it.pid||'';
-  document.getElementById('siShortDesc').value=it.shortDesc||'';
-  document.getElementById('siDesc').value=it.desc||'';
-  document.getElementById('siImg').value=it.img||'';
-  document.getElementById('siWa').value=it.waNum||'919876543210';
-  document.getElementById('siBadge').value=it.badge||'PREMIUM';
-  document.getElementById('siFileUrl').value=it.fileUrl||'';
-  document.getElementById('siFileStatus').textContent=it.fileName?'File: '+it.fileName:'';
-  // show image preview if exists
-  const prev=document.getElementById('siImgPreview');
-  const thumb=document.getElementById('siImgThumb');
-  if(it.img&&it.img.startsWith('data:')){prev.style.display='block';thumb.src=it.img;}
-  else{prev.style.display='none';}
-  document.getElementById('siImgFile').value='';
-  document.getElementById('siFileInput').value='';
-  document.getElementById('subItemOverlay').classList.add('open');
-}
-function closeSubItemEd(){ document.getElementById('subItemOverlay').classList.remove('open'); editSubProdIdx=-1; editSubItemIdx=-1; }
-
-function saveSubItemEd(){
-  if(editSubProdIdx<0||editSubItemIdx<0) return;
-  const it=products[editSubProdIdx].items[editSubItemIdx];
-  it.name=cap(document.getElementById('siName').value);
-  it.pid=document.getElementById('siPid').value;
-  it.shortDesc=document.getElementById('siShortDesc').value;
-  it.desc=document.getElementById('siDesc').value;
-  it.img=document.getElementById('siImg').value;
-  it.waNum=document.getElementById('siWa').value;
-  it.badge=document.getElementById('siBadge').value;
-  const fu=document.getElementById('siFileUrl').value;
-  if(fu) it.fileUrl=fu;
-  save('products',products); renderProds(); closeSubItemEd();
-  toast('Saved: '+it.name);
-}
-
-function toggleSubItem(prodIdx,itemIdx){
-  products[prodIdx].items[itemIdx].hidden=!products[prodIdx].items[itemIdx].hidden;
-  save('products',products); renderProds();
-}
-function delSubItem(prodIdx,itemIdx){
-  if(!confirm('Delete "'+products[prodIdx].items[itemIdx].name+'"?'))return;
-  products[prodIdx].items.splice(itemIdx,1);
-  save('products',products); renderProds(); toast('Deleted','err');
-}
-
-
-/* ═══ ANALYTICS ═══ */
-let productPrices = ls('productPrices', {});
-
-function savePrices(){
-  const fields = document.querySelectorAll('.price-inp');
-  fields.forEach(f => { productPrices[f.dataset.pid] = parseFloat(f.value)||0; });
-  save('productPrices', productPrices);
-  toast('Prices Saved');
-  renderAnalytics();
-}
-
-function renderAnalytics(){
-  const now = new Date();
-  const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
-  const thirtyDaysAgo = new Date(now - 30*24*60*60*1000);
-
-  const newLast7 = users.filter(u => u.date && new Date(u.date) >= sevenDaysAgo);
-  const newLast30 = users.filter(u => u.date && new Date(u.date) >= thirtyDaysAgo);
-  const active = users.filter(u => u.status === 'active');
-
-  // Revenue calc (7-day new users × their product prices)
-  let rev7 = 0;
-  newLast7.forEach(u => {
-    (u.products||[]).forEach(pid => { rev7 += productPrices[pid]||0; });
-  });
-
-  // Top stats
-  const topEl = document.getElementById('analyticsTopStats');
-  if(topEl) topEl.innerHTML = [
-    {v: users.length, l: 'Total Users', c: '#fff'},
-    {v: active.length, l: 'Active Users', c: '#4ade80'},
-    {v: newLast7.length, l: '7-Day New Users', c: '#e8b84b'},
-    {v: '₹'+rev7.toLocaleString('en-IN'), l: '7-Day Revenue Est.', c: '#e8b84b'},
-  ].map(s => `<div class="stat-box"><div class="stat-val" style="color:${s.c};font-size:22px;">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
-
-  // Product prices form
-  const allProds = [...products, ...indicators.map(i=>({...i, id:'ind_'+i.id, name:'📊 '+i.name}))];
-  const pfEl = document.getElementById('productPriceFields');
-  if(pfEl) pfEl.innerHTML = allProds.map(p => `
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:13px;color:#c8c4d0;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.icon||''} ${p.name}</span>
-      <input class="inp price-inp" data-pid="${p.id}" type="number" min="0" step="100" value="${productPrices[p.id]||0}" placeholder="₹ Price" style="flex:1;">
-    </div>`).join('');
-
-  // Product breakdown
-  const bdEl = document.getElementById('productBreakdown');
-  if(bdEl){
-    const counts = {};
-    allProds.forEach(p => counts[p.id] = {name: (p.icon||'') + ' ' + p.name, count:0});
-    users.forEach(u => (u.products||[]).forEach(pid => { if(counts[pid]) counts[pid].count++; }));
-    const maxC = Math.max(...Object.values(counts).map(x=>x.count), 1);
-    bdEl.innerHTML = Object.values(counts).sort((a,b)=>b.count-a.count).map(x => `
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-        <div style="min-width:160px;font-size:13px;color:#c8c4d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${x.name}</div>
-        <div style="flex:1;background:#1c1824;border-radius:6px;height:8px;overflow:hidden;">
-          <div style="height:100%;width:${maxC?Math.round(x.count/maxC*100):0}%;background:#e8b84b;border-radius:6px;transition:width 0.4s;"></div>
-        </div>
-        <div style="min-width:30px;text-align:right;font-size:13px;font-weight:700;color:#e8b84b;">${x.count}</div>
-      </div>`).join('') || '<div style="color:var(--t3);font-size:13px;">No Users Yet</div>';
-  }
-
-  // 7-day table
-  const tbl = document.getElementById('sevenDayTable');
-  if(tbl){
-    const days = [];
-    for(let i=6;i>=0;i--){
-      const d = new Date(now - i*24*60*60*1000);
-      const ds = d.toISOString().split('T')[0];
-      const cnt = users.filter(u=>u.date===ds).length;
-      days.push({ds, cnt});
-    }
-    tbl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">' +
-      days.map(d => `
-        <div style="text-align:center;background:#141119;border:1px solid #2a2736;border-radius:10px;padding:14px 8px;">
-          <div style="font-size:20px;font-weight:800;color:${d.cnt?'#e8b84b':'#4a4560'};">${d.cnt}</div>
-          <div style="font-size:10px;color:var(--t3);margin-top:4px;">${d.ds.slice(5)}</div>
-        </div>`).join('') + '</div>';
-  }
-}
-
-/* ═══ FILE UPLOADS ═══ */
-let uploadedFiles = ls('uploadedFiles', {ea: null, videos: [], images: []});
-
-function renderUploads(){
-  renderEAList();
-  renderVidList();
-  renderImgList();
-  fetchServerFiles();
-}
-
-async function fetchServerFiles(){
-  try{
-    const res = await fetch('https://ag-assistant-api.onrender.com/api/uploads/list');
-    const data = await res.json();
-    const el = document.getElementById('serverFileList');
-    if(!el) return;
-    if(!data.files || !data.files.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No Files On Server Yet.</div>'; return; }
-    el.innerHTML = data.files.map(f=>`
-      <div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div>
-          <div style="font-size:13px;font-weight:700;color:#e8b84b;">${f.name}</div>
-          <div style="font-size:11px;color:var(--t3);">${(f.size/1024 < 1000?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB')}</div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-out" onclick="navigator.clipboard.writeText('${f.url}');toast('URL Copied!')" style="font-size:11px;padding:5px 12px;">📋 Copy URL</button>
-          <a href="${f.url}" target="_blank" class="btn-out" style="font-size:11px;padding:5px 12px;text-decoration:none;">⬇ Open</a>
-        </div>
-      </div>`).join('');
-  }catch(e){ const el=document.getElementById('serverFileList'); if(el) el.innerHTML='<div style="font-size:12px;color:var(--red);">Could not reach server.</div>'; }
-}
-
-function toBase64(file){
-  return new Promise((res,rej)=>{
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-
-async function uploadEA(){
-  const file = document.getElementById('eaFileInput').files[0];
-  if(!file){ toast('Select A File First','err'); return; }
-  const st = document.getElementById('eaStatus');
-  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
-  const url = await uploadToServer(file, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
-  if(url){
-    uploadedFiles.ea = {name: file.name, size: file.size, url: url, date: new Date().toISOString().split('T')[0]};
-    save('uploadedFiles', uploadedFiles);
-    st.style.color = '#4ade80';
-    st.textContent = '✓ '+file.name+' — uploaded';
-    renderEAList();
-    toast('EA Uploaded: ' + file.name);
-  }
-}
-
-function renderEAList(){
-  const el = document.getElementById('eaFileList'); if(!el) return;
-  const ea = uploadedFiles.ea;
-  if(!ea){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No EA Uploaded Yet</div>'; return; }
-  el.innerHTML = `<div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
-    <div><div style="font-size:13px;font-weight:700;color:#e8b84b;">🤖 ${ea.name}</div><div style="font-size:11px;color:var(--t3);">${(ea.size/1024).toFixed(1)} KB · Uploaded ${ea.date}</div></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-out" onclick="downloadUploadedEA()" style="font-size:12px;padding:6px 14px;">⬇ Download</button>
-      <button class="btn-icon" onclick="deleteEA()">🗑️</button>
-    </div>
-  </div>`;
-}
-
-function downloadUploadedEA(){
-  const ea = uploadedFiles.ea; if(!ea) return;
-  window.open(ea.url||ea.data, '_blank');
-}
-
-function deleteEA(){ if(!confirm('Delete EA file?')) return; uploadedFiles.ea=null; save('uploadedFiles',uploadedFiles); renderEAList(); toast('EA Deleted','err'); }
-
-async function uploadVideo(){
-  const file = document.getElementById('vidFileInput').files[0];
-  const label = cap(document.getElementById('vidLabel').value.trim());
-  const vidId = document.getElementById('vidId').value.trim().replace(/\s+/g,'_').toLowerCase();
-  if(!file||!label||!vidId){ toast('Fill Label, ID & Select File','err'); return; }
-  const st = document.getElementById('vidStatus');
-  st.style.color='#e8b84b'; st.textContent='Uploading video to server... (may take a moment for large files)';
-  const url = await uploadToServer(file, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
-  if(url){
-    const existing = uploadedFiles.videos.findIndex(v=>v.id===vidId);
-    const entry = {id:vidId, name:label, size:file.size, url:url, date:new Date().toISOString().split('T')[0]};
-    if(existing>=0) uploadedFiles.videos[existing] = entry;
-    else uploadedFiles.videos.push(entry);
-    save('uploadedFiles', uploadedFiles);
-    st.style.color='#4ade80'; st.textContent='✓ '+label+' — uploaded';
-    document.getElementById('vidLabel').value=''; document.getElementById('vidId').value=''; document.getElementById('vidFileInput').value='';
-    renderVidList(); toast('Video Uploaded: '+label);
-  }
-}
-
-function renderVidList(){
-  const el = document.getElementById('vidFileList'); if(!el) return;
-  if(!uploadedFiles.videos.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No Videos Uploaded Yet</div>'; return; }
-  el.innerHTML = uploadedFiles.videos.map((v,i)=>`
-    <div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div><div style="font-size:13px;font-weight:700;color:#e8b84b;">🎬 ${v.name}</div><div style="font-size:11px;color:var(--t3);">ID: ${v.id} · ${(v.size/1024/1024).toFixed(1)} MB · ${v.date}</div></div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-out" onclick="downloadVid(${i})" style="font-size:12px;padding:6px 14px;">⬇</button>
-        <button class="btn-icon" onclick="deleteVid(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-
-function downloadVid(i){ const v=uploadedFiles.videos[i]; if(!v)return; window.open(v.url||v.data, '_blank'); }
-function deleteVid(i){ if(!confirm('Delete video?'))return; uploadedFiles.videos.splice(i,1); save('uploadedFiles',uploadedFiles); renderVidList(); toast('Video Deleted','err'); }
-
-async function uploadImg(){
-  const file = document.getElementById('imgFileInput').files[0];
-  const name = document.getElementById('imgName').value.trim().replace(/\s+/g,'-').toLowerCase();
-  if(!file||!name){ toast('Enter Name & Select Image','err'); return; }
-  const st = document.getElementById('imgStatus');
-  let url;
-  if(file.size < 500*1024){
-    url = await toB64(file);
-  } else {
-    st.style.color='#e8b84b'; st.textContent='Uploading image...';
-    url = await uploadToServer(file, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
-  }
-  if(url){
-    const existing = uploadedFiles.images.findIndex(v=>v.id===name);
-    const entry = {id:name, size:file.size, data:url, date:new Date().toISOString().split('T')[0]};
-    if(existing>=0) uploadedFiles.images[existing] = entry;
-    else uploadedFiles.images.push(entry);
-    save('uploadedFiles', uploadedFiles);
-    st.style.color='#4ade80'; st.textContent='✓ '+name+' — ready';
-    document.getElementById('imgName').value=''; document.getElementById('imgFileInput').value='';
-    renderImgList(); toast('Image Uploaded: '+name);
-  }
-}
-
-function renderImgList(){
-  const el = document.getElementById('imgFileList'); if(!el) return;
-  if(!uploadedFiles.images.length){ el.innerHTML='<div style="font-size:12px;color:var(--t3);">No Images Uploaded Yet</div>'; return; }
-  el.innerHTML = uploadedFiles.images.map((img,i)=>`
-    <div style="background:#141119;border:1px solid #2a2736;border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <img src="${img.data}" style="width:48px;height:36px;object-fit:cover;border-radius:6px;border:1px solid #2a2736;">
-        <div><div style="font-size:13px;font-weight:700;color:#e8b84b;">🖼️ ${img.id}</div><div style="font-size:11px;color:var(--t3);">${(img.size/1024).toFixed(1)} KB · ${img.date}</div></div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-out" onclick="copyImgUrl(${i})" style="font-size:12px;padding:6px 14px;">📋 Copy URL</button>
-        <button class="btn-icon" onclick="deleteImg(${i})">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-
-function copyImgUrl(i){ navigator.clipboard.writeText(uploadedFiles.images[i].data); toast('Image URL Copied — Paste In Sub-Item Image Field'); }
-function deleteImg(i){ if(!confirm('Delete image?'))return; uploadedFiles.images.splice(i,1); save('uploadedFiles',uploadedFiles); renderImgList(); toast('Deleted','err'); }
-
-
-/* ═══ DIRECT IMAGE/FILE UPLOAD HELPERS ═══ */
-function toB64(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
-
-const UPLOAD_API = 'https://ag-assistant-api.onrender.com';
-async function uploadToServer(file, onProgress){
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('category', 'admin');
-  if(onProgress) onProgress('Uploading ' + file.name + '...');
-  try {
-    const res = await fetch(UPLOAD_API + '/api/upload', {method:'POST', body:fd});
-    const data = await res.json();
-    if(data.ok){
-      const sizeStr = data.size < 1024*1024 ? (data.size/1024).toFixed(0)+' KB' : (data.size/1024/1024).toFixed(1)+' MB';
-      if(onProgress) onProgress('✓ ' + file.name + ' (' + sizeStr + ') — uploaded');
-      return data.url;
-    } else {
-      if(onProgress) onProgress('✗ Upload failed: ' + (data.error||'unknown'));
-      return null;
-    }
-  } catch(e) {
-    if(onProgress) onProgress('✗ Network error: ' + e.message);
-    return null;
-  }
-}
-
-async function uploadSiImg(){
-  const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image first','err');return;}
-  // Small images (<500KB) → base64 OK; larger → server upload
-  if(f.size < 500*1024){
-    const b64=await toB64(f);
-    document.getElementById('siImg').value=b64;
-    document.getElementById('siImgThumb').src=b64;
-    document.getElementById('siImgPreview').style.display='block';
-    toast('Image Ready — Click Save');
-  } else {
-    const url = await uploadToServer(f, msg=>toast(msg));
-    if(url){
-      document.getElementById('siImg').value=url;
-      document.getElementById('siImgThumb').src=url;
-      document.getElementById('siImgPreview').style.display='block';
-      toast('Image Uploaded — Click Save');
-    }
-  }
-}
-
-async function uploadSiFile(){
-  const f=document.getElementById('siFileInput').files[0]; if(!f){toast('Select file first','err');return;}
-  const st=document.getElementById('siFileStatus');
-  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
-  const url = await uploadToServer(f, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
-  if(url){
-    document.getElementById('siFileUrl').value=url;
-    if(editSubProdIdx>=0&&editSubItemIdx>=0){ products[editSubProdIdx].items[editSubItemIdx].fileName=f.name; save('products',products); }
-    st.style.color='#4ade80';
-    st.textContent='✓ '+f.name+' — uploaded. Click Save.';
-    toast('File Uploaded — Click Save');
-  }
-}
-
-async function uploadIeImg(){
-  const f=document.getElementById('ieImgFile').files[0]; if(!f){toast('Select image first','err');return;}
-  const b64=await toB64(f);
-  document.getElementById('ieImg').value=b64;
-  const prev=document.getElementById('ieImgPreview');
-  document.getElementById('ieImgThumb').src=b64;
-  prev.style.display='block';
-  toast('Image Ready — Click Save');
-}
-
 
 async function uploadPeImg(){
   const f=document.getElementById('peImgFile').files[0]; if(!f){toast('Select image first','err');return;}
-  let url;
-  if(f.size < 500*1024){
-    url = await toB64(f);
-  } else {
-    url = await uploadToServer(f, msg=>toast(msg));
-  }
-  if(url){
-    document.getElementById('peImg').value=url;
-    document.getElementById('peImgThumb').src=url;
-    document.getElementById('peImgPreview').style.display='block';
-    if(editProdIdx>=0){ products[editProdIdx].img=url; save('products',products); }
-    toast('Image Ready — Click Save');
-  }
+  let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}
+  if(url){document.getElementById('peImgUrl').value=url;document.getElementById('peImgThumb').src=url;document.getElementById('peImgPreview').style.display='block';}
 }
 async function uploadPeFile(){
   const f=document.getElementById('peProdFile').files[0]; if(!f){toast('Select file first','err');return;}
-  const st=document.getElementById('peProdFileStatus');
-  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
-  const url = await uploadToServer(f, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
-  if(url){
-    document.getElementById('peProdFileUrl').value=url;
-    if(editProdIdx>=0){ products[editProdIdx].fileUrl=url; products[editProdIdx].fileName=f.name; save('products',products); }
-    st.style.color='#4ade80';
-    st.textContent='✓ '+f.name+' — uploaded. Click Save.';
-    toast('File Uploaded — Click Save');
-  }
+  const st=document.getElementById('peProdFileStatus'); st.textContent='Uploading...';
+  const url=await uploadToServer(f,msg=>{st.textContent=msg;});
+  if(url){document.getElementById('peProdFileUrl').value=url; st.textContent='✓ '+f.name;}
 }
 
-
-/* ═══ CUSTOM STRATEGY SENDER ═══ */
-let csSentHistory = ls('csSentHistory', []);
-let csFileData = null;
-let csFileName = '';
-
-function renderCsPage(){
-  renderCsSent();
-  updateCsPreview();
+/* ── SUB-ITEMS ── */
+function openAddSi(pi){ _editSiProdIdx=pi; _editSiIdx=-1; document.getElementById('siTitle').textContent='Add Sub-Item'; clearSiForm(); document.getElementById('siProdId').value=pi; document.getElementById('siOverlay').classList.add('open'); }
+function openSiEd(pi,ji){
+  _editSiProdIdx=pi; _editSiIdx=ji;
+  const it=products[pi].items[ji];
+  document.getElementById('siTitle').textContent='Edit: '+it.name;
+  document.getElementById('siProdId').value=pi;
+  document.getElementById('siIdx').value=ji;
+  document.getElementById('siName').value=it.name||'';
+  document.getElementById('siPid').value=it.pid||'';
+  document.getElementById('siBadge').value=it.badge||'';
+  document.getElementById('siDesc').value=it.desc||'';
+  document.getElementById('siImgUrl').value=it.img||'';
+  document.getElementById('siFileUrl').value=it.fileUrl||'';
+  document.getElementById('siFileStatus').textContent=it.fileName?'File: '+it.fileName:'';
+  document.getElementById('siVid').value=it.videoUrl||'';
+  const prev=document.getElementById('siImgPrev'),thumb=document.getElementById('siImgThumb');
+  if(it.img){thumb.src=it.img;prev.style.display='block';}else{prev.style.display='none';}
+  document.getElementById('siOverlay').classList.add('open');
+}
+function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; }
+function closeSiEd(){ document.getElementById('siOverlay').classList.remove('open'); }
+function saveSi(){
+  const pi=parseInt(document.getElementById('siProdId').value);
+  const ji=_editSiIdx;
+  const it={name:document.getElementById('siName').value,pid:document.getElementById('siPid').value,badge:document.getElementById('siBadge').value,desc:document.getElementById('siDesc').value,img:document.getElementById('siImgUrl').value,fileUrl:document.getElementById('siFileUrl').value,fileName:document.getElementById('siFileStatus').textContent.replace('File: ','').replace('✓ ','').split(' ')[0]||'',videoUrl:document.getElementById('siVid').value,hidden:false};
+  if(!products[pi].items) products[pi].items=[];
+  if(ji>=0) products[pi].items[ji]=it; else products[pi].items.push(it);
+  save('products',products); renderProds(); closeSiEd(); toast('Sub-item saved');
+}
+function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].items.splice(ji,1); save('products',products); renderProds(); toast('Deleted','err'); }
+async function uploadSiImg(){
+  const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image','err');return;}
+  let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}
+  if(url){document.getElementById('siImgUrl').value=url;document.getElementById('siImgThumb').src=url;document.getElementById('siImgPrev').style.display='block';}
+}
+async function uploadSiFile(){
+  const f=document.getElementById('siFileInput').files[0]; if(!f){toast('Select file','err');return;}
+  const st=document.getElementById('siFileStatus'); st.textContent='Uploading...';
+  const url=await uploadToServer(f,msg=>{st.textContent=msg;});
+  if(url){document.getElementById('siFileUrl').value=url; st.textContent='✓ '+f.name;}
 }
 
-function updateCsPreview(){
-  const name = document.getElementById('csUserName')?.value.trim()||'[User]';
-  const market = document.getElementById('csMarket')?.value.trim()||'[Market]';
-  const tf = document.getElementById('csTf')?.value.trim()||'[Timeframe]';
-  const notes = document.getElementById('csNotes')?.value.trim()||'';
-  const fileNote = csFileName ? '\n\n📎 File Attached: ' + csFileName + '\n(Download link sent separately)' : '';
-  const msg = `Hi ${name}! 👋\n\nYour Custom Strategy From AG Technicals Is Ready! ✅\n\n📊 Market: ${market}\n⏱ Timeframe: ${tf}\n\n${notes}${fileNote}\n\n— AG Technicals\nhttps://ag-technicals.onrender.com`;
-  const el = document.getElementById('csPreviewMsg');
-  if(el) el.textContent = msg;
-  return msg;
-}
-
-// Live preview on input
-document.addEventListener('DOMContentLoaded', ()=>{
-  ['csUserName','csMarket','csTf','csNotes'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.addEventListener('input', updateCsPreview);
-  });
-});
-
-async function uploadCsFile(){
-  const f = document.getElementById('csFileInput').files[0];
-  if(!f){ toast('Select File First','err'); return; }
-  const st = document.getElementById('csFileStatus');
-  st.style.color='#e8b84b'; st.textContent='Uploading to server...';
-  const url = await uploadToServer(f, msg=>{ st.style.color='#e8b84b'; st.textContent=msg; });
-  if(url){
-    csFileData = url; csFileName = f.name;
-    st.style.color='#4ade80';
-    st.textContent='✓ '+f.name+' — uploaded & ready to send';
-    updateCsPreview();
-    toast('File Ready');
-  }
-}
-
-function getCsMsg(){ return updateCsPreview(); }
-
-function sendCsWa(){
-  const wa = document.getElementById('csUserWa').value.trim().replace(/\D/g,'');
-  if(!wa){ toast('Enter WhatsApp Number','err'); return; }
-  const msg = getCsMsg();
-  logCsSent('WhatsApp', wa);
-  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(msg), '_blank');
-  toast('WhatsApp Opened!');
-}
-
-function sendCsTg(){
-  const wa = document.getElementById('csUserWa').value.trim();
-  const msg = getCsMsg();
-  logCsSent('Telegram', wa);
-  // If it's a username, open Telegram DM
-  const tg = wa.startsWith('@') ? wa.slice(1) : wa;
-  window.open('https://t.me/'+tg, '_blank');
-  navigator.clipboard.writeText(msg).catch(()=>{});
-  toast('Telegram Opened! Message Copied — Paste & Send');
-}
-
-function copyCsMsg(){
-  navigator.clipboard.writeText(getCsMsg());
-  toast('Message Copied!');
-}
-
-function logCsSent(via, contact){
-  const name = document.getElementById('csUserName').value.trim()||'Unknown';
-  const market = document.getElementById('csMarket').value.trim();
-  csSentHistory.unshift({name, contact, market, via, file:csFileName||'—', date:new Date().toISOString().split('T')[0]});
-  if(csSentHistory.length>50) csSentHistory.pop();
-  save('csSentHistory', csSentHistory);
-  renderCsSent();
-}
-
-function renderCsSent(){
-  const el = document.getElementById('csSentList'); if(!el) return;
-  if(!csSentHistory.length){ el.innerHTML='<div style="color:var(--t3);font-size:13px;">No Strategies Sent Yet.</div>'; return; }
-  el.innerHTML = csSentHistory.slice(0,20).map((s,i)=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1c1824;">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:#fff;">${s.name} <span style="font-size:11px;font-weight:400;color:var(--t3);">· ${s.contact||'—'}</span></div>
-        <div style="font-size:11px;color:var(--t3);">${s.market||'—'} · via ${s.via} · ${s.date}</div>
-        <div style="font-size:11px;color:var(--g5);">📎 ${s.file}</div>
+/* ══════════════ TV INDICATORS ══════════════ */
+const D_INDS = [
+  {id:'TVI-0003',name:'AG SMC Indicator',img:'img-smc.png',badge:'PREMIUM',hidden:false},
+  {id:'TVI-0004',name:'AG Order Flow',img:'img-orderflow.png',badge:'PREMIUM',hidden:false},
+  {id:'TVI-0005',name:'AG-ESB (Swing + EMA + R:R)',img:'img-esb.png',badge:'PREMIUM',hidden:false},
+];
+let indicators = ls('indicators', D_INDS);
+function renderInds(){
+  const live=indicators.filter(i=>!i.hidden).length, hidden=indicators.filter(i=>i.hidden).length;
+  document.getElementById('indStats').innerHTML=
+    `<div class="stat"><div class="stat-val" style="color:var(--g5);">${indicators.length}</div><div class="stat-label">Total</div></div>
+     <div class="stat"><div class="stat-val" style="color:var(--green);">${live}</div><div class="stat-label">Live</div></div>
+     <div class="stat"><div class="stat-val" style="color:var(--red);">${hidden}</div><div class="stat-label">Hidden</div></div>
+     <div class="stat"><div class="stat-val" style="color:var(--g5);font-size:16px;font-family:'JetBrains Mono',monospace;">${indicators.length?indicators[indicators.length-1].id:'—'}</div><div class="stat-label">Latest PID</div></div>`;
+  document.getElementById('indList').innerHTML = indicators.map((ind,i)=>`
+    <div class="prod-row">
+      <div class="prod-row-icon"><img src="${ind.img}" style="width:40px;height:40px;object-fit:contain;border-radius:6px;" onerror="this.style.display='none'"></div>
+      <div class="prod-row-info">
+        <div class="prod-row-name">${ind.name}<span class="prod-row-badge ${ind.hidden?'badge-hidden':'badge-live'}">${ind.hidden?'HIDDEN':'LIVE'}</span></div>
+        <div class="prod-row-sub">${ind.id} · ${ind.badge||''}</div>
       </div>
-      <button class="btn-icon" onclick="deleteCsSent(${i})">🗑️</button>
-    </div>`).join('');
+      <div class="btns" style="flex-shrink:0;">
+        <button class="btn-out" onclick="toggleInd(${i})" style="font-size:11px;padding:6px 12px;">${ind.hidden?'Show':'Hide'}</button>
+        <button class="btn-danger" onclick="deleteInd(${i})" style="font-size:11px;padding:6px 10px;">🗑️</button>
+      </div>
+    </div>`).join('') || '<div class="empty">No indicators.</div>';
 }
+function addInd(){
+  const name=document.getElementById('indName').value.trim(), pid=document.getElementById('indPid').value.trim();
+  if(!name||!pid){toast('Fill name and PID','err');return;}
+  indicators.push({id:pid,name,img:document.getElementById('indImg').value.trim(),badge:document.getElementById('indBadge').value.trim()||'PREMIUM',hidden:false});
+  save('indicators',indicators); renderInds(); ['indName','indPid','indImg','indBadge'].forEach(id=>document.getElementById(id).value=''); toast('Added: '+name);
+}
+function toggleInd(i){ indicators[i].hidden=!indicators[i].hidden; save('indicators',indicators); renderInds(); }
+function deleteInd(i){ if(!confirm('Delete?')) return; indicators.splice(i,1); save('indicators',indicators); renderInds(); toast('Deleted','err'); }
 
-function deleteCsSent(i){ csSentHistory.splice(i,1); save('csSentHistory',csSentHistory); renderCsSent(); toast('Deleted','err'); }
+/* ══════════════ USERS ══════════════ */
+let users = ls('users', []);
+function renderUsers(){
+  // Product picker
+  document.getElementById('uProdPicker').innerHTML = products.map(p=>`
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--t2);">
+      <input type="checkbox" class="u-prod-check" value="${p.id}" style="accent-color:var(--g5);">${p.icon} ${p.name}
+    </label>`).join('');
+  document.getElementById('uDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('userList').innerHTML = users.length ? users.map((u,i)=>`
+    <div class="user-row">
+      <div class="user-avatar">${(u.name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1;">
+        <div class="user-name">${u.name||'Unknown'}</div>
+        <div class="user-meta">${u.contact||''} · ${u.date||''} · <span style="color:${u.status==='active'?'var(--green)':u.status==='trial'?'var(--g5)':'var(--red);'}">${(u.status||'active').toUpperCase()}</span></div>
+        <div style="margin-top:4px;">${(u.products||[]).map(pid=>{const pr=products.find(x=>x.id===pid); return pr?`<span class="product-chip">${pr.icon} ${pr.name}</span>`:''}).join('')}</div>
+      </div>
+      <button class="btn-danger" onclick="deleteUser(${i})" style="font-size:11px;padding:5px 10px;">🗑️</button>
+    </div>`).join('') : '<div class="empty">No users yet.</div>';
+}
+function addUser(){
+  const name=document.getElementById('uName').value.trim();
+  if(!name){toast('Enter user name','err');return;}
+  const prods=[...document.querySelectorAll('.u-prod-check:checked')].map(c=>c.value);
+  users.push({name,contact:document.getElementById('uContact').value.trim(),products:prods,date:document.getElementById('uDate').value,status:document.getElementById('uStatus').value});
+  save('users',users); renderUsers(); document.getElementById('uName').value=''; document.getElementById('uContact').value=''; toast('User added: '+name);
+}
+function deleteUser(i){ if(!confirm('Delete user?')) return; users.splice(i,1); save('users',users); renderUsers(); toast('Deleted','err'); }
 
+/* ══════════════ ANALYTICS ══════════════ */
+let prices = ls('productPrices',{});
+function renderAnalytics(){
+  const now=new Date(), d7=new Date(now-7*864e5), d30=new Date(now-30*864e5);
+  const new7=users.filter(u=>u.date&&new Date(u.date)>=d7);
+  const active=users.filter(u=>u.status==='active');
+  let rev=0; new7.forEach(u=>(u.products||[]).forEach(pid=>rev+=prices[pid]||0));
+  document.getElementById('analyticsStats').innerHTML=[
+    {v:users.length,l:'Total Users',c:'#fff'},
+    {v:active.length,l:'Active Users',c:'var(--green)'},
+    {v:new7.length,l:'7-Day New',c:'var(--g5)'},
+    {v:'₹'+rev.toLocaleString('en-IN'),l:'7-Day Revenue Est.',c:'var(--g5)'},
+  ].map(s=>`<div class="stat"><div class="stat-val" style="color:${s.c};">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
+  document.getElementById('priceFlds').innerHTML=products.map(p=>`
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);">
+      <span style="min-width:120px;">${p.icon} ${p.name}</span>
+      <input class="inp price-inp" data-pid="${p.id}" type="number" min="0" value="${prices[p.id]||0}" style="width:80px;padding:6px 8px;">
+    </label>`).join('');
+  const maxC=Math.max(...products.map(p=>users.filter(u=>(u.products||[]).includes(p.id)).length),1);
+  document.getElementById('prodBreakdown').innerHTML=products.map(p=>{
+    const cnt=users.filter(u=>(u.products||[]).includes(p.id)).length;
+    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+      <div style="min-width:150px;font-size:12px;color:var(--t2);">${p.icon} ${p.name}</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${Math.round(cnt/maxC*100)}%;"></div></div>
+      <div style="min-width:24px;text-align:right;font-size:12px;font-weight:700;color:var(--g5);">${cnt}</div>
+    </div>`;}).join('');
+  const days=[]; for(let i=6;i>=0;i--){const d=new Date(now-i*864e5),ds=d.toISOString().split('T')[0],cnt=users.filter(u=>u.date===ds).length;days.push({ds:ds.slice(5),cnt});}
+  document.getElementById('sevenDay').innerHTML='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">'+days.map(d=>`<div style="text-align:center;background:var(--c3);border-radius:8px;padding:12px 4px;"><div style="font-size:20px;font-weight:800;color:${d.cnt?'var(--g5)':'var(--t3)'};">${d.cnt}</div><div style="font-size:10px;color:var(--t3);margin-top:3px;">${d.ds}</div></div>`).join('')+'</div>';
+}
+function savePrices(){ document.querySelectorAll('.price-inp').forEach(f=>prices[f.dataset.pid]=parseFloat(f.value)||0); save('productPrices',prices); toast('Prices saved'); renderAnalytics(); }
 
-async function clearNewsCache(){
-  const el = document.getElementById('cacheClearMsg');
-  if(el) el.textContent = 'Clearing...';
+/* ══════════════ CUSTOM STRATEGY ══════════════ */
+let csSent=ls('csSent',[]); let csFileUrl=''; let csFileName='';
+function renderStrategy(){ renderCsSent(); previewMsg(); }
+function previewMsg(){
+  const name=document.getElementById('csName')?.value||'[User]', market=document.getElementById('csMarket')?.value||'[Market]', tf=document.getElementById('csTf')?.value||'[Timeframe]', notes=document.getElementById('csNotes')?.value||'';
+  const fileNote=csFileName?'\\n\\n📎 File: '+csFileName:'';
+  const msg='Hi '+name+'! 👋\\n\\nYour Custom Strategy From AG Technicals Is Ready ✅\\n\\n📊 Market: '+market+'\\n⏱ Timeframe: '+tf+'\\n\\n'+notes+fileNote+'\\n\\n— AG Technicals\\nhttps://ag-technicals.onrender.com';
+  const el=document.getElementById('csPreview'); if(el) el.textContent=msg; return msg;
+}
+async function uploadCsFile(){ const f=document.getElementById('csFile').files[0]; if(!f) return; const st=document.getElementById('csFileStatus'); st.textContent='Uploading...'; const url=await uploadToServer(f,m=>{st.textContent=m;}); if(url){csFileUrl=url;csFileName=f.name;st.style.color='var(--green)';previewMsg();} }
+function sendWa(){ const wa=document.getElementById('csContact').value.trim().replace(/\D/g,''); if(!wa){toast('Enter WhatsApp number','err');return;} logSent('WhatsApp',wa); window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(previewMsg()),'_blank'); }
+function sendTg(){ const tg=document.getElementById('csContact').value.trim().replace('@',''); if(!tg){toast('Enter Telegram handle','err');return;} logSent('Telegram',tg); navigator.clipboard.writeText(previewMsg()); window.open('https://t.me/'+tg,'_blank'); toast('Message copied — paste in Telegram'); }
+function copyMsg(){ navigator.clipboard.writeText(previewMsg()); toast('Copied!'); }
+function logSent(via,contact){ csSent.unshift({name:document.getElementById('csName').value,contact,via,file:csFileName||'—',date:new Date().toISOString().split('T')[0]}); if(csSent.length>50) csSent.pop(); save('csSent',csSent); renderCsSent(); }
+function renderCsSent(){ const el=document.getElementById('csSent'); if(!el) return; el.innerHTML=csSent.length?csSent.slice(0,20).map((s,i)=>`<div class="card-row"><div><div style="font-size:13px;font-weight:600;color:#fff;">${s.name} <span style="color:var(--t3);font-size:11px;">· ${s.contact}</span></div><div style="font-size:11px;color:var(--t3);">via ${s.via} · ${s.date} · 📎 ${s.file}</div></div><button class="btn-icon" onclick="csSent.splice(${i},1);save('csSent',csSent);renderCsSent();">🗑️</button></div>`).join(''):'<div class="empty">No strategies sent yet.</div>'; }
+
+/* ══════════════ HERO ══════════════ */
+const D_HERO={badge:'Live Intelligence · 9+ Years Screen Time',h1:'Trade With The <span style="color:var(--g5)">Edge</span> Of Real Intelligence',sub:'AG Technicals gives you indicators, signals, and education built from 9+ years of real screen time.',btnText:'Explore Services',videoUrl:''};
+let hero=ls('hero',D_HERO);
+function loadHero(){ ['heroBadge','heroH1','heroSub','heroBtn','heroVid'].forEach((id,i)=>document.getElementById(id).value=[hero.badge,hero.h1,hero.sub,hero.btnText,hero.videoUrl||''][i]); }
+function saveHero(){ hero={badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtn').value,videoUrl:document.getElementById('heroVid').value}; save('hero',hero); toast('Hero saved'); }
+
+/* ══════════════ TICKER ══════════════ */
+const D_TICK=[{text:'XAU/USD  Live',type:'gold'},{text:'BTC/USD  Live',type:'default'},{text:'COT · Tracking Institutional Flow',type:'cot'}];
+let ticker=ls('ticker',D_TICK);
+function loadTicker(){ renderTickerList(); }
+function addTicker(){ const t=document.getElementById('tkText').value.trim(); if(!t){toast('Enter text','err');return;} ticker.push({text:t,type:document.getElementById('tkType').value}); renderTickerList(); document.getElementById('tkText').value=''; }
+function renderTickerList(){ document.getElementById('tickerList').innerHTML=ticker.map((t,i)=>`<div class="card-row"><div><div style="font-size:13px;color:#fff;">${t.text}</div><div style="font-size:10px;color:var(--t3);">${t.type}</div></div><button class="btn-icon" onclick="ticker.splice(${i},1);renderTickerList();">🗑️</button></div>`).join('')||'<div class="empty">No pills.</div>'; }
+function saveTicker(){ save('ticker',ticker); toast('Ticker saved'); }
+
+/* ══════════════ CONTACT ══════════════ */
+const D_CONTACT=[{name:'WhatsApp',icon:'💬',url:'https://wa.me/919876543210',handle:'+91 98765 43210'},{name:'Telegram',icon:'✈️',url:'https://t.me/agtechnical',handle:'@agtechnical'},{name:'Instagram',icon:'📸',url:'https://instagram.com/agtechnical',handle:'@agtechnical'}];
+let contact=ls('contact',D_CONTACT);
+function loadContact(){ document.getElementById('contactList').innerHTML=contact.map((c,i)=>`<div class="card-row"><div>${c.icon} <strong>${c.name}</strong> <span style="color:var(--t3);font-size:12px;">${c.handle}</span></div><button class="btn-icon" onclick="contact.splice(${i},1);loadContact();">🗑️</button></div>`).join(''); }
+function addContact(){ const name=document.getElementById('ctName').value.trim(); if(!name) return; contact.push({name,icon:document.getElementById('ctIcon').value,url:document.getElementById('ctUrl').value,handle:document.getElementById('ctHandle').value}); ['ctName','ctIcon','ctUrl','ctHandle'].forEach(id=>document.getElementById(id).value=''); loadContact(); }
+function saveContact(){ save('contact',contact); toast('Contacts saved'); }
+
+/* ══════════════ ABOUT ══════════════ */
+const D_ABOUT={title:'About AG Technicals',whoText:'AG Technicals is built by traders, for traders — 9+ years of real screen time across every major market.',markets:'Forex, Crypto, Gold (XAU), Indices, Commodities',videoUrl:''};
+let about=ls('about',D_ABOUT);
+function loadAbout(){ document.getElementById('aboutTitle').value=about.title||''; document.getElementById('aboutWho').value=about.whoText||''; document.getElementById('aboutMarkets').value=about.markets||''; document.getElementById('aboutVid').value=about.videoUrl||''; }
+function saveAbout(){ about={title:document.getElementById('aboutTitle').value,whoText:document.getElementById('aboutWho').value,markets:document.getElementById('aboutMarkets').value,videoUrl:document.getElementById('aboutVid').value}; save('about',about); toast('About saved'); }
+
+/* ══════════════ FAQ ══════════════ */
+const D_FAQ=[{q:'What is the Bridge / copy trading?',a:'The Bridge connects your TradingView to MT5. Signals fire automatically on your account.'},{q:'Do I need to be online for trades to execute?',a:'No — the Bridge runs on a server 24/7. Your MT5 EA just needs to be running on a VPS.'},{q:'Which markets do you cover?',a:'Forex (majors and minors), Gold (XAU/USD), Crypto (BTC, ETH), and major indices.'}];
+let faq=ls('faq',D_FAQ);
+function loadFaq(){ document.getElementById('faqList').innerHTML=faq.map((f,i)=>`<div class="card-row"><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#fff;">${f.q}</div><div style="font-size:12px;color:var(--t3);margin-top:3px;">${f.a.slice(0,80)}...</div></div><button class="btn-icon" onclick="faq.splice(${i},1);loadFaq();">🗑️</button></div>`).join('')||'<div class="empty">No FAQ items.</div>'; }
+function addFaq(){ const q=document.getElementById('faqQ').value.trim(),a=document.getElementById('faqA').value.trim(); if(!q||!a){toast('Fill question and answer','err');return;} faq.push({q,a}); save('faq',faq); loadFaq(); document.getElementById('faqQ').value=''; document.getElementById('faqA').value=''; toast('FAQ added'); }
+function saveFaq(){ save('faq',faq); toast('FAQ saved'); }
+
+/* ══════════════ NEWS ══════════════ */
+const D_NEWS={dossierTitle:'Gold Dossier — COT + DXY + Institutional Flow',dossierSub:'Live institutional data, COT analysis, and DXY watch — updated regularly.',dossierUrl:'gold-dossier.html'};
+let newsData=ls('news',D_NEWS);
+function loadNews(){ document.getElementById('ndTitle').value=newsData.dossierTitle||''; document.getElementById('ndSub').value=newsData.dossierSub||''; document.getElementById('ndUrl').value=newsData.dossierUrl||''; }
+function saveNews(){ newsData.dossierTitle=document.getElementById('ndTitle').value; newsData.dossierSub=document.getElementById('ndSub').value; newsData.dossierUrl=document.getElementById('ndUrl').value; save('news',newsData); toast('Dossier settings saved'); }
+async function clearNewsCache(){ const el=document.getElementById('newsCacheMsg'); el.textContent='Clearing...'; try{ const r=await fetch(API+'/api/cache/clear'); const d=await r.json(); el.textContent=d.ok?'✓ Refreshed — reload site':'✗ Failed'; setTimeout(()=>el.textContent='',4000); }catch(e){el.textContent='✗ Server unreachable';} }
+
+/* ══════════════ UPLOADS ══════════════ */
+async function uploadGlobal(){
+  const f=document.getElementById('globalFile').files[0]; if(!f){toast('Select a file','err');return;}
+  const st=document.getElementById('globalFileStatus'); st.textContent='Uploading...';
+  const url=await uploadToServer(f,m=>{st.textContent=m;});
+  if(url){ st.style.color='var(--green)'; st.textContent='✓ '+f.name+' — '+url; await navigator.clipboard.writeText(url); toast('URL copied to clipboard!'); loadServerFiles(); }
+}
+async function loadServerFiles(){
+  const el=document.getElementById('serverFiles'); if(!el) return;
+  el.innerHTML='<div class="empty">Loading...</div>';
   try{
-    const res = await fetch('https://ag-assistant-api.onrender.com/api/cache/clear');
-    const data = await res.json();
-    if(el) el.textContent = data.ok ? '✓ Done — news will refresh on next page load' : '✗ Failed';
-    setTimeout(()=>{ if(el) el.textContent=''; }, 4000);
-  }catch(e){ if(el) el.textContent='✗ Server unreachable'; }
+    const r=await fetch(API+'/api/uploads/list'); const d=await r.json();
+    if(!d.files||!d.files.length){el.innerHTML='<div class="empty">No files on server yet.</div>';return;}
+    el.innerHTML=d.files.map(f=>`
+      <div class="card-row">
+        <div><div style="font-size:13px;font-weight:600;color:var(--g5);">${f.name}</div><div style="font-size:11px;color:var(--t3);">${f.size<1024*1024?(f.size/1024).toFixed(0)+' KB':(f.size/1024/1024).toFixed(1)+' MB'}</div></div>
+        <div class="btns">
+          <button class="btn-out" onclick="navigator.clipboard.writeText('${f.url}');toast('URL Copied!')" style="font-size:11px;padding:5px 10px;">📋 Copy URL</button>
+          <a href="${f.url}" target="_blank" class="btn-out" style="font-size:11px;padding:5px 10px;text-decoration:none;">⬇ Open</a>
+        </div>
+      </div>`).join('');
+  }catch(e){el.innerHTML='<div class="empty" style="color:var(--red);">Server unreachable.</div>';}
 }
-/* ═══ ESC ═══ */
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('prodOverlay').classList.remove('open'); document.getElementById('indOverlay').classList.remove('open'); document.getElementById('subItemOverlay').classList.remove('open'); } });
+function loadUploads(){ loadServerFiles(); }
 
-/* ═══ INIT ═══ */
-window.addEventListener('DOMContentLoaded', ()=>{ renderProds(); });
+/* ══════════════ EXPORT / IMPORT ══════════════ */
+function exportData(){
+  const data={products,indicators,users,hero,ticker,contact,about,faq,news:newsData};
+  const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='ag-admin-backup-'+new Date().toISOString().split('T')[0]+'.json'; a.click();
+}
+function importData(){
+  const f=document.getElementById('importFile').files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result); if(d.products){products=d.products;save('products',products);} if(d.indicators){indicators=d.indicators;save('indicators',indicators);} if(d.users){users=d.users;save('users',users);} toast('Import successful — reload page');} catch(e){toast('Invalid JSON file','err');}}; r.readAsText(f);
+}
+
+/* ══════════════ SECURITY ══════════════ */
+async function setupBiometric(){
+  const btn=document.getElementById('bioSetupBtn'), msg=document.getElementById('bioSetupMsg');
+  btn.textContent='Setting up...';
+  try{
+    const ch=new Uint8Array(32); crypto.getRandomValues(ch);
+    const cred=await navigator.credentials.create({publicKey:{challenge:ch,rp:{name:'AG Technicals Admin'},user:{id:new Uint8Array(16),name:'admin',displayName:'AG Admin'},pubKeyCredParams:[{alg:-7,type:'public-key'}],timeout:30000,authenticatorSelection:{userVerification:'required'},attestation:'none'}});
+    localStorage.setItem('ag_bio_id',btoa(String.fromCharCode(...new Uint8Array(cred.rawId))));
+    msg.style.color='var(--green)'; msg.textContent='✓ Biometric registered on this device!'; btn.textContent='Set Up Biometric';
+  }catch(e){ msg.style.color='var(--red)'; msg.textContent='✗ Failed: '+e.message; btn.textContent='Set Up Biometric'; }
+}
+function changePass(){
+  const cur=document.getElementById('pwCur').value, nw=document.getElementById('pwNew').value, cf=document.getElementById('pwConf').value;
+  const msg=document.getElementById('pwMsg');
+  if(cur!==_pass){msg.style.color='var(--red)';msg.textContent='Current password wrong.';return;}
+  if(nw.length<6){msg.style.color='var(--red)';msg.textContent='Min 6 characters.';return;}
+  if(nw!==cf){msg.style.color='var(--red)';msg.textContent='Passwords do not match.';return;}
+  _pass=nw; localStorage.setItem(PASS_KEY,nw);
+  msg.style.color='var(--green)'; msg.textContent='✓ Password changed successfully!';
+  ['pwCur','pwNew','pwConf'].forEach(id=>document.getElementById(id).value='');
+}
+
+/* ── INIT ── */
+renderProds();
 </script>
 </body>
 </html>

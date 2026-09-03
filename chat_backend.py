@@ -193,7 +193,7 @@ async def upload_file(file: UploadFile = File(...), category: str = Form(default
         # Stream to disk (handles large files)
         with open(save_path, "wb") as f:
             while True:
-                chunk = await file.read(1024 * 1024)  # 1MB chunks
+                chunk = await file.read(4 * 1024 * 1024)  # 4MB chunks
                 if not chunk:
                     break
                 f.write(chunk)

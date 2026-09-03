@@ -627,14 +627,29 @@ function toast(msg,type){
 }
 function toB64(file){ return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);}); }
 async function uploadToServer(file, onProg){
-  const fd=new FormData(); fd.append('file',file); fd.append('category','admin');
-  if(onProg) onProg('Uploading '+file.name+'...');
-  try{
-    const res=await fetch(API+'/api/upload',{method:'POST',body:fd});
-    const data=await res.json();
-    if(data.ok){ if(onProg) onProg('✓ '+file.name+' uploaded'); return data.url; }
-    else{ if(onProg) onProg('✗ '+( data.error||'Upload failed')); return null; }
-  }catch(e){ if(onProg) onProg('✗ Network error'); return null; }
+  return new Promise((resolve)=>{
+    const fd=new FormData(); fd.append('file',file); fd.append('category','admin');
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST', API+'/api/upload');
+    xhr.timeout=300000;
+    xhr.upload.onprogress=(e)=>{
+      if(e.lengthComputable&&onProg){
+        const pct=Math.round(e.loaded/e.total*100);
+        const sz=(n)=>n>1048576?(n/1048576).toFixed(1)+' MB':(n/1024).toFixed(0)+' KB';
+        onProg('Uploading '+pct+'% — '+sz(e.loaded)+' / '+sz(e.total));
+      }
+    };
+    xhr.onload=()=>{
+      try{
+        const d=JSON.parse(xhr.responseText);
+        if(d.ok){if(onProg)onProg('✓ Uploaded — '+file.name);resolve(d.url);}
+        else{if(onProg)onProg('✗ '+(d.error||'Failed'));resolve(null);}
+      }catch(e){if(onProg)onProg('✗ Server error');resolve(null);}
+    };
+    xhr.onerror=()=>{if(onProg)onProg('✗ Network error');resolve(null);};
+    xhr.ontimeout=()=>{if(onProg)onProg('✗ Timeout — file too large. Use Google Drive/YouTube link instead.');resolve(null);};
+    xhr.send(fd);
+  });
 }
 
 /* ── NAV ── */
@@ -765,7 +780,16 @@ function closeProdEd(){ document.getElementById('prodOverlay').classList.remove(
 
 function setTab(t){
   _peTab=t;
-  ['page','modal','link'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('active',x===t));
+  ['page','modal','link'].forEach(x=>{
+    const el=document.getElementById('tab-'+x);
+    if(el) el.classList.toggle('active',x===t);
+  });
+  const urlEl=document.getElementById('peUrl');
+  if(urlEl){
+    if(t==='page') urlEl.placeholder='e.g. bridge.html, guide.html';
+    else if(t==='modal') urlEl.placeholder='Leave empty for modal popup';
+    else urlEl.placeholder='https://external-link.com';
+  }
 }
 
 function saveProd(){

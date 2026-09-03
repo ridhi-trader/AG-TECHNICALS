@@ -117,6 +117,39 @@ select.inp{cursor:pointer;}
 </style>
 </head>
 <body>
+
+<div id="loginWall" style="position:fixed;inset:0;background:#0d0d0f;z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#141318;border:1px solid #2a2736;border-radius:20px;padding:48px 40px;width:100%;max-width:380px;text-align:center;">
+    <div style="font-size:32px;margin-bottom:16px;">🔐</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;">AG Technicals</div>
+    <div style="font-size:13px;color:#a0a0b8;margin-bottom:32px;">Admin Panel — Authorised Access Only</div>
+    <input type="password" id="loginInp" placeholder="Enter Password" onkeydown="if(event.key==='Enter')checkLogin()" style="width:100%;background:#0d0d0f;border:1px solid #2a2736;border-radius:10px;padding:13px 16px;color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:'Inter',sans-serif;" autocomplete="current-password">
+    <div id="loginErr" style="font-size:12px;color:#f26d6d;min-height:18px;margin-bottom:12px;"></div>
+    <button onclick="checkLogin()" style="width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;">Enter Admin</button>
+  </div>
+</div>
+<script>
+(function(){
+  function checkLogin(){
+    var v=document.getElementById('loginInp').value;
+    if(v==='ridhima2307'){
+      sessionStorage.setItem('ag_auth','ok');
+      document.getElementById('loginWall').style.display='none';
+    } else {
+      var e=document.getElementById('loginErr');
+      e.textContent='Wrong password.';
+      setTimeout(function(){e.textContent='';},2500);
+    }
+  }
+  window.checkLogin=checkLogin;
+  if(sessionStorage.getItem('ag_auth')!=='ok'){
+    document.getElementById('loginWall').style.display='flex';
+  } else {
+    document.getElementById('loginWall').style.display='none';
+  }
+})();
+</script>
+
 <div id="toast"></div>
 
 <!-- PRODUCT EDITOR -->
@@ -272,7 +305,7 @@ select.inp{cursor:pointer;}
       <button class="sb-item" onclick="show('password',this)">🔐 Change Password</button>
     </div>
     <div class="sb-bottom">
-      <button class="sb-logout" onclick="alert('No password set — just close the tab.')">🚪 Logout</button>
+      <button class="sb-logout" onclick="sessionStorage.removeItem('ag_admin_auth');location.reload();">🚪 Logout</button>
     </div>
   </div>
 

@@ -408,7 +408,22 @@ async def init_db():
                 expires_at TIMESTAMP NOT NULL,
                 used BOOLEAN DEFAULT FALSE
             );
+            CREATE TABLE IF NOT EXISTS bridge_licenses (
+                lid TEXT PRIMARY KEY,
+                secret TEXT NOT NULL,
+                user_email TEXT,
+                account TEXT,
+                active BOOLEAN DEFAULT TRUE,
+                expires_at TIMESTAMP,
+                created_at TIMESTAMP DEFAULT NOW()
+            );
         """)
+        # Load licenses from DB into bridge_module
+        rows = await conn.fetch("SELECT lid, secret, user_email, account, active, expires_at FROM bridge_licenses WHERE active=TRUE")
+        for row in rows:
+            days_left = max(1, int((row['expires_at'] - __import__('datetime').datetime.utcnow()).total_seconds() / 86400)) if row['expires_at'] else 365
+            add_license(row['lid'], days=days_left)
+            add_strategy(sid=row['lid'], secret=row['secret'], name=f"Bridge-{row['lid']}")
 
 def hash_pass(pw): return hashlib.sha256(pw.encode()).hexdigest()
 def gen_otp(): return str(secrets.randbelow(900000) + 100000)
@@ -571,3 +586,55 @@ async def admin_users():
     async with pool.acquire() as conn:
         rows = await conn.fetch("SELECT id,username,email,products,created_at,verified FROM ag_users ORDER BY created_at DESC")
         return JSONResponse({"ok": True, "users": [{"id":r['id'],"username":r['username'],"email":r['email'],"products":r['products'],"joined":str(r['created_at'])[:10],"verified":r['verified']} for r in rows]})
+
+# ── BRIDGE LICENSE MANAGEMENT ─────────────────────────────────────────────────
+
+class BridgeLicReq(BaseModel):
+    user_email: str = ""
+    days: int = 365
+
+class BridgeAssignReq(BaseModel):
+    lid: str
+    account: str = ""
+
+@app.post("/api/admin/bridge/create-license")
+async def create_bridge_license(req: BridgeLicReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    import secrets as _sec, datetime as _dt
+    lid = "LIC-" + _sec.token_hex(4).upper()
+    secret = _sec.token_urlsafe(24)
+    expires = _dt.datetime.utcnow() + _dt.timedelta(days=req.days)
+    async with pool.acquire() as conn:
+        await conn.execute(
+            "INSERT INTO bridge_licenses (lid, secret, user_email, expires_at) VALUES ($1,$2,$3,$4)",
+            lid, secret, req.user_email or None, expires
+        )
+    add_license(lid, days=req.days)
+    add_strategy(sid=lid, secret=secret, name=f"Bridge-{lid}")
+    return JSONResponse({"ok": True, "lid": lid, "secret": secret, "expires": str(expires.date()), "user_email": req.user_email})
+
+@app.get("/api/admin/bridge/licenses")
+async def list_bridge_licenses():
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "licenses": []})
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("SELECT lid, secret, user_email, account, active, expires_at, created_at FROM bridge_licenses ORDER BY created_at DESC")
+        return JSONResponse({"ok": True, "licenses": [dict(r) for r in rows]})
+
+@app.delete("/api/admin/bridge/license/{lid}")
+async def delete_bridge_license(lid: str):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        await conn.execute("UPDATE bridge_licenses SET active=FALSE WHERE lid=$1", lid)
+    return JSONResponse({"ok": True})
+
+@app.post("/api/admin/bridge/assign")
+async def assign_bridge_account(req: BridgeAssignReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        await conn.execute("UPDATE bridge_licenses SET account=$1 WHERE lid=$2", req.account, req.lid)
+    return JSONResponse({"ok": True})
+

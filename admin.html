@@ -197,6 +197,7 @@ select.inp{cursor:pointer;}
       <button class="sb-btn" onclick="nav('uploads',this)"><span class="sb-icon">📁</span>File Uploads</button>
       <button class="sb-btn" onclick="nav('export',this)"><span class="sb-icon">📦</span>Export / Backup</button>
       <button class="sb-btn" onclick="nav('password',this)"><span class="sb-icon">🔐</span>Security</button>
+      <button class="sb-btn" onclick="nav('bridge_lic',this)"><span class="sb-icon">🌉</span>Bridge Licenses</button>
     </nav>
     <div class="sb-foot">
       <button class="sb-logout" onclick="logout()">🚪 Logout</button>
@@ -492,6 +493,24 @@ select.inp{cursor:pointer;}
       </div>
     </div>
 
+    <!-- BRIDGE LICENSES PAGE -->
+    <div class="page" id="page-bridge_lic">
+      <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Bridge <span>Licenses</span></div></div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:14px;">Generate New License</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;">
+          <div class="field"><label class="label">User Email</label><input class="inp" id="blEmail" placeholder="user@email.com"></div>
+          <div class="field"><label class="label">Days Valid</label><input class="inp" id="blDays" type="number" value="365"></div>
+          <button class="btn-gold" onclick="genLicense()">Generate</button>
+        </div>
+        <div id="blResult" style="margin-top:12px;display:none;background:#0d0d0f;border:1px solid #2a2736;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#e8b84b;white-space:pre-wrap;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;">Active Licenses <button class="btn-out" style="font-size:11px;padding:3px 10px;margin-left:10px;" onclick="loadLicenses()">Refresh</button></div>
+        <div id="blList"><div style="color:var(--t3);">Loading...</div></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -664,7 +683,7 @@ function nav(id, btn){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
-  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{}};
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses};
   if(loaders[id]) loaders[id]();
 }
 
@@ -1182,6 +1201,50 @@ async function saveAssign(){
 
 /* ── INIT ── */
 renderProds();
+
+// ── BRIDGE LICENSE FUNCTIONS ──────────────────────────────────────────────────
+const BL_API = 'https://ag-assistant-api.onrender.com';
+
+async function genLicense(){
+  const email = document.getElementById('blEmail').value.trim();
+  const days = parseInt(document.getElementById('blDays').value)||365;
+  const res = document.getElementById('blResult');
+  res.style.display='block'; res.textContent='Generating...';
+  try{
+    const r = await fetch(BL_API+'/api/admin/bridge/create-license',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_email:email,days})});
+    const d = await r.json();
+    if(d.ok){
+      res.textContent = 'LICENSE ID: '+d.lid+'\nSECRET KEY: '+d.secret+'\nUSER: '+(d.user_email||'unassigned')+'\nEXPIRES: '+d.expires+'\n\n⚠️ Save this secret — it will not be shown again.';
+      loadLicenses();
+    } else { res.textContent='Error: '+d.error; }
+  }catch(e){ res.textContent='Error: '+e.message; }
+}
+
+async function loadLicenses(){
+  const el = document.getElementById('blList'); if(!el) return;
+  el.innerHTML='<div style="color:var(--t3);">Loading...</div>';
+  try{
+    const r = await fetch(BL_API+'/api/admin/bridge/licenses');
+    const d = await r.json();
+    if(!d.ok||!d.licenses.length){ el.innerHTML='<div style="color:var(--t3);">No licenses yet.</div>'; return; }
+    el.innerHTML = d.licenses.map(l=>`
+      <div style="border:1px solid #2a2736;border-radius:8px;padding:12px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;">
+        <div>
+          <div style="font-weight:700;color:var(--g5);font-size:13px;">${l.lid}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px;">Email: ${l.user_email||'—'} | Account: ${l.account||'—'} | Expires: ${l.expires_at?l.expires_at.split('T')[0]:'—'}</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:3px;font-family:monospace;">Secret: ${l.secret}</div>
+        </div>
+        <button class="btn-out" style="font-size:11px;padding:3px 10px;color:var(--red);" onclick="deleteLicense('${l.lid}')">Revoke</button>
+      </div>`).join('');
+  }catch(e){ el.innerHTML='<div style="color:var(--red);">Error loading licenses</div>'; }
+}
+
+async function deleteLicense(lid){
+  if(!confirm('Revoke license '+lid+'?')) return;
+  await fetch(BL_API+'/api/admin/bridge/license/'+lid,{method:'DELETE'});
+  toast('License revoked'); loadLicenses();
+}
+
 </script>
 
 <!-- ASSIGN PRODUCTS OVERLAY -->

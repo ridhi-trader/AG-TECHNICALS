@@ -55,8 +55,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 .news-status{font-size:12px;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
 .news-count{color:var(--g5);font-weight:700;}
 
-.article-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;transition:border-color .2s,transform .2s;cursor:pointer;text-decoration:none;display:block;}
-.article-card:hover{border-color:rgba(232,184,75,.35);transform:translateY(-2px);}
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:20px;}
+.article-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,transform .2s;cursor:pointer;text-decoration:none;display:flex;flex-direction:column;}
+.article-card:hover{border-color:rgba(232,184,75,.35);transform:translateY(-3px);box-shadow:0 8px 32px rgba(232,184,75,0.08);}
+.article-cover{width:100%;height:180px;object-fit:cover;display:block;background:#1a1820;}
+.article-cover-placeholder{width:100%;height:180px;background:linear-gradient(135deg,#1a1820,#141318);display:flex;align-items:center;justify-content:center;font-size:40px;}
+.article-body{padding:16px;flex:1;display:flex;flex-direction:column;}
+/* News reader modal */
+.news-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.news-modal-overlay.open{display:flex;}
+.news-modal{background:#141318;border:1px solid #2a2736;border-radius:18px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;padding:32px;}
+.news-modal-close{float:right;background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;}
+.news-modal img{width:100%;border-radius:12px;margin-bottom:20px;max-height:300px;object-fit:cover;}
+.news-modal-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:12px;line-height:1.4;}
+.news-modal-meta{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.news-modal-body{font-size:15px;color:var(--t2);line-height:1.8;}
+.news-modal-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:var(--g5);color:#000;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:14px;}
 .article-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .article-cat{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
 .cat-gold{background:rgba(232,184,75,.1);color:var(--g5);border:1px solid rgba(232,184,75,.2);}
@@ -140,7 +154,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
       <span id="statusText">Loading news...</span>
       <span id="lastUpdate"></span>
     </div>
-    <div id="newsFeed"></div>
+    <div class="news-grid" id="newsFeed"></div>
   </div>
   <aside class="sidebar">
     <div class="widget">
@@ -214,23 +228,27 @@ function renderFeed(){
     feed.innerHTML='<div class="no-results"><h3>No Results</h3><p>Try a different search or category.</p></div>';
     return;
   }
-  feed.innerHTML = arts.map(a=>{
+  // Store articles globally for modal
+  window._newsArts = arts;
+  feed.innerHTML = arts.map((a,i)=>{
     const catClass = CAT_CLASS[a.category]||'cat-default';
-    const dirBadge = a.dir==='up'?'<span class="dir-badge dir-up">▲</span>':a.dir==='dn'?'<span class="dir-badge dir-dn">▼</span>':'';
     const srcBadge = a.real?'<span class="real-badge">LIVE</span>':'<span class="ag-badge">AG</span>';
-    const imgHtml = a.image ? `<img src="${a.image}" alt="" style="width:100%;height:180px;object-fit:cover;border-radius:10px;margin-bottom:12px;" onerror="this.style.display='none'">` : '';
-    const card = `${imgHtml}<div class="article-top">
-      <span class="article-cat ${catClass}">${a.category}</span>
-      ${dirBadge}
-      ${srcBadge}
-      <span class="article-time">${a.time}</span>
-      <span class="article-source">${a.source}</span>
-    </div>
-    <div class="article-title">${a.title}</div>
-    ${a.summary?'<div class="article-summary">'+a.summary+'</div>':''}`;
-    return a.url
-      ? `<a href="${a.url}" target="_blank" rel="noopener" class="article-card">${card}</a>`
-      : `<div class="article-card" style="cursor:default;">${card}</div>`;
+    const cover = a.image
+      ? `<img class="article-cover" src="${a.image}" alt="" onerror="this.parentElement.querySelector('.article-cover-placeholder').style.display='flex';this.remove()">`+
+        `<div class="article-cover-placeholder" style="display:none">📰</div>`
+      : `<div class="article-cover-placeholder">📰</div>`;
+    return `<div class="article-card" onclick="openArticle(${i})">
+      ${cover}
+      <div class="article-body">
+        <div class="article-top">
+          <span class="article-cat ${catClass}">${a.category}</span>
+          ${srcBadge}
+          <span class="article-time" style="margin-left:auto;">${a.time}</span>
+        </div>
+        <div class="article-title" style="margin:10px 0 8px;font-size:15px;font-weight:700;line-height:1.4;color:#fff;">${a.title}</div>
+        <div class="article-source" style="font-size:12px;color:var(--t3);margin-top:auto;">${a.source}</div>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -361,5 +379,14 @@ loadNews();
 setInterval(loadNews, 5*60*1000);
 </script>
 <script src="ag-assistant.js"></script>
+
+<!-- NEWS READER MODAL -->
+<div class="news-modal-overlay" id="newsModalOverlay" onclick="if(event.target===this)closeArticle()">
+  <div class="news-modal">
+    <button class="news-modal-close" onclick="closeArticle()">✕</button>
+    <div id="newsModalContent"></div>
+  </div>
+</div>
+
 </body>
 </html>

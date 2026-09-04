@@ -130,18 +130,21 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     </div>
     <div class="step-desc">In the alert's <strong>Message</strong> box, paste this JSON exactly — edit values to match your strategy:</div>
     <div class="code-block" style="white-space:pre;">
-      <button class="copy-btn" onclick="copy(this,`{\n  \"secret\": \"YOUR_SECRET_KEY\",\n  \"action\": \"buy\",\n  \"symbol\": \"XAUUSD\",\n  \"price\": {{close}},\n  \"swing_price\": {{plot(\"Swing\")}}\n}`)">Copy</button>{
+      <button class="copy-btn" onclick="copy(this,`{\n  \"secret\": \"YOUR_SECRET_KEY\",\n  \"action\": \"buy\",\n  \"symbol\": \"XAUUSD\",\n  \"price\": {{close}},\n  \"sl\": 0,\n  \"tp\": 0,\n  \"lot\": 0.1\n}`)">Copy</button>{
   "secret": "YOUR_SECRET_KEY",
-  "action": "buy",
-  "symbol": "XAUUSD",
+  "action": <span style="color:#4ade80;">"buy"</span> <span style="color:var(--t3);">or "sell"</span>,
+  "symbol": <span style="color:#a78bfa;">"XAUUSD"</span>,
   "price": <span style="color:#4ade80;">{{close}}</span>,
-  "swing_price": <span style="color:#8b7cf0;">{{plot("Swing")}}</span>
+  "sl": <span style="color:#f26d6d;">0</span>,
+  "tp": <span style="color:#4ade80;">0</span>,
+  "lot": <span style="color:#8b7cf0;">0.1</span>
 }</div>
     <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
-      <div style="font-size:13px;color:var(--t2);">• <code>secret</code> — must match exactly what AG Technicals set for your account</div>
-      <div style="font-size:13px;color:var(--t2);">• <code>action</code> — must be <code>buy</code> or <code>sell</code></div>
-      <div style="font-size:13px;color:var(--t2);">• <code>price</code> — <code style="color:#4ade80;">{{close}}</code> fills automatically from your chart</div>
-      <div style="font-size:13px;color:var(--t2);">• <code>swing_price</code> — optional, for SL placement. Remove if not used.</div>
+      <div style="font-size:13px;color:var(--t2);">• <code>secret</code> — apna unique secret key (AG Technicals dega)</div>
+      <div style="font-size:13px;color:var(--t2);">• <code>action</code> — <code style="color:#4ade80;">buy</code> or <code style="color:#f26d6d;">sell</code></div>
+      <div style="font-size:13px;color:var(--t2);">• <code>symbol</code> — jo chart pe alert laga h wahi symbol — XAUUSD, EURUSD, BTCUSD, kuch bhi</div>
+      <div style="font-size:13px;color:var(--t2);">• <code>price</code> — <code style="color:#4ade80;">{{close}}</code> automatically fill hota h</div>
+      <div style="font-size:13px;color:var(--t2);">• <code>sl</code> / <code>tp</code> / <code>lot</code> — sab optional. 0 = MT5 apni setting use karega</div>
     </div>
   </div>
 

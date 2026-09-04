@@ -99,22 +99,19 @@ def _build_signal(body: dict):
 
     try:
         price = float(body.get("price", 0))
-        if price <= 0:
+        if price < 0:
             raise ValueError
     except (ValueError, TypeError):
         return None, "invalid price"
 
     # swing_price — accept swing_low / swing_high / swing_price
-    sw = body.get("swing_price") or body.get("swing_low") or body.get("swing_high")
+    sw = body.get("sl") or body.get("swing_price") or body.get("swing_low") or body.get("swing_high")
     sl = ""
     if sw is not None:
         try:
             swing = float(sw)
             # Validate swing side
-            if action == "buy" and swing >= price:
-                return None, f"swing_price {swing} must be BELOW entry {price} for BUY"
-            if action == "sell" and swing <= price:
-                return None, f"swing_price {swing} must be ABOVE entry {price} for SELL"
+            # Skip strict swing side validation — let EA handle it
             # Too close — drop SL (let EA use its own)
             pct_diff = abs(price - swing) / price
             if pct_diff >= 0.0002:  # >= 0.02%
@@ -159,7 +156,9 @@ async def webhook(sid: str, request: Request):
                 continue
             if lic["paused"]:
                 continue
-            if sid not in lic["subs"]:
+            # Per-user model: sid == lid (license IS the strategy)
+            # OR classic model: sid in subs list
+            if lid != sid and sid not in lic["subs"]:
                 continue
             PENDING.setdefault(lid, []).append(signal)
             delivered += 1

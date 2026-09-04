@@ -48,6 +48,7 @@ app.add_middleware(
 
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 FINNHUB_KEY = os.environ.get("FINNHUB_API_KEY", "")
+NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "")
 
 import xml.etree.ElementTree as ET
 import hashlib as _hashlib
@@ -67,6 +68,58 @@ RSS_FEEDS = [
     {"url": "https://www.livemint.com/rss/markets", "source": "LiveMint", "category": "Indices"},
     {"url": "https://economictimes.indiatimes.com/markets/commodities/rssfeeds/2146791.cms", "source": "Economic Times", "category": "Gold"},
 ]
+
+async def fetch_newsapi():
+    """Fetch real news from NewsAPI with full descriptions"""
+    if not NEWSAPI_KEY:
+        return []
+    queries = [
+        {"q": "gold XAU forex trading", "cat": "Gold"},
+        {"q": "forex EUR USD GBP trading", "cat": "Forex"},
+        {"q": "bitcoin crypto trading", "cat": "Crypto"},
+        {"q": "stock market indices NSE BSE Nifty Sensex", "cat": "Indices"},
+        {"q": "oil commodity trading", "cat": "Commodities"},
+    ]
+    all_news = []
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            for q in queries:
+                try:
+                    r = await client.get(
+                        "https://newsapi.org/v2/everything",
+                        params={"q": q["q"], "language": "en", "sortBy": "publishedAt",
+                                "pageSize": 8, "apiKey": NEWSAPI_KEY}
+                    )
+                    if r.status_code == 200:
+                        data = r.json()
+                        for art in data.get("articles", []):
+                            if art.get("title") == "[Removed]": continue
+                            import email.utils as _eu
+                            ts = 0
+                            try:
+                                from datetime import datetime as _dt
+                                ts = int(_dt.fromisoformat(art["publishedAt"].replace("Z","+00:00")).timestamp())
+                            except: pass
+                            t_diff = int((time.time() - ts) / 3600) if ts else 0
+                            all_news.append({
+                                "title": art.get("title",""),
+                                "summary": art.get("description","") or art.get("content","")[:400] or "",
+                                "image": art.get("urlToImage","") or "",
+                                "url": art.get("url",""),
+                                "source": art.get("source",{}).get("name","NewsAPI"),
+                                "category": q["cat"],
+                                "time_unix": ts,
+                                "time": (str(t_diff)+"h ago") if t_diff < 24 else (str(t_diff//24)+"d ago"),
+                                "real": True,
+                                "badge": "LIVE",
+                            })
+                except Exception as qe:
+                    print(f"NewsAPI query error: {qe}")
+                    continue
+    except Exception as e:
+        print(f"NewsAPI error: {e}")
+    all_news.sort(key=lambda x: x.get("time_unix",0), reverse=True)
+    return all_news[:50]
 
 async def fetch_rss_news():
     all_news = []
@@ -378,9 +431,19 @@ async def get_news(category: str = "", search: str = ""):
     prices = await fetch_prices()
     finnhub = await fetch_finnhub_news()
     rss = await fetch_rss_news()
+    newsapi = await fetch_newsapi()
     ai = await fetch_news_ai(prices)
 
     articles = []
+    # NewsAPI first — real content with full descriptions
+    for item in newsapi:
+        articles.append({
+            "title": item["title"], "summary": item.get("summary",""),
+            "category": item.get("category","Market"), "source": item.get("source",""),
+            "url": item.get("url",""), "image": item.get("image",""),
+            "dir":"up", "real": True, "badge": "LIVE",
+            "time": item.get("time",""),
+        })
     # RSS news first (real, with covers)
     for item in rss:
         t_diff = int((time.time() - item.get("time_unix", time.time())) / 3600)

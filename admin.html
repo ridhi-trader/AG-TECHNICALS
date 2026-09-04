@@ -734,9 +734,9 @@ const D_PRODS = [
       if(p.id==='education'){p.type='page';p.url='education.html';p.hidden=false;ch=true;}
       if(p.id==='bridge'){p.type='page';p.url='bridge.html';p.hidden=false;ch=true;}
       if(p.id==='algo'){p.type='page';p.url='algo.html';p.hidden=false;ch=true;}
-      // If stored product has 0 items but D_PRODS has items, copy them
+      // If stored items fewer than D_PRODS defaults, force-replace with full set
       const def=D_PRODS.find(d=>d.id===p.id);
-      if(def && (!p.items||p.items.length===0) && def.items && def.items.length>0){
+      if(def && def.items && def.items.length>0 && (!p.items||p.items.length<def.items.length)){
         p.items=def.items; ch=true;
       }
     });

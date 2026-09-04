@@ -574,7 +574,7 @@ const ticker   = load('ticker',   D.ticker);
       if(p.id==='custom'||p.id==='strategy'){p.id='custom'; changed=true;}
       // Merge items from D if stored has none
       const def = D.products.find(d=>d.id===p.id);
-      if(def && (!p.items||!p.items.length) && def.items && def.items.length){ p.items=def.items; changed=true; }
+      if(def && def.items && def.items.length>0 && (!p.items||p.items.length<def.items.length)){ p.items=def.items; changed=true; }
     });
     if(changed) localStorage.setItem('ag_products', JSON.stringify(stored));
   }catch(e){}

@@ -740,7 +740,7 @@ const D_PRODS = [
 // Force-fix stale localStorage — v4 version check
 (function(){
   try{
-    const PROD_VER='5';
+    const PROD_VER='6';
     if(localStorage.getItem('ag_prod_v')!==PROD_VER){
       localStorage.removeItem('products');
       localStorage.setItem('ag_prod_v',PROD_VER);

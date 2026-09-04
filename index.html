@@ -556,7 +556,7 @@ const ticker   = load('ticker',   D.ticker);
 // ── FORCE FIX BEFORE LOAD — v4 ──
 (function(){
   try{
-    const PROD_VER='5';
+    const PROD_VER='6';
     // If version mismatch → nuke products so D defaults load fresh
     if(localStorage.getItem('ag_prod_v')!==PROD_VER){
       localStorage.removeItem('ag_products');

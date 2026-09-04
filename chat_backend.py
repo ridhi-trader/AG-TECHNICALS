@@ -761,10 +761,10 @@ async def fetch_article(url: str):
         text = _re.sub(r'<[^>]+>', ' ', text_html)
         text = _re.sub(r'\s+', ' ', text).strip()
         # Extract OG image
-        og_img = _re.search(r'<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']', html, _re.IGNORECASE)
+        og_img = _re.search('<meta[^>]+property="og:image"[^>]+content="([^"]+)"', html, _re.IGNORECASE)
         img = og_img.group(1) if og_img else ""
         # Extract title
-        og_title = _re.search(r'<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']', html, _re.IGNORECASE)
+        og_title = _re.search('<meta[^>]+property="og:title"[^>]+content="([^"]+)"', html, _re.IGNORECASE)
         title = og_title.group(1) if og_title else ""
         return JSONResponse({"ok": True, "content": text[:3000], "image": img, "title": title})
     except Exception as e:

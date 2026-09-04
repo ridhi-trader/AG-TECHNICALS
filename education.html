@@ -227,7 +227,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   section.innerHTML = `
     <div class="section-label" style="margin-bottom:16px;">📎 Downloadable Resources</div>
     ${files.map(f=>`
-      <a href="${f.url}" download="${f.name}" style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:#141318;border:1px solid #2a2736;border-radius:12px;padding:18px 24px;margin-bottom:12px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#e8b84b'" onmouseout="this.style.borderColor='#2a2736'">
+      <a href="${f.url}" download="${f.name}" style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:#141318;border:1px solid #2a2736;border-radius:12px;padding:18px 24px;margin-bottom:12px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor=&apos;#e8b84b&apos;" onmouseout="this.style.borderColor=&apos;#2a2736&apos;">
         <div>
           ${f.label ? `<div style="font-size:11px;font-weight:700;color:#e8b84b;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${f.badge||'Resource'}</div>` : ''}
           <div style="font-size:15px;font-weight:700;color:#fff;">${f.label||f.name}</div>
@@ -274,7 +274,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   if(!files.length){ section.style.display='none'; return; }
   section.style.display='block';
   section.innerHTML = '<div class="section-label" style="margin-bottom:16px;">📎 Downloadable Resources</div>' +
-    files.map(f=>'<a href="'+f.url+'" download="'+f.name+'" style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:#141318;border:1px solid #2a2736;border-radius:12px;padding:18px 24px;margin-bottom:12px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#e8b84b'" onmouseout="this.style.borderColor='#2a2736'"><div>'+(f.label?'<div style="font-size:11px;font-weight:700;color:#e8b84b;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">'+(f.badge||'Resource')+'</div>':'')+'<div style="font-size:15px;font-weight:700;color:#fff;">'+(f.label||f.name)+'</div><div style="font-size:12px;color:#a0a0b8;margin-top:2px;">'+f.name+'</div></div><div style="background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;white-space:nowrap;">⬇ Download</div></a>').join('');
+    files.map(f=>'<a href="'+f.url+'" download="'+f.name+'" style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:#141318;border:1px solid #2a2736;border-radius:12px;padding:18px 24px;margin-bottom:12px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor=&apos;#e8b84b&apos;" onmouseout="this.style.borderColor=&apos;#2a2736&apos;"><div>'+(f.label?'<div style="font-size:11px;font-weight:700;color:#e8b84b;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">'+(f.badge||'Resource')+'</div>':'')+'<div style="font-size:15px;font-weight:700;color:#fff;">'+(f.label||f.name)+'</div><div style="font-size:12px;color:#a0a0b8;margin-top:2px;">'+f.name+'</div></div><div style="background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;white-space:nowrap;">⬇ Download</div></a>').join('');
 })();
 </script>
 <script src="ag-assistant.js"></script>

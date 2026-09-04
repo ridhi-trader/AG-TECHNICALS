@@ -132,6 +132,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 
 <div class="layout">
   <div>
+    <div id="videoSection" style="margin-bottom:20px;display:none;">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;">📺 Market Analysis Videos</div>
+      <div id="videoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+    </div>
     <div class="news-status">
       <span id="statusText">Loading news...</span>
       <span id="lastUpdate"></span>
@@ -146,6 +150,12 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
     <div class="widget">
       <div class="widget-title">📡 Market Sentiment</div>
       <div id="sentWidget">Loading...</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">📺 Live Chart</div>
+      <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);">
+        <iframe src="https://s.tradingview.com/widgetembed/?symbol=XAUUSD&interval=60&theme=dark&style=1&locale=en&hide_top_toolbar=1&hide_legend=1&saveimage=0&toolbarbg=0d0d0f&backgroundColor=%230d0d0f&gridColor=%232a2736&" style="width:100%;height:220px;border:none;" allowtransparency="true" scrolling="no"></iframe>
+      </div>
     </div>
     <div class="widget" style="background:linear-gradient(135deg,rgba(232,184,75,.06),rgba(201,150,12,.02));border-color:rgba(232,184,75,.15);">
       <div class="widget-title">🌐 More Sources</div>
@@ -162,6 +172,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 
 <script>
 const API = 'https://ag-assistant-api.onrender.com';
+
+// Featured video news - AG Technicals YouTube/analysis videos
+const AG_VIDEOS = [
+  {title:'Gold (XAU/USD) Weekly Analysis — AG Technicals', category:'Gold', videoId:'', url:'https://www.youtube.com/@agtechnicals', thumb:'', desc:'Weekly gold analysis covering key levels, COT data and institutional flow.'},
+  {title:'TradingView to MT5 Bridge — Live Demo', category:'Analysis', videoId:'', url:'https://www.youtube.com/@agtechnicals', thumb:'', desc:'Watch how AG Bridge connects TradingView signals to MT5 automatically.'},
+];
+
+function openVideo(url){
+  window.open(url, '_blank');
+}
 const CATS = ['All','Gold','Forex','Crypto','Indices','Macro','Commodities','Analysis'];
 let _allArticles = [];
 let _activeCat = 'All';
@@ -248,9 +268,33 @@ function renderTicker(prices){
     `<span class="ti">BTC/USD $${b.price?Math.round(b.price).toLocaleString():'—'} ${arr(b.chg||0)} ${Math.abs(b.chg||0).toFixed(2)}%</span>`,
     `<span class="ti">EUR/USD ${e.price?e.price.toFixed(4):'—'} ${arr(e.chg||0)} ${Math.abs(e.chg||0).toFixed(2)}%</span>`,
     `<span class="ti ti-gold">⬤ AG TECHNICALS · LIVE MARKET NEWS</span>`,
-    `<span class="ti">Search any market · Updated every 15 min</span>`,
+    `<span class="ti">Search any market · Updated Every 5 Min</span>`,
   ].join('');
   document.getElementById('tickerTrack').innerHTML = pills + pills;
+}
+
+function renderVideos(articles){
+  // Show YouTube-linked articles as video cards
+  const videoArts = articles.filter(a=>a.url && (a.url.includes('youtube')||a.url.includes('youtu.be')));
+  const section = document.getElementById('videoSection');
+  const grid = document.getElementById('videoGrid');
+  if(!section || !grid) return;
+  if(videoArts.length){
+    section.style.display = 'block';
+    grid.innerHTML = videoArts.slice(0,4).map(a=>{
+      const vidId = a.url.match(/(?:v=|youtu\.be\/)([^&\s]{11})/)?.[1];
+      const thumb = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : '';
+      return `<a href="${a.url}" target="_blank" rel="noopener" style="text-decoration:none;display:block;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,.4)'" onmouseout="this.style.borderColor='var(--border)'">
+        ${thumb?`<img src="${thumb}" style="width:100%;height:100px;object-fit:cover;" onerror="this.style.display='none'">`:`<div style="width:100%;height:80px;background:linear-gradient(135deg,#1a1620,#0f0e14);display:flex;align-items:center;justify-content:center;font-size:28px;">▶️</div>`}
+        <div style="padding:10px 12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--g5);margin-bottom:4px;">${a.category} · ${a.time}</div>
+          <div style="font-size:12px;font-weight:600;color:#fff;line-height:1.4;">${a.title.slice(0,60)}${a.title.length>60?'...':''}</div>
+        </div>
+      </a>`;
+    }).join('');
+  } else {
+    section.style.display = 'none';
+  }
 }
 
 async function loadNews(force){
@@ -266,7 +310,7 @@ async function loadNews(force){
     renderSentiment(d.sentiment);
     renderTicker(d.prices);
     const upd = d.updated ? new Date(d.updated*1000).toLocaleTimeString() : '';
-    document.getElementById('lastUpdate').textContent = 'Updated: '+upd;
+    document.getElementById('lastUpdate').textContent = '🟢 Updated: '+upd;
     document.title = `Market News (${_allArticles.length}) — AG Technicals`;
   }catch(e){
     feed.innerHTML='<div class="no-results"><h3>Could Not Load News</h3><p>Server may be starting up. Try again in a moment.</p><br><button onclick="loadNews()" style="background:var(--g5);color:#000;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">Try Again</button></div>';
@@ -275,7 +319,7 @@ async function loadNews(force){
 
 renderCats();
 loadNews();
-setInterval(loadNews, 15*60*1000);
+setInterval(loadNews, 5*60*1000);
 </script>
 <script src="ag-assistant.js"></script>
 </body>

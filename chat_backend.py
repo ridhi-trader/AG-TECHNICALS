@@ -100,7 +100,7 @@ RULES:
 
 # ── MARKET DATA CACHE ──────────────────────────────────────────────────────────
 _market_cache = {"data": None, "ts": 0}
-CACHE_TTL = 3600
+CACHE_TTL = 300  # 5 min cache for news freshness
 
 async def fetch_prices():
     prices = {}

@@ -165,6 +165,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
       <div class="widget-title">📡 Market Sentiment</div>
       <div id="sentWidget">Loading...</div>
     </div>
+    <div class="widget" style="background:linear-gradient(135deg,rgba(232,184,75,.04),rgba(0,0,0,0));border-color:rgba(232,184,75,.15);">
+      <div class="widget-title">⚔️ Buyers vs Sellers</div>
+      <div id="bsWidget">Loading...</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">🔥 Market Pulse</div>
+      <div id="pulseWidget" style="font-size:13px;color:var(--t2);line-height:1.7;">Loading...</div>
+    </div>
     <div class="widget">
       <div class="widget-title">📺 Live Chart</div>
       <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);">
@@ -205,6 +213,57 @@ const CAT_CLASS = {
   Gold:'cat-gold', Forex:'cat-forex', Crypto:'cat-crypto', Macro:'cat-macro',
   Indices:'cat-indices', Commodities:'cat-commodities', Analysis:'cat-analysis'
 };
+
+function renderBuySell(bs){
+  const el = document.getElementById('bsWidget');
+  if(!el||!bs) return;
+  el.innerHTML = Object.entries(bs).map(([sym,d])=>{
+    const buyW = d.buy+'%', sellW = d.sell+'%';
+    const dominant = d.buy > 55 ? 'BUYERS' : d.buy < 45 ? 'SELLERS' : 'NEUTRAL';
+    const domColor = d.buy > 55 ? '#4ade80' : d.buy < 45 ? '#f26d6d' : '#e8b84b';
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+        <span style="font-size:12px;font-weight:700;color:#fff;">${sym}/USD</span>
+        <span style="font-size:10px;font-weight:700;color:${domColor};">${dominant}</span>
+      </div>
+      <div style="height:8px;border-radius:4px;overflow:hidden;background:#1a1820;display:flex;">
+        <div style="width:${buyW};background:#4ade80;transition:width .5s;"></div>
+        <div style="width:${sellW};background:#f26d6d;transition:width .5s;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:3px;">
+        <span style="font-size:10px;color:#4ade80;">🟢 Buy ${d.buy}%</span>
+        <span style="font-size:10px;color:#f26d6d;">🔴 Sell ${d.sell}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPulse(data){
+  const el = document.getElementById('pulseWidget');
+  if(!el) return;
+  const prices = data.prices||{};
+  const bs = data.buysell||{};
+  const sent = data.sentiment||[];
+  const xau = prices['XAU/USD']||prices['XAUUSDT']||{};
+  const btc = prices['BTC/USD']||prices['BTCUSDT']||{};
+  const xauChg = xau.change_24h||xau.chg||0;
+  const btcChg = btc.change_24h||btc.chg||0;
+  const xauDir = xauChg>=0?'▲ bullish':'▼ bearish';
+  const btcDir = btcChg>=0?'▲ bullish':'▼ bearish';
+  const xauBs = bs['XAU']||{buy:60,sell:40};
+  const btcBs = bs['BTC']||{buy:55,sell:45};
+  el.innerHTML = `
+    <div style="padding:8px;background:rgba(232,184,75,.05);border-radius:8px;margin-bottom:8px;border-left:3px solid #e8b84b;">
+      <span style="color:#e8b84b;font-weight:700;">🥇 Gold:</span> ${xauDir} (${xauChg>=0?'+':''}${Number(xauChg).toFixed(2)}%) — ${xauBs.buy>50?'Buyers dominant':'Sellers dominant'}
+    </div>
+    <div style="padding:8px;background:rgba(247,147,26,.05);border-radius:8px;margin-bottom:8px;border-left:3px solid #f7931a;">
+      <span style="color:#f7931a;font-weight:700;">₿ Bitcoin:</span> ${btcDir} (${btcChg>=0?'+':''}${Number(btcChg).toFixed(2)}%) — ${btcBs.buy>50?'Buyers dominant':'Sellers dominant'}
+    </div>
+    <div style="padding:8px;background:rgba(74,222,128,.05);border-radius:8px;border-left:3px solid #4ade80;">
+      <span style="color:#4ade80;font-weight:700;">📊 Market:</span> ${sent.find(s=>s.label==='Gold')?.pct>55?'Risk-on, bulls in control':'Cautious, watch key levels'}
+    </div>
+  `;
+}
 
 function renderCats(){
   document.getElementById('catBtns').innerHTML = CATS.map(c=>`

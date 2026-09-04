@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dashboard — AG Technicals</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0f;--card:#141318;--c2:#181620;--g5:#e8b84b;--g4:#c9960c;--t1:#fff;--t2:#c8c4d0;--t3:#a0a0b8;--border:#2a2736;--red:#f26d6d;--green:#4ade80;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--g5);text-decoration:none;}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-user{font-size:13px;color:var(--t2);}
+.nav-user span{color:var(--g5);font-weight:700;}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--t3);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;transition:all .2s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px;}
+.greeting{margin-bottom:32px;}
+.greeting-tag{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:8px;}
+.greeting-h{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;}
+.greeting-sub{font-size:14px;color:var(--t3);margin-top:4px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px;}
+.stat-label{font-size:12px;color:var(--t3);}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;}
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:12px;display:flex;align-items:center;gap:16px;transition:border-color .2s;}
+.prod-card:hover{border-color:rgba(232,184,75,.3);}
+.prod-icon{width:46px;height:46px;background:rgba(232,184,75,.08);border:1px solid rgba(232,184,75,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.prod-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
+.prod-sub{font-size:12px;color:var(--t3);}
+.prod-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:var(--green);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;margin-left:8px;}
+.prod-cta{margin-left:auto;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.2);color:var(--g5);font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.prod-cta:hover{background:var(--g5);color:#000;}
+.empty-prods{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:40px;text-align:center;color:var(--t3);}
+.empty-prods h3{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--t2);margin-bottom:8px;}
+.wa-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;font-size:13px;font-weight:700;padding:10px 20px;border-radius:9px;text-decoration:none;margin-top:12px;transition:all .2s;}
+.wa-cta:hover{transform:translateY(-2px);}
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px;display:flex;align-items:center;gap:20px;}
+.avatar{width:56px;height:56px;background:linear-gradient(135deg,#e8b84b,#c9960c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#000;flex-shrink:0;}
+.profile-name{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.profile-email{font-size:13px;color:var(--t3);margin-top:2px;}
+.profile-joined{font-size:11px;color:var(--t3);margin-top:4px;}
+.loading{text-align:center;padding:60px;color:var(--t3);}
+@media(max-width:600px){nav{padding:14px 20px;}.wrap{padding:24px 16px;}.stats{grid-template-columns:repeat(2,1fr);}nav .nav-user{display:none;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">AG Technicals</a>
+  <div class="nav-right">
+    <div class="nav-user">Logged in as <span id="navUser">...</span></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="wrap" id="mainWrap">
+  <div class="loading">Loading your dashboard...</div>
+</div>
+
+<script>
+const API = 'https://ag-assistant-api.onrender.com';
+
+const userRaw = sessionStorage.getItem('ag_user');
+if(!userRaw){ window.location.href='user-login.html'; }
+
+const user = JSON.parse(userRaw);
+document.getElementById('navUser').textContent = user.username;
+
+const PROD_MAP = {
+  bridge:      {icon:'🌉', name:'Bridge',               sub:'TradingView → MT5 Connector', url:'bridge.html'},
+  algo:        {icon:'🤖', name:'Algo (MT5)',            sub:'Auto Trading System',         url:'algo.html'},
+  tvindicator: {icon:'📈', name:'TradingView Indicator', sub:'Custom TV Indicators',        url:'tv-indicators.html'},
+  education:   {icon:'🧠', name:'Education',             sub:'Courses & Academy',           url:'education.html'},
+  guide:       {icon:'📖', name:'Guide',                 sub:'Written Playbooks',           url:'guide.html'},
+  custom:      {icon:'⚙️', name:'Custom Strategy',       sub:'Built For You',               url:'index.html#services'},
+  news:        {icon:'📰', name:'News',                  sub:'Live Market Feed',            url:'gold-dossier.html'},
+};
+
+function logout(){
+  sessionStorage.removeItem('ag_user');
+  window.location.href='user-login.html';
+}
+
+function render(){
+  const prods = (user.products||'').split(',').map(p=>p.trim()).filter(Boolean);
+  const joined = user.joined || 'Recently';
+  const firstLetter = (user.username||'A')[0].toUpperCase();
+
+  document.getElementById('mainWrap').innerHTML = `
+    <div class="greeting">
+      <div class="greeting-tag">Member Dashboard</div>
+      <div class="greeting-h">Welcome, ${user.username} 👋</div>
+      <div class="greeting-sub">Here's everything you have access to.</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="avatar">${firstLetter}</div>
+      <div>
+        <div class="profile-name">${user.username}</div>
+        <div class="profile-email">${user.email}</div>
+        <div class="profile-joined">Member since ${joined}</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-val" style="color:var(--g5);">${prods.length}</div><div class="stat-label">Products Access</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--green);">Active</div><div class="stat-label">Account Status</div></div>
+      <div class="stat"><div class="stat-val" style="color:#fff;font-size:16px;">${joined}</div><div class="stat-label">Member Since</div></div>
+    </div>
+
+    <div class="section-title">📦 Your Products</div>
+    ${prods.length ? prods.map(pid=>{
+      const p = PROD_MAP[pid] || {icon:'📦', name:pid, sub:'Product', url:'index.html'};
+      return `<div class="prod-card">
+        <div class="prod-icon">${p.icon}</div>
+        <div>
+          <div class="prod-name">${p.name}<span class="prod-badge">✓ Access</span></div>
+          <div class="prod-sub">${p.sub}</div>
+        </div>
+        <a href="${p.url}" class="prod-cta">Open →</a>
+      </div>`;
+    }).join('') : `
+      <div class="empty-prods">
+        <h3>No Products Yet</h3>
+        <p style="font-size:13px;">Contact us on WhatsApp to get access to products.</p>
+        <a href="https://wa.me/919876543210" target="_blank" class="wa-cta">💬 Contact On WhatsApp</a>
+      </div>`}
+
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
+      <div class="section-title">🔗 Quick Links</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="index.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">🏠 Home</div></a>
+        <a href="education.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">🧠 Education</div></a>
+        <a href="guide.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">📖 Guides</div></a>
+        <a href="gold-dossier.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">📰 Gold Dossier</div></a>
+      </div>
+    </div>`;
+}
+
+// Try to refresh user data from server
+async function refreshUser(){
+  try{
+    const r = await fetch(API+'/api/auth/user/'+user.id);
+    const d = await r.json();
+    if(d.ok){
+      const updated = {...user, ...d.user};
+      sessionStorage.setItem('ag_user', JSON.stringify(updated));
+      Object.assign(user, updated);
+    }
+  }catch(e){}
+  render();
+}
+
+refreshUser();
+</script>
+</body>
+</html>

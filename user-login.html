@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Login — AG Technicals</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d0f;--card:#141318;--g5:#e8b84b;--g4:#c9960c;--t1:#fff;--t2:#c8c4d0;--t3:#a0a0b8;--border:#2a2736;--red:#f26d6d;--green:#4ade80;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--g5);text-decoration:none;}
+.nav-back{font-size:13px;color:var(--t3);text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--g5);}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:420px;}
+.box-title{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:4px;}
+.box-sub{font-size:13px;color:var(--t3);margin-bottom:28px;}
+.tabs{display:flex;background:#0d0d0f;border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:24px;}
+.tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;color:var(--t3);cursor:pointer;border-radius:8px;transition:all .2s;}
+.tab.active{background:var(--card);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.field{margin-bottom:14px;}
+label{display:block;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;color:#fff;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+input:focus{border-color:rgba(232,184,75,.5);}
+.btn{width:100%;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:opacity .2s;margin-top:4px;}
+.btn:hover{opacity:.88;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-out{width:100%;background:transparent;border:1px solid var(--border);color:var(--t2);border-radius:10px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px;}
+.btn-out:hover{border-color:var(--g5);color:var(--g5);}
+.msg{font-size:13px;min-height:20px;text-align:center;margin:10px 0;}
+.msg.err{color:var(--red);}
+.msg.ok{color:var(--green);}
+.otp-wrap{display:none;}
+.otp-wrap.show{display:block;}
+.forgot-link{text-align:center;font-size:12px;color:var(--t3);margin-top:14px;cursor:pointer;transition:color .2s;}
+.forgot-link:hover{color:var(--g5);}
+.step{display:none;}
+.step.show{display:block;}
+.back-step{font-size:12px;color:var(--t3);cursor:pointer;margin-bottom:16px;transition:color .2s;}
+.back-step:hover{color:var(--g5);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">AG Technicals</a>
+  <a href="index.html" class="nav-back">← Back To Site</a>
+</nav>
+<div class="wrap">
+  <div class="box">
+
+    <!-- MAIN: Login / Signup tabs -->
+    <div id="mainStep" class="step show">
+      <div class="box-title">Welcome Back</div>
+      <div class="box-sub" id="boxSub">Sign in to your AG Technicals account.</div>
+      <div class="tabs">
+        <div class="tab active" id="tabLogin" onclick="switchTab('login')">Login</div>
+        <div class="tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="loginForm">
+        <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="msg err" id="loginErr"></div>
+        <button class="btn" onclick="doLogin()">Login →</button>
+        <div class="forgot-link" onclick="showForgot()">Forgot password?</div>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="signupForm" style="display:none;">
+        <div class="field"><label>Username</label><input type="text" id="signupUser" placeholder="agtrades" autocomplete="username"></div>
+        <div class="field"><label>Email</label><input type="email" id="signupEmail" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="field"><label>Password</label><input type="password" id="signupPass" placeholder="Min 6 characters" autocomplete="new-password"></div>
+        <div class="msg err" id="signupErr"></div>
+        <button class="btn" onclick="doSignup()">Create Account →</button>
+      </div>
+    </div>
+
+    <!-- OTP VERIFY STEP -->
+    <div id="otpStep" class="step">
+      <div class="back-step" onclick="backToMain()">← Back</div>
+      <div class="box-title">Verify Email</div>
+      <div class="box-sub">OTP sent to <span id="otpEmailShow" style="color:var(--g5);"></span></div>
+      <div class="field" style="margin-top:20px;"><label>Enter 6-Digit OTP</label><input type="text" id="otpInput" placeholder="123456" maxlength="6" inputmode="numeric" onkeydown="if(event.key==='Enter')doVerifyOtp()"></div>
+      <div class="msg err" id="otpErr"></div>
+      <button class="btn" onclick="doVerifyOtp()">Verify OTP →</button>
+      <div class="forgot-link" onclick="resendOtp()">Resend OTP</div>
+    </div>
+
+    <!-- FORGOT PASSWORD STEP -->
+    <div id="forgotStep" class="step">
+      <div class="back-step" onclick="backToMain()">← Back</div>
+      <div class="box-title">Reset Password</div>
+      <div class="box-sub">Enter your email to receive an OTP.</div>
+      <div class="field" style="margin-top:20px;"><label>Email</label><input type="email" id="forgotEmail" placeholder="you@email.com"></div>
+      <div class="msg err" id="forgotErr"></div>
+      <button class="btn" onclick="doForgot()">Send OTP →</button>
+    </div>
+
+    <!-- FORGOT OTP STEP -->
+    <div id="forgotOtpStep" class="step">
+      <div class="back-step" onclick="showStep('forgotStep')">← Back</div>
+      <div class="box-title">Enter OTP</div>
+      <div class="box-sub">OTP sent to <span id="forgotEmailShow" style="color:var(--g5);"></span></div>
+      <div class="field" style="margin-top:20px;"><label>OTP</label><input type="text" id="forgotOtpInput" placeholder="123456" maxlength="6" inputmode="numeric"></div>
+      <div class="field"><label>New Password</label><input type="password" id="newPass" placeholder="Min 6 characters"></div>
+      <div class="field"><label>Confirm Password</label><input type="password" id="confPass" placeholder="Repeat password"></div>
+      <div class="msg err" id="forgotOtpErr"></div>
+      <button class="btn" onclick="doReset()">Reset Password →</button>
+    </div>
+
+    <!-- SUCCESS STEP -->
+    <div id="successStep" class="step">
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:48px;margin-bottom:16px;">✅</div>
+        <div class="box-title" style="margin-bottom:8px;">You're In!</div>
+        <div class="box-sub" style="margin-bottom:24px;">Redirecting to your dashboard...</div>
+        <div style="width:100%;background:var(--border);border-radius:4px;height:3px;overflow:hidden;"><div id="progressBar" style="height:100%;background:var(--g5);width:0%;transition:width 2s linear;"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'https://ag-assistant-api.onrender.com';
+let _signupEmail = '';
+let _forgotEmail = '';
+let _currentTab = 'login';
+
+function showStep(id){ document.querySelectorAll('.step').forEach(s=>s.classList.remove('show')); document.getElementById(id).classList.add('show'); }
+function switchTab(tab){
+  _currentTab = tab;
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('signupForm').style.display = tab==='signup'?'block':'none';
+  document.getElementById('boxSub').textContent = tab==='login'?'Sign in to your AG Technicals account.':'Create your AG Technicals account.';
+  document.getElementById('box-title') && (document.getElementById('box-title').textContent = tab==='login'?'Welcome Back':'Create Account');
+}
+function backToMain(){ showStep('mainStep'); }
+function showForgot(){ showStep('forgotStep'); }
+
+function setErr(id, msg){ const el=document.getElementById(id); el.textContent=msg; el.className='msg err'; }
+function setOk(id, msg){ const el=document.getElementById(id); el.textContent=msg; el.className='msg ok'; }
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){setErr('loginErr','Fill all fields');return;}
+  setErr('loginErr','Logging in...');
+  try{
+    const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const d=await r.json();
+    if(d.ok){ sessionStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
+    else setErr('loginErr', d.error||'Login failed');
+  }catch(e){setErr('loginErr','Network error. Try again.');}
+}
+
+async function doSignup(){
+  const username=document.getElementById('signupUser').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPass').value;
+  if(!username||!email||!pass){setErr('signupErr','Fill all fields');return;}
+  if(pass.length<6){setErr('signupErr','Password min 6 characters');return;}
+  setErr('signupErr','Creating account...');
+  try{
+    const r=await fetch(API+'/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password:pass})});
+    const d=await r.json();
+    if(d.ok){
+      _signupEmail=email;
+      document.getElementById('otpEmailShow').textContent=email;
+      setErr('signupErr','');
+      showStep('otpStep');
+    } else setErr('signupErr', d.error||'Signup failed');
+  }catch(e){setErr('signupErr','Network error. Try again.');}
+}
+
+async function doVerifyOtp(){
+  const otp=document.getElementById('otpInput').value.trim();
+  if(otp.length!==6){setErr('otpErr','Enter 6-digit OTP');return;}
+  setErr('otpErr','Verifying...');
+  try{
+    const r=await fetch(API+'/api/auth/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_signupEmail,otp})});
+    const d=await r.json();
+    if(d.ok){ sessionStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
+    else setErr('otpErr',d.error||'Invalid OTP');
+  }catch(e){setErr('otpErr','Network error');}
+}
+
+async function resendOtp(){
+  try{
+    const r=await fetch(API+'/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'_resend_',email:_signupEmail,password:'_resend_'})});
+    setErr('otpErr','New OTP sent!');
+  }catch(e){}
+}
+
+async function doForgot(){
+  const email=document.getElementById('forgotEmail').value.trim();
+  if(!email){setErr('forgotErr','Enter your email');return;}
+  setErr('forgotErr','Sending OTP...');
+  try{
+    const r=await fetch(API+'/api/auth/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const d=await r.json();
+    if(d.ok){
+      _forgotEmail=email;
+      document.getElementById('forgotEmailShow').textContent=email;
+      setErr('forgotErr','');
+      showStep('forgotOtpStep');
+    } else setErr('forgotErr',d.error||'Email not found');
+  }catch(e){setErr('forgotErr','Network error');}
+}
+
+async function doReset(){
+  const otp=document.getElementById('forgotOtpInput').value.trim();
+  const np=document.getElementById('newPass').value;
+  const cp=document.getElementById('confPass').value;
+  if(!otp||!np||!cp){setErr('forgotOtpErr','Fill all fields');return;}
+  if(np!==cp){setErr('forgotOtpErr','Passwords do not match');return;}
+  if(np.length<6){setErr('forgotOtpErr','Min 6 characters');return;}
+  setErr('forgotOtpErr','Resetting...');
+  try{
+    const r=await fetch(API+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_forgotEmail,otp,new_password:np})});
+    const d=await r.json();
+    if(d.ok){ setErr('forgotOtpErr',''); document.getElementById('forgotOtpErr').className='msg ok'; document.getElementById('forgotOtpErr').textContent='✓ Password reset! Redirecting...'; setTimeout(()=>backToMain(),1500); }
+    else setErr('forgotOtpErr',d.error||'Failed');
+  }catch(e){setErr('forgotOtpErr','Network error');}
+}
+
+function showSuccess(){
+  showStep('successStep');
+  setTimeout(()=>{ document.getElementById('progressBar').style.width='100%'; },100);
+  setTimeout(()=>{ window.location.href='user-dashboard.html'; },2100);
+}
+
+// If already logged in, redirect
+if(sessionStorage.getItem('ag_user')){ window.location.href='user-dashboard.html'; }
+</script>
+</body>
+</html>

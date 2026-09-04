@@ -4,3 +4,7 @@ httpx
 pydantic
 python-multipart
 aiofiles
+asyncpg
+passlib[bcrypt]
+python-jose[cryptography]
+emails

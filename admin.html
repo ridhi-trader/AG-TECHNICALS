@@ -266,6 +266,12 @@ select.inp{cursor:pointer;}
         <button class="btn-gold" onclick="addUser()">Add User</button>
       </div>
       <div id="userList"></div>
+      <hr style="border:none;border-top:1px solid var(--bd);margin:20px 0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="section-title" style="margin:0;">🌐 Registered Users (From DB)</div>
+        <button class="btn-out" onclick="loadDbUsers()" style="font-size:11px;padding:6px 12px;">🔄 Load From DB</button>
+      </div>
+      <div id="dbUserList"><div class="empty">Click "Load From DB" to see registered users.</div></div>
     </div>
 
     <!-- ══ ANALYTICS ══ -->
@@ -1080,8 +1086,69 @@ function changePass(){
   ['pwCur','pwNew','pwConf'].forEach(id=>document.getElementById(id).value='');
 }
 
+/* ── DB USERS ── */
+async function loadDbUsers(){
+  const el=document.getElementById('dbUserList'); if(!el) return;
+  el.innerHTML='<div class="empty">Loading...</div>';
+  try{
+    const r=await fetch('https://ag-assistant-api.onrender.com/api/admin/users');
+    const d=await r.json();
+    if(!d.ok||!d.users.length){el.innerHTML='<div class="empty">No registered users yet.</div>';return;}
+    el.innerHTML=d.users.map(u=>`
+      <div class="user-row">
+        <div class="user-avatar">${(u.username||'?')[0].toUpperCase()}</div>
+        <div style="flex:1;">
+          <div class="user-name">${u.username} <span style="font-size:10px;color:${u.verified?'var(--green)':'var(--red)'};">${u.verified?'✓ Verified':'✗ Unverified'}</span></div>
+          <div class="user-meta">${u.email} · Joined ${u.joined}</div>
+          <div style="margin-top:4px;">${(u.products||'').split(',').filter(Boolean).map(pid=>{const p=products.find(x=>x.id===pid);return p?'<span class="product-chip">'+p.icon+' '+p.name+'</span>':''}).join('')||'<span style="font-size:11px;color:var(--t3);">No products assigned</span>'}</div>
+        </div>
+        <div>
+          <button class="btn-out" onclick="openAssign(${u.id},'${u.username}','${u.products||''}')" style="font-size:11px;padding:6px 12px;">Assign Products</button>
+        </div>
+      </div>`).join('');
+  }catch(e){el.innerHTML='<div class="empty" style="color:var(--red);">Could not reach server.</div>';}
+}
+
+let _assignUserId=null;
+function openAssign(uid,uname,currentProds){
+  _assignUserId=uid;
+  const prods=currentProds.split(',').filter(Boolean);
+  document.getElementById('assignTitle').textContent='Assign Products — '+uname;
+  document.getElementById('assignCheckboxes').innerHTML=products.map(p=>`
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2);margin-bottom:10px;cursor:pointer;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--bd);">
+      <input type="checkbox" class="assign-check" value="${p.id}" ${prods.includes(p.id)?'checked':''} style="accent-color:var(--g5);width:16px;height:16px;">
+      <span style="font-size:18px;">${p.icon}</span> ${p.name}
+    </label>`).join('');
+  document.getElementById('assignOverlay').classList.add('open');
+}
+async function saveAssign(){
+  const prods=[...document.querySelectorAll('.assign-check:checked')].map(c=>c.value).join(',');
+  try{
+    const r=await fetch('https://ag-assistant-api.onrender.com/api/admin/assign-products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:_assignUserId,products:prods})});
+    const d=await r.json();
+    if(d.ok){toast('Products assigned!');document.getElementById('assignOverlay').classList.remove('open');loadDbUsers();}
+    else toast('Failed: '+(d.error||'unknown'),'err');
+  }catch(e){toast('Network error','err');}
+}
+
 /* ── INIT ── */
 renderProds();
 </script>
+
+<!-- ASSIGN PRODUCTS OVERLAY -->
+<div class="overlay" id="assignOverlay">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="assignTitle">Assign Products</span>
+      <button class="modal-close" onclick="document.getElementById('assignOverlay').classList.remove('open')">✕</button>
+    </div>
+    <div id="assignCheckboxes" style="margin-bottom:16px;"></div>
+    <div class="btns">
+      <button class="btn-gold" onclick="saveAssign()">Save Assignment</button>
+      <button class="btn-out" onclick="document.getElementById('assignOverlay').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

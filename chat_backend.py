@@ -277,3 +277,213 @@ async def clear_cache():
 @app.head("/")
 def root():
     return {"status": "AG Assistant API running"}
+
+# ── USER AUTH SYSTEM ───────────────────────────────────────────────────────────
+import asyncpg, hashlib, secrets, smtplib, ssl
+from email.mime.text import MIMEText
+from datetime import datetime, timedelta
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+
+DB_URL = os.environ.get("DATABASE_URL", "")
+GMAIL_USER = os.environ.get("GMAIL_USER", "")
+GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password
+SITE_URL = "https://ag-technicals.onrender.com"
+
+_db_pool = None
+
+async def get_db():
+    global _db_pool
+    if not _db_pool and DB_URL:
+        try:
+            _db_pool = await asyncpg.create_pool(DB_URL, ssl='require', min_size=1, max_size=5)
+            await init_db()
+        except Exception as e:
+            print(f"DB connection failed: {e}")
+    return _db_pool
+
+async def init_db():
+    pool = _db_pool
+    if not pool: return
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS ag_users (
+                id SERIAL PRIMARY KEY,
+                username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                products TEXT DEFAULT '',
+                created_at TIMESTAMP DEFAULT NOW(),
+                verified BOOLEAN DEFAULT FALSE
+            );
+            CREATE TABLE IF NOT EXISTS ag_otps (
+                id SERIAL PRIMARY KEY,
+                email TEXT NOT NULL,
+                otp TEXT NOT NULL,
+                purpose TEXT NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                used BOOLEAN DEFAULT FALSE
+            );
+        """)
+
+def hash_pass(pw): return hashlib.sha256(pw.encode()).hexdigest()
+def gen_otp(): return str(secrets.randbelow(900000) + 100000)
+
+def send_email(to_email, subject, body):
+    if not GMAIL_USER or not GMAIL_PASS:
+        print(f"EMAIL (no creds): To={to_email} Subject={subject}")
+        return True
+    try:
+        msg = MIMEText(body, 'html')
+        msg['Subject'] = subject
+        msg['From'] = f"AG Technicals <{GMAIL_USER}>"
+        msg['To'] = to_email
+        ctx = ssl.create_default_context()
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ctx) as s:
+            s.login(GMAIL_USER, GMAIL_PASS)
+            s.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"Email error: {e}")
+        return False
+
+def otp_email_html(otp, purpose):
+    return f"""
+    <div style="background:#0d0d0f;padding:40px;font-family:Inter,sans-serif;color:#fff;max-width:500px;margin:0 auto;border-radius:16px;">
+      <div style="font-size:24px;font-weight:800;color:#e8b84b;margin-bottom:8px;">AG Technicals</div>
+      <div style="font-size:14px;color:#a0a0b8;margin-bottom:32px;">{'Verify your email' if purpose=='signup' else 'Password Reset OTP'}</div>
+      <div style="background:#141318;border:1px solid #2a2736;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+        <div style="font-size:13px;color:#a0a0b8;margin-bottom:12px;">Your OTP Code</div>
+        <div style="font-size:40px;font-weight:800;color:#e8b84b;letter-spacing:8px;">{otp}</div>
+        <div style="font-size:12px;color:#a0a0b8;margin-top:12px;">Valid for 10 minutes</div>
+      </div>
+      <div style="font-size:12px;color:#7e7a90;">If you did not request this, ignore this email.</div>
+    </div>"""
+
+class SignupReq(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class OtpReq(BaseModel):
+    email: str
+    otp: str
+
+class LoginReq(BaseModel):
+    email: str
+    password: str
+
+class ForgotReq(BaseModel):
+    email: str
+
+class ResetReq(BaseModel):
+    email: str
+    otp: str
+    new_password: str
+
+@app.on_event("startup")
+async def startup():
+    await get_db()
+
+@app.post("/api/auth/signup")
+async def signup(req: SignupReq):
+    pool = await get_db()
+    if not pool:
+        return JSONResponse({"ok": False, "error": "Database unavailable"})
+    if len(req.password) < 6:
+        return JSONResponse({"ok": False, "error": "Password must be at least 6 characters"})
+    if len(req.username) < 3:
+        return JSONResponse({"ok": False, "error": "Username must be at least 3 characters"})
+    try:
+        async with pool.acquire() as conn:
+            existing = await conn.fetchrow("SELECT id FROM ag_users WHERE email=$1 OR username=$2", req.email, req.username)
+            if existing:
+                return JSONResponse({"ok": False, "error": "Email or username already registered"})
+            await conn.execute("INSERT INTO ag_users (username, email, password_hash) VALUES ($1,$2,$3)",
+                req.username, req.email, hash_pass(req.password))
+            # Delete old OTPs
+            await conn.execute("DELETE FROM ag_otps WHERE email=$1 AND purpose='signup'", req.email)
+            otp = gen_otp()
+            expires = datetime.utcnow() + timedelta(minutes=10)
+            await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'signup',$3)", req.email, otp, expires)
+            send_email(req.email, "AG Technicals — Verify Your Email", otp_email_html(otp, 'signup'))
+            return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)})
+
+@app.post("/api/auth/verify-otp")
+async def verify_otp(req: OtpReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT * FROM ag_otps WHERE email=$1 AND otp=$2 AND purpose='signup' AND used=FALSE AND expires_at > NOW()", req.email, req.otp)
+        if not row: return JSONResponse({"ok": False, "error": "Invalid or expired OTP"})
+        await conn.execute("UPDATE ag_otps SET used=TRUE WHERE id=$1", row['id'])
+        await conn.execute("UPDATE ag_users SET verified=TRUE WHERE email=$1", req.email)
+        user = await conn.fetchrow("SELECT id,username,email,products FROM ag_users WHERE email=$1", req.email)
+        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products']}})
+
+@app.post("/api/auth/login")
+async def login(req: LoginReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow("SELECT * FROM ag_users WHERE email=$1 AND password_hash=$2 AND verified=TRUE", req.email, hash_pass(req.password))
+        if not user: return JSONResponse({"ok": False, "error": "Invalid credentials or email not verified"})
+        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products']}})
+
+@app.post("/api/auth/forgot-password")
+async def forgot_password(req: ForgotReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow("SELECT id FROM ag_users WHERE email=$1", req.email)
+        if not user: return JSONResponse({"ok": False, "error": "Email not found"})
+        await conn.execute("DELETE FROM ag_otps WHERE email=$1 AND purpose='reset'", req.email)
+        otp = gen_otp()
+        expires = datetime.utcnow() + timedelta(minutes=10)
+        await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'reset',$3)", req.email, otp, expires)
+        send_email(req.email, "AG Technicals — Password Reset OTP", otp_email_html(otp, 'reset'))
+        return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
+
+@app.post("/api/auth/reset-password")
+async def reset_password(req: ResetReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT * FROM ag_otps WHERE email=$1 AND otp=$2 AND purpose='reset' AND used=FALSE AND expires_at > NOW()", req.email, req.otp)
+        if not row: return JSONResponse({"ok": False, "error": "Invalid or expired OTP"})
+        if len(req.new_password) < 6: return JSONResponse({"ok": False, "error": "Password too short"})
+        await conn.execute("UPDATE ag_otps SET used=TRUE WHERE id=$1", row['id'])
+        await conn.execute("UPDATE ag_users SET password_hash=$1 WHERE email=$2", hash_pass(req.new_password), req.email)
+        return JSONResponse({"ok": True, "msg": "Password reset successfully"})
+
+@app.get("/api/auth/user/{user_id}")
+async def get_user(user_id: int):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow("SELECT id,username,email,products,created_at FROM ag_users WHERE id=$1", user_id)
+        if not user: return JSONResponse({"ok": False, "error": "User not found"})
+        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products'], "joined": str(user['created_at'])[:10]}})
+
+# Admin: assign products to user
+class AssignReq(BaseModel):
+    user_id: int
+    products: str  # comma-separated product ids
+
+@app.post("/api/admin/assign-products")
+async def assign_products(req: AssignReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", req.products, req.user_id)
+        return JSONResponse({"ok": True})
+
+@app.get("/api/admin/users")
+async def admin_users():
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "users": []})
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("SELECT id,username,email,products,created_at,verified FROM ag_users ORDER BY created_at DESC")
+        return JSONResponse({"ok": True, "users": [{"id":r['id'],"username":r['username'],"email":r['email'],"products":r['products'],"joined":str(r['created_at'])[:10],"verified":r['verified']} for r in rows]})

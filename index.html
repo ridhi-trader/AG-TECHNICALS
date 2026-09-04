@@ -657,10 +657,10 @@ const visProds = products.filter(p=>!p.hidden);
 document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   const hasItems = (p.items||[]).filter(it=>!it.hidden).length > 0;
   let onclick;
-  if(hasItems){
-    onclick = "openSubItems('" + p.id + "')";
-  } else if(p.type==='page'){
+  if(p.type==='page' && p.url){
     onclick = "window.location.href='" + p.url + "'";
+  } else if(hasItems){
+    onclick = "openSubItems('" + p.id + "')";
   } else {
     const t=p.title.replace(/'/g,"\\'")||'',d=p.desc.replace(/'/g,"\\'")||'',ct=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||''),fv=(p.fileUrl?'1':''),fn=(p.fileName||p.name||'').replace(/'/g,"\\'")||'';
     onclick = "openModal('" + t + "','" + d + "','" + p.icon + "','" + v + "','" + ct + "','" + cu + "','','" + fv + "','" + fn + "','" + p.id + "')";

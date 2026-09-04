@@ -766,6 +766,23 @@ async def fetch_article(url: str):
         # Extract title
         og_title = _re.search('<meta[^>]+property="og:title"[^>]+content="([^"]+)"', html, _re.IGNORECASE)
         title = og_title.group(1) if og_title else ""
+        # If content too short, use AI to expand
+        if len(text) < 200 and ANTHROPIC_KEY:
+            try:
+                async with httpx.AsyncClient(timeout=20) as ai_client:
+                    ai_resp = await ai_client.post(
+                        "https://api.anthropic.com/v1/messages",
+                        headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                        json={"model": "claude-haiku-4-5-20251001", "max_tokens": 600,
+                              "messages": [{"role": "user", "content": f"Write a detailed 3-4 paragraph trading news analysis for a trader audience about this headline: \"{title or url}\"\n\nContext: {text}\n\nFocus on market impact, what traders should watch, and key levels. Be specific and informative."}]}
+                    )
+                    if ai_resp.status_code == 200:
+                        ai_data = ai_resp.json()
+                        ai_text = ai_data.get("content", [{}])[0].get("text", "")
+                        if ai_text:
+                            text = ai_text
+            except Exception:
+                pass
         return JSONResponse({"ok": True, "content": text[:3000], "image": img, "title": title})
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})

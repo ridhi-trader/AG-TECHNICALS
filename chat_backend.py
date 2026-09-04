@@ -82,7 +82,9 @@ async def fetch_rss_news():
                     for item in root.findall(".//item")[:6]:
                         title = item.findtext("title", "").strip()
                         link = item.findtext("link", "").strip()
-                        desc = item.findtext("description", "").strip()[:200]
+                        import re as _re
+                        raw_desc = item.findtext("description", "").strip()
+                        desc = _re.sub(r'<[^>]+>', '', raw_desc).strip()[:600]
                         pub = item.findtext("pubDate", "")
                         # Try to get image
                         img = ""
@@ -722,3 +724,48 @@ async def assign_bridge_account(req: BridgeAssignReq):
         await conn.execute("UPDATE bridge_licenses SET account=$1 WHERE lid=$2", req.account, req.lid)
     return JSONResponse({"ok": True})
 
+@app.get("/api/news/article")
+async def fetch_article(url: str):
+    """Fetch and parse full article content for site-side reader"""
+    if not url:
+        return JSONResponse({"ok": False, "error": "No URL"})
+    try:
+        async with httpx.AsyncClient(timeout=10, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "text/html,application/xhtml+xml",
+        }, follow_redirects=True) as client:
+            r = await client.get(url)
+            if r.status_code != 200:
+                return JSONResponse({"ok": False, "error": f"Status {r.status_code}"})
+            html = r.text
+        # Extract content using simple heuristics
+        import re as _re
+        # Remove scripts, styles, nav, footer, ads
+        html = _re.sub(r'<script[^>]*>.*?</script>', '', html, flags=_re.DOTALL|_re.IGNORECASE)
+        html = _re.sub(r'<style[^>]*>.*?</style>', '', html, flags=_re.DOTALL|_re.IGNORECASE)
+        html = _re.sub(r'<nav[^>]*>.*?</nav>', '', html, flags=_re.DOTALL|_re.IGNORECASE)
+        html = _re.sub(r'<footer[^>]*>.*?</footer>', '', html, flags=_re.DOTALL|_re.IGNORECASE)
+        html = _re.sub(r'<header[^>]*>.*?</header>', '', html, flags=_re.DOTALL|_re.IGNORECASE)
+        # Find article/main content
+        art = _re.search(r'<article[^>]*>(.*?)</article>', html, _re.DOTALL|_re.IGNORECASE)
+        main = _re.search(r'<main[^>]*>(.*?)</main>', html, _re.DOTALL|_re.IGNORECASE)
+        content_div = _re.search(r'class=["'][^"']*(?:article-body|article-content|post-content|entry-content|story-body|article__body)[^"']*["'][^>]*>(.*?)</div>', html, _re.DOTALL|_re.IGNORECASE)
+        raw = (art or main or content_div)
+        if raw:
+            text_html = raw.group(1)
+        else:
+            # Fallback: get all paragraphs
+            paras = _re.findall(r'<p[^>]*>(.*?)</p>', html, _re.DOTALL|_re.IGNORECASE)
+            text_html = ' '.join(paras[:15])
+        # Strip tags for plain text
+        text = _re.sub(r'<[^>]+>', ' ', text_html)
+        text = _re.sub(r'\s+', ' ', text).strip()
+        # Extract OG image
+        og_img = _re.search(r'<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']', html, _re.IGNORECASE)
+        img = og_img.group(1) if og_img else ""
+        # Extract title
+        og_title = _re.search(r'<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']', html, _re.IGNORECASE)
+        title = og_title.group(1) if og_title else ""
+        return JSONResponse({"ok": True, "content": text[:3000], "image": img, "title": title})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)})

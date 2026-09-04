@@ -377,6 +377,55 @@ async function loadNews(force){
 renderCats();
 loadNews();
 setInterval(loadNews, 5*60*1000);
+
+const API_BACKEND = 'https://ag-assistant-api.onrender.com';
+
+async function openArticle(i){
+  const a = window._newsArts && window._newsArts[i];
+  if(!a) return;
+  const catClass = CAT_CLASS[a.category]||'cat-default';
+  const mc = document.getElementById('newsModalContent');
+  mc.innerHTML = `
+    ${a.image?`<img src="${a.image}" alt="" style="width:100%;border-radius:12px;margin-bottom:20px;max-height:300px;object-fit:cover;" onerror="this.remove()">` : ''}
+    <div class="news-modal-meta">
+      <span class="article-cat ${catClass}">${a.category}</span>
+      ${a.real?'<span class="real-badge">LIVE</span>':'<span class="ag-badge">AG</span>'}
+      <span style="font-size:12px;color:var(--t3);margin-left:auto;">${a.source} &middot; ${a.time}</span>
+    </div>
+    <div class="news-modal-title">${a.title}</div>
+    <div class="news-modal-body" id="articleBody"><span style="color:var(--t3);">Loading full article...</span></div>
+  `;
+  document.getElementById('newsModalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(a.url){
+    try{
+      const r = await fetch(API_BACKEND+'/api/news/article?url='+encodeURIComponent(a.url));
+      const d = await r.json();
+      const body = document.getElementById('articleBody');
+      if(!body) return;
+      if(d.ok && d.content && d.content.length>100){
+        if(d.image && !a.image){
+          mc.insertAdjacentHTML('afterbegin',`<img src="${d.image}" alt="" style="width:100%;border-radius:12px;margin-bottom:20px;max-height:300px;object-fit:cover;" onerror="this.remove()">`);
+        }
+        const paras = d.content.split('\n').filter(p=>p.trim().length>30);
+        body.innerHTML = paras.map(p=>`<p style="margin-bottom:14px;">${p.trim()}</p>`).join('');
+      } else {
+        body.innerHTML = `<p>${a.summary||'Full content not available.'}</p>`;
+      }
+    }catch(e){
+      const body = document.getElementById('articleBody');
+      if(body) body.innerHTML = `<p>${a.summary||'Could not load article.'}</p>`;
+    }
+  } else {
+    document.getElementById('articleBody').innerHTML = `<p>${a.summary||''}</p>`;
+  }
+}
+
+function closeArticle(){
+  document.getElementById('newsModalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeArticle();});
 </script>
 <script src="ag-assistant.js"></script>
 

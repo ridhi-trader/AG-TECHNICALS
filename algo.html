@@ -227,26 +227,24 @@ function renderEAs(){
     return;
   }
   grid.innerHTML = items.map(function(ea,i){
-    var hasVideo = !!(ea.fileUrl||ea.videoUrl);
-    // Auto-generate thumbnail from Cloudinary video URL
     var vsrc = ea.fileUrl||ea.videoUrl||'';
-    var thumbUrl = '';
-    if(vsrc && vsrc.indexOf('cloudinary.com')>-1){
-      thumbUrl = vsrc.replace('/video/upload/','/video/upload/so_0/').replace('.mp4','.jpg');
-    }
-    var img = thumbUrl ? '<img src="'+thumbUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">' :
-              ea.img ? '<img src="'+ea.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">' :
-              '<div style="font-size:48px;display:flex;align-items:center;justify-content:center;height:100%;">🤖</div>';
-    return '<div class="ea-card" onclick="openItem('+i+')" style="cursor:pointer;">'+
-      '<div class="ea-img" style="position:relative;">'+img+
+    var hasVideo = !!vsrc;
+    var cardTop = hasVideo ?
+      '<div style="position:relative;background:#000;border-radius:10px 10px 0 0;overflow:hidden;">'+
+        '<video src="'+vsrc+'" controls playsinline preload="metadata" style="width:100%;max-height:200px;display:block;background:#000;border-radius:10px 10px 0 0;"></video>'+
         (ea.badge?'<div class="ea-badge">'+ea.badge+'</div>':'')+
-        (hasVideo?'<div style="position:absolute;top:8px;right:8px;background:rgba(232,184,75,0.9);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;">▶ VIDEO</div>':'')+
-      '</div>'+
+      '</div>' :
+      '<div class="ea-img" style="position:relative;">'+
+        (ea.img?'<img src="'+ea.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">':'<div style="font-size:48px;display:flex;align-items:center;justify-content:center;height:100%;">🤖</div>')+
+        (ea.badge?'<div class="ea-badge">'+ea.badge+'</div>':'')+
+      '</div>';
+    return '<div class="ea-card" style="cursor:default;">'+
+      cardTop+
       '<div class="ea-body">'+
         (ea.pid?'<div class="ea-pid">PID: '+ea.pid+'</div>':'')+
         '<div class="ea-name">'+(ea.name||'')+'</div>'+
         '<div class="ea-desc">'+(ea.desc||'')+'</div>'+
-        '<button class="ea-btn">View Details</button>'+
+        '<a href="https://wa.me/919876543210?text=Hi!+Interested+in+'+encodeURIComponent(ea.name||'')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;">💬 Get On WhatsApp</a>'+
       '</div>'+
     '</div>';
   }).join('');

@@ -670,16 +670,61 @@ function nav(id, btn){
 
 /* ══════════════ PRODUCTS ══════════════ */
 const D_PRODS = [
-  {id:'bridge',      name:'Bridge',               icon:'🌉', sub:'TradingView → MT5 Connector',  badge:'PREMIUM', desc:'The AG Bridge connects TradingView alerts straight to MetaTrader 5 — 24/7 automated. One license, one MT5 account.', cta:'Get Bridge Access →', type:'page', url:'bridge.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
-  {id:'algo',        name:'Algo (MT5)',            icon:'🤖', sub:'Auto Trading System (MT5)',    badge:'PREMIUM', desc:'Fully automated MT5 trading algorithm — runs 24/7, executes entries and exits without manual input.', cta:'View Algo →', type:'page', url:'algo.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
-  {id:'tvindicator', name:'TradingView Indicator', icon:'📈', sub:'Custom TradingView Indicator', badge:'PREMIUM', desc:'3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Auto-detect key levels in real time.', cta:'View Indicators →', type:'page', url:'tv-indicators.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
-  {id:'education',   name:'Education',             icon:'🧠', sub:'Courses & Academy',           badge:'FREE + PAID', desc:'Structured courses from beginner to advanced — SMC, ICT, risk management, trading psychology.', cta:'Open Courses →', type:'page', url:'education.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
-  {id:'guide',       name:'Guide',                 icon:'📖', sub:'Written Playbooks',           badge:'PREMIUM', desc:'Step-by-step written guides — order flow, stop loss, session timing, prop firm rules and more.', cta:'Open Guides →', type:'page', url:'guide.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
-  {id:'custom',      name:'Custom Strategy',       icon:'⚙️', sub:'Built For You',               badge:'CUSTOM', desc:'Your own personalised trading strategy — tailored to your market, risk, and timeframe by AG analysts.', cta:'Contact Us →', type:'modal', url:'', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
-  {id:'news',        name:'News',                  icon:'📰', sub:'Live Market Feed',            badge:'LIVE', desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow.', cta:'Read Dossier →', type:'page', url:'gold-dossier.html', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'bridge', name:'Bridge', icon:'🌉', sub:'TradingView → MT5 Connector', badge:'PREMIUM',
+   desc:'The AG Bridge connects TradingView alerts straight to MetaTrader 5 — 24/7 automated. One license, one MT5 account.',
+   cta:'Get Bridge Access →', type:'page', url:'bridge.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   items:[
+     {name:'Bridge Setup Guide', pid:'BRG-0001', badge:'GUIDE', desc:'Step-by-step TradingView → MT5 setup', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'Bridge License (1 Month)', pid:'BRG-0002', badge:'1 MONTH', desc:'30-day Bridge access license', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'Bridge License (3 Months)', pid:'BRG-0003', badge:'3 MONTHS', desc:'90-day Bridge access license', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'Bridge License (Lifetime)', pid:'BRG-0004', badge:'LIFETIME', desc:'Lifetime Bridge access', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+   ]},
+  {id:'algo', name:'Algo (MT5)', icon:'🤖', sub:'Auto Trading System (MT5)', badge:'PREMIUM',
+   desc:'Fully automated MT5 trading algorithm — runs 24/7, executes entries and exits without manual input.',
+   cta:'View Algo →', type:'page', url:'algo.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   items:[
+     {name:'AG SMC EA', pid:'EA-0001', badge:'SMC', desc:'Smart Money Concepts automated EA for MT5', img:'img-smc.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG Order Flow EA', pid:'EA-0002', badge:'ORDER FLOW', desc:'Order flow based automated trading EA', img:'img-orderflow.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG 3Logic Grid EA', pid:'EA-0003', badge:'GRID', desc:'3-logic grid trading system EA', img:'img-esb.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG ATR Grid EA', pid:'EA-0004', badge:'ATR GRID', desc:'ATR-based dynamic grid EA', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG Swing EMA RR EA', pid:'EA-0005', badge:'SWING', desc:'Swing trading with EMA and R:R management', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+   ]},
+  {id:'tvindicator', name:'TradingView Indicator', icon:'📈', sub:'Custom TradingView Indicator', badge:'PREMIUM',
+   desc:'3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Auto-detect key levels in real time.',
+   cta:'View Indicators →', type:'page', url:'tv-indicators.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   items:[
+     {name:'AG SMC Indicator', pid:'TVI-0003', badge:'PREMIUM', desc:'Smart Money Concepts auto-detection indicator', img:'img-smc.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG Order Flow', pid:'TVI-0004', badge:'PREMIUM', desc:'Real-time order flow visualization indicator', img:'img-orderflow.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG-ESB (Swing + EMA + R:R)', pid:'TVI-0005', badge:'PREMIUM', desc:'Swing, EMA and risk-reward indicator combined', img:'img-esb.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+   ]},
+  {id:'education', name:'Education', icon:'🧠', sub:'Courses & Academy', badge:'FREE + PAID',
+   desc:'Structured courses from beginner to advanced — SMC, ICT, risk management, trading psychology.',
+   cta:'Open Courses →', type:'page', url:'education.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   items:[
+     {name:'Basic To Pro Course', pid:'EDU-0001', badge:'BEGINNER', desc:'Financial Markets, Pips, Leverage, Orders, Risk — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'education-foundation.html', hidden:false},
+     {name:'SMC Complete Course', pid:'EDU-0002', badge:'ADVANCED · SMC', desc:'17 chapters on Market Structure, Order Blocks, Liquidity, FVG — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'education-smc.html', hidden:false},
+     {name:'Real Trading Journey', pid:'EDU-0003', badge:'ALL LEVELS', desc:'Real trades, real analysis, real lessons from AG Technicals', img:'', fileUrl:'', fileName:'', videoUrl:'real-trading-journey.html', hidden:false},
+   ]},
+  {id:'guide', name:'Guide', icon:'📖', sub:'Written Playbooks', badge:'PREMIUM',
+   desc:'Step-by-step written guides — order flow, stop loss, session timing, prop firm rules and more.',
+   cta:'Open Guides →', type:'page', url:'guide.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   items:[
+     {name:'AG Swing EMA RR EA Guide', pid:'GD-0001', badge:'EA GUIDE', desc:'Complete Swing EMA EA user guide — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'swing-ema-guide.html', hidden:false},
+     {name:'AG ATR Grid EA Guide', pid:'GD-0002', badge:'EA GUIDE', desc:'Complete ATR Grid EA user guide', img:'', fileUrl:'', fileName:'', videoUrl:'atr-grid-guide.html', hidden:false},
+     {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', img:'', fileUrl:'', fileName:'', videoUrl:'smc-feature-guide.html', hidden:false},
+   ]},
+  {id:'custom', name:'Custom Strategy', icon:'⚙️', sub:'Built For You', badge:'CUSTOM',
+   desc:'Your own personalised trading strategy — tailored to your market, risk, and timeframe by AG analysts.',
+   cta:'Contact Us →', type:'modal', url:'', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
+  {id:'news', name:'News', icon:'📰', sub:'Live Market Feed', badge:'LIVE',
+   desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow.',
+   cta:'Read Dossier →', type:'page', url:'gold-dossier.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   items:[
+     {name:'Gold Dossier', pid:'NEWS-0001', badge:'GOLD', desc:'COT analysis, DXY watch, institutional flow for XAU/USD', img:'', fileUrl:'', fileName:'', videoUrl:'gold-dossier.html', hidden:false},
+   ]},
 ];
 
-// Force-fix stale localStorage
+// Force-fix stale localStorage — merge D_PRODS items into stored products
 (function(){
   try{
     const s=JSON.parse(localStorage.getItem('ag_products')||'null'); if(!s) return;
@@ -689,6 +734,11 @@ const D_PRODS = [
       if(p.id==='education'){p.type='page';p.url='education.html';p.hidden=false;ch=true;}
       if(p.id==='bridge'){p.type='page';p.url='bridge.html';p.hidden=false;ch=true;}
       if(p.id==='algo'){p.type='page';p.url='algo.html';p.hidden=false;ch=true;}
+      // If stored product has 0 items but D_PRODS has items, copy them
+      const def=D_PRODS.find(d=>d.id===p.id);
+      if(def && (!p.items||p.items.length===0) && def.items && def.items.length>0){
+        p.items=def.items; ch=true;
+      }
     });
     if(ch) localStorage.setItem('ag_products',JSON.stringify(s));
   }catch(e){}

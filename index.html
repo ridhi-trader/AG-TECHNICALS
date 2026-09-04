@@ -468,13 +468,44 @@ const D = {
     {text:'AG INTEL · Gold Dossier: Jackson Hole — Read ↗',type:'gold'},
   ],
   products: [
-    {id:'bridge',      name:'Bridge',               icon:'🌉',sub:'TradingView to MT5 Connector', title:'Bridge',               desc:'AG Bridge connects TradingView to your MT5. Signals fire automatically, trades execute without touching a button. One license, one account, 24/7 automated.',cta:'Get Bridge Access',type:'page',url:'bridge.html',videoUrl:'',hidden:false},
-    {id:'algo',        name:'Algo (MT5)',            icon:'🤖',sub:'Auto Trading System (MT5)',  title:'Algo (MT5)',            desc:'Our MT5 Expert Advisors — SMC EA, Order Flow EA, AG 3-Logic Grid EA and more. Fully automated, runs 24/7.',cta:'View EAs →',type:'page',url:'algo.html',videoUrl:'',hidden:false},
-    {id:'tvindicator', name:'TradingView Indicator', icon:'📈',sub:'Custom TV Indicator',        title:'TradingView Indicator', desc:'Our 3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Pine Script-based, auto-detect key levels and zones in real time.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',videoUrl:'',hidden:false},
-    {id:'education',   name:'Education',            icon:'🧠',sub:'Courses & Academy',          title:'Education',            desc:'Structured courses from beginner to advanced — SMC, ICT methodology, Elliott Wave, risk management, and trading psychology. 40+ hours of content.',cta:'Open Courses →',type:'page',url:'education.html',videoUrl:'',hidden:false},
-    {id:'guide',       name:'Guide',                icon:'📖',sub:'Written Playbooks',          title:'Guides',               desc:'Step-by-step written guides — how to read order flow, set stops, session timing, prop firm rules, and more. Practical, no fluff.',cta:'Open Guides →',type:'page',url:'guide.html',videoUrl:'',hidden:false},
-    {id:'strategy',    name:'Custom Strategy',      icon:'⚙️',sub:'Built For You',              title:'Custom Strategy',      desc:'Your own personalised trading strategy built by AG Technicals analysts — tailored to your risk profile, timeframe, and market preference.',cta:'Join Waitlist →',type:'modal',url:'',videoUrl:'',hidden:false},
-    {id:'news',        name:'News',                 icon:'📰',sub:'Live Market Feed',           title:'News',                 desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow breakdowns.',cta:'Read Dossier →',type:'page',url:'gold-dossier.html',videoUrl:'',hidden:false},
+    {id:'bridge',name:'Bridge',icon:'🌉',sub:'TradingView → MT5 Connector',badge:'PREMIUM',title:'Bridge',desc:'AG Bridge connects TradingView to your MT5. Signals fire automatically — 24/7 automated.',cta:'Get Bridge Access →',type:'page',url:'bridge.html',hidden:false,img:'',fileUrl:'',fileName:'',
+     items:[
+       {name:'Bridge Setup Guide',pid:'BRG-0001',badge:'GUIDE',desc:'Step-by-step TradingView → MT5 setup',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'Bridge License (1 Month)',pid:'BRG-0002',badge:'1 MONTH',desc:'30-day Bridge access',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'Bridge License (3 Months)',pid:'BRG-0003',badge:'3 MONTHS',desc:'90-day Bridge access',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'Bridge License (Lifetime)',pid:'BRG-0004',badge:'LIFETIME',desc:'Lifetime Bridge access',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+     ]},
+    {id:'algo',name:'Algo (MT5)',icon:'🤖',sub:'Auto Trading System (MT5)',badge:'PREMIUM',title:'Algo (MT5)',desc:'5 fully automated MT5 EAs — runs 24/7, no manual input needed.',cta:'View EAs →',type:'page',url:'algo.html',hidden:false,img:'',fileUrl:'',fileName:'',
+     items:[
+       {name:'AG SMC EA',pid:'EA-0001',badge:'SMC',desc:'Smart Money Concepts automated EA',img:'img-smc.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'AG Order Flow EA',pid:'EA-0002',badge:'ORDER FLOW',desc:'Order flow based automated EA',img:'img-orderflow.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'AG 3Logic Grid EA',pid:'EA-0003',badge:'GRID',desc:'3-logic grid trading system',img:'img-esb.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'AG ATR Grid EA',pid:'EA-0004',badge:'ATR GRID',desc:'ATR-based dynamic grid EA',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'AG Swing EMA RR EA',pid:'EA-0005',badge:'SWING',desc:'Swing + EMA + R:R management EA',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+     ]},
+    {id:'tvindicator',name:'TradingView Indicator',icon:'📈',sub:'Custom TradingView Indicator',badge:'PREMIUM',title:'TradingView Indicator',desc:'3 custom Pine Script indicators — AG SMC, AG Order Flow, AG-ESB.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',hidden:false,img:'',fileUrl:'',fileName:'',
+     items:[
+       {name:'AG SMC Indicator',pid:'TVI-0003',badge:'PREMIUM',desc:'SMC auto-detection indicator',img:'img-smc.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'AG Order Flow',pid:'TVI-0004',badge:'PREMIUM',desc:'Real-time order flow visualization',img:'img-orderflow.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+       {name:'AG-ESB (Swing + EMA + R:R)',pid:'TVI-0005',badge:'PREMIUM',desc:'Swing, EMA and R:R combined',img:'img-esb.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
+     ]},
+    {id:'education',name:'Education',icon:'🧠',sub:'Courses & Academy',badge:'FREE + PAID',title:'Education',desc:'Structured courses — SMC, ICT, risk management, trading psychology.',cta:'Open Courses →',type:'page',url:'education.html',hidden:false,img:'',fileUrl:'',fileName:'',
+     items:[
+       {name:'Basic To Pro Course',pid:'EDU-0001',badge:'BEGINNER',desc:'Financial Markets, Pips, Leverage — Hindi & English',img:'',fileUrl:'',fileName:'',videoUrl:'education-foundation.html',hidden:false},
+       {name:'SMC Complete Course',pid:'EDU-0002',badge:'ADVANCED',desc:'17 chapters on SMC, OBs, FVG — Hindi & English',img:'',fileUrl:'',fileName:'',videoUrl:'education-smc.html',hidden:false},
+       {name:'Real Trading Journey',pid:'EDU-0003',badge:'ALL LEVELS',desc:'Real trades and lessons from AG Technicals',img:'',fileUrl:'',fileName:'',videoUrl:'real-trading-journey.html',hidden:false},
+     ]},
+    {id:'guide',name:'Guide',icon:'📖',sub:'Written Playbooks',badge:'PREMIUM',title:'Guides',desc:'Written guides — order flow, stop loss, sessions, prop firm rules.',cta:'Open Guides →',type:'page',url:'guide.html',hidden:false,img:'',fileUrl:'',fileName:'',
+     items:[
+       {name:'AG Swing EMA RR EA Guide',pid:'GD-0001',badge:'EA GUIDE',desc:'Complete Swing EMA EA guide',img:'',fileUrl:'',fileName:'',videoUrl:'swing-ema-guide.html',hidden:false},
+       {name:'AG ATR Grid EA Guide',pid:'GD-0002',badge:'EA GUIDE',desc:'Complete ATR Grid EA guide',img:'',fileUrl:'',fileName:'',videoUrl:'atr-grid-guide.html',hidden:false},
+       {name:'AG SMC Feature Guide',pid:'GD-0003',badge:'SMC',desc:'SMC features — OBs, FVG, BOS/CHoCH',img:'',fileUrl:'',fileName:'',videoUrl:'smc-feature-guide.html',hidden:false},
+     ]},
+    {id:'custom',name:'Custom Strategy',icon:'⚙️',sub:'Built For You',badge:'CUSTOM',title:'Custom Strategy',desc:'Personalised strategy — tailored to your market, risk, and timeframe.',cta:'Contact Us →',type:'modal',url:'',hidden:false,img:'',fileUrl:'',fileName:'',items:[]},
+    {id:'news',name:'News',icon:'📰',sub:'Live Market Feed',badge:'LIVE',title:'AG Intel',desc:'Live dossiers, COT analysis, DXY watch, institutional flow.',cta:'Read Dossier →',type:'page',url:'gold-dossier.html',hidden:false,img:'',fileUrl:'',fileName:'',
+     items:[
+       {name:'Gold Dossier',pid:'NEWS-0001',badge:'GOLD',desc:'COT, DXY, institutional flow for XAU/USD',img:'',fileUrl:'',fileName:'',videoUrl:'gold-dossier.html',hidden:false},
+     ]},
   ],
   faq: [
     {q:'What markets does AG Technicals cover?', a:'We cover Forex (all major & minor pairs), Gold & Silver, Bitcoin & Crypto, Indian Markets (NSE/BSE), Indices (NAS100, SPX500, US30) and Crude Oil. If it moves, we have analysis on it.'},
@@ -535,11 +566,15 @@ const ticker   = load('ticker',   D.ticker);
     if(!stored) return;
     let changed = false;
     stored.forEach(p => {
-      if(p.id==='guide'){    p.type='page'; p.url='guide.html';      p.cta='Open Guides →';   p.fileUrl=''; p.fileName=''; p.hidden=false; changed=true; }
-      if(p.id==='education'){p.type='page'; p.url='education.html';  p.cta='Open Courses →';  p.hidden=false; changed=true; }
-      if(p.id==='bridge'){   p.type='page'; p.url='bridge.html';     p.cta='Get Bridge Access →'; p.hidden=false; changed=true; }
-      if(p.id==='algo'){     p.type='page'; p.url='algo.html';       p.hidden=false; changed=true; }
-      if(p.id==='tv-indicators'||p.id==='indicator'){p.type='page';  p.url='tv-indicators.html'; p.hidden=false; changed=true; }
+      if(p.id==='guide'){    p.type='page'; p.url='guide.html';         p.hidden=false; p.fileUrl=''; p.fileName=''; changed=true; }
+      if(p.id==='education'){p.type='page'; p.url='education.html';     p.hidden=false; changed=true; }
+      if(p.id==='bridge'){   p.type='page'; p.url='bridge.html';        p.hidden=false; changed=true; }
+      if(p.id==='algo'){     p.type='page'; p.url='algo.html';          p.hidden=false; changed=true; }
+      if(p.id==='tvindicator'||p.id==='indicator'||p.id==='tv-indicators'){p.type='page'; p.url='tv-indicators.html'; p.hidden=false; changed=true; }
+      if(p.id==='custom'||p.id==='strategy'){p.id='custom'; changed=true;}
+      // Merge items from D if stored has none
+      const def = D.products.find(d=>d.id===p.id);
+      if(def && (!p.items||!p.items.length) && def.items && def.items.length){ p.items=def.items; changed=true; }
     });
     if(changed) localStorage.setItem('ag_products', JSON.stringify(stored));
   }catch(e){}

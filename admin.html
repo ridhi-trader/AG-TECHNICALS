@@ -727,7 +727,7 @@ const D_PRODS = [
 // Force-fix stale localStorage — merge D_PRODS items into stored products
 (function(){
   try{
-    const s=JSON.parse(localStorage.getItem('ag_products')||'null'); if(!s) return;
+    const s=JSON.parse(localStorage.getItem('products')||'null'); if(!s) return;
     let ch=false;
     s.forEach(p=>{
       if(p.id==='guide'){p.type='page';p.url='guide.html';p.hidden=false;p.fileUrl='';ch=true;}
@@ -740,7 +740,7 @@ const D_PRODS = [
         p.items=def.items; ch=true;
       }
     });
-    if(ch) localStorage.setItem('ag_products',JSON.stringify(s));
+    if(ch) localStorage.setItem('products',JSON.stringify(s));
   }catch(e){}
 })();
 

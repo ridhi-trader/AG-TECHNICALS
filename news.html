@@ -218,7 +218,8 @@ function renderFeed(){
     const catClass = CAT_CLASS[a.category]||'cat-default';
     const dirBadge = a.dir==='up'?'<span class="dir-badge dir-up">▲</span>':a.dir==='dn'?'<span class="dir-badge dir-dn">▼</span>':'';
     const srcBadge = a.real?'<span class="real-badge">LIVE</span>':'<span class="ag-badge">AG</span>';
-    const card = `<div class="article-top">
+    const imgHtml = a.image ? `<img src="${a.image}" alt="" style="width:100%;height:180px;object-fit:cover;border-radius:10px;margin-bottom:12px;" onerror="this.style.display='none'">` : '';
+    const card = `${imgHtml}<div class="article-top">
       <span class="article-cat ${catClass}">${a.category}</span>
       ${dirBadge}
       ${srcBadge}

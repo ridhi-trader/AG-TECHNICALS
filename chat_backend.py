@@ -49,6 +49,70 @@ app.add_middleware(
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 FINNHUB_KEY = os.environ.get("FINNHUB_API_KEY", "")
 
+import xml.etree.ElementTree as ET
+import hashlib as _hashlib
+
+RSS_FEEDS = [
+    {"url": "https://www.fxstreet.com/rss/news", "source": "FXStreet", "category": "Forex"},
+    {"url": "https://www.forexfactory.com/ff_calendar.xml", "source": "ForexFactory", "category": "Forex"},
+    {"url": "https://feeds.finance.yahoo.com/rss/2.0/headline?s=XAUUSD%3DX&region=US&lang=en-US", "source": "Yahoo Finance", "category": "Gold"},
+    {"url": "https://cointelegraph.com/rss", "source": "CoinTelegraph", "category": "Crypto"},
+    {"url": "https://www.investing.com/rss/news_25.rss", "source": "Investing.com", "category": "Forex"},
+    {"url": "https://www.investing.com/rss/news_301.rss", "source": "Investing.com", "category": "Crypto"},
+    {"url": "https://www.investing.com/rss/news_1.rss", "source": "Investing.com", "category": "Gold"},
+]
+
+async def fetch_rss_news():
+    all_news = []
+    try:
+        async with httpx.AsyncClient(timeout=8, headers={"User-Agent": "Mozilla/5.0 (AG Technicals News Bot)"}) as client:
+            for feed in RSS_FEEDS:
+                try:
+                    r = await client.get(feed["url"])
+                    if r.status_code != 200:
+                        continue
+                    root = ET.fromstring(r.text)
+                    ns = {"media": "http://search.yahoo.com/mrss/"}
+                    for item in root.findall(".//item")[:6]:
+                        title = item.findtext("title", "").strip()
+                        link = item.findtext("link", "").strip()
+                        desc = item.findtext("description", "").strip()[:200]
+                        pub = item.findtext("pubDate", "")
+                        # Try to get image
+                        img = ""
+                        media = item.find("media:thumbnail", ns) or item.find("media:content", ns)
+                        if media is not None:
+                            img = media.get("url", "")
+                        if not img:
+                            # Try enclosure
+                            enc = item.find("enclosure")
+                            if enc is not None and "image" in enc.get("type", ""):
+                                img = enc.get("url", "")
+                        # Parse time
+                        import email.utils as _eu
+                        ts = 0
+                        try:
+                            ts = int(_eu.parsedate_to_datetime(pub).timestamp()) if pub else 0
+                        except: pass
+                        if title and link:
+                            all_news.append({
+                                "title": title,
+                                "summary": desc,
+                                "url": link,
+                                "image": img,
+                                "source": feed["source"],
+                                "category": feed["category"],
+                                "time_unix": ts,
+                                "badge": "LIVE",
+                            })
+                except Exception as fe:
+                    print(f"RSS feed error {feed['source']}: {fe}")
+                    continue
+    except Exception as e:
+        print(f"RSS fetch error: {e}")
+    all_news.sort(key=lambda x: x.get("time_unix", 0), reverse=True)
+    return all_news[:40]
+
 async def fetch_finnhub_news():
     if not FINNHUB_KEY:
         return []
@@ -63,9 +127,11 @@ async def fetch_finnhub_news():
                             "title": item.get("headline", ""),
                             "summary": item.get("summary", "")[:200],
                             "url": item.get("url", ""),
+                            "image": item.get("image", ""),
                             "source": item.get("source", ""),
                             "time_unix": item.get("datetime", 0),
                             "category": cat.title(),
+                            "badge": "LIVE",
                         })
         all_news.sort(key=lambda x: x.get("time_unix", 0), reverse=True)
         return all_news[:20]
@@ -303,14 +369,26 @@ class ChatReq(BaseModel):
 async def get_news(category: str = "", search: str = ""):
     prices = await fetch_prices()
     finnhub = await fetch_finnhub_news()
+    rss = await fetch_rss_news()
     ai = await fetch_news_ai(prices)
 
     articles = []
+    # RSS news first (real, with covers)
+    for item in rss:
+        t_diff = int((time.time() - item.get("time_unix", time.time())) / 3600)
+        articles.append({
+            "title": item["title"], "summary": item.get("summary",""),
+            "category": item.get("category","Market"), "source": item.get("source",""),
+            "url": item.get("url",""), "image": item.get("image",""),
+            "dir":"up", "real": True, "badge": "LIVE",
+            "time": (str(t_diff)+"h ago") if t_diff < 24 else (str(t_diff//24)+"d ago"),
+        })
     for item in finnhub:
         articles.append({
             "title": item["title"], "summary": item.get("summary",""),
             "category": item.get("category","Market"), "source": item.get("source",""),
-            "url": item.get("url",""), "dir":"up", "real": True,
+            "url": item.get("url",""), "image": item.get("image",""),
+            "dir":"up", "real": True, "badge": "LIVE",
             "time": str(int((time.time() - item.get("time_unix",time.time()))/3600))+"h ago",
         })
     if ai and ai.get("articles"):

@@ -154,7 +154,7 @@ async function doLogin(){
   try{
     const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
     const d=await r.json();
-    if(d.ok){ sessionStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
+    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
     else setErr('loginErr', d.error||'Login failed');
   }catch(e){setErr('loginErr','Network error. Try again.');}
 }
@@ -185,7 +185,7 @@ async function doVerifyOtp(){
   try{
     const r=await fetch(API+'/api/auth/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_signupEmail,otp})});
     const d=await r.json();
-    if(d.ok){ sessionStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
+    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
     else setErr('otpErr',d.error||'Invalid OTP');
   }catch(e){setErr('otpErr','Network error');}
 }
@@ -236,7 +236,7 @@ function showSuccess(){
 }
 
 // If already logged in, redirect
-if(sessionStorage.getItem('ag_user')){ window.location.href='user-dashboard.html'; }
+if(localStorage.getItem('ag_user')){ window.location.href='user-dashboard.html'; }
 </script>
 </body>
 </html>

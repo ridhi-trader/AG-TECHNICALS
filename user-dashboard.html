@@ -64,7 +64,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 <script>
 const API = 'https://ag-assistant-api.onrender.com';
 
-const userRaw = sessionStorage.getItem('ag_user');
+const userRaw = localStorage.getItem('ag_user');
 if(!userRaw){ window.location.href='user-login.html'; }
 
 const user = JSON.parse(userRaw);
@@ -81,7 +81,7 @@ const PROD_MAP = {
 };
 
 function logout(){
-  sessionStorage.removeItem('ag_user');
+  localStorage.removeItem('ag_user');
   window.location.href='user-login.html';
 }
 
@@ -148,7 +148,7 @@ async function refreshUser(){
     const d = await r.json();
     if(d.ok){
       const updated = {...user, ...d.user};
-      sessionStorage.setItem('ag_user', JSON.stringify(updated));
+      localStorage.setItem('ag_user', JSON.stringify(updated));
       Object.assign(user, updated);
     }
   }catch(e){}

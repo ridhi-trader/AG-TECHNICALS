@@ -60,6 +60,12 @@ RSS_FEEDS = [
     {"url": "https://www.investing.com/rss/news_25.rss", "source": "Investing.com", "category": "Forex"},
     {"url": "https://www.investing.com/rss/news_301.rss", "source": "Investing.com", "category": "Crypto"},
     {"url": "https://www.investing.com/rss/news_1.rss", "source": "Investing.com", "category": "Gold"},
+    # Indian Markets
+    {"url": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms", "source": "Economic Times", "category": "Indices"},
+    {"url": "https://economictimes.indiatimes.com/markets/stocks/rssfeeds/2146842.cms", "source": "Economic Times", "category": "Indices"},
+    {"url": "https://www.moneycontrol.com/rss/marketreports.xml", "source": "Moneycontrol", "category": "Indices"},
+    {"url": "https://www.livemint.com/rss/markets", "source": "LiveMint", "category": "Indices"},
+    {"url": "https://economictimes.indiatimes.com/markets/commodities/rssfeeds/2146791.cms", "source": "Economic Times", "category": "Gold"},
 ]
 
 async def fetch_rss_news():

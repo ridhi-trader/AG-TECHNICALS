@@ -103,7 +103,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <div class="hero">
   <div class="hero-badge">📋 Setup Guide</div>
   <h1>Bridge <span>Setup</span> Guide</h1>
-  <p>Wire TradingView alerts to your MT5 EA in 4 steps. Follow in order.</p>
+  <p>Wire TradingView alerts to your MT5 in 4 steps. Follow in order.</p>
 </div>
 
 <div class="guide">
@@ -163,9 +163,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="step">
     <div class="step-header">
       <div class="step-num">04</div>
-      <div class="step-title">MT5 — EA Inputs</div>
+      <div class="step-title">MT5 — Inputs</div>
     </div>
-    <div class="step-desc">Attach the AG Bridge EA to your chart and enter these values in the EA input settings:</div>
+    <div class="step-desc">Enter these values in your MT5 Bridge settings:</div>
     <table class="input-table">
       <tr><th>Input Name</th><th>What To Enter</th></tr>
       <tr><td>License ID</td><td><code>YOUR-LICENSE-ID</code> (provided by AG Technicals)</td></tr>
@@ -178,13 +178,13 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="step">
     <div class="step-header">
       <div class="step-num">05</div>
-      <div class="step-title">What The EA Gets Back (Reference)</div>
+      <div class="step-title">What MT5 Gets Back (Reference)</div>
     </div>
-    <div class="step-desc">The EA polls <code>GET /api/pull/{license_id}</code> and receives plain text responses:</div>
+    <div class="step-desc">MT5 polls <code>GET /api/pull/{license_id}</code> and receives plain text responses:</div>
     <table class="response-table">
       <tr><th>Response</th><th>Meaning</th></tr>
       <tr><td>OK|License activated...</td><td>First call — license bound to this account</td></tr>
-      <tr><td>buy,XAUUSD,2634.5,...</td><td>Signal waiting — EA will execute trade</td></tr>
+      <tr><td>buy,XAUUSD,2634.5,...</td><td>Signal waiting — MT5 will execute trade</td></tr>
       <tr><td>(empty)</td><td>No signal pending — EA keeps polling</td></tr>
       <tr><td>ERROR|License locked...</td><td>Wrong MT5 account for this license</td></tr>
       <tr><td>ERROR|Subscription expired</td><td>License has expired — contact AG Technicals to renew</td></tr>
@@ -201,8 +201,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
       <div class="check-item"><span class="check-icon">■</span><span>Webhook URL set correctly in TradingView alert</span></div>
       <div class="check-item"><span class="check-icon">■</span><span>JSON message has correct <code>secret</code>, <code>action</code>, and <code>symbol</code></span></div>
       <div class="check-item"><span class="check-icon">■</span><span>MT5 WebRequest URL added in Tools → Options</span></div>
-      <div class="check-item"><span class="check-icon">■</span><span>License ID and Server URL entered in EA inputs</span></div>
-      <div class="check-item"><span class="check-icon">■</span><span>EA attached to chart and AutoTrading enabled in MT5</span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>License ID and Server URL configured in MT5</span></div>
+      <div class="check-item"><span class="check-icon">■</span><span>AutoTrading enabled in MT5</span></div>
       <div class="check-item"><span class="check-icon">■</span><span>Test alert sent from TradingView — check MT5 journal for "License activated"</span></div>
     </div>
   </div>

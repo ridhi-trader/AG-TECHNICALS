@@ -476,13 +476,7 @@ const D = {
        {name:'Bridge License (Lifetime)',pid:'BRG-0004',badge:'LIFETIME',desc:'Lifetime Bridge access',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
      ]},
     {id:'algo',name:'Algo (MT5)',icon:'🤖',sub:'Auto Trading System (MT5)',badge:'PREMIUM',title:'Algo (MT5)',desc:'5 fully automated MT5 EAs — runs 24/7, no manual input needed.',cta:'View EAs →',type:'page',url:'algo.html',hidden:false,img:'',fileUrl:'',fileName:'',
-     items:[
-       {name:'AG SMC EA',pid:'EA-0001',badge:'SMC',desc:'Smart Money Concepts automated EA',img:'img-smc.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
-       {name:'AG Order Flow EA',pid:'EA-0002',badge:'ORDER FLOW',desc:'Order flow based automated EA',img:'img-orderflow.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
-       {name:'AG 3Logic Grid EA',pid:'EA-0003',badge:'GRID',desc:'3-logic grid trading system',img:'img-esb.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
-       {name:'AG ATR Grid EA',pid:'EA-0004',badge:'ATR GRID',desc:'ATR-based dynamic grid EA',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
-       {name:'AG Swing EMA RR EA',pid:'EA-0005',badge:'SWING',desc:'Swing + EMA + R:R management EA',img:'',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
-     ]},
+     items:[]},
     {id:'tvindicator',name:'TradingView Indicator',icon:'📈',sub:'Custom TradingView Indicator',badge:'PREMIUM',title:'TradingView Indicator',desc:'3 custom Pine Script indicators — AG SMC, AG Order Flow, AG-ESB.',cta:'View Indicators →',type:'page',url:'tv-indicators.html',hidden:false,img:'',fileUrl:'',fileName:'',
      items:[
        {name:'AG SMC Indicator',pid:'TVI-0003',badge:'PREMIUM',desc:'SMC auto-detection indicator',img:'img-smc.png',fileUrl:'',fileName:'',videoUrl:'',hidden:false},
@@ -562,7 +556,7 @@ const ticker   = load('ticker',   D.ticker);
 // ── FORCE FIX BEFORE LOAD — v4 ──
 (function(){
   try{
-    const PROD_VER='4';
+    const PROD_VER='5';
     // If version mismatch → nuke products so D defaults load fresh
     if(localStorage.getItem('ag_prod_v')!==PROD_VER){
       localStorage.removeItem('ag_products');

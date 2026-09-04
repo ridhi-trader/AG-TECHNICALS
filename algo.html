@@ -203,55 +203,70 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB
 </script>
 
 <script>
-const EAS = [];
-
-function buildBarChart(colors){
-  const heights=[45,65,40,80,55,70,35,90,60,75,50,85];
-  return heights.map((h,i)=>`<div class="ea-bar" style="height:${h}%;background:${colors[i%colors.length]};opacity:0.7;"></div>`).join('');
+// Load items from localStorage (ag_products key, algo product)
+function getAlgoItems(){
+  try{
+    // index.html uses ag_ prefix
+    var prods = JSON.parse(localStorage.getItem('ag_products')||'null');
+    if(!prods){
+      // admin uses no prefix
+      prods = JSON.parse(localStorage.getItem('products')||'null');
+    }
+    if(!prods) return [];
+    var algo = prods.find(function(p){return p.id==='algo';});
+    if(!algo||!algo.items) return [];
+    return algo.items.filter(function(it){return !it.hidden;});
+  }catch(e){return [];}
 }
 
 function renderEAs(){
-  const grid=document.getElementById('eaGrid');
-  grid.innerHTML=EAS.map((ea,i)=>
-    '<div class="ea-card" onclick="openModal('+i+')">' +
-      '<div class="ea-img">' +
-        '<div class="ea-chart-preview"><div class="ea-chart-bars">'+buildBarChart(ea.colors)+'</div></div>' +
-        '<div class="ea-badge">' + ea.badge + '</div>' +
-      '</div>' +
-      '<div class="ea-body">' +
-        '<div class="ea-pid">PID: ' + ea.pid + '</div>' +
-        '<div class="ea-name">' + ea.name + '</div>' +
-        '<div class="ea-desc">' + ea.desc + '</div>' +
-        '<button class="ea-btn">View Details</button>' +
-      '</div>' +
-    '</div>'
-  ).join('');
+  var items = getAlgoItems();
+  var grid = document.getElementById('eaGrid');
+  if(!items.length){
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--t3);font-size:15px;">Coming Soon — Check Back Shortly</div>';
+    return;
+  }
+  grid.innerHTML = items.map(function(ea,i){
+    var hasVideo = !!(ea.fileUrl||ea.videoUrl);
+    var img = ea.img ? '<img src="'+ea.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">' : '<div style="font-size:48px;display:flex;align-items:center;justify-content:center;height:100%;">🤖</div>';
+    return '<div class="ea-card" onclick="openItem('+i+')" style="cursor:pointer;">'+
+      '<div class="ea-img" style="position:relative;">'+img+
+        (ea.badge?'<div class="ea-badge">'+ea.badge+'</div>':'')+
+        (hasVideo?'<div style="position:absolute;top:8px;right:8px;background:rgba(232,184,75,0.9);color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;">▶ VIDEO</div>':'')+
+      '</div>'+
+      '<div class="ea-body">'+
+        (ea.pid?'<div class="ea-pid">PID: '+ea.pid+'</div>':'')+
+        '<div class="ea-name">'+(ea.name||'')+'</div>'+
+        '<div class="ea-desc">'+(ea.desc||'')+'</div>'+
+        '<button class="ea-btn">View Details</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
 
-function openModal(i){
-  const ea=EAS[i];
-  document.getElementById('modalPid').textContent='PID: '+ea.pid;
-  document.getElementById('modalName').textContent=ea.name;
-  document.getElementById('modalDesc').textContent=ea.fullDesc;
-  document.getElementById('modalWa').href='https://wa.me/'+ea.waNum+'?text=Hi!+I%27m+interested+in+'+encodeURIComponent(ea.name)+'+('+ea.pid+')';
-  document.getElementById('modalFeats').innerHTML=ea.features.map(f=>
-    '<div class="modal-feat"><span class="modal-feat-icon">✦</span><span>'+f+'</span></div>'
-  ).join('');
-  // Video player
-  const vwrap=document.getElementById('modalVideoWrap');
-  if(ea.videoId){
-    const vsrc='https://ag-assistant-api.onrender.com/video/'+ea.videoId+'.mp4';
+function openItem(i){
+  var items = getAlgoItems();
+  var ea = items[i];
+  if(!ea) return;
+  document.getElementById('modalPid').textContent = ea.pid ? 'PID: '+ea.pid : '';
+  document.getElementById('modalName').textContent = ea.name||'';
+  document.getElementById('modalDesc').textContent = ea.desc||'';
+  document.getElementById('modalFeats').innerHTML = '';
+  // Video — fileUrl first, then videoUrl
+  var vsrc = ea.fileUrl||ea.videoUrl||'';
+  var vwrap = document.getElementById('modalVideoWrap');
+  if(vsrc){
     vwrap.style.display='block';
     vwrap.innerHTML='<div style="position:relative;margin-bottom:16px;">'+
       '<video controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;max-height:220px;" src="'+vsrc+'"></video>'+
-      '<div onclick="videoLB(this.dataset.src)" data-src="'+vsrc+'" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⛶</div>'+
+      '<div onclick="videoLB(''+vsrc+'')" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⛶</div>'+
     '</div>';
   } else {
     vwrap.style.display='none'; vwrap.innerHTML='';
   }
-  // Fallback icon
-  document.getElementById('modalImg').style.display=ea.videoId?'none':'flex';
-  document.getElementById('modalImg').textContent=ea.icon;
+  var mi = document.getElementById('modalImg');
+  mi.style.display = vsrc?'none':'flex';
+  mi.textContent = ea.icon||'🤖';
   document.getElementById('eaOverlay').classList.add('open');
 }
 
@@ -259,7 +274,7 @@ function closeModal(){
   document.getElementById('eaOverlay').classList.remove('open');
 }
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
 renderEAs();
 </script>
 </body>

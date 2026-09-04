@@ -444,26 +444,45 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </script>
 
 <script>
-/* ── LIVE MARKET DATA AUTO-UPDATE ── */
+// MARKET PRICE STRIP — live prices from backend
 (function(){
-  const API = 'https://ag-assistant-api.onrender.com/api/market-data';
-  async function refresh(){
-    try{
-      const res = await fetch(API, {signal: AbortSignal.timeout(15000)});
-      if(!res.ok) return;
-      const data = await res.json();
-      if(!data.ticker || !data.ticker.length) return;
-      const track = document.getElementById('tickerTrack');
-      if(!track) return;
-      // Build pills matching index.html style
-      const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',default:'ti'};
-      const pills = data.ticker.map(t=>'<span class="ti '+(typeClass[t.type]||'ti')+'"><b>'+t.text+'</b></span>').join('');
-      track.innerHTML = pills + pills;
-    } catch(e){}
+  var API = 'https://ag-assistant-api.onrender.com/api/market-data';
+  var SYMBOLS = [
+    {key:'XAU/USD', icon:'🥇', color:'#e8b84b'},
+    {key:'BTC/USD', icon:'₿', color:'#f7931a'},
+    {key:'ETH/USD', icon:'Ξ', color:'#627eea'},
+    {key:'EUR/USD', icon:'€', color:'#4ade80'},
+    {key:'GBP/USD', icon:'£', color:'#a78bfa'},
+  ];
+  function buildStrip(prices){
+    return SYMBOLS.map(function(s){
+      var d = prices[s.key]||{};
+      var price = d.price ? parseFloat(d.price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+      var chg = d.change_24h !== undefined ? (d.change_24h >= 0 ? '▲ +' : '▼ ') + Math.abs(d.change_24h).toFixed(2) + '%' : '';
+      var chgColor = d.change_24h >= 0 ? '#4ade80' : '#f26d6d';
+      return '<span style="margin:0 24px;white-space:nowrap;">'+
+        '<span style="color:'+s.color+';font-weight:700;">'+s.icon+' '+s.key+'</span>'+
+        ' <span style="color:#fff;">$'+price+'</span>'+
+        (chg ? ' <span style="color:'+chgColor+';font-size:11px;">'+chg+'</span>' : '')+
+      '</span>';
+    }).join('<span style="color:#2a2736;margin:0 8px;">|</span>');
   }
-  refresh();
-  setInterval(refresh, 5 * 60 * 1000);
+  function refreshStrip(){
+    var track = document.getElementById('tickerTrack');
+    if(!track) return;
+    fetch(API).then(function(r){return r.json();}).then(function(data){
+      var prices = data.prices || {};
+      var html = buildStrip(prices);
+      track.innerHTML = html + html;
+    }).catch(function(){
+      // fallback static
+      track.innerHTML = '<span style="color:#a0a0b8;margin:0 20px;">Live market data loading...</span>';
+    });
+  }
+  refreshStrip();
+  setInterval(refreshStrip, 300000); // 5 min refresh
 })();
+
 </script>
 
 <script src="ag-assistant.js"></script>

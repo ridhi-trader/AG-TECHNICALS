@@ -270,7 +270,45 @@ function renderTicker(prices){
     `<span class="ti ti-gold">⬤ AG TECHNICALS · LIVE MARKET NEWS</span>`,
     `<span class="ti">Search any market · Updated Every 5 Min</span>`,
   ].join('');
-  document.getElementById('tickerTrack').innerHTML = pills + pills;
+  // MARKET PRICE STRIP — live prices from backend
+(function(){
+  var API = 'https://ag-assistant-api.onrender.com/api/market-data';
+  var SYMBOLS = [
+    {key:'XAU/USD', icon:'🥇', color:'#e8b84b'},
+    {key:'BTC/USD', icon:'₿', color:'#f7931a'},
+    {key:'ETH/USD', icon:'Ξ', color:'#627eea'},
+    {key:'EUR/USD', icon:'€', color:'#4ade80'},
+    {key:'GBP/USD', icon:'£', color:'#a78bfa'},
+  ];
+  function buildStrip(prices){
+    return SYMBOLS.map(function(s){
+      var d = prices[s.key]||{};
+      var price = d.price ? parseFloat(d.price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+      var chg = d.change_24h !== undefined ? (d.change_24h >= 0 ? '▲ +' : '▼ ') + Math.abs(d.change_24h).toFixed(2) + '%' : '';
+      var chgColor = d.change_24h >= 0 ? '#4ade80' : '#f26d6d';
+      return '<span style="margin:0 24px;white-space:nowrap;">'+
+        '<span style="color:'+s.color+';font-weight:700;">'+s.icon+' '+s.key+'</span>'+
+        ' <span style="color:#fff;">$'+price+'</span>'+
+        (chg ? ' <span style="color:'+chgColor+';font-size:11px;">'+chg+'</span>' : '')+
+      '</span>';
+    }).join('<span style="color:#2a2736;margin:0 8px;">|</span>');
+  }
+  function refreshStrip(){
+    var track = document.getElementById('tickerTrack');
+    if(!track) return;
+    fetch(API).then(function(r){return r.json();}).then(function(data){
+      var prices = data.prices || {};
+      var html = buildStrip(prices);
+      track.innerHTML = html + html;
+    }).catch(function(){
+      // fallback static
+      track.innerHTML = '<span style="color:#a0a0b8;margin:0 20px;">Live market data loading...</span>';
+    });
+  }
+  refreshStrip();
+  setInterval(refreshStrip, 300000); // 5 min refresh
+})();
+
 }
 
 function renderVideos(articles){

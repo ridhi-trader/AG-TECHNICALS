@@ -130,8 +130,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     </div>
     <div class="step-desc">In the alert's <strong>Message</strong> box, paste this JSON exactly — edit values to match your strategy:</div>
     <div class="code-block" style="white-space:pre;">
-      <button class="copy-btn" onclick="copy(this,`{\n  \"secret\": \"ag-bridge-secret-2026\",\n  \"action\": \"buy\",\n  \"symbol\": \"XAUUSD\",\n  \"price\": {{close}},\n  \"swing_price\": {{plot(\"Swing\")}}\n}`)">Copy</button>{
-  "secret": "ag-bridge-secret-2026",
+      <button class="copy-btn" onclick="copy(this,`{\n  \"secret\": \"YOUR_SECRET_KEY\",\n  \"action\": \"buy\",\n  \"symbol\": \"XAUUSD\",\n  \"price\": {{close}},\n  \"swing_price\": {{plot(\"Swing\")}}\n}`)">Copy</button>{
+  "secret": "YOUR_SECRET_KEY",
   "action": "buy",
   "symbol": "XAUUSD",
   "price": <span style="color:#4ade80;">{{close}}</span>,
@@ -168,7 +168,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="step-desc">Attach the AG Bridge EA to your chart and enter these values in the EA input settings:</div>
     <table class="input-table">
       <tr><th>Input Name</th><th>What To Enter</th></tr>
-      <tr><td>License ID</td><td><code>LIC-0001</code> (or the ID AG Technicals gave you)</td></tr>
+      <tr><td>License ID</td><td><code>YOUR-LICENSE-ID</code> (provided by AG Technicals)</td></tr>
       <tr><td>Server URL</td><td><code>https://ag-assistant-api.onrender.com</code></td></tr>
       <tr><td>Account</td><td>Filled automatically from your MT5 terminal</td></tr>
     </table>

@@ -47,6 +47,31 @@ app.add_middleware(
 )
 
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+FINNHUB_KEY = os.environ.get("FINNHUB_API_KEY", "")
+
+async def fetch_finnhub_news():
+    if not FINNHUB_KEY:
+        return []
+    try:
+        all_news = []
+        async with httpx.AsyncClient(timeout=10) as client:
+            for cat in ["forex", "crypto", "general"]:
+                r = await client.get(f"https://finnhub.io/api/v1/news?category={cat}&token={FINNHUB_KEY}")
+                if r.status_code == 200:
+                    for item in r.json()[:5]:
+                        all_news.append({
+                            "title": item.get("headline", ""),
+                            "summary": item.get("summary", "")[:200],
+                            "url": item.get("url", ""),
+                            "source": item.get("source", ""),
+                            "time_unix": item.get("datetime", 0),
+                            "category": cat.title(),
+                        })
+        all_news.sort(key=lambda x: x.get("time_unix", 0), reverse=True)
+        return all_news[:20]
+    except Exception as e:
+        print(f"Finnhub error: {e}")
+        return []
 
 SYSTEM = """You are AG Assistant — the official AI assistant for AG Technicals (ag-technicals.onrender.com).
 
@@ -113,11 +138,28 @@ async def fetch_news_ai(prices: dict):
         f"EUR/USD {prices.get('EURUSDT',{}).get('price',1.084):.4f} ({prices.get('EURUSDT',{}).get('chg',0):+.1f}%)",
         f"GBP/USD {prices.get('GBPUSDT',{}).get('price',1.273):.4f} ({prices.get('GBPUSDT',{}).get('chg',0):+.1f}%)",
     ])
-    prompt = f"""Current market prices: {price_str}
-Today: {time.strftime('%B %d, %Y')}.
-Return ONLY valid JSON:
-{{"latest":[{{"title":"headline","time":"Xh ago · Forex","dir":"up"}},{{"title":"headline","time":"Xh ago · Crypto","dir":"up"}},{{"title":"headline","time":"Xh ago · Commodities","dir":"dn"}},{{"title":"headline","time":"Xh ago · Indices","dir":"up"}}],"analysis":[{{"title":"EUR/USD analysis","time":"Xh ago · AG Analysis","dir":"up"}},{{"title":"Gold analysis","time":"Xh ago · AG Analysis","dir":"dn"}},{{"title":"GBP/USD analysis","time":"Xh ago · AG Analysis","dir":"up"}},{{"title":"BTC analysis","time":"Xh ago · AG Analysis","dir":"up"}}],"sentiment":[{{"label":"Forex","pct":65,"dir":"up"}},{{"label":"Crypto","pct":72,"dir":"up"}},{{"label":"Gold","pct":55,"dir":"up"}},{{"label":"Indices","pct":60,"dir":"up"}},{{"label":"Crude Oil","pct":45,"dir":"neutral"}}],"ticker_extra":["macro event note"]}}
-Use actual prices. Make headlines specific and realistic."""
+    prompt = f"""You are a financial news writer. Today: {time.strftime('%B %d, %Y')}. Prices: {price_str}.
+Generate 12 realistic trading news headlines. Return ONLY valid JSON:
+{{"articles":[
+  {{"title":"Gold headline using actual price","category":"Gold","dir":"up","summary":"2-sentence context","time":"1h ago"}},
+  {{"title":"Forex EUR/USD headline","category":"Forex","dir":"dn","summary":"context","time":"2h ago"}},
+  {{"title":"BTC crypto headline","category":"Crypto","dir":"up","summary":"context","time":"1h ago"}},
+  {{"title":"Indices NAS/SPX headline","category":"Indices","dir":"up","summary":"context","time":"3h ago"}},
+  {{"title":"Fed/Macro headline","category":"Macro","dir":"neutral","summary":"context","time":"4h ago"}},
+  {{"title":"Gold analysis","category":"Analysis","dir":"up","summary":"context","time":"2h ago"}},
+  {{"title":"GBP/USD headline","category":"Forex","dir":"up","summary":"context","time":"3h ago"}},
+  {{"title":"ETH headline","category":"Crypto","dir":"up","summary":"context","time":"5h ago"}},
+  {{"title":"Oil/commodities","category":"Commodities","dir":"dn","summary":"context","time":"4h ago"}},
+  {{"title":"DXY dollar strength","category":"Forex","dir":"up","summary":"context","time":"6h ago"}},
+  {{"title":"COT institutional positioning","category":"Analysis","dir":"up","summary":"context","time":"7h ago"}},
+  {{"title":"JPY/USD headline","category":"Forex","dir":"dn","summary":"context","time":"8h ago"}}
+],
+"sentiment":[
+  {{"label":"Gold","pct":65,"dir":"up"}},{{"label":"Forex","pct":58,"dir":"up"}},
+  {{"label":"Crypto","pct":72,"dir":"up"}},{{"label":"Indices","pct":55,"dir":"up"}},
+  {{"label":"Crude Oil","pct":40,"dir":"dn"}}
+],"ticker_extra":["macro event or central bank note"]}}
+Use actual prices. dir: up/dn/neutral."""
     try:
         async with httpx.AsyncClient(timeout=25) as client:
             r = await client.post(
@@ -129,7 +171,11 @@ Use actual prices. Make headlines specific and realistic."""
         if text.startswith("```"):
             text = text.split("```")[1]
             if text.startswith("json"): text = text[4:]
-        return json.loads(text.strip())
+        data = json.loads(text.strip())
+        arts = data.get("articles", [])
+        data["latest"] = [{"title":a["title"],"time":a["time"]+" · "+a["category"],"dir":a["dir"]} for a in arts[:4]]
+        data["analysis"] = [{"title":a["title"],"time":a["time"]+" · AG Analysis","dir":a["dir"]} for a in arts[4:8]]
+        return data
     except Exception:
         return None
 
@@ -252,6 +298,44 @@ class Msg(BaseModel):
 
 class ChatReq(BaseModel):
     messages: List[Msg]
+
+@app.get("/api/news")
+async def get_news(category: str = "", search: str = ""):
+    prices = await fetch_prices()
+    finnhub = await fetch_finnhub_news()
+    ai = await fetch_news_ai(prices)
+
+    articles = []
+    for item in finnhub:
+        articles.append({
+            "title": item["title"], "summary": item.get("summary",""),
+            "category": item.get("category","Market"), "source": item.get("source",""),
+            "url": item.get("url",""), "dir":"up", "real": True,
+            "time": str(int((time.time() - item.get("time_unix",time.time()))/3600))+"h ago",
+        })
+    if ai and ai.get("articles"):
+        for a in ai["articles"]:
+            articles.append({
+                "title": a.get("title",""), "summary": a.get("summary",""),
+                "category": a.get("category","Market"), "source":"AG Technicals",
+                "url":"", "dir": a.get("dir","up"), "real": False,
+                "time": a.get("time",""),
+            })
+    if category and category != "All":
+        articles = [a for a in articles if a["category"].lower()==category.lower()]
+    if search:
+        sl=search.lower()
+        articles = [a for a in articles if sl in a["title"].lower() or sl in a.get("summary","").lower()]
+    return {
+        "articles": articles,
+        "sentiment": (ai or {}).get("sentiment",[
+            {"label":"Gold","pct":60,"dir":"up"},{"label":"Forex","pct":55,"dir":"up"},
+            {"label":"Crypto","pct":65,"dir":"up"},{"label":"Indices","pct":50,"dir":"up"},
+            {"label":"Crude Oil","pct":40,"dir":"dn"},
+        ]),
+        "prices": {"gold":prices.get("XAUUSDT",{}),"btc":prices.get("BTCUSDT",{}),"eurusd":prices.get("EURUSDT",{})},
+        "total": len(articles), "has_live": len(finnhub)>0, "updated": int(time.time()),
+    }
 
 @app.post("/api/chat")
 async def chat(req: ChatReq):

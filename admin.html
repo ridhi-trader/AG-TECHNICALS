@@ -724,9 +724,15 @@ const D_PRODS = [
    ]},
 ];
 
-// Force-fix stale localStorage — merge D_PRODS items into stored products
+// Force-fix stale localStorage — v4 version check
 (function(){
   try{
+    const PROD_VER='4';
+    if(localStorage.getItem('ag_prod_v')!==PROD_VER){
+      localStorage.removeItem('products');
+      localStorage.setItem('ag_prod_v',PROD_VER);
+      return;
+    }
     const s=JSON.parse(localStorage.getItem('products')||'null'); if(!s) return;
     let ch=false;
     s.forEach(p=>{
@@ -734,7 +740,6 @@ const D_PRODS = [
       if(p.id==='education'){p.type='page';p.url='education.html';p.hidden=false;ch=true;}
       if(p.id==='bridge'){p.type='page';p.url='bridge.html';p.hidden=false;ch=true;}
       if(p.id==='algo'){p.type='page';p.url='algo.html';p.hidden=false;ch=true;}
-      // If stored items fewer than D_PRODS defaults, force-replace with full set
       const def=D_PRODS.find(d=>d.id===p.id);
       if(def && def.items && def.items.length>0 && (!p.items||p.items.length<def.items.length)){
         p.items=def.items; ch=true;

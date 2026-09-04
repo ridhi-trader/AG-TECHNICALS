@@ -559,9 +559,16 @@ function load(key, fallback){ try{ const v=localStorage.getItem('ag_'+key); retu
 
 const hero     = load('hero',     D.hero);
 const ticker   = load('ticker',   D.ticker);
-// ── FORCE FIX BEFORE LOAD ──
+// ── FORCE FIX BEFORE LOAD — v4 ──
 (function(){
   try{
+    const PROD_VER='4';
+    // If version mismatch → nuke products so D defaults load fresh
+    if(localStorage.getItem('ag_prod_v')!==PROD_VER){
+      localStorage.removeItem('ag_products');
+      localStorage.setItem('ag_prod_v',PROD_VER);
+      return; // ls() will use D.products fallback
+    }
     const stored = JSON.parse(localStorage.getItem('ag_products')||'null');
     if(!stored) return;
     let changed = false;
@@ -572,7 +579,6 @@ const ticker   = load('ticker',   D.ticker);
       if(p.id==='algo'){     p.type='page'; p.url='algo.html';          p.hidden=false; changed=true; }
       if(p.id==='tvindicator'||p.id==='indicator'||p.id==='tv-indicators'){p.type='page'; p.url='tv-indicators.html'; p.hidden=false; changed=true; }
       if(p.id==='custom'||p.id==='strategy'){p.id='custom'; changed=true;}
-      // Merge items from D if stored has none
       const def = D.products.find(d=>d.id===p.id);
       if(def && def.items && def.items.length>0 && (!p.items||p.items.length<def.items.length)){ p.items=def.items; changed=true; }
     });

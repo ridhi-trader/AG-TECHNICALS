@@ -749,7 +749,7 @@ async def fetch_article(url: str):
         # Find article/main content
         art = _re.search(r'<article[^>]*>(.*?)</article>', html, _re.DOTALL|_re.IGNORECASE)
         main = _re.search(r'<main[^>]*>(.*?)</main>', html, _re.DOTALL|_re.IGNORECASE)
-        content_div = _re.search(r'class=["'][^"']*(?:article-body|article-content|post-content|entry-content|story-body|article__body)[^"']*["'][^>]*>(.*?)</div>', html, _re.DOTALL|_re.IGNORECASE)
+        content_div = _re.search(r'class=["\'](article-body|article-content|post-content|entry-content|story-body|article__body)["\'][^>]*>(.*?)</div>', html, _re.DOTALL|_re.IGNORECASE)
         raw = (art or main or content_div)
         if raw:
             text_html = raw.group(1)

@@ -729,14 +729,12 @@ const D_PRODS = [
    desc:'Step-by-step written guides — order flow, stop loss, session timing, prop firm rules and more.',
    cta:'Open Guides →', type:'page', url:'guide.html', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[
-     {name:'── EA Guides ──', pid:'GD-SEC1', badge:'SECTION', desc:'', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
-     {name:'AG Swing EMA RR EA Guide', pid:'GD-0001', badge:'EA GUIDE', desc:'Complete Swing EMA EA user guide — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'swing-ema-guide.html', hidden:false},
-     {name:'AG ATR Grid EA Guide', pid:'GD-0002', badge:'EA GUIDE', desc:'Complete ATR Grid EA user guide', img:'', fileUrl:'', fileName:'', videoUrl:'atr-grid-guide.html', hidden:false},
-     {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', img:'', fileUrl:'', fileName:'', videoUrl:'smc-feature-guide.html', hidden:false},
-     {name:'── TradingView Guides ──', pid:'GD-SEC2', badge:'SECTION', desc:'', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
-     {name:'TradingView Alert Setup Guide', pid:'GD-0004', badge:'TV GUIDE', desc:'Step-by-step: TradingView alerts, webhook URLs, alert conditions, AG Bridge connection', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
-     {name:'AG SMC Indicator — Setup & Usage', pid:'GD-0005', badge:'TV GUIDE', desc:'Installing and using AG SMC TradingView indicator — OBs, FVG, BOS/CHoCH confluence', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
-     {name:'Pine Script Alerts — JSON Format', pid:'GD-0006', badge:'TV GUIDE', desc:'Writing Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, SL, TP', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG Swing EMA RR EA Guide', pid:'GD-0001', badge:'EA GUIDE', section:'ea', desc:'Complete Swing EMA EA user guide — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'swing-ema-guide.html', hidden:false},
+     {name:'AG ATR Grid EA Guide', pid:'GD-0002', badge:'EA GUIDE', section:'ea', desc:'Complete ATR Grid EA user guide', img:'', fileUrl:'', fileName:'', videoUrl:'atr-grid-guide.html', hidden:false},
+     {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', section:'ea', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', img:'', fileUrl:'', fileName:'', videoUrl:'smc-feature-guide.html', hidden:false},
+     {name:'TradingView Alert Setup Guide', pid:'GD-0004', badge:'TV GUIDE', section:'tv', desc:'Step-by-step: TradingView alerts, webhook URLs, alert conditions, AG Bridge connection', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'AG SMC Indicator — Setup & Usage', pid:'GD-0005', badge:'TV GUIDE', section:'tv', desc:'Installing and using AG SMC TradingView indicator — OBs, FVG, BOS/CHoCH confluence', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
+     {name:'Pine Script Alerts — JSON Format', pid:'GD-0006', badge:'TV GUIDE', section:'tv', desc:'Writing Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, SL, TP', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
    ]},
   {id:'custom', name:'Custom Strategy', icon:'⚙️', sub:'Built For You', badge:'CUSTOM',
    desc:'Your own personalised trading strategy — tailored to your market, risk, and timeframe by AG analysts.',
@@ -752,7 +750,7 @@ const D_PRODS = [
 // Force-fix stale localStorage — v4 version check
 (function(){
   try{
-    const PROD_VER='7';
+    const PROD_VER='8';
     if(localStorage.getItem('ag_prod_v')!==PROD_VER){
       localStorage.removeItem('products');
       localStorage.setItem('ag_prod_v',PROD_VER);

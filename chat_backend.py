@@ -36,8 +36,7 @@ for _vid_id, _vid_file in [
     if _os.path.exists(_path):
         add_video(_vid_id, _path)
 
-add_strategy(sid="agbridge", secret="ag-bridge-secret-2026", name="AG TradeBridge")
-add_license(lid="LIC-0001", days=365)
+# Per-user licenses loaded from DB on startup (see startup function)
 
 app.add_middleware(
     CORSMiddleware,
@@ -74,11 +73,18 @@ async def fetch_newsapi():
     if not NEWSAPI_KEY:
         return []
     queries = [
-        {"q": "gold XAU forex trading", "cat": "Gold"},
-        {"q": "forex EUR USD GBP trading", "cat": "Forex"},
-        {"q": "bitcoin crypto trading", "cat": "Crypto"},
-        {"q": "stock market indices NSE BSE Nifty Sensex", "cat": "Indices"},
-        {"q": "oil commodity trading", "cat": "Commodities"},
+        {"q": "gold XAU price trading analysis", "cat": "Gold"},
+        {"q": "forex EUR USD GBP JPY trading", "cat": "Forex"},
+        {"q": "bitcoin ethereum crypto trading", "cat": "Crypto"},
+        {"q": "Nifty Sensex NSE BSE Indian stock market", "cat": "Indices"},
+        {"q": "S&P500 Nasdaq Dow Jones stock market indices", "cat": "Indices"},
+        {"q": "Federal Reserve interest rate inflation CPI macroeconomics", "cat": "Macro"},
+        {"q": "RBI India economy GDP inflation rupee", "cat": "Macro"},
+        {"q": "oil silver commodity futures trading", "cat": "Commodities"},
+        {"q": "forex trading technical analysis chart levels", "cat": "Analysis"},
+        {"q": "gold technical analysis support resistance", "cat": "Analysis"},
+        {"q": "India stock market Nifty Bank Nifty today", "cat": "Indices"},
+        {"q": "Mumbai Delhi finance business economy India", "cat": "Macro"},
     ]
     all_news = []
     try:

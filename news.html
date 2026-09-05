@@ -55,6 +55,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 .news-status{font-size:12px;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
 .news-count{color:var(--g5);font-weight:700;}
 
+/* Rotating news ticker */
+.news-ticker-wrap{overflow:hidden;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:10px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.news-ticker-label{font-size:10px;font-weight:800;color:#e8b84b;letter-spacing:1px;white-space:nowrap;background:rgba(232,184,75,.15);padding:3px 8px;border-radius:4px;}
+.news-ticker-track{overflow:hidden;flex:1;}
+.news-ticker-inner{display:flex;gap:0;animation:tickerScroll 30s linear infinite;}
+.news-ticker-inner:hover{animation-play-state:paused;}
+.news-ticker-item{white-space:nowrap;padding:0 32px;font-size:13px;color:var(--t2);cursor:pointer;transition:color .2s;}
+.news-ticker-item:hover{color:#e8b84b;}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:20px;}
 .article-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,transform .2s;cursor:pointer;text-decoration:none;display:flex;flex-direction:column;}
 .article-card:hover{border-color:rgba(232,184,75,.35);transform:translateY(-3px);box-shadow:0 8px 32px rgba(232,184,75,0.08);}
@@ -154,6 +163,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
       <span id="statusText">Loading news...</span>
       <span id="lastUpdate"></span>
     </div>
+    <div class="news-ticker-wrap" id="newsTicker" style="display:none;">
+      <span class="news-ticker-label">⚡ LIVE</span>
+      <div class="news-ticker-track"><div class="news-ticker-inner" id="newsTickerInner"></div></div>
+    </div>
     <div class="news-grid" id="newsFeed"></div>
   </div>
   <aside class="sidebar">
@@ -213,6 +226,21 @@ const CAT_CLASS = {
   Gold:'cat-gold', Forex:'cat-forex', Crypto:'cat-crypto', Macro:'cat-macro',
   Indices:'cat-indices', Commodities:'cat-commodities', Analysis:'cat-analysis'
 };
+
+function renderTicker(arts){
+  const wrap = document.getElementById('newsTicker');
+  const inner = document.getElementById('newsTickerInner');
+  if(!wrap||!inner||!arts.length) return;
+  const items = arts.slice(0,20).map((a,i)=>
+    `<span class="news-ticker-item" onclick="openArticle(${i})">
+      <span style="color:${a.category==='Gold'?'#e8b84b':a.category==='Crypto'?'#f7931a':a.category==='Forex'?'#4ade80':'#a78bfa'};">●</span>
+      ${a.title}
+    </span>`
+  ).join('<span style="color:#2a2736;padding:0 8px;">|</span>');
+  // Duplicate for seamless loop
+  inner.innerHTML = items + items;
+  wrap.style.display='flex';
+}
 
 function renderBuySell(bs){
   const el = document.getElementById('bsWidget');

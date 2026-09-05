@@ -799,18 +799,31 @@ function renderProds(){
   if(!products.length){el.innerHTML='<div class="empty">No products. Add one below.</div>';return;}
   el.innerHTML = products.map((p,i)=>{
     const items = (p.items||[]);
-    const itemsHtml = items.length ? `
-      <div class="sub-items-wrap">
-        ${items.map((it,j)=>it.badge==='SECTION'?`
-          <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--g5);padding:8px 4px 4px;text-transform:uppercase;border-top:1px solid var(--bd);margin-top:4px;">${it.name}</div>
-        `:`
+    // Split items into EA and TV sections for guide product
+    const isGuide = p.id==='guide';
+    const eaItems = isGuide ? items.filter(it=>it.badge!=='SECTION'&&it.section!=='tv') : [];
+    const tvItems = isGuide ? items.filter(it=>it.badge!=='SECTION'&&it.section==='tv') : [];
+    function siRow(it,j){ return `
           <div class="sub-item-row">
             ${it.img?`<img src="${it.img}" style="width:28px;height:28px;border-radius:5px;object-fit:cover;border:1px solid var(--bd);">`:'<span style="font-size:16px;">📄</span>'}
             <div class="sub-item-name">${it.name||'Unnamed'}</div>
             <div class="sub-item-badge">${it.pid||it.badge||''}</div>
             <button class="btn-icon" onclick="openSiEd(${i},${j})" title="Edit">✏️</button>
             <button class="btn-icon" onclick="deleteSi(${i},${j})" title="Delete">🗑️</button>
-          </div>`).join('')}
+          </div>`; }
+    const itemsHtml = isGuide ? `
+      <div class="sub-items-wrap">
+        <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:#e8b84b;padding:6px 4px 4px;text-transform:uppercase;">⚡ EA Guides</div>
+        ${eaItems.map((it,j)=>siRow(it,items.indexOf(it))).join('') || '<div style="color:var(--t3);font-size:12px;padding:4px;">None yet</div>'}
+        <button class="btn-out" style="font-size:11px;padding:4px 10px;margin:6px 0;" onclick="openAddSi(${i});document.getElementById('siSection').value='ea'">+ Add EA Guide</button>
+        <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:#a78bfa;padding:10px 4px 4px;text-transform:uppercase;border-top:1px solid var(--bd);margin-top:4px;">📺 TradingView Guides</div>
+        ${tvItems.map((it,j)=>siRow(it,items.indexOf(it))).join('') || '<div style="color:var(--t3);font-size:12px;padding:4px;">None yet</div>'}
+        <button class="btn-out" style="font-size:11px;padding:4px 10px;margin:6px 0;" onclick="openAddSi(${i});document.getElementById('siSection').value='tv'">+ Add TV Guide</button>
+      </div>` : items.length ? `
+      <div class="sub-items-wrap">
+        ${items.map((it,j)=>it.badge==='SECTION'?`
+          <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--g5);padding:8px 4px 4px;text-transform:uppercase;border-top:1px solid var(--bd);margin-top:4px;">${it.name}</div>
+        `:siRow(it,j)).join('')}
         <button class="btn-out" style="font-size:11px;padding:6px 12px;margin-top:4px;" onclick="openAddSi(${i})">+ Add Sub-Item</button>
       </div>` : `<div style="margin-top:10px;"><button class="btn-out" style="font-size:11px;padding:6px 12px;" onclick="openAddSi(${i})">+ Add Sub-Item</button></div>`;
     return `<div class="prod-row">

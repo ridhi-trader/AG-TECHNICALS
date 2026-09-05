@@ -143,9 +143,23 @@ async def webhook(sid: str, request: Request):
     if secret != strat["secret"]:
         return JSONResponse({"status": "unauthorized"})
 
-    signal, err = _build_signal(body)
-    if err:
-        return JSONResponse({"status": "rejected", "reason": err})
+    # Support both single signal and array of signals
+    signals_raw = body.get("signals")
+    if signals_raw and isinstance(signals_raw, list):
+        # Multi-signal mode
+        signals = []
+        for s in signals_raw:
+            sig, err = _build_signal(s)
+            if sig:
+                signals.append(sig)
+        if not signals:
+            return JSONResponse({"status": "rejected", "reason": "no valid signals in array"})
+    else:
+        # Single signal mode
+        signal, err = _build_signal(body)
+        if err:
+            return JSONResponse({"status": "rejected", "reason": err})
+        signals = [signal]
 
     # Queue to all eligible licenses
     delivered = 0
@@ -156,16 +170,16 @@ async def webhook(sid: str, request: Request):
                 continue
             if lic["paused"]:
                 continue
-            # Per-user model: sid == lid (license IS the strategy)
-            # OR classic model: sid in subs list
             if lid != sid and sid not in lic["subs"]:
                 continue
-            PENDING.setdefault(lid, []).append(signal)
+            for sig in signals:
+                PENDING.setdefault(lid, []).append(sig)
             delivered += 1
 
     return JSONResponse({
         "status": "broadcast",
         "strategy": strat["name"],
+        "signals_queued": len(signals),
         "delivered_to": delivered,
     })
 
@@ -358,7 +372,21 @@ function upd(){
   var sec=document.getElementById('sec').value||'YOUR-SECRET';
   var sym=document.getElementById('sym').value||'XAUUSD';
   document.getElementById('wh_url').textContent='https://ag-assistant-api.onrender.com/master/'+sid;
-  document.getElementById('tv_body').textContent=JSON.stringify({secret:sec,action:'buy',symbol:sym,price:'{{close}}',swing_price:0},null,2).replace('"{{close}}"','{{close}}');
+  var body = {
+    secret: sec,
+    action: '{{strategy.order.action}}',
+    symbol: '{{ticker}}',
+    price: '{{close}}',
+    sl: '{{strategy.order.price}}',
+    tp: 0,
+    lot: '{{strategy.position_size}}'
+  };
+  document.getElementById('tv_body').textContent = JSON.stringify(body,null,2)
+    .replace('"{{strategy.order.action}}"','"{{strategy.order.action}}"')
+    .replace('"{{ticker}}"','"{{ticker}}"')
+    .replace('"{{close}}"','{{close}}')
+    .replace('"{{strategy.order.price}}"','{{strategy.order.price}}')
+    .replace('"{{strategy.position_size}}"','{{strategy.position_size}}');
 }
 ['sid','sec','sym'].forEach(function(id){document.getElementById(id).addEventListener('input',upd)});
 </script>

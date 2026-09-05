@@ -939,38 +939,23 @@ function switchChartTab(tab){
   const isForex = tab==='forex';
   document.getElementById('forexPanel').style.display = isForex?'block':'none';
   document.getElementById('indiaPanel').style.display = isForex?'none':'block';
-  document.getElementById('tradingview_chart').style.display = isForex?'block':'none';
-  document.getElementById('indiaChart').style.display = isForex?'none':'block';
-  document.getElementById('tabForex').style.background = isForex?'#e8b84b':'transparent';
-  document.getElementById('tabForex').style.color = isForex?'#000':'var(--t2)';
-  document.getElementById('tabForex').style.border = isForex?'none':'1px solid #2a2736';
-  document.getElementById('tabIndia').style.background = isForex?'transparent':'#e8b84b';
-  document.getElementById('tabIndia').style.color = isForex?'var(--t2)':'#000';
-  document.getElementById('tabIndia').style.border = isForex?'1px solid #2a2736':'none';
-  if(!isForex && !document.getElementById('indiaChart').src){
-    loadIndiaStock('NIFTY50');
-  }
+  document.getElementById('tradingview_chart').style.display = 'block';
+  document.getElementById('indiaChart').style.display = 'none';
+  document.getElementById('tabForex').style.cssText = isForex?'padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;background:#e8b84b;color:#000;':'padding:6px 14px;border-radius:7px;border:1px solid #2a2736;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--t2);';
+  document.getElementById('tabIndia').style.cssText = isForex?'padding:6px 14px;border-radius:7px;border:1px solid #2a2736;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--t2);':'padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;background:#e8b84b;color:#000;';
+  if(!isForex) loadIndiaStock('NSE:NIFTY');
+  else if(window._loadTVWidget) window._loadTVWidget('BINANCE:BTCUSDT');
 }
 
 function loadIndiaStock(sym){
-  const frame = document.getElementById('indiaChart');
-  // Stooq.com — free Indian stock charts, no iframe block
-  const symMap = {
-    'NIFTY50':'%5Ensei',
-    'BANKNIFTY':'%5Enbi',
-    'HDFCBANK':'hdfcb.ns',
-    'RELIANCE':'reli.ns',
-    'TCS':'tcs.ns',
-    'INFY':'infy.ns',
-    'TATAMOTORS':'ttmt.ns',
-    'WIPRO':'wipr.ns',
-    'ICICIBANK':'icib.ns',
-    'SBIN':'sbin.ns',
-    'AXISBANK':'axbk.ns',
-    'BAJFINANCE':'bjfin.ns',
-  };
-  const stooqSym = symMap[sym] || sym.toLowerCase()+'.ns';
-  frame.src = 'https://stooq.com/c/r/?s='+stooqSym+'&d=20250101&e=20260101&t=d&o=ln&v=0&a=lg&p=0&r=0&d1=&d2=&df=1&n=1&c=1';
+  // Use TradingView advanced chart with NSE prefix — works in widget mode
+  const nseSym = sym.includes(':') ? sym : 'NSE:'+sym;
+  if(window._loadTVWidget){
+    // Switch to forex chart area and load NSE symbol
+    document.getElementById('tradingview_chart').style.display='block';
+    document.getElementById('indiaChart').style.display='none';
+    window._loadTVWidget(nseSym);
+  }
 }
 
 function searchIndiaStock(){

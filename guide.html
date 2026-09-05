@@ -94,8 +94,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 </div>
 
 <div class="section">
-  <div class="section-label">All Guides</div>
-  <div id="guideList"></div>
+  <div class="section-label" style="color:#e8b84b;border-bottom:1px solid rgba(232,184,75,.2);padding-bottom:10px;margin-bottom:20px;">⚡ EA Guides — MT5 Expert Advisors</div>
+  <div id="eaGuideList"></div>
+  <div class="section-label" style="color:#a78bfa;border-bottom:1px solid rgba(167,139,250,.2);padding-bottom:10px;margin-bottom:20px;margin-top:36px;">📺 TradingView Guides — Indicators & Alerts</div>
+  <div id="tvGuideList"></div>
 </div>
 
 <!-- READER OVERLAY -->
@@ -118,17 +120,43 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <script>
 
 
-const EXTERNAL_GUIDES=[
+const EA_GUIDES=[
   {icon:"⚡",tag:"EA Guide",level:"All Levels",time:"13 sections",title:"AG Swing + EMA + R:R EA — Complete Guide",desc:"Full EA user guide — Introduction, EMA basics, Swing High/Low, BUY/SELL logic, MT5 setup, inputs, risk, troubleshooting. Hindi & English.",url:"swing-ema-guide.html"},
   {icon:"📐",tag:"EA Guide",level:"All Levels",time:"Multi-section",title:"AG ATR Grid EA — User Guide",desc:"Complete ATR Grid EA user guide — grid logic, ATR settings, lot sizing, risk management, MT5 setup and troubleshooting.",url:"atr-grid-guide.html"},
   {icon:"🧠",tag:"SMC Guide",level:"Intermediate",time:"Full Guide",title:"AG SMC Feature Guide",desc:"Complete Smart Money Concepts feature guide — order blocks, FVG, BOS/CHoCH, liquidity sweeps and confluence explained.",url:"smc-feature-guide.html"},
 ];
+const TV_GUIDES=[
+  {icon:"📺",tag:"TV Guide",level:"Beginner",time:"Quick Start",title:"TradingView Alert Setup — Complete Guide",desc:"Step-by-step: how to set up TradingView alerts, webhook URLs, alert conditions, and connect to MT5 via AG Bridge."},
+  {icon:"📊",tag:"TV Guide",level:"All Levels",time:"Full Guide",title:"AG SMC Indicator — Setup & Usage",desc:"Complete guide to installing and using the AG SMC TradingView indicator — order blocks, FVG, BOS/CHoCH, confluence trading."},
+  {icon:"🔔",tag:"TV Guide",level:"Intermediate",time:"Guide",title:"TradingView Pine Script Alerts — JSON Format",desc:"How to write Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, symbol, SL, TP and lot configuration."},
+];
 const GUIDES=[];
 
+function makeCard(g, i, isTV){
+  const inner = `
+      <div class="guide-icon">${g.icon}</div>
+      <div class="guide-meta">
+        <div class="guide-tags">
+          <span class="tag ${isTV?'':'gold'}" style="${isTV?'background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.3);':''}">${g.tag}</span>
+          <span class="tag-dot">·</span>
+          <span class="tag">${g.level}</span>
+          <span class="tag-dot">·</span>
+          <span class="tag">📖 ${g.time}</span>
+        </div>
+        <div class="guide-title">${g.title}</div>
+        <div class="guide-desc">${g.desc}</div>
+      </div>
+      <div class="guide-btn">${isTV?'Read Guide →':'Open Guide →'}</div>`;
+  if(g.url) return `<a class="guide-card" href="${g.url}" style="text-decoration:none;">${inner}</a>`;
+  return `<div class="guide-card" style="cursor:default;opacity:.8;">${inner}</div>`;
+}
+
 function renderList(){
-  const el = document.getElementById('guideList');
-  // External guides (full pages) first
-  const extCards = EXTERNAL_GUIDES.map(g=>`
+  document.getElementById('eaGuideList').innerHTML = EA_GUIDES.map((g,i)=>makeCard(g,i,false)).join('');
+  document.getElementById('tvGuideList').innerHTML = TV_GUIDES.map((g,i)=>makeCard(g,i,true)).join('');
+  const el = document.getElementById('guideList'); // legacy fallback
+  // External guides (full pages) first — KEEP FOR localStorage guides below
+  const extCards = EA_GUIDES.map(g=>`
     <a class="guide-card" href="${g.url}" style="text-decoration:none;">
       <div class="guide-icon">${g.icon}</div>
       <div class="guide-meta">

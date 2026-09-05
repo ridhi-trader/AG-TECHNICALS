@@ -331,7 +331,39 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
           <button class="sym-btn" onclick="loadSym('NAS100',this)">NAS100</button>
         </div>
       </div>
-      <div class="tv-wrap"><iframe id="tvFrame" src="https://s.tradingview.com/widgetembed/?symbol=BINANCE%3ABTCUSDT&interval=60&theme=dark&style=1&locale=en&hide_top_toolbar=0&allow_symbol_change=1&save_image=0&backgroundColor=%230c0b10&gridColor=%232a2736&" allowtransparency="true" scrolling="no" allowfullscreen></iframe></div>
+      <div class="tv-wrap" id="tvWrap">
+        <!-- TradingView Advanced Chart Widget -->
+        <div class="tradingview-widget-container" style="height:100%;width:100%;">
+          <div id="tradingview_chart" style="height:100%;width:100%;"></div>
+          <script type="text/javascript">
+          var _tvWidget = null;
+          function loadTVWidget(sym){
+            if(typeof TradingView === 'undefined') return;
+            if(_tvWidget) { try{ _tvWidget.remove(); }catch(e){} }
+            _tvWidget = new TradingView.widget({
+              autosize: true,
+              symbol: sym || "BINANCE:BTCUSDT",
+              interval: "60",
+              timezone: "Asia/Kolkata",
+              theme: "dark",
+              style: "1",
+              locale: "en",
+              toolbar_bg: "#0c0b10",
+              enable_publishing: false,
+              allow_symbol_change: true,
+              container_id: "tradingview_chart",
+              backgroundColor: "#0c0b10",
+              gridColor: "#2a2736",
+              hide_top_toolbar: false,
+              hide_legend: false,
+              save_image: false,
+            });
+          }
+          window._loadTVWidget = loadTVWidget;
+          </script>
+          <script type="text/javascript" src="https://s3.tradingview.com/tv.js" onload="loadTVWidget('BINANCE:BTCUSDT')"></script>
+        </div>
+      </div>
       <div class="chart-footer">
         <div class="live-badge"><div class="live-dot"></div>Live Chart</div>
         <div class="powered">Powered By TradingView</div>
@@ -883,7 +915,7 @@ document.querySelectorAll('.hero .reveal, .hero-left, .chart-panel').forEach(el=
 
 /* ── TRADINGVIEW ── */
 const SYM_MAP={'BTCUSD':'BINANCE:BTCUSDT','BTCUSDT':'BINANCE:BTCUSDT','ETHUSD':'BINANCE:ETHUSDT','XAUUSD':'TVC:GOLD','GOLD':'TVC:GOLD','SILVER':'TVC:SILVER','XAGUSD':'TVC:SILVER','EURUSD':'FX:EURUSD','GBPUSD':'FX:GBPUSD','USDJPY':'FX:USDJPY','AUDUSD':'FX:AUDUSD','USDCAD':'FX:USDCAD','USDCHF':'FX:USDCHF','NZDUSD':'FX:NZDUSD','GBPJPY':'FX:GBPJPY','EURJPY':'FX:EURJPY','NAS100':'NASDAQ:NDX','NASDAQ':'NASDAQ:NDX','SPX500':'SP:SPX','SPX':'SP:SPX','DOW':'DJ:DJI','CRUDE':'TVC:USOIL','OIL':'TVC:USOIL','BNBUSD':'BINANCE:BNBUSDT','SOLUSD':'BINANCE:SOLUSDT','XRPUSD':'BINANCE:XRPUSDT','ADAUSD':'BINANCE:ADAUSDT'};
-function buildTVUrl(sym){ const s=SYM_MAP[sym]||sym||'BINANCE:BTCUSDT'; return `https://s.tradingview.com/widgetembed/?symbol=${encodeURIComponent(s)}&interval=60&theme=dark&style=1&locale=en&hide_top_toolbar=0&allow_symbol_change=1&save_image=0&backgroundColor=%230c0b10&gridColor=%232a2736&`; }
+function buildTVUrl(sym){ return SYM_MAP[sym]||sym||'BINANCE:BTCUSDT'; }
 function searchSym(){
   const inp=document.getElementById('chartSearchInp');
   const errEl=document.getElementById('chartSearchErr');
@@ -894,13 +926,13 @@ function searchSym(){
   let sym = m || raw;
   // Pass symbol directly to TradingView
   document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tvFrame').src=buildTVUrl(sym);
+  if(window._loadTVWidget) window._loadTVWidget(buildTVUrl(sym));
   inp.value='';
   inp.placeholder=sym+' loaded ✓';
   errEl.textContent='';
   setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD, NAS100, US30...',4000);
 }
-function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('tvFrame').src=buildTVUrl(sym); }
+function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(window._loadTVWidget) window._loadTVWidget(buildTVUrl(sym)); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
 

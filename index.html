@@ -954,17 +954,23 @@ function switchChartTab(tab){
 
 function loadIndiaStock(sym){
   const frame = document.getElementById('indiaChart');
-  // Use Screener.in embed for Indian stocks
-  const screenerMap = {
-    'NIFTY50':'https://charts.screener.in/nse/NIFTY50',
-    'BANKNIFTY':'https://charts.screener.in/nse/BANKNIFTY',
-    'HDFCBANK':'https://charts.screener.in/nse/HDFCBANK',
-    'RELIANCE':'https://charts.screener.in/nse/RELIANCE',
-    'TCS':'https://charts.screener.in/nse/TCS',
-    'INFY':'https://charts.screener.in/nse/INFY',
+  // Stooq.com — free Indian stock charts, no iframe block
+  const symMap = {
+    'NIFTY50':'%5Ensei',
+    'BANKNIFTY':'%5Enbi',
+    'HDFCBANK':'hdfcb.ns',
+    'RELIANCE':'reli.ns',
+    'TCS':'tcs.ns',
+    'INFY':'infy.ns',
+    'TATAMOTORS':'ttmt.ns',
+    'WIPRO':'wipr.ns',
+    'ICICIBANK':'icib.ns',
+    'SBIN':'sbin.ns',
+    'AXISBANK':'axbk.ns',
+    'BAJFINANCE':'bjfin.ns',
   };
-  const url = screenerMap[sym] || 'https://charts.screener.in/nse/'+sym;
-  frame.src = url;
+  const stooqSym = symMap[sym] || sym.toLowerCase()+'.ns';
+  frame.src = 'https://stooq.com/c/r/?s='+stooqSym+'&d=20250101&e=20260101&t=d&o=ln&v=0&a=lg&p=0&r=0&d1=&d2=&df=1&n=1&c=1';
 }
 
 function searchIndiaStock(){

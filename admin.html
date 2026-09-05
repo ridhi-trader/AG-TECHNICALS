@@ -198,6 +198,7 @@ select.inp{cursor:pointer;}
       <button class="sb-btn" onclick="nav('export',this)"><span class="sb-icon">📦</span>Export / Backup</button>
       <button class="sb-btn" onclick="nav('password',this)"><span class="sb-icon">🔐</span>Security</button>
       <button class="sb-btn" onclick="nav('bridge_lic',this)"><span class="sb-icon">🌉</span>Bridge Licenses</button>
+      <button class="sb-btn" onclick="nav('pagecms',this)"><span class="sb-icon">✏️</span>Page Content</button>
     </nav>
     <div class="sb-foot">
       <button class="sb-logout" onclick="logout()">🚪 Logout</button>
@@ -514,6 +515,67 @@ select.inp{cursor:pointer;}
   </main>
 </div>
 
+<!-- PAGE CONTENT TAB PAGE -->
+<div class="page" id="page-pagecms" style="display:none;">
+  <div class="ph"><div class="ph-tag">CMS</div><div class="ph-title">Page <span>Content</span></div></div>
+  <p style="color:var(--t3);font-size:13px;margin-bottom:20px;">Edit text content for each page. Changes apply site-wide instantly.</p>
+
+  <!-- PAGE TABS -->
+  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="btn-gold" id="cmsTabAlgo" onclick="showCMSTab('algo')">⚙️ Algo</button>
+    <button class="btn-out" id="cmsTabBridge" onclick="showCMSTab('bridge')">🌉 Bridge</button>
+  </div>
+
+  <!-- ALGO CONTENT -->
+  <div id="cmsAlgo">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Hero Section</div>
+      <div class="field"><label class="label">Badge Text</label><input class="inp" id="cAlgoBadge" placeholder="MT5 · Automated Trading"></div>
+      <div class="field"><label class="label">H1 Title (HTML ok)</label><input class="inp" id="cAlgoH1" placeholder="AG Algo &lt;span&gt;(MT5)&lt;/span&gt;"></div>
+      <div class="field"><label class="label">Subtitle</label><textarea class="inp" id="cAlgoSub" rows="2" placeholder="Subtitle text..."></textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
+        <div><label class="label">Stat 1 Value</label><input class="inp" id="cAlgoS1V" placeholder="5"></div>
+        <div><label class="label">Stat 1 Label</label><input class="inp" id="cAlgoS1L" placeholder="EAs Available"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
+        <div><label class="label">Stat 2 Value</label><input class="inp" id="cAlgoS2V" placeholder="24/7"></div>
+        <div><label class="label">Stat 2 Label</label><input class="inp" id="cAlgoS2L" placeholder="Automated"></div>
+        <div><label class="label">Stat 3 Value</label><input class="inp" id="cAlgoS3V" placeholder="MT5"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Feature Cards</div>
+      ${[1,2,3,4].map(n=>`
+      <div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:8px;margin-bottom:10px;align-items:center;">
+        <input class="inp" id="cAlgoF${n}I" placeholder="🔒" style="text-align:center;font-size:18px;">
+        <input class="inp" id="cAlgoF${n}T" placeholder="Feature ${n} Title">
+        <input class="inp" id="cAlgoF${n}S" placeholder="Feature ${n} subtitle">
+      </div>`).join('')}
+    </div>
+    <button class="btn-gold" onclick="saveCMSAlgo()">💾 Save Algo Content</button>
+  </div>
+
+  <!-- BRIDGE CONTENT -->
+  <div id="cmsBridge" style="display:none;">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Hero Section</div>
+      <div class="field"><label class="label">Badge Text</label><input class="inp" id="cBridgeBadge" placeholder="TradingView to MT5 · Live"></div>
+      <div class="field"><label class="label">H1 Title (HTML ok)</label><input class="inp" id="cBridgeH1" placeholder="TV To &lt;span&gt;MT5&lt;/span&gt;"></div>
+      <div class="field"><label class="label">Subtitle</label><textarea class="inp" id="cBridgeSub" rows="2"></textarea></div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Feature Cards (6)</div>
+      ${[1,2,3,4,5,6].map(n=>`
+      <div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:8px;margin-bottom:10px;align-items:center;">
+        <input class="inp" id="cBF${n}I" placeholder="🔒" style="text-align:center;font-size:18px;">
+        <input class="inp" id="cBF${n}T" placeholder="Feature ${n} Title">
+        <input class="inp" id="cBF${n}S" placeholder="Feature ${n} desc">
+      </div>`).join('')}
+    </div>
+    <button class="btn-gold" onclick="saveCMSBridge()">💾 Save Bridge Content</button>
+  </div>
+</div>
+
 <!-- PRODUCT EDITOR OVERLAY -->
 <div class="overlay" id="prodOverlay">
   <div class="modal" style="max-width:640px;">
@@ -690,7 +752,7 @@ function nav(id, btn){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
-  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses};
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS};
   if(loaders[id]) loaders[id]();
 }
 
@@ -1274,6 +1336,90 @@ async function deleteLicense(lid){
   if(!confirm('Revoke license '+lid+'?')) return;
   await fetch(BL_API+'/api/admin/bridge/license/'+lid,{method:'DELETE'});
   toast('License revoked'); loadLicenses();
+}
+
+
+// ── PAGE CMS ──────────────────────────────────────────────────────────────────
+function loadPageCMS(){
+  showCMSTab('algo');
+}
+
+function showCMSTab(tab){
+  document.getElementById('cmsAlgo').style.display = tab==='algo'?'block':'none';
+  document.getElementById('cmsBridge').style.display = tab==='bridge'?'block':'none';
+  document.getElementById('cmsTabAlgo').className = tab==='algo'?'btn-gold':'btn-out';
+  document.getElementById('cmsTabBridge').className = tab==='bridge'?'btn-gold':'btn-out';
+  if(tab==='algo') loadCMSAlgo();
+  if(tab==='bridge') loadCMSBridge();
+}
+
+function loadCMSAlgo(){
+  var d = JSON.parse(localStorage.getItem('ag_page_algo')||'{}');
+  var v = function(id,def){var el=document.getElementById(id);if(el)el.value=d[id.replace('cAlgo','').replace('cAlgoF','f').toLowerCase()]||def||'';};
+  document.getElementById('cAlgoBadge').value=d.badge||'MT5 · Automated Trading';
+  document.getElementById('cAlgoH1').value=d.h1||'AG Algo <span>(MT5)</span>';
+  document.getElementById('cAlgoSub').value=d.sub||'';
+  document.getElementById('cAlgoS1V').value=d.s1v||'5';
+  document.getElementById('cAlgoS1L').value=d.s1l||'EAs Available';
+  document.getElementById('cAlgoS2V').value=d.s2v||'24/7';
+  document.getElementById('cAlgoS2L').value=d.s2l||'Automated';
+  document.getElementById('cAlgoS3V').value=d.s3v||'MT5';
+  [1,2,3,4].forEach(n=>{
+    ['I','T','S'].forEach(x=>{
+      var el=document.getElementById('cAlgoF'+n+x);
+      if(el) el.value=d['f'+n+x.toLowerCase()]||'';
+    });
+  });
+}
+
+function saveCMSAlgo(){
+  var d={
+    badge:document.getElementById('cAlgoBadge').value,
+    h1:document.getElementById('cAlgoH1').value,
+    sub:document.getElementById('cAlgoSub').value,
+    s1v:document.getElementById('cAlgoS1V').value,
+    s1l:document.getElementById('cAlgoS1L').value,
+    s2v:document.getElementById('cAlgoS2V').value,
+    s2l:document.getElementById('cAlgoS2L').value,
+    s3v:document.getElementById('cAlgoS3V').value,
+  };
+  [1,2,3,4].forEach(n=>{
+    ['I','T','S'].forEach(x=>{
+      var el=document.getElementById('cAlgoF'+n+x);
+      if(el) d['f'+n+x.toLowerCase()]=el.value;
+    });
+  });
+  localStorage.setItem('ag_page_algo',JSON.stringify(d));
+  toast('Algo content saved ✓');
+}
+
+function loadCMSBridge(){
+  var d=JSON.parse(localStorage.getItem('ag_page_bridge')||'{}');
+  document.getElementById('cBridgeBadge').value=d.badge||'TradingView to MT5 · Live';
+  document.getElementById('cBridgeH1').value=d.h1||'TV To <span>MT5</span>';
+  document.getElementById('cBridgeSub').value=d.sub||'';
+  [1,2,3,4,5,6].forEach(n=>{
+    ['I','T','S'].forEach(x=>{
+      var el=document.getElementById('cBF'+n+x);
+      if(el) el.value=d['f'+n+x.toLowerCase()]||'';
+    });
+  });
+}
+
+function saveCMSBridge(){
+  var d={
+    badge:document.getElementById('cBridgeBadge').value,
+    h1:document.getElementById('cBridgeH1').value,
+    sub:document.getElementById('cBridgeSub').value,
+  };
+  [1,2,3,4,5,6].forEach(n=>{
+    ['I','T','S'].forEach(x=>{
+      var el=document.getElementById('cBF'+n+x);
+      if(el) d['f'+n+x.toLowerCase()]=el.value;
+    });
+  });
+  localStorage.setItem('ag_page_bridge',JSON.stringify(d));
+  toast('Bridge content saved ✓');
 }
 
 </script>

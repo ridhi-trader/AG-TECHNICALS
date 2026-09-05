@@ -139,29 +139,26 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <a href="index.html" class="nav-back">← Back</a>
 </nav>
 
-<div class="hero">
-  <div class="hero-badge"><span class="hero-dot"></span> MT5 · Automated Trading</div>
-  <h1>AG Algo <span>(MT5)</span></h1>
-  <p>Institutional-grade Expert Advisors for MetaTrader 5. Built on real SMC logic — not indicators. Set once, trade 24/7.</p>
-  <div class="hero-stats">
-    <div class="stat"><div class="stat-val">5</div><div class="stat-lbl">EAs Available</div></div>
-    <div class="stat"><div class="stat-val">24/7</div><div class="stat-lbl">Automated</div></div>
-    <div class="stat"><div class="stat-val">MT5</div><div class="stat-lbl">Platform</div></div>
+<div class="hero" id="algoHero">
+  <div class="hero-badge"><span class="hero-dot"></span> <span id="algoBadge">MT5 · Automated Trading</span></div>
+  <h1 id="algoH1">AG Algo <span>(MT5)</span></h1>
+  <p id="algoSub">Institutional-grade Expert Advisors for MetaTrader 5. Built on real SMC logic — not indicators. Set once, trade 24/7.</p>
+  <div class="hero-stats" id="algoStats">
+    <div class="stat"><div class="stat-val" id="algoStat1V">5</div><div class="stat-lbl" id="algoStat1L">EAs Available</div></div>
+    <div class="stat"><div class="stat-val" id="algoStat2V">24/7</div><div class="stat-lbl" id="algoStat2L">Automated</div></div>
+    <div class="stat"><div class="stat-val" id="algoStat3V">MT5</div><div class="stat-lbl" id="algoStat3L">Platform</div></div>
   </div>
 </div>
 
 <div class="section">
-
-  <!-- FEATURE STRIP -->
-  <div class="features-strip">
-    <div class="feat-item"><div class="feat-icon">🔒</div><div class="feat-title">License Locked</div><div class="feat-sub">One EA per MT5 account. Secure and verified.</div></div>
-    <div class="feat-item"><div class="feat-icon">⚡</div><div class="feat-title">Runs 24/7</div><div class="feat-sub">No screen time needed. Trades while you sleep.</div></div>
-    <div class="feat-item"><div class="feat-icon">🎚️</div><div class="feat-title">Full Control</div><div class="feat-sub">Adjust risk, lot size and SL from EA inputs.</div></div>
-    <div class="feat-item"><div class="feat-icon">🛡️</div><div class="feat-title">Risk Management</div><div class="feat-sub">Built-in SL, TP, break-even and circuit breaker.</div></div>
+  <div class="features-strip" id="algoFeats">
+    <div class="feat-item"><div class="feat-icon" id="algoF1I">🔒</div><div class="feat-title" id="algoF1T">License Locked</div><div class="feat-sub" id="algoF1S">One EA per MT5 account. Secure and verified.</div></div>
+    <div class="feat-item"><div class="feat-icon" id="algoF2I">⚡</div><div class="feat-title" id="algoF2T">Runs 24/7</div><div class="feat-sub" id="algoF2S">No screen time needed. Trades while you sleep.</div></div>
+    <div class="feat-item"><div class="feat-icon" id="algoF3I">🎚️</div><div class="feat-title" id="algoF3T">Full Control</div><div class="feat-sub" id="algoF3S">Adjust risk, lot size and SL from EA inputs.</div></div>
+    <div class="feat-item"><div class="feat-icon" id="algoF4I">🛡️</div><div class="feat-title" id="algoF4T">Risk Management</div><div class="feat-sub" id="algoF4S">Built-in SL, TP, break-even and circuit breaker.</div></div>
   </div>
-
-  <div class="sec-label">Our EAs</div>
-  <div class="sec-title">MT5 <span>Expert Advisors</span></div>
+  <div class="sec-label" id="algoSecLbl">Our EAs</div>
+  <div class="sec-title" id="algoSecTitle">MT5 <span>Expert Advisors</span></div>
 
   <div class="ea-grid" id="eaGrid"></div>
 </div>
@@ -281,6 +278,23 @@ function closeModal(){
 }
 
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+// Load page content from localStorage
+(function(){
+  try{
+    var d = JSON.parse(localStorage.getItem('ag_page_algo')||'null');
+    if(!d) return;
+    var set = function(id,val){var el=document.getElementById(id);if(el&&val)el.innerHTML=val;};
+    set('algoBadge',d.badge); set('algoH1',d.h1); set('algoSub',d.sub);
+    set('algoStat1V',d.s1v); set('algoStat1L',d.s1l);
+    set('algoStat2V',d.s2v); set('algoStat2L',d.s2l);
+    set('algoStat3V',d.s3v); set('algoStat3L',d.s3l);
+    set('algoF1I',d.f1i); set('algoF1T',d.f1t); set('algoF1S',d.f1s);
+    set('algoF2I',d.f2i); set('algoF2T',d.f2t); set('algoF2S',d.f2s);
+    set('algoF3I',d.f3i); set('algoF3T',d.f3t); set('algoF3S',d.f3s);
+    set('algoF4I',d.f4i); set('algoF4T',d.f4t); set('algoF4S',d.f4s);
+    set('algoSecLbl',d.secLbl); set('algoSecTitle',d.secTitle);
+  }catch(e){}
+})();
 renderEAs();
 </script>
 </body>

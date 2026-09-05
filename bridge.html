@@ -123,9 +123,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </nav>
 
 <div class="hero">
-  <div class="hero-badge"><span class="live-dot"></span> TradingView to MT5 · Live</div>
-  <h1>TV To <span>MT5</span></h1>
-  <p>Professionalism Comes From Knowledge. Set up once — your TradingView signals execute automatically on MT5, around the clock.</p>
+  <div class="hero-badge"><span class="live-dot"></span> <span id="bridgeBadge">TradingView to MT5 · Live</span></div>
+  <h1 id="bridgeH1">TV To <span>MT5</span></h1>
+  <p id="bridgeSub">Professionalism Comes From Knowledge. Set up once — your TradingView signals execute automatically on MT5, around the clock.</p>
   <div class="hero-cta">
     <a href="bridge-guide.html" class="btn-gold">📋 View Setup Guide</a>
     <a href="index.html#contact" class="btn-out">Contact Us</a>
@@ -185,12 +185,12 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-eyebrow">Features</div>
   <div class="sec-title">Everything You <span>Need</span></div>
   <div class="feat-grid">
-    <div class="feat"><div class="feat-icon">🔒</div><div class="feat-title">License Locked</div><div class="feat-desc">One license binds to one MT5 account. Secure, no sharing.</div></div>
-    <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">Around The Clock</div><div class="feat-desc">Runs 24/7. Signals are acted on even while you sleep.</div></div>
-    <div class="feat"><div class="feat-icon">🛡️</div><div class="feat-title">Bad Signals Blocked</div><div class="feat-desc">Wrong SL or broken format is rejected at the server before it reaches your account.</div></div>
-    <div class="feat"><div class="feat-icon">🎚️</div><div class="feat-title">You Stay In Control</div><div class="feat-desc">Turn auto-trading on or off anytime. Choose your own risk settings.</div></div>
-    <div class="feat"><div class="feat-icon">📡</div><div class="feat-title">Any TV Strategy</div><div class="feat-desc">Works with any TradingView Pine Script strategy that sends alerts.</div></div>
-    <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Multi-Symbol</div><div class="feat-desc">Trade Gold, Forex, Crypto, Indices — any symbol available on your MT5 broker.</div></div>
+    <div class="feat"><div class="feat-icon" id="bF1I">🔒</div><div class="feat-title" id="bF1T">License Locked</div><div class="feat-desc" id="bF1S">One license binds to one MT5 account. Secure, no sharing.</div></div>
+    <div class="feat"><div class="feat-icon" id="bF2I">⚡</div><div class="feat-title" id="bF2T">Around The Clock</div><div class="feat-desc" id="bF2S">Runs 24/7. Signals are acted on even while you sleep.</div></div>
+    <div class="feat"><div class="feat-icon" id="bF3I">🛡️</div><div class="feat-title" id="bF3T">Bad Signals Blocked</div><div class="feat-desc" id="bF3S">Wrong SL or broken format is rejected at the server before it reaches your account.</div></div>
+    <div class="feat"><div class="feat-icon" id="bF4I">🎚️</div><div class="feat-title" id="bF4T">You Stay In Control</div><div class="feat-desc" id="bF4S">Turn auto-trading on or off anytime. Choose your own risk settings.</div></div>
+    <div class="feat"><div class="feat-icon" id="bF5I">📡</div><div class="feat-title" id="bF5T">Any TV Strategy</div><div class="feat-desc" id="bF5S">Works with any TradingView Pine Script strategy that sends alerts.</div></div>
+    <div class="feat"><div class="feat-icon" id="bF6I">📊</div><div class="feat-title" id="bF6T">Multi-Symbol</div><div class="feat-desc" id="bF6S">Trade Gold, Forex, Crypto, Indices — any symbol available on your MT5 broker.</div></div>
   </div>
 
   <!-- GUIDE LINK -->
@@ -213,6 +213,22 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 </div>
 
+<script>
+(function(){
+  try{
+    var d=JSON.parse(localStorage.getItem('ag_page_bridge')||'null');
+    if(!d) return;
+    var s=function(id,v){var e=document.getElementById(id);if(e&&v)e.innerHTML=v;};
+    s('bridgeBadge',d.badge); s('bridgeH1',d.h1); s('bridgeSub',d.sub);
+    s('bF1I',d.f1i); s('bF1T',d.f1t); s('bF1S',d.f1s);
+    s('bF2I',d.f2i); s('bF2T',d.f2t); s('bF2S',d.f2s);
+    s('bF3I',d.f3i); s('bF3T',d.f3t); s('bF3S',d.f3s);
+    s('bF4I',d.f4i); s('bF4T',d.f4t); s('bF4S',d.f4s);
+    s('bF5I',d.f5i); s('bF5T',d.f5t); s('bF5S',d.f5s);
+    s('bF6I',d.f6i); s('bF6T',d.f6t); s('bF6S',d.f6s);
+  }catch(e){}
+})();
+</script>
 <script src="ag-assistant.js"></script>
 </body>
 </html>

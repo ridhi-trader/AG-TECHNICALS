@@ -557,11 +557,10 @@ const ticker   = load('ticker',   D.ticker);
 (function(){
   try{
     const PROD_VER='8';
-    // If version mismatch → nuke products so D defaults load fresh
+    // If version mismatch → merge D defaults but KEEP user-added items
     if(localStorage.getItem('ag_prod_v')!==PROD_VER){
-      localStorage.removeItem('ag_products');
       localStorage.setItem('ag_prod_v',PROD_VER);
-      return; // ls() will use D.products fallback
+      // Don't nuke — just let force-fix below handle merging
     }
     const stored = JSON.parse(localStorage.getItem('ag_products')||'null');
     if(!stored) return;

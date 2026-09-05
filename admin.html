@@ -752,9 +752,8 @@ const D_PRODS = [
   try{
     const PROD_VER='8';
     if(localStorage.getItem('ag_prod_v')!==PROD_VER){
-      localStorage.removeItem('products');
       localStorage.setItem('ag_prod_v',PROD_VER);
-      return;
+      // Don't nuke — let force-fix merge defaults below
     }
     const s=JSON.parse(localStorage.getItem('products')||'null'); if(!s) return;
     let ch=false;

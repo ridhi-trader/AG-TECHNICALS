@@ -332,37 +332,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         </div>
       </div>
       <div class="tv-wrap" id="tvWrap">
-        <!-- TradingView Advanced Chart Widget -->
-        <div class="tradingview-widget-container" style="height:100%;width:100%;">
-          <div id="tradingview_chart" style="height:100%;width:100%;"></div>
-          <script type="text/javascript">
-          var _tvWidget = null;
-          function loadTVWidget(sym){
-            if(typeof TradingView === 'undefined') return;
-            if(_tvWidget) { try{ _tvWidget.remove(); }catch(e){} }
-            _tvWidget = new TradingView.widget({
-              autosize: true,
-              symbol: sym || "BINANCE:BTCUSDT",
-              interval: "60",
-              timezone: "Asia/Kolkata",
-              theme: "dark",
-              style: "1",
-              locale: "en",
-              toolbar_bg: "#0c0b10",
-              enable_publishing: false,
-              allow_symbol_change: true,
-              container_id: "tradingview_chart",
-              backgroundColor: "#0c0b10",
-              gridColor: "#2a2736",
-              hide_top_toolbar: false,
-              hide_legend: false,
-              save_image: false,
-            });
-          }
-          window._loadTVWidget = loadTVWidget;
-          </script>
-          <script type="text/javascript" src="https://s3.tradingview.com/tv.js" onload="loadTVWidget('BINANCE:BTCUSDT')"></script>
-        </div>
+        <div id="tradingview_chart" style="height:100%;width:100%;"></div>
       </div>
       <div class="chart-footer">
         <div class="live-badge"><div class="live-dot"></div>Live Chart</div>
@@ -992,6 +962,33 @@ document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.k
   setInterval(loadMarketData, 5 * 60 * 1000);
 })();
 
+</script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+var _tvWidget = null;
+function loadTVWidget(sym){
+  if(typeof TradingView === 'undefined'){ setTimeout(function(){loadTVWidget(sym);},500); return; }
+  if(_tvWidget){ try{ _tvWidget.remove(); }catch(e){} _tvWidget=null; }
+  document.getElementById('tradingview_chart').innerHTML='';
+  _tvWidget = new TradingView.widget({
+    autosize: true,
+    symbol: sym||"BINANCE:BTCUSDT",
+    interval: "60",
+    timezone: "Asia/Kolkata",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    toolbar_bg: "#0c0b10",
+    enable_publishing: false,
+    allow_symbol_change: true,
+    container_id: "tradingview_chart",
+    backgroundColor: "#0c0b10",
+    hide_top_toolbar: false,
+    save_image: false,
+  });
+}
+window._loadTVWidget = loadTVWidget;
+window.addEventListener('load', function(){ loadTVWidget('BINANCE:BTCUSDT'); });
 </script>
 <script src="ag-assistant.js"></script>
 </body>

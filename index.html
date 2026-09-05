@@ -317,29 +317,52 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     </div>
     <div class="chart-panel reveal" style="transition-delay:0.15s">
       <div class="chart-top">
-        <div class="chart-search-row">
-          <input class="chart-search-inp" id="chartSearchInp" placeholder="BTCUSD, XAUUSD, EURUSD, NAS100, CRUDE..." autocomplete="off" list="symList"/>
-          <datalist id="symList">
-            <option value="BTCUSD"><option value="ETHUSD"><option value="XAUUSD"><option value="SILVER">
-            <option value="EURUSD"><option value="GBPUSD"><option value="USDJPY"><option value="AUDUSD">
-            <option value="GBPJPY"><option value="EURJPY"><option value="USDCAD"><option value="USDCHF">
-            <option value="NAS100"><option value="SPX500"><option value="DOW"><option value="CRUDE">
-            <option value="BNBUSD"><option value="SOLUSD"><option value="XRPUSD"><option value="ADAUSD">
-          </datalist>
-          <button class="chart-search-btn" onclick="searchSym()">Go</button>
+        <!-- Tab switcher -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button id="tabForex" onclick="switchChartTab('forex')" style="padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;background:#e8b84b;color:#000;">🌐 Forex / Crypto</button>
+          <button id="tabIndia" onclick="switchChartTab('india')" style="padding:6px 14px;border-radius:7px;border:1px solid #2a2736;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--t2);">🇮🇳 Indian Stocks</button>
         </div>
-        <div class="chart-search-err" id="chartSearchErr"></div>
-        <div class="chart-sym-bar" id="symBar">
-          <button class="sym-btn active" onclick="loadSym('BTCUSD',this)">BTC/USD</button>
-          <button class="sym-btn" onclick="loadSym('ETHUSD',this)">ETH/USD</button>
-          <button class="sym-btn" onclick="loadSym('XAUUSD',this)">XAU/USD</button>
-          <button class="sym-btn" onclick="loadSym('EURUSD',this)">EUR/USD</button>
-          <button class="sym-btn" onclick="loadSym('GBPUSD',this)">GBP/USD</button>
-          <button class="sym-btn" onclick="loadSym('NAS100',this)">NAS100</button>
+        <!-- Forex panel -->
+        <div id="forexPanel">
+          <div class="chart-search-row">
+            <input class="chart-search-inp" id="chartSearchInp" placeholder="BTCUSD, XAUUSD, EURUSD, NAS100..." autocomplete="off" list="symList"/>
+            <datalist id="symList">
+              <option value="BTCUSD"><option value="ETHUSD"><option value="XAUUSD"><option value="SILVER">
+              <option value="EURUSD"><option value="GBPUSD"><option value="USDJPY"><option value="AUDUSD">
+              <option value="GBPJPY"><option value="NAS100"><option value="SPX500"><option value="CRUDE">
+              <option value="BNBUSD"><option value="SOLUSD"><option value="XRPUSD">
+            </datalist>
+            <button class="chart-search-btn" onclick="searchSym()">Go</button>
+          </div>
+          <div class="chart-search-err" id="chartSearchErr"></div>
+          <div class="chart-sym-bar" id="symBar">
+            <button class="sym-btn active" onclick="loadSym('BTCUSD',this)">BTC/USD</button>
+            <button class="sym-btn" onclick="loadSym('ETHUSD',this)">ETH/USD</button>
+            <button class="sym-btn" onclick="loadSym('XAUUSD',this)">XAU/USD</button>
+            <button class="sym-btn" onclick="loadSym('EURUSD',this)">EUR/USD</button>
+            <button class="sym-btn" onclick="loadSym('GBPUSD',this)">GBP/USD</button>
+            <button class="sym-btn" onclick="loadSym('NAS100',this)">NAS100</button>
+          </div>
+        </div>
+        <!-- Indian Stocks panel -->
+        <div id="indiaPanel" style="display:none;">
+          <div class="chart-search-row">
+            <input class="chart-search-inp" id="indiaSearchInp" placeholder="HDFCBANK, RELIANCE, TCS, NIFTY..." autocomplete="off"/>
+            <button class="chart-search-btn" onclick="searchIndiaStock()">Go</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+            <button class="sym-btn" onclick="loadIndiaStock('NIFTY50')">NIFTY 50</button>
+            <button class="sym-btn" onclick="loadIndiaStock('BANKNIFTY')">Bank Nifty</button>
+            <button class="sym-btn" onclick="loadIndiaStock('HDFCBANK')">HDFC Bank</button>
+            <button class="sym-btn" onclick="loadIndiaStock('RELIANCE')">Reliance</button>
+            <button class="sym-btn" onclick="loadIndiaStock('TCS')">TCS</button>
+            <button class="sym-btn" onclick="loadIndiaStock('INFY')">Infosys</button>
+          </div>
         </div>
       </div>
       <div class="tv-wrap" id="tvWrap">
-        <div id="tradingview_chart" style="height:100%;width:100%;"></div>
+        <div id="tradingview_chart" style="height:100%;width:100%;display:block;"></div>
+        <iframe id="indiaChart" style="display:none;width:100%;height:100%;border:none;border-radius:10px;" src="" allowfullscreen></iframe>
       </div>
       <div class="chart-footer">
         <div class="live-badge"><div class="live-dot"></div>Live Chart</div>
@@ -911,6 +934,46 @@ function searchSym(){
   }
 }
 function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(window._loadTVWidget) window._loadTVWidget(buildTVUrl(sym)); }
+
+function switchChartTab(tab){
+  const isForex = tab==='forex';
+  document.getElementById('forexPanel').style.display = isForex?'block':'none';
+  document.getElementById('indiaPanel').style.display = isForex?'none':'block';
+  document.getElementById('tradingview_chart').style.display = isForex?'block':'none';
+  document.getElementById('indiaChart').style.display = isForex?'none':'block';
+  document.getElementById('tabForex').style.background = isForex?'#e8b84b':'transparent';
+  document.getElementById('tabForex').style.color = isForex?'#000':'var(--t2)';
+  document.getElementById('tabForex').style.border = isForex?'none':'1px solid #2a2736';
+  document.getElementById('tabIndia').style.background = isForex?'transparent':'#e8b84b';
+  document.getElementById('tabIndia').style.color = isForex?'var(--t2)':'#000';
+  document.getElementById('tabIndia').style.border = isForex?'1px solid #2a2736':'none';
+  if(!isForex && !document.getElementById('indiaChart').src){
+    loadIndiaStock('NIFTY50');
+  }
+}
+
+function loadIndiaStock(sym){
+  const frame = document.getElementById('indiaChart');
+  // Use Screener.in embed for Indian stocks
+  const screenerMap = {
+    'NIFTY50':'https://charts.screener.in/nse/NIFTY50',
+    'BANKNIFTY':'https://charts.screener.in/nse/BANKNIFTY',
+    'HDFCBANK':'https://charts.screener.in/nse/HDFCBANK',
+    'RELIANCE':'https://charts.screener.in/nse/RELIANCE',
+    'TCS':'https://charts.screener.in/nse/TCS',
+    'INFY':'https://charts.screener.in/nse/INFY',
+  };
+  const url = screenerMap[sym] || 'https://charts.screener.in/nse/'+sym;
+  frame.src = url;
+}
+
+function searchIndiaStock(){
+  const inp = document.getElementById('indiaSearchInp');
+  const sym = inp.value.trim().toUpperCase();
+  if(!sym) return;
+  loadIndiaStock(sym);
+  inp.value='';
+}
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
 

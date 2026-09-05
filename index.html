@@ -884,7 +884,27 @@ document.querySelectorAll('.hero .reveal, .hero-left, .chart-panel').forEach(el=
 /* ── TRADINGVIEW ── */
 const SYM_MAP={'BTCUSD':'BINANCE:BTCUSDT','BTCUSDT':'BINANCE:BTCUSDT','ETHUSD':'BINANCE:ETHUSDT','XAUUSD':'TVC:GOLD','GOLD':'TVC:GOLD','SILVER':'TVC:SILVER','XAGUSD':'TVC:SILVER','EURUSD':'FX:EURUSD','GBPUSD':'FX:GBPUSD','USDJPY':'FX:USDJPY','AUDUSD':'FX:AUDUSD','USDCAD':'FX:USDCAD','USDCHF':'FX:USDCHF','NZDUSD':'FX:NZDUSD','GBPJPY':'FX:GBPJPY','EURJPY':'FX:EURJPY','NAS100':'NASDAQ:NDX','NASDAQ':'NASDAQ:NDX','SPX500':'SP:SPX','SPX':'SP:SPX','DOW':'DJ:DJI','CRUDE':'TVC:USOIL','OIL':'TVC:USOIL','BNBUSD':'BINANCE:BNBUSDT','SOLUSD':'BINANCE:SOLUSDT','XRPUSD':'BINANCE:XRPUSDT','ADAUSD':'BINANCE:ADAUSDT'};
 function buildTVUrl(sym){ const s=SYM_MAP[sym]||'BINANCE:BTCUSDT'; return `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_main&symbol=${encodeURIComponent(s)}&interval=60&hidesidetoolbar=1&hidetoptoolbar=0&symboledit=0&saveimage=0&toolbarbg=0c0b10&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&showpopupbutton=0&locale=en&overrides=%7B%22mainSeriesProperties.candleStyle.upColor%22%3A%22%232ecc71%22%2C%22mainSeriesProperties.candleStyle.downColor%22%3A%22%23e74c3c%22%2C%22paneProperties.background%22%3A%22%230c0b10%22%2C%22paneProperties.vertGridProperties.color%22%3A%22%232a2736%22%2C%22paneProperties.horzGridProperties.color%22%3A%22%232a2536%22%7D&disabled_features=%5B%22use_localstorage_for_settings%22%5D`; }
-function searchSym(){ const inp=document.getElementById('chartSearchInp'),errEl=document.getElementById('chartSearchErr'),raw=inp.value.trim().toUpperCase().replace(/[\/\-\s]/g,''); if(!raw) return; const m=Object.keys(SYM_MAP).find(k=>k===raw||k.includes(raw)||raw.includes(k)); if(m){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); document.getElementById('tvFrame').src=buildTVUrl(m); inp.value=''; inp.placeholder=m+' loaded ✓'; errEl.textContent=''; setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD...',5000); } else { errEl.textContent='Not found. Try: BTCUSD, XAUUSD, EURUSD, NAS100'; setTimeout(()=>errEl.textContent='',3000); } }
+function searchSym(){
+  const inp=document.getElementById('chartSearchInp');
+  const errEl=document.getElementById('chartSearchErr');
+  let raw=inp.value.trim().toUpperCase().replace(/[\s]/g,'');
+  if(!raw) return;
+  // Check SYM_MAP first
+  const m=Object.keys(SYM_MAP).find(k=>k===raw||k.includes(raw)||raw.includes(k));
+  let sym = m || raw;
+  // Auto-add NSE: prefix for Indian stocks (not already prefixed, not a known forex/crypto)
+  const knownGlobal = ['BTC','ETH','XAU','EUR','GBP','USD','NAS','DOW','SPX','OIL','GOLD','SILVER'];
+  const isKnown = knownGlobal.some(k=>sym.startsWith(k)) || sym.includes(':');
+  if(!isKnown && sym.length <= 20){
+    sym = 'NSE:'+sym;
+  }
+  document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tvFrame').src=buildTVUrl(sym);
+  inp.value='';
+  inp.placeholder=sym+' loaded ✓';
+  errEl.textContent='';
+  setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD, HDFCBANK...',4000);
+}
 function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('tvFrame').src=buildTVUrl(sym); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });

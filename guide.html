@@ -128,14 +128,12 @@ function getGuideItems(){
     if(!prods) return {ea:[], tv:[]};
     var guide = prods.find(function(p){return p.id==='guide';});
     if(!guide||!guide.items) return {ea:[], tv:[]};
-    var ea=[], tv=[], isTv=false;
+    var ea=[], tv=[];
     guide.items.forEach(function(it){
-      if(it.badge==='SECTION'){
-        isTv = it.name.toLowerCase().indexOf('trading')>-1 || it.name.toLowerCase().indexOf('tv')>-1;
-        return;
-      }
+      if(it.badge==='SECTION') return;
       if(it.hidden) return;
-      if(isTv) tv.push(it); else ea.push(it);
+      if(it.section==='tv') tv.push(it);
+      else ea.push(it); // default ea
     });
     return {ea:ea, tv:tv};
   }catch(e){return {ea:[],tv:[]};}

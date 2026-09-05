@@ -600,6 +600,13 @@ select.inp{cursor:pointer;}
       <input class="inp" id="siFileUrl" placeholder="File URL" style="font-size:11px;margin-top:4px;">
     </div>
     <div class="field" style="display:none;"><label class="label">Video URL (embed / YouTube)</label><input class="inp" id="siVid" placeholder="https://..."></div>
+    <div class="field" style="margin-top:8px;"><label class="label">Guide Section</label>
+      <select class="inp" id="siSection" style="background:#0d0d0f;color:#fff;">
+        <option value="ea">⚡ EA Guide</option>
+        <option value="tv">📺 TradingView Guide</option>
+        <option value="none">📄 General</option>
+      </select>
+    </div>
     <div style="display:flex;gap:8px;margin-top:4px;">
       <button class="btn-gold" onclick="saveSi()">Save Item</button>
       <button class="btn-out" onclick="closeSiEd()">Cancel</button>
@@ -923,16 +930,17 @@ function openSiEd(pi,ji){
   document.getElementById('siFileUrl').value=it.fileUrl||'';
   document.getElementById('siFileStatus').textContent=it.fileName?'File: '+it.fileName:'';
   document.getElementById('siVid').value=it.videoUrl||'';
+  document.getElementById('siSection').value=it.section||'ea';
   const prev=document.getElementById('siImgPrev'),thumb=document.getElementById('siImgThumb');
   if(it.img){thumb.src=it.img;prev.style.display='block';}else{prev.style.display='none';}
   document.getElementById('siOverlay').classList.add('open');
 }
-function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; }
+function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siSection').value='ea'; document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; }
 function closeSiEd(){ document.getElementById('siOverlay').classList.remove('open'); }
 function saveSi(){
   const pi=parseInt(document.getElementById('siProdId').value);
   const ji=_editSiIdx;
-  const it={name:document.getElementById('siName').value,pid:document.getElementById('siPid').value,badge:document.getElementById('siBadge').value,desc:document.getElementById('siDesc').value,img:document.getElementById('siImgUrl').value,fileUrl:document.getElementById('siFileUrl').value,fileName:document.getElementById('siFileStatus').textContent.replace('File: ','').replace('✓ ','').split(' ')[0]||'',videoUrl:document.getElementById('siVid').value,hidden:false};
+  const it={name:document.getElementById('siName').value,pid:document.getElementById('siPid').value,badge:document.getElementById('siBadge').value,desc:document.getElementById('siDesc').value,img:document.getElementById('siImgUrl').value,fileUrl:document.getElementById('siFileUrl').value,fileName:document.getElementById('siFileStatus').textContent.replace('File: ','').replace('✓ ','').split(' ')[0]||'',videoUrl:document.getElementById('siVid').value,section:document.getElementById('siSection').value||'ea',hidden:false};
   if(!products[pi].items) products[pi].items=[];
   if(ji>=0) products[pi].items[ji]=it; else products[pi].items.push(it);
   save('products',products); renderProds(); closeSiEd(); toast('Sub-item saved');

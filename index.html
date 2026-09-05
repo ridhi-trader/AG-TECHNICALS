@@ -318,7 +318,14 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="chart-panel reveal" style="transition-delay:0.15s">
       <div class="chart-top">
         <div class="chart-search-row">
-          <input class="chart-search-inp" id="chartSearchInp" placeholder="Search: BTCUSD, EURUSD, XAUUSD..." autocomplete="off"/>
+          <input class="chart-search-inp" id="chartSearchInp" placeholder="BTCUSD, XAUUSD, EURUSD, NAS100, CRUDE..." autocomplete="off" list="symList"/>
+          <datalist id="symList">
+            <option value="BTCUSD"><option value="ETHUSD"><option value="XAUUSD"><option value="SILVER">
+            <option value="EURUSD"><option value="GBPUSD"><option value="USDJPY"><option value="AUDUSD">
+            <option value="GBPJPY"><option value="EURJPY"><option value="USDCAD"><option value="USDCHF">
+            <option value="NAS100"><option value="SPX500"><option value="DOW"><option value="CRUDE">
+            <option value="BNBUSD"><option value="SOLUSD"><option value="XRPUSD"><option value="ADAUSD">
+          </datalist>
           <button class="chart-search-btn" onclick="searchSym()">Go</button>
         </div>
         <div class="chart-search-err" id="chartSearchErr"></div>
@@ -889,18 +896,19 @@ function buildTVUrl(sym){ return SYM_MAP[sym]||sym||'BINANCE:BTCUSDT'; }
 function searchSym(){
   const inp=document.getElementById('chartSearchInp');
   const errEl=document.getElementById('chartSearchErr');
-  let raw=inp.value.trim().toUpperCase().replace(/[\s]/g,'');
+  let raw=inp.value.trim().toUpperCase().replace(/[\s\/]/g,'');
   if(!raw) return;
-  // Check SYM_MAP first
   const m=Object.keys(SYM_MAP).find(k=>k===raw||k.includes(raw)||raw.includes(k));
-  let sym = m || raw;
-  // Pass symbol directly to TradingView
-  document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active'));
-  if(window._loadTVWidget) window._loadTVWidget(buildTVUrl(sym));
-  inp.value='';
-  inp.placeholder=sym+' loaded ✓';
-  errEl.textContent='';
-  setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD, NAS100, US30...',4000);
+  if(m){
+    document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active'));
+    if(window._loadTVWidget) window._loadTVWidget(buildTVUrl(m));
+    inp.value=''; errEl.textContent='';
+    inp.placeholder=m+' loaded ✓';
+    setTimeout(()=>inp.placeholder='BTCUSD, XAUUSD, EURUSD, NAS100...',3000);
+  } else {
+    errEl.textContent='Not supported. Try: BTCUSD, XAUUSD, EURUSD, NAS100, CRUDE';
+    setTimeout(()=>errEl.textContent='',3000);
+  }
 }
 function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(window._loadTVWidget) window._loadTVWidget(buildTVUrl(sym)); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });

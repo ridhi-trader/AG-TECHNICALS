@@ -892,18 +892,13 @@ function searchSym(){
   // Check SYM_MAP first
   const m=Object.keys(SYM_MAP).find(k=>k===raw||k.includes(raw)||raw.includes(k));
   let sym = m || raw;
-  // Auto-add NSE: prefix for Indian stocks (not already prefixed, not a known forex/crypto)
-  const knownGlobal = ['BTC','ETH','XAU','EUR','GBP','USD','NAS','DOW','SPX','OIL','GOLD','SILVER'];
-  const isKnown = knownGlobal.some(k=>sym.startsWith(k)) || sym.includes(':');
-  if(!isKnown && sym.length <= 20){
-    sym = 'NSE:'+sym;
-  }
+  // Pass symbol directly to TradingView
   document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tvFrame').src=buildTVUrl(sym);
   inp.value='';
   inp.placeholder=sym+' loaded ✓';
   errEl.textContent='';
-  setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD, HDFCBANK...',4000);
+  setTimeout(()=>inp.placeholder='Search: BTCUSD, EURUSD, XAUUSD, NAS100, US30...',4000);
 }
 function loadSym(sym,btn){ document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('tvFrame').src=buildTVUrl(sym); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });

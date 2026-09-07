@@ -201,18 +201,28 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB
 
 <script>
 // Load items from localStorage (ag_products key, algo product)
+// Hardcoded Cloudinary defaults — always available
+var D_ALGO_ITEMS = [
+  {name:'AG 3 Logic EA', pid:'EA-0001', badge:'PREMIUM', desc:'AG 3 Logic EA live trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559676/signal-2026-08-30-00-48-50-396.mp4', hidden:false},
+  {name:'AG Signal Demo 2', pid:'EA-0002', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559593/signal-2026-09-04-17-06-41-824.mp4', hidden:false},
+  {name:'AG Signal Demo 3', pid:'EA-0003', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788555255/signal-2026-09-02-15-17-21-420.mp4', hidden:false},
+  {name:'AG Signal Demo 4', pid:'EA-0004', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788554068/signal-2026-09-02-15-04-34-203.mp4', hidden:false},
+  {name:'AG Signal Demo 5', pid:'EA-0005', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788544257/signal-2026-09-02-16-58-59-388.mp4', hidden:false},
+];
+
 function getAlgoItems(){
   try{
-    // index.html uses ag_ prefix
-    var prods = JSON.parse(localStorage.getItem('ag_products')||'null');
-    if(!prods){
-      // admin uses no prefix
-      prods = JSON.parse(localStorage.getItem('products')||'null');
+    var prods = JSON.parse(localStorage.getItem('ag_products')||'null') ||
+                JSON.parse(localStorage.getItem('products')||'null');
+    if(prods){
+      var algo = prods.find(function(p){return p.id==='algo';});
+      if(algo && algo.items && algo.items.length > 0){
+        var items = algo.items.filter(function(it){return !it.hidden;});
+        if(items.length > 0) return items;
+      }
     }
-    if(!prods) return [];
-    var algo = prods.find(function(p){return p.id==='algo';});
-    if(!algo||!algo.items) return [];
-    return algo.items.filter(function(it){return !it.hidden;});
+    // Fallback to hardcoded defaults
+    return D_ALGO_ITEMS;
   }catch(e){return [];}
 }
 

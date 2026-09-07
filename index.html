@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AG Technicals — Professional Trading Analysis & Live Signals</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <!-- OG / Google -->
+  <meta property="og:title" content="AG Technicals — Professional Trading Analysis">
+  <meta property="og:description" content="Institutional-grade analysis, live signals, algo trading tools for Forex, Crypto, Gold and Indices.">
+  <meta property="og:image" content="https://ag-technicals.onrender.com/logo.png">
+  <meta property="og:url" content="https://ag-technicals.onrender.com">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://ag-technicals.onrender.com/logo.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -286,7 +297,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo"><img src="logo.png" alt="AG Technicals" style="height:44px;width:auto;"></a>
+  <a href="#" class="logo"><img id="siteLogo" src="logo.png" alt="AG Technicals" style="height:44px;width:auto;"></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
     <li><a href="#news">News</a></li>
@@ -460,7 +471,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <!-- FOOTER -->
 <footer>
-  <div class="f-logo"><img src="logo.png" alt="AG Technicals" style="height:40px;width:auto;"></div>
+  <div class="f-logo"><img id="siteLogoFooter" src="logo.png" alt="AG Technicals" style="height:40px;width:auto;"></div>
   <div class="f-copy" id="footerCopy">© 2025 AG Technicals. All rights reserved.</div>
   <div class="f-links">
     <a href="privacy-policy.html">Privacy Policy</a>
@@ -591,6 +602,20 @@ function load(key, fallback){ try{ const v=localStorage.getItem('ag_'+key); retu
 
 const hero     = load('hero',     D.hero);
 const ticker   = load('ticker',   D.ticker);
+// Load custom logo if set
+(function(){
+  var logo = localStorage.getItem('ag_logo_url');
+  if(logo){
+    document.addEventListener('DOMContentLoaded',function(){
+      ['siteLogo','siteLogoFooter'].forEach(function(id){
+        var el=document.getElementById(id); if(el) el.src=logo;
+      });
+      // Update OG image
+      var og=document.querySelector('meta[property="og:image"]');
+      if(og) og.content=logo;
+    });
+  }
+})();
 // ── FORCE FIX BEFORE LOAD — v4 ──
 (function(){
   try{

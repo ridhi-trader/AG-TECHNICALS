@@ -351,7 +351,15 @@ select.inp{cursor:pointer;}
         <div class="field"><label class="label">Headline (H1)</label><input class="inp" id="heroH1"></div>
         <div class="field"><label class="label">Sub-text</label><textarea class="inp" id="heroSub"></textarea></div>
         <div class="field"><label class="label">Background Video URL (optional)</label><input class="inp" id="heroVid" placeholder="https://..."></div>
-        <button class="btn-gold" onclick="saveHero()">Save Hero</button>
+        <div class="field">
+          <label class="label">Site Logo URL</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input class="inp" id="siteLogoUrl" placeholder="https://... or leave empty for logo.png">
+            <img id="logoPreview" src="logo.png" style="height:40px;width:auto;border-radius:6px;border:1px solid #2a2736;" onerror="this.style.display='none'">
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px;">Upload logo to File Uploads tab → copy URL → paste here</div>
+        </div>
+        <button class="btn-gold" onclick="saveHero()">Save Hero & Logo</button>
       </div>
     </div>
 
@@ -1151,8 +1159,19 @@ function renderCsSent(){ const el=document.getElementById('csSent'); if(!el) ret
 /* ══════════════ HERO ══════════════ */
 const D_HERO={badge:'Live Intelligence · 9+ Years Screen Time',h1:'Trade With The <span style="color:var(--g5)">Edge</span> Of Real Intelligence',sub:'AG Technicals gives you indicators, signals, and education built from 9+ years of real screen time.',btnText:'Explore Services',videoUrl:''};
 let hero=ls('hero',D_HERO);
-function loadHero(){ ['heroBadge','heroH1','heroSub','heroBtn','heroVid'].forEach((id,i)=>document.getElementById(id).value=[hero.badge,hero.h1,hero.sub,hero.btnText,hero.videoUrl||''][i]); }
-function saveHero(){ hero={badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtn').value,videoUrl:document.getElementById('heroVid').value}; save('hero',hero); toast('Hero saved'); }
+function loadHero(){
+  ['heroBadge','heroH1','heroSub','heroBtn','heroVid'].forEach((id,i)=>document.getElementById(id).value=[hero.badge,hero.h1,hero.sub,hero.btnText,hero.videoUrl||''][i]);
+  var logo = localStorage.getItem('ag_logo_url')||'';
+  document.getElementById('siteLogoUrl').value=logo;
+  if(logo){ document.getElementById('logoPreview').src=logo; document.getElementById('logoPreview').style.display=''; }
+}
+function saveHero(){
+  hero={badge:document.getElementById('heroBadge').value,h1:document.getElementById('heroH1').value,sub:document.getElementById('heroSub').value,btnText:document.getElementById('heroBtn').value,videoUrl:document.getElementById('heroVid').value};
+  save('hero',hero);
+  var logoUrl = document.getElementById('siteLogoUrl').value.trim();
+  if(logoUrl){ localStorage.setItem('ag_logo_url',logoUrl); document.getElementById('logoPreview').src=logoUrl; }
+  toast('Hero & Logo saved');
+}
 
 /* ══════════════ TICKER ══════════════ */
 const D_TICK=[{text:'XAU/USD  Live',type:'gold'},{text:'BTC/USD  Live',type:'default'},{text:'COT · Tracking Institutional Flow',type:'cot'}];

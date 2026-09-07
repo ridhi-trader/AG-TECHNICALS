@@ -212,8 +212,7 @@ var D_ALGO_ITEMS = [
 
 function getAlgoItems(){
   try{
-    var prods = JSON.parse(localStorage.getItem('ag_products')||'null') ||
-                JSON.parse(localStorage.getItem('products')||'null');
+    var prods = JSON.parse(localStorage.getItem('ag_products')||'null');
     if(prods){
       var algo = prods.find(function(p){return p.id==='algo';});
       if(algo && algo.items && algo.items.length > 0){

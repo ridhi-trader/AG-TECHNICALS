@@ -134,8 +134,7 @@ var D_GUIDE_TV = [
 
 function getGuideItems(){
   try{
-    var prods = JSON.parse(localStorage.getItem('ag_products')||'null') ||
-                JSON.parse(localStorage.getItem('products')||'null');
+    var prods = JSON.parse(localStorage.getItem('ag_products')||'null');
     if(prods){
       var guide = prods.find(function(p){return p.id==='guide';});
       if(guide && guide.items && guide.items.length > 0){

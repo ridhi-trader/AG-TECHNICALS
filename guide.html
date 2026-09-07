@@ -168,42 +168,6 @@ function renderList(){
   document.getElementById('tvGuideList').innerHTML = tv.length ? tv.map(function(g,i){
     return makeCard({icon:'📺',tag:g.badge||'TV Guide',level:'All Levels',time:'Guide',title:g.name,desc:g.desc||'',url:g.videoUrl||g.fileUrl||''},i,true);
   }).join('') : '<div style="color:var(--t3);font-size:13px;padding:12px 0;">No TradingView guides added yet.</div>';
-  const el = document.getElementById('guideList'); // legacy fallback
-  // External guides (full pages) first — KEEP FOR localStorage guides below
-  const extCards = EA_GUIDES.map(g=>`
-    <a class="guide-card" href="${g.url}" style="text-decoration:none;">
-      <div class="guide-icon">${g.icon}</div>
-      <div class="guide-meta">
-        <div class="guide-tags">
-          <span class="tag gold">${g.tag}</span>
-          <span class="tag-dot">·</span>
-          <span class="tag">${g.level}</span>
-          <span class="tag-dot">·</span>
-          <span class="tag">📖 ${g.time}</span>
-        </div>
-        <div class="guide-title">${g.title}</div>
-        <div class="guide-desc">${g.desc}</div>
-      </div>
-      <div class="guide-btn">Open Guide →</div>
-    </a>`).join('');
-  // Inline guides
-  const inlineCards = GUIDES.map((g,i)=>`
-    <div class="guide-card" onclick="openReader('${g.id}')">
-      <div class="guide-icon">${g.icon}</div>
-      <div class="guide-meta">
-        <div class="guide-tags">
-          <span class="tag gold">${g.tag}</span>
-          <span class="tag-dot">·</span>
-          <span class="tag">${g.level}</span>
-          <span class="tag-dot">·</span>
-          <span class="tag">⏱ ${g.time}</span>
-        </div>
-        <div class="guide-title">${g.title}</div>
-        <div class="guide-desc">${g.desc}</div>
-      </div>
-      <div class="guide-btn">Read Guide →</div>
-    </div>`).join('');
-  el.innerHTML = extCards + inlineCards;
 }
 
 function openReader(id){

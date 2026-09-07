@@ -120,23 +120,38 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <script>
 
 
-// Load from localStorage — same key as admin
+// Default guide items — always available even without localStorage
+var D_GUIDE_EA = [
+  {name:'AG Swing EMA RR EA Guide', pid:'GD-0001', badge:'EA GUIDE', section:'ea', desc:'Complete Swing EMA EA user guide — Hindi & English', videoUrl:'swing-ema-guide.html'},
+  {name:'AG ATR Grid EA Guide', pid:'GD-0002', badge:'EA GUIDE', section:'ea', desc:'Complete ATR Grid EA user guide', videoUrl:'atr-grid-guide.html'},
+  {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', section:'ea', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', videoUrl:'smc-feature-guide.html'},
+];
+var D_GUIDE_TV = [
+  {name:'TradingView Alert Setup Guide', pid:'GD-0004', badge:'TV GUIDE', section:'tv', desc:'Step-by-step: TradingView alerts, webhook URLs, alert conditions, AG Bridge connection', videoUrl:''},
+  {name:'AG SMC Indicator — Setup & Usage', pid:'GD-0005', badge:'TV GUIDE', section:'tv', desc:'Installing and using AG SMC TradingView indicator — OBs, FVG, BOS/CHoCH confluence', videoUrl:''},
+  {name:'Pine Script Alerts — JSON Format', pid:'GD-0006', badge:'TV GUIDE', section:'tv', desc:'Writing Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, SL, TP', videoUrl:''},
+];
+
 function getGuideItems(){
   try{
     var prods = JSON.parse(localStorage.getItem('ag_products')||'null') ||
                 JSON.parse(localStorage.getItem('products')||'null');
-    if(!prods) return {ea:[], tv:[]};
-    var guide = prods.find(function(p){return p.id==='guide';});
-    if(!guide||!guide.items) return {ea:[], tv:[]};
-    var ea=[], tv=[];
-    guide.items.forEach(function(it){
-      if(it.badge==='SECTION') return;
-      if(it.hidden) return;
-      if(it.section==='tv') tv.push(it);
-      else ea.push(it); // default ea
-    });
-    return {ea:ea, tv:tv};
-  }catch(e){return {ea:[],tv:[]};}
+    if(prods){
+      var guide = prods.find(function(p){return p.id==='guide';});
+      if(guide && guide.items && guide.items.length > 0){
+        var ea=[], tv=[];
+        guide.items.forEach(function(it){
+          if(it.badge==='SECTION') return;
+          if(it.hidden) return;
+          if(it.section==='tv') tv.push(it);
+          else ea.push(it);
+        });
+        if(ea.length > 0 || tv.length > 0) return {ea:ea, tv:tv};
+      }
+    }
+    // Fallback to defaults
+    return {ea: D_GUIDE_EA, tv: D_GUIDE_TV};
+  }catch(e){ return {ea: D_GUIDE_EA, tv: D_GUIDE_TV}; }
 }
 const GUIDES=[];
 

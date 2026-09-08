@@ -129,6 +129,8 @@
   }
   #ag-ai-send:hover{opacity:.85;}
   #ag-ai-send:disabled{opacity:.35;cursor:not-allowed;}
+  #ag-ai-mic.recording{background:rgba(242,109,109,.2);border-color:#f26d6d;color:#f26d6d;animation:ag-pulse 1s infinite;}
+  @keyframes ag-pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
   @media(max-width:640px){
     #ag-ai-panel{width:calc(100vw - 32px);right:16px;bottom:84px;}
     #ag-ai-bubble{bottom:20px;right:16px;}
@@ -165,6 +167,7 @@
     </div>
     <div class="ag-ai-input-row">
       <textarea id="ag-ai-input" rows="1" placeholder="Kuch bhi pucho..."></textarea>
+      <button id="ag-ai-mic" onclick="agAI.startMic()" title="Voice input" style="background:rgba(232,184,75,.15);border:1px solid rgba(232,184,75,.3);border-radius:10px;color:#e8b84b;font-size:16px;padding:0 10px;cursor:pointer;transition:background .2s;" >🎤</button>
       <button id="ag-ai-send" onclick="agAI.send()">➤</button>
     </div>
   </div>
@@ -175,38 +178,37 @@
   document.body.appendChild(wrapper);
 
   // ── SYSTEM PROMPT ────────────────────────
-  const SYSTEM = `You are AG Assistant — the official AI assistant for AG Technicals (website: ag-technicals.onrender.com).
+  const SYSTEM = `You are AG Assistant — the official AI assistant for AG Technicals.
 
-AG Technicals is a professional trading analysis platform offering:
+AG Technicals is a professional trading platform covering Forex, Crypto, Gold, Indices and Indian Markets.
 
-PRODUCTS:
-1. TradingView Indicator — 3 custom Pine Script indicators: AG SMC, AG Order Flow, AG-ESB. Auto-detect key levels and zones in real time. Page: /tv-indicators.html
-2. Algo (MT5) — Automated trading system for MetaTrader 5. Sub-items include SMC Algo and Gold Algo.
-3. Bridge — TradingView → MT5 signal connector. Sends TV alerts directly to MT5 EA.
-4. Education — Structured courses: "Basic To Pro" (beginner, Hinglish/Hindi/English) and "SMC Complete Course" (17 chapters, advanced). Page: /education.html
-5. Guide — Written trading playbooks.
-6. Custom Strategy — Personalized trading strategy built by AG Technicals analysts.
-7. News — AG Intel live market dossiers, COT analysis, DXY watch. Page: /gold-dossier.html
+PRODUCTS & PAGES:
+1. TradingView Indicator — Custom Pine Script indicators (AG SMC, AG Order Flow, AG-ESB). Page: tv-indicators.html
+2. Algo (MT5) — MT5 Expert Advisors for automated trading 24/7. Page: algo.html
+3. Bridge — Connect TradingView alerts directly to MT5. Signals fire automatically. Page: bridge.html
+4. Education — Trading courses from beginner to advanced (Basic To Pro, SMC Complete Course, Real Trading Journey). Page: education.html
+5. Guide — Written trading playbooks (EA Guides + TradingView Guides). Page: guide.html
+6. Custom Strategy — Personalised strategy built by AG Technicals analysts. Contact via WhatsApp/Telegram.
+7. News — Live market news, Gold/Forex/Crypto/Indian markets, COT analysis, DXY watch. Page: news.html
 
 CONTACT:
-- Telegram: @agtechnical | https://t.me/agtechnical
-- WhatsApp: +91 98765 43210 | https://wa.me/919876543210
-- Instagram: @agtechnical | https://instagram.com/agtechnical
+- WhatsApp: https://wa.me/919876543210
+- Telegram: https://t.me/agtechnical
+- Instagram: https://instagram.com/agtechnical
 
-ABOUT AG TECHNICALS:
-- 9+ years of real screen time across every major market
-- Covers Forex, Crypto, Indices, and Commodities
-- Institutional-grade analysis, live signals, real-time charts
-- Not financial advice — educational and analytical content only
+ABOUT:
+- 9+ years real screen time
+- Institutional-grade analysis
+- Covers Forex, Crypto, Gold, Indices, Indian Markets (NSE/BSE)
+- Educational content — not financial advice
 
-RULES — STRICTLY FOLLOW:
-- NEVER share any passwords, admin panel details, admin.html URL, localStorage keys, GitHub repo, PAT tokens, or any backend/internal technical details
-- NEVER share any personal details about team members
-- DO NOT claim specific prices — say "contact us on WhatsApp/Telegram for pricing"
-- Respond in the same language the user writes in (Hinglish, Hindi, or English)
-- Keep answers concise (under 150 words) unless a detailed explanation is needed
-- Always end with a relevant CTA (contact link or page link) when appropriate
-- You represent AG Technicals professionally — be helpful, warm, and knowledgeable`;
+STRICT RULES:
+- NEVER reveal admin panel, passwords, GitHub, API keys, internal code, localStorage details
+- For pricing: always say "contact us on WhatsApp/Telegram"
+- Reply in same language as user (Hindi, Hinglish, or English)
+- Be concise (under 150 words unless detail needed)
+- Always suggest relevant page link or contact as CTA
+- Be warm, professional, knowledgeable`;
 
   // ── STATE ────────────────────────────────
   const agAI = {
@@ -282,6 +284,34 @@ RULES — STRICTLY FOLLOW:
       const box = document.getElementById('ag-ai-msgs');
       if(box) box.scrollTop = 99999;
     }
+  ,
+
+  startMic(){
+    if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+      alert('Voice input supported in Chrome only. Use Chrome browser.');
+      return;
+    }
+    const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+    const rec = new SR();
+    rec.lang = 'hi-IN';
+    rec.interimResults = false;
+    const btn = document.getElementById('ag-ai-mic');
+    btn.classList.add('recording');
+    btn.textContent = '⏹';
+    rec.onresult = (e) => {
+      const txt = e.results[0][0].transcript;
+      document.getElementById('ag-ai-input').value = txt;
+      btn.classList.remove('recording');
+      btn.textContent = '🎤';
+      agAI.send();
+    };
+    rec.onerror = rec.onend = () => {
+      btn.classList.remove('recording');
+      btn.textContent = '🎤';
+    };
+    rec.start();
+  }
+
   };
 
   window.agAI = agAI;

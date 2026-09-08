@@ -921,8 +921,8 @@ function renderProds(){
   }).join('');
 }
 
-function toggleHide(i){ products[i].hidden=!products[i].hidden; save('products',products); renderProds(); toast((products[i].hidden?'Hidden: ':'Visible: ')+products[i].name); }
-function deleteProd(i){ if(!confirm('Delete '+products[i].name+'?')) return; products.splice(i,1); save('products',products); renderProds(); toast('Deleted','err'); }
+function toggleHide(i){ products[i].hidden=!products[i].hidden; save('ag_products',products); renderProds(); toast((products[i].hidden?'Hidden: ':'Visible: ')+products[i].name); }
+function deleteProd(i){ if(!confirm('Delete '+products[i].name+'?')) return; products.splice(i,1); save('ag_products',products); renderProds(); toast('Deleted','err'); }
 
 function openAddProd(){ _editProdIdx=-1; document.getElementById('peTitle').textContent='Add New Product'; clearPeForm(); document.getElementById('prodOverlay').classList.add('open'); }
 function openProdEd(i){
@@ -985,7 +985,7 @@ function saveProd(){
   };
   if(_editProdIdx>=0) products[_editProdIdx]=p;
   else products.push(p);
-  save('products',products); renderProds(); closeProdEd(); toast('Saved: '+p.name);
+  save('ag_products',products); renderProds(); closeProdEd(); toast('Saved: '+p.name);
 }
 
 async function uploadPeImg(){
@@ -1029,9 +1029,9 @@ function saveSi(){
   const it={name:document.getElementById('siName').value,pid:document.getElementById('siPid').value,badge:document.getElementById('siBadge').value,desc:document.getElementById('siDesc').value,img:document.getElementById('siImgUrl').value,fileUrl:document.getElementById('siFileUrl').value,fileName:document.getElementById('siFileStatus').textContent.replace('File: ','').replace('✓ ','').split(' ')[0]||'',videoUrl:document.getElementById('siVid').value,section:document.getElementById('siSection').value||'ea',hidden:false};
   if(!products[pi].items) products[pi].items=[];
   if(ji>=0) products[pi].items[ji]=it; else products[pi].items.push(it);
-  save('products',products); renderProds(); closeSiEd(); toast('Sub-item saved');
+  save('ag_products',products); renderProds(); closeSiEd(); toast('Sub-item saved');
 }
-function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].items.splice(ji,1); save('products',products); renderProds(); toast('Deleted','err'); }
+function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].items.splice(ji,1); save('ag_products',products); renderProds(); toast('Deleted','err'); }
 async function uploadSiImg(){
   const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image','err');return;}
   let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}
@@ -1241,7 +1241,7 @@ function exportData(){
 }
 function importData(){
   const f=document.getElementById('importFile').files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result); if(d.products){products=d.products;save('products',products);} if(d.indicators){indicators=d.indicators;save('indicators',indicators);} if(d.users){users=d.users;save('users',users);} toast('Import successful — reload page');} catch(e){toast('Invalid JSON file','err');}}; r.readAsText(f);
+  const r=new FileReader(); r.onload=()=>{try{const d=JSON.parse(r.result); if(d.products){products=d.products;save('ag_products',products);} if(d.indicators){indicators=d.indicators;save('indicators',indicators);} if(d.users){users=d.users;save('users',users);} toast('Import successful — reload page');} catch(e){toast('Invalid JSON file','err');}}; r.readAsText(f);
 }
 
 /* ══════════════ SECURITY ══════════════ */

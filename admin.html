@@ -520,68 +520,68 @@ select.inp{cursor:pointer;}
       </div>
     </div>
 
+    <!-- PAGE CONTENT TAB PAGE -->
+    <div class="page" id="page-pagecms" style="display:none;">
+      <div class="ph"><div class="ph-tag">CMS</div><div class="ph-title">Page <span>Content</span></div></div>
+      <p style="color:var(--t3);font-size:13px;margin-bottom:20px;">Edit text content for each page. Changes apply site-wide instantly.</p>
+    
+      <!-- PAGE TABS -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn-gold" id="cmsTabAlgo" onclick="showCMSTab('algo')">⚙️ Algo</button>
+        <button class="btn-out" id="cmsTabBridge" onclick="showCMSTab('bridge')">🌉 Bridge</button>
+      </div>
+    
+      <!-- ALGO CONTENT -->
+      <div id="cmsAlgo">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Hero Section</div>
+          <div class="field"><label class="label">Badge Text</label><input class="inp" id="cAlgoBadge" placeholder="MT5 · Automated Trading"></div>
+          <div class="field"><label class="label">H1 Title (HTML ok)</label><input class="inp" id="cAlgoH1" placeholder="AG Algo &lt;span&gt;(MT5)&lt;/span&gt;"></div>
+          <div class="field"><label class="label">Subtitle</label><textarea class="inp" id="cAlgoSub" rows="2" placeholder="Subtitle text..."></textarea></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
+            <div><label class="label">Stat 1 Value</label><input class="inp" id="cAlgoS1V" placeholder="5"></div>
+            <div><label class="label">Stat 1 Label</label><input class="inp" id="cAlgoS1L" placeholder="EAs Available"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
+            <div><label class="label">Stat 2 Value</label><input class="inp" id="cAlgoS2V" placeholder="24/7"></div>
+            <div><label class="label">Stat 2 Label</label><input class="inp" id="cAlgoS2L" placeholder="Automated"></div>
+            <div><label class="label">Stat 3 Value</label><input class="inp" id="cAlgoS3V" placeholder="MT5"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Feature Cards</div>
+          ${[1,2,3,4].map(n=>`
+          <div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:8px;margin-bottom:10px;align-items:center;">
+            <input class="inp" id="cAlgoF${n}I" placeholder="🔒" style="text-align:center;font-size:18px;">
+            <input class="inp" id="cAlgoF${n}T" placeholder="Feature ${n} Title">
+            <input class="inp" id="cAlgoF${n}S" placeholder="Feature ${n} subtitle">
+          </div>`).join('')}
+        </div>
+        <button class="btn-gold" onclick="saveCMSAlgo()">💾 Save Algo Content</button>
+      </div>
+    
+      <!-- BRIDGE CONTENT -->
+      <div id="cmsBridge" style="display:none;">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Hero Section</div>
+          <div class="field"><label class="label">Badge Text</label><input class="inp" id="cBridgeBadge" placeholder="TradingView to MT5 · Live"></div>
+          <div class="field"><label class="label">H1 Title (HTML ok)</label><input class="inp" id="cBridgeH1" placeholder="TV To &lt;span&gt;MT5&lt;/span&gt;"></div>
+          <div class="field"><label class="label">Subtitle</label><textarea class="inp" id="cBridgeSub" rows="2"></textarea></div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">Feature Cards (6)</div>
+          ${[1,2,3,4,5,6].map(n=>`
+          <div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:8px;margin-bottom:10px;align-items:center;">
+            <input class="inp" id="cBF${n}I" placeholder="🔒" style="text-align:center;font-size:18px;">
+            <input class="inp" id="cBF${n}T" placeholder="Feature ${n} Title">
+            <input class="inp" id="cBF${n}S" placeholder="Feature ${n} desc">
+          </div>`).join('')}
+        </div>
+        <button class="btn-gold" onclick="saveCMSBridge()">💾 Save Bridge Content</button>
+      </div>
+    </div>
+
   </main>
-</div>
-
-<!-- PAGE CONTENT TAB PAGE -->
-<div class="page" id="page-pagecms" style="display:none;">
-  <div class="ph"><div class="ph-tag">CMS</div><div class="ph-title">Page <span>Content</span></div></div>
-  <p style="color:var(--t3);font-size:13px;margin-bottom:20px;">Edit text content for each page. Changes apply site-wide instantly.</p>
-
-  <!-- PAGE TABS -->
-  <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-    <button class="btn-gold" id="cmsTabAlgo" onclick="showCMSTab('algo')">⚙️ Algo</button>
-    <button class="btn-out" id="cmsTabBridge" onclick="showCMSTab('bridge')">🌉 Bridge</button>
-  </div>
-
-  <!-- ALGO CONTENT -->
-  <div id="cmsAlgo">
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-title">Hero Section</div>
-      <div class="field"><label class="label">Badge Text</label><input class="inp" id="cAlgoBadge" placeholder="MT5 · Automated Trading"></div>
-      <div class="field"><label class="label">H1 Title (HTML ok)</label><input class="inp" id="cAlgoH1" placeholder="AG Algo &lt;span&gt;(MT5)&lt;/span&gt;"></div>
-      <div class="field"><label class="label">Subtitle</label><textarea class="inp" id="cAlgoSub" rows="2" placeholder="Subtitle text..."></textarea></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
-        <div><label class="label">Stat 1 Value</label><input class="inp" id="cAlgoS1V" placeholder="5"></div>
-        <div><label class="label">Stat 1 Label</label><input class="inp" id="cAlgoS1L" placeholder="EAs Available"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
-        <div><label class="label">Stat 2 Value</label><input class="inp" id="cAlgoS2V" placeholder="24/7"></div>
-        <div><label class="label">Stat 2 Label</label><input class="inp" id="cAlgoS2L" placeholder="Automated"></div>
-        <div><label class="label">Stat 3 Value</label><input class="inp" id="cAlgoS3V" placeholder="MT5"></div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-title">Feature Cards</div>
-      ${[1,2,3,4].map(n=>`
-      <div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:8px;margin-bottom:10px;align-items:center;">
-        <input class="inp" id="cAlgoF${n}I" placeholder="🔒" style="text-align:center;font-size:18px;">
-        <input class="inp" id="cAlgoF${n}T" placeholder="Feature ${n} Title">
-        <input class="inp" id="cAlgoF${n}S" placeholder="Feature ${n} subtitle">
-      </div>`).join('')}
-    </div>
-    <button class="btn-gold" onclick="saveCMSAlgo()">💾 Save Algo Content</button>
-  </div>
-
-  <!-- BRIDGE CONTENT -->
-  <div id="cmsBridge" style="display:none;">
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-title">Hero Section</div>
-      <div class="field"><label class="label">Badge Text</label><input class="inp" id="cBridgeBadge" placeholder="TradingView to MT5 · Live"></div>
-      <div class="field"><label class="label">H1 Title (HTML ok)</label><input class="inp" id="cBridgeH1" placeholder="TV To &lt;span&gt;MT5&lt;/span&gt;"></div>
-      <div class="field"><label class="label">Subtitle</label><textarea class="inp" id="cBridgeSub" rows="2"></textarea></div>
-    </div>
-    <div class="card" style="margin-bottom:16px;">
-      <div class="card-title">Feature Cards (6)</div>
-      ${[1,2,3,4,5,6].map(n=>`
-      <div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:8px;margin-bottom:10px;align-items:center;">
-        <input class="inp" id="cBF${n}I" placeholder="🔒" style="text-align:center;font-size:18px;">
-        <input class="inp" id="cBF${n}T" placeholder="Feature ${n} Title">
-        <input class="inp" id="cBF${n}S" placeholder="Feature ${n} desc">
-      </div>`).join('')}
-    </div>
-    <button class="btn-gold" onclick="saveCMSBridge()">💾 Save Bridge Content</button>
-  </div>
 </div>
 
 <!-- PRODUCT EDITOR OVERLAY -->

@@ -616,39 +616,7 @@ const ticker   = load('ticker',   D.ticker);
     });
   }
 })();
-// ── FORCE FIX BEFORE LOAD — v4 ──
-(function(){
-  try{
-    // Clean unwanted stale keys
-    ['csSent','uploadedFiles','ag_bio_id'].forEach(function(k){
-      // Keep these — they're valid
-    });
-    // Remove truly stale keys
-    ['ag_indicators_old','products_backup','ag_products_bak'].forEach(function(k){
-      localStorage.removeItem(k);
-    });
-    const PROD_VER='9';
-    if(localStorage.getItem('ag_prod_v')!==PROD_VER){
-      // Smart merge: keep user items, but reset D_PRODS defaults fresh
-      localStorage.removeItem('ag_products');
-      localStorage.setItem('ag_prod_v',PROD_VER);
-    }
-    const stored = JSON.parse(localStorage.getItem('ag_products')||'null');
-    if(!stored) return;
-    let changed = false;
-    stored.forEach(p => {
-      if(p.id==='guide'){    p.type='page'; p.url='guide.html';         p.hidden=false; p.fileUrl=''; p.fileName=''; changed=true; }
-      if(p.id==='education'){p.type='page'; p.url='education.html';     p.hidden=false; changed=true; }
-      if(p.id==='bridge'){   p.type='page'; p.url='bridge.html';        p.hidden=false; changed=true; }
-      if(p.id==='algo'){     p.type='page'; p.url='algo.html';          p.hidden=false; changed=true; }
-      if(p.id==='tvindicator'||p.id==='indicator'||p.id==='tv-indicators'){p.type='page'; p.url='tv-indicators.html'; p.hidden=false; changed=true; }
-      if(p.id==='custom'||p.id==='strategy'){p.id='custom'; changed=true;}
-      const def = D.products.find(d=>d.id===p.id);
-      if(def && def.items && def.items.length>0 && (!p.items||p.items.length<def.items.length)){ p.items=def.items; changed=true; }
-    });
-    if(changed) localStorage.setItem('ag_products', JSON.stringify(stored));
-  }catch(e){}
-})();
+// No auto-fix — data preserved always
 const products = load('products', D.products);
 const faqItems = load('faq',      D.faq);
 const contact  = load('contact',  D.contact);

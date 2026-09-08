@@ -823,29 +823,7 @@ const D_PRODS = [
    ]},
 ];
 
-// Force-fix stale localStorage — v4 version check
-(function(){
-  try{
-    const PROD_VER='9';
-    if(localStorage.getItem('ag_prod_v')!==PROD_VER){
-      localStorage.removeItem('ag_products');
-      localStorage.setItem('ag_prod_v',PROD_VER);
-    }
-    const s=JSON.parse(localStorage.getItem('ag_products')||'null'); if(!s) return;
-    let ch=false;
-    s.forEach(p=>{
-      if(p.id==='guide'){p.type='page';p.url='guide.html';p.hidden=false;p.fileUrl='';ch=true;}
-      if(p.id==='education'){p.type='page';p.url='education.html';p.hidden=false;ch=true;}
-      if(p.id==='bridge'){p.type='page';p.url='bridge.html';p.hidden=false;ch=true;}
-      if(p.id==='algo'){p.type='page';p.url='algo.html';p.hidden=false;ch=true;}
-      const def=D_PRODS.find(d=>d.id===p.id);
-      if(def && def.items && def.items.length>0 && (!p.items||p.items.length<def.items.length)){
-        p.items=def.items; ch=true;
-      }
-    });
-    if(ch) localStorage.setItem('ag_products',JSON.stringify(s));
-  }catch(e){}
-})();
+// No auto-fix — data preserved always
 
 let products = ls('ag_products', D_PRODS);
 let _editProdIdx = -1;

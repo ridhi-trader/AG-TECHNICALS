@@ -620,14 +620,30 @@ async def get_news(category: str = "", search: str = ""):
 async def chat(req: ChatReq):
     if not ANTHROPIC_KEY:
         return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
-    async with httpx.AsyncClient(timeout=30) as client:
-        r = await client.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-            json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800, "system": SYSTEM, "messages": [m.dict() for m in req.messages]}
-        )
-    reply = r.json().get("content", [{}])[0].get("text", "Sorry, please try again.")
-    return {"reply": reply}
+    try:
+        # pydantic v1 compat
+        try:
+            msgs = [m.dict() for m in req.messages]
+        except Exception:
+            msgs = [m.model_dump() for m in req.messages]
+        async with httpx.AsyncClient(timeout=30) as client:
+            r = await client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800, "system": SYSTEM, "messages": msgs}
+            )
+        rj = r.json()
+        if r.status_code != 200:
+            print(f"Anthropic API error {r.status_code}: {rj}")
+            return {"reply": "AI service error. Please try again or contact us on WhatsApp."}
+        reply = rj.get("content", [{}])[0].get("text", "")
+        if not reply:
+            print(f"Empty reply from Anthropic. Full response: {rj}")
+            return {"reply": "Sorry, please try again."}
+        return {"reply": reply}
+    except Exception as e:
+        print(f"Chat endpoint exception: {e}")
+        return {"reply": "Network error. Please try again."}
 
 @app.get("/api/cache/clear")
 async def clear_cache():

@@ -218,19 +218,21 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script>
 (function(){
   function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-  const products = ls('ag_products', []);
-  const eduProd = products.find(p => p.id === 'education');
-  const section = document.getElementById('downloadSection');
+  // Try localStorage first, fallback to empty (items added via admin)
+  var products = ls('ag_products', []);
+  var eduProd = products.find(function(p){return p.id==='education';});
+  var section = document.getElementById('downloadSection');
   if(!section) return;
 
   // Product-level file
-  const files = [];
+  var files = [];
   if(eduProd && eduProd.fileUrl){
-    files.push({name: eduProd.fileName || 'Education Resource', url: eduProd.fileUrl});
+    files.push({name: eduProd.fileName||'Education Resource', url: eduProd.fileUrl});
   }
-  // Sub-item files
-  (eduProd && eduProd.items || []).filter(it => !it.hidden && it.fileUrl).forEach(it => {
-    files.push({name: it.fileName || it.name || 'Resource', url: it.fileUrl, label: it.name, badge: it.badge});
+  // Sub-item files — show ALL items (not just fileUrl ones)
+  (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;}).forEach(function(it){
+    if(it.fileUrl) files.push({name:it.fileName||it.name||'Resource', url:it.fileUrl, label:it.name, badge:it.badge});
+    else if(it.videoUrl) files.push({name:it.name||'Resource', url:it.videoUrl, label:it.name, badge:it.badge, isLink:true});
   });
 
   if(!files.length){ section.style.display='none'; return; }
@@ -273,14 +275,15 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script>
 (function(){
   function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-  const products = ls('ag_products', []);
-  const eduProd = products.find(p => p.id === 'education');
-  const files = [];
-  if(eduProd && eduProd.fileUrl) files.push({name: eduProd.fileName || 'Education Resource', url: eduProd.fileUrl});
-  (eduProd && eduProd.items || []).filter(it => !it.hidden && it.fileUrl).forEach(it => {
-    files.push({name: it.fileName || it.name || 'Resource', url: it.fileUrl, label: it.name, badge: it.badge});
+  var products = ls('ag_products', []);
+  var eduProd = products.find(function(p){return p.id==='education';});
+  var files = [];
+  if(eduProd && eduProd.fileUrl) files.push({name:eduProd.fileName||'Education Resource', url:eduProd.fileUrl});
+  (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;}).forEach(function(it){
+    if(it.fileUrl) files.push({name:it.fileName||it.name||'Resource', url:it.fileUrl, label:it.name, badge:it.badge});
+    else if(it.videoUrl) files.push({name:it.name||'Resource', url:it.videoUrl, label:it.name, badge:it.badge, isLink:true});
   });
-  const section = document.getElementById('downloadSection');
+  var section = document.getElementById('downloadSection');
   if(!section) return;
   if(!files.length){ section.style.display='none'; return; }
   section.style.display='block';

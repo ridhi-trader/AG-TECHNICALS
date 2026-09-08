@@ -1,3 +1,29 @@
+/* AG Technicals — Content Protection */
+(function(){
+  // Disable right click
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  
+  // Disable text selection
+  document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+  
+  // Disable keyboard shortcuts
+  document.addEventListener('keydown', function(e){
+    // Block Ctrl+S, Ctrl+P, Ctrl+U, Ctrl+A, F12, PrintScreen
+    if(e.key==='PrintScreen'){ navigator.clipboard.writeText(''); }
+    if(e.ctrlKey && ['s','p','u','a'].includes(e.key.toLowerCase())){ e.preventDefault(); }
+    if(e.key==='F12'){ e.preventDefault(); }
+  });
+  
+  // Watermark overlay — shows on print
+  var style = document.createElement('style');
+  style.innerHTML = 
+    'body { -webkit-user-select:none; -moz-user-select:none; user-select:none; }' +
+    'img { pointer-events:none; -webkit-user-drag:none; }' +
+    '@media print { body::before { content:"© AG Technicals — Confidential"; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-45deg); font-size:48px; color:rgba(232,184,75,0.3); font-weight:900; z-index:99999; } }';
+  document.head.appendChild(style);
+})();
+
+
 /* ══════════════════════════════════════
    AG ASSISTANT — Shared AI Chat Widget
    Loads on every page of AG Technicals

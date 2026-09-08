@@ -179,36 +179,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <p>Start At The Top If You're New. Each Part Stands On Its Own.</p>
 </div>
 
-<div class="courses-section">
+<div class="courses-section" id="mainCourseSection">
   <div class="section-label">Our Courses</div>
-
-  <a class="course-card" href="education-foundation.html">
-    <div class="course-icon">🎓</div>
-    <div class="course-meta">
-      <div class="course-tags">
-        <span class="tag">Start Here</span>
-        <span class="tag-dot">·</span>
-        <span class="tag">Beginner</span>
-      </div>
-      <div class="course-title">Basic To Pro</div>
-      <div class="course-desc">Financial Markets, Pips & Lots, Leverage, Margin, Orders, Stop Loss, Risk, Candlesticks And More — Everything A Beginner Needs. Hindi & English.</div>
-    </div>
-    <div class="course-btn">Open Course →</div>
-  </a>
-
-  <a class="course-card smc" href="education-smc.html">
-    <div class="course-icon">📚</div>
-    <div class="course-meta">
-      <div class="course-tags">
-        <span class="tag gold">Advanced</span>
-        <span class="tag-dot">·</span>
-        <span class="tag gold">SMC</span>
-      </div>
-      <div class="course-title">Smart Money Concepts — Complete Course</div>
-      <div class="course-desc">17 Chapters On Market Structure, Order Blocks, Liquidity, FVG And More — In Hindi & English, With Diagrams. First Chapters Free.</div>
-    </div>
-    <div class="course-btn">Open Course →</div>
-  </a>
+  <div id="mainCourseList"></div>
 </div>
 
 
@@ -219,75 +192,12 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script>
 (function(){
   function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-  // Try localStorage first, fallback to empty (items added via admin)
   var products = ls('ag_products', []);
   var eduProd = products.find(function(p){return p.id==='education';});
-  var section = document.getElementById('downloadSection');
-  if(!section) return;
-
-  // Product-level file
-  var files = [];
-  if(eduProd && eduProd.fileUrl){
-    files.push({name: eduProd.fileName||'Education Resource', url: eduProd.fileUrl});
-  }
-  // Sub-item files — show ALL items
-  (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;}).forEach(function(it){
-    var url = it.fileUrl||it.videoUrl||'';
-    if(url) files.push({name:it.name||'Resource', url:url, label:it.name, badge:it.badge, desc:it.desc||'', icon:it.icon||'📖'});
-  });
-
-  if(!files.length){ section.style.display='none'; return; }
-  section.style.display='block';
-  section.innerHTML =
-    files.map(function(f){
-      return '<a class="course-card" href="'+f.url+'" target="_blank">'+
-        '<div class="course-icon">'+(f.icon||'📖')+'</div>'+
-        '<div class="course-meta">'+
-          '<div class="course-tags">'+
-            (f.badge?'<span class="tag gold">'+f.badge+'</span>':'<span class="tag">Course</span>')+
-          '</div>'+
-          '<div class="course-title">'+(f.label||f.name)+'</div>'+
-          '<div class="course-desc">'+(f.desc||'')+'</div>'+
-        '</div>'+
-        '<div class="course-btn">Open Course →</div>'+
-      '</a>';
-    }).join('');
-})();
-</script>
-
-
-<div class="courses-section" style="padding-top:0;padding-bottom:80px;" id="downloadSection" style="display:none;">
-</div>
-
-<div class="courses-section" style="padding-top:0;padding-bottom:20px;">
-  <div class="section-label">Additional Courses</div>
-  <a class="course-card" href="real-trading-journey.html">
-    <div class="course-icon">🚀</div>
-    <div class="course-meta">
-      <div class="course-tags">
-        <span class="tag gold">Real Trading</span>
-        <span class="tag-dot">·</span>
-        <span class="tag">All Levels</span>
-      </div>
-      <div class="course-title">AG Real Trading Journey</div>
-      <div class="course-desc">Real trades, real analysis, real lessons — follow AG Technicals' actual trading journey with breakdowns of entries, exits, and decisions.</div>
-    </div>
-    <div class="course-btn">Open Course →</div>
-  </a>
-</div>
-
-<script>
-(function(){
-  function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-  var products = ls('ag_products', []);
-  var eduProd = products.find(function(p){return p.id==='education';});
-  var section = document.getElementById('downloadSection');
-  if(!section) return;
-  var items = (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden && (it.fileUrl||it.videoUrl);});
-  if(!items.length){ section.style.display='none'; return; }
-  section.style.display='block';
-  section.innerHTML = items.map(function(it){
-    var url = it.fileUrl||it.videoUrl||'';
+  var items = (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;});
+  
+  function makeCard(it){
+    var url = it.fileUrl||it.videoUrl||'#';
     return '<a class="course-card" href="'+url+'" target="_blank">'+
       '<div class="course-icon">'+(it.icon||'📖')+'</div>'+
       '<div class="course-meta">'+
@@ -299,9 +209,21 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
       '</div>'+
       '<div class="course-btn">Open Course →</div>'+
     '</a>';
-  }).join('');
+  }
+
+  var mainList = document.getElementById('mainCourseList');
+  if(mainList){
+    mainList.innerHTML = items.length ? items.map(makeCard).join('') : '<div style="color:var(--t3);padding:20px 0;">No courses added yet.</div>';
+  }
+
+  // Hide downloadSection — no longer needed
+  var dl = document.getElementById('downloadSection');
+  if(dl) dl.style.display='none';
 })();
 </script>
+
+
+
 <script src="ag-assistant.js"></script>
 </body>
 </html>

@@ -699,7 +699,7 @@ document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   } else if(hasItems){
     onclick = "openSubItems('" + p.id + "')";
   } else {
-    const t=p.title.replace(/'/g,"\\'")||'',d=p.desc.replace(/'/g,"\\'")||'',ct=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||''),fv=(p.fileUrl?'1':''),fn=(p.fileName||p.name||'').replace(/'/g,"\\'")||'';
+    const t=(p.title||p.name||'').replace(/'/g,"\\'")||'',d=(p.desc||'').replace(/'/g,"\\'")||'',ct=(p.cta||'Join Waitlist →').replace(/'/g,"\\'"),v=(p.videoUrl||''),cu=(p.ctaUrl||''),fv=(p.fileUrl?'1':''),fn=(p.fileName||p.name||'').replace(/'/g,"\\'")||'';
     onclick = "openModal('" + t + "','" + d + "','" + p.icon + "','" + v + "','" + ct + "','" + cu + "','','" + fv + "','" + fn + "','" + p.id + "')";
   }
   // Image section — use uploaded img or icon

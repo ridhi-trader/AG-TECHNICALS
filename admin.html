@@ -686,7 +686,7 @@ select.inp{cursor:pointer;}
 
 <script>
 'use strict';
-const API = 'https://ag-assistant-api.onrender.com';
+const API = 'https://ag-technicals-production.up.railway.app';
 const PASS_KEY = 'ag_admin_pass';
 let _pass = localStorage.getItem(PASS_KEY) || 'ridhima2307';
 
@@ -1245,7 +1245,7 @@ async function loadDbUsers(){
   const el=document.getElementById('dbUserList'); if(!el) return;
   el.innerHTML='<div class="empty">Loading...</div>';
   try{
-    const r=await fetch('https://ag-assistant-api.onrender.com/api/admin/users');
+    const r=await fetch('https://ag-technicals-production.up.railway.app/api/admin/users');
     const d=await r.json();
     if(!d.ok||!d.users.length){el.innerHTML='<div class="empty">No registered users yet.</div>';return;}
     el.innerHTML=d.users.map(u=>`
@@ -1267,7 +1267,7 @@ async function loadDbUsers(){
 async function deleteDbUser(uid, uname){
   if(!confirm('Delete user ' + uname + '? This cannot be undone.')) return;
   try{
-    const r = await fetch('https://ag-assistant-api.onrender.com/api/admin/users/' + uid, {method:'DELETE'});
+    const r = await fetch('https://ag-technicals-production.up.railway.app/api/admin/users/' + uid, {method:'DELETE'});
     const d = await r.json();
     if(d.ok){ toast('User deleted'); loadDbUsers(); }
     else toast('Error: ' + (d.error||'Failed'), 'err');
@@ -1289,7 +1289,7 @@ function openAssign(uid,uname,currentProds){
 async function saveAssign(){
   const prods=[...document.querySelectorAll('.assign-check:checked')].map(c=>c.value).join(',');
   try{
-    const r=await fetch('https://ag-assistant-api.onrender.com/api/admin/assign-products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:_assignUserId,products:prods})});
+    const r=await fetch('https://ag-technicals-production.up.railway.app/api/admin/assign-products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:_assignUserId,products:prods})});
     const d=await r.json();
     if(d.ok){toast('Products assigned!');document.getElementById('assignOverlay').classList.remove('open');loadDbUsers();}
     else toast('Failed: '+(d.error||'unknown'),'err');
@@ -1300,7 +1300,7 @@ async function saveAssign(){
 renderProds();
 
 // ── BRIDGE LICENSE FUNCTIONS ──────────────────────────────────────────────────
-const BL_API = 'https://ag-assistant-api.onrender.com';
+const BL_API = 'https://ag-technicals-production.up.railway.app';
 
 async function genLicense(){
   const email = document.getElementById('blEmail').value.trim();

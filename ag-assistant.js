@@ -330,7 +330,7 @@
       try{
         const controller = new AbortController();
         const timeout = setTimeout(()=>controller.abort(), 60000);
-        const res = await fetch('https://ag-assistant-api.onrender.com/api/chat',{
+        const res = await fetch('https://ag-technicals-production.up.railway.app/api/chat',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body: JSON.stringify({ messages: this.msgs }),
@@ -432,7 +432,7 @@
   }, 8000);
 
   // Keep backend warm
-  setInterval(()=>{ fetch('https://ag-assistant-api.onrender.com/',{method:'GET'}).catch(()=>{}); }, 4*60*1000);
-  setTimeout(()=>{ fetch('https://ag-assistant-api.onrender.com/',{method:'GET'}).catch(()=>{}); }, 2000);
+  setInterval(()=>{ fetch('https://ag-technicals-production.up.railway.app/',{method:'GET'}).catch(()=>{}); }, 4*60*1000);
+  setTimeout(()=>{ fetch('https://ag-technicals-production.up.railway.app/',{method:'GET'}).catch(()=>{}); }, 2000);
 
 })();

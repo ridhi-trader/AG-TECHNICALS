@@ -21,8 +21,8 @@ app.include_router(video_router)
 import os as _os
 _base = _os.path.dirname(_os.path.abspath(__file__))
 
-# Upload directory — persists within Render instance (ephemeral on restart)
-UPLOAD_DIR = _os.path.join(_base, "uploaded_files")
+# /var/data = persistent disk on Render paid plan; fallback = ephemeral local
+UPLOAD_DIR = "/var/data/uploaded_files" if _os.path.exists("/var/data") else _os.path.join(_base, "uploaded_files")
 _os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 for _vid_id, _vid_file in [

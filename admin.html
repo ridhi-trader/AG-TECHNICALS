@@ -451,12 +451,20 @@ select.inp{cursor:pointer;}
     <!-- ══ UPLOADS ══ -->
     <div class="page" id="page-uploads">
       <div class="ph"><div class="ph-tag">Files</div><div class="ph-title">File <span>Uploads</span></div></div>
-      <div class="form-box" style="margin-bottom:16px;">
-        <div class="card-title" style="margin-bottom:10px;">📤 Upload Any File</div>
-        <div class="card-sub" style="margin-bottom:12px;">Upload to server — PDF, EA .ex5, MP4, HTML, image. Get a URL to use anywhere in admin.</div>
+      <div class="form-box" style="margin-bottom:16px;border:1px solid rgba(232,184,75,0.4);">
+        <div class="card-title" style="margin-bottom:8px;color:#e8b84b;">⚠️ Important — Read Before Uploading</div>
+        <div style="font-size:13px;color:#c8c4d0;line-height:1.7;margin-bottom:14px;">
+          Files uploaded here are <b style="color:#f26d6d;">deleted when server restarts</b> (Render free plan).<br>
+          <b>Always use permanent external links instead:</b><br><br>
+          📄 <b>PDF / HTML / EA files</b> → Upload to <a href="https://drive.google.com" target="_blank" style="color:#e8b84b;">Google Drive</a> → Share → Anyone with link → Copy link<br>
+          🎥 <b>Videos</b> → Upload to <a href="https://cloudinary.com" target="_blank" style="color:#e8b84b;">Cloudinary</a> (free) → Copy URL<br>
+          🖼️ <b>Images</b> → <a href="https://cloudinary.com" target="_blank" style="color:#e8b84b;">Cloudinary</a> or <a href="https://imgbb.com" target="_blank" style="color:#e8b84b;">ImgBB</a> → Copy URL<br><br>
+          Paste that URL in the File URL field of any product/sub-item.
+        </div>
+        <div class="card-title" style="margin-bottom:8px;font-size:12px;">Temporary Upload (will be deleted on restart)</div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <input type="file" class="file-inp" id="globalFile" style="flex:1;">
-          <button class="btn-gold" onclick="uploadGlobal()">Upload</button>
+          <button class="btn-out" onclick="uploadGlobal()">Upload (Temp)</button>
         </div>
         <div class="file-status" id="globalFileStatus"></div>
       </div>
@@ -619,13 +627,13 @@ select.inp{cursor:pointer;}
       <input class="inp" id="peImgUrl" placeholder="Image URL (auto-filled after upload)" style="font-size:11px;">
     </div>
     <div class="field">
-      <label class="label">📎 Downloadable File (PDF, EA, guide, any)</label>
-      <div style="display:flex;gap:8px;margin-bottom:6px;">
-        <input type="file" class="file-inp" id="peProdFile" style="flex:1;">
-        <button class="btn-out" onclick="uploadPeFile()">Upload</button>
+      <label class="label">📎 File / Content URL</label>
+      <input class="inp" id="peProdFileUrl" placeholder="Paste Google Drive / Cloudinary / any permanent URL" style="font-size:11px;">
+      <div style="font-size:10px;color:#e8b84b;margin-top:5px;line-height:1.5;">
+        ⚠️ <b>Server upload = deleted on restart.</b> Use permanent links only:<br>
+        • <b>Google Drive:</b> Upload → Share → Anyone with link → Copy link<br>
+        • <b>Cloudinary:</b> Upload → Copy URL
       </div>
-      <div class="file-status" id="peProdFileStatus"></div>
-      <input class="inp" id="peProdFileUrl" placeholder="File URL (auto-filled after upload)" style="font-size:11px;margin-top:4px;">
     </div>
     <div style="display:flex;gap:8px;margin-top:4px;">
       <button class="btn-gold" onclick="saveProd()">Save Product</button>
@@ -661,13 +669,14 @@ select.inp{cursor:pointer;}
       <input class="inp" id="siImgUrl" placeholder="Image URL" style="font-size:11px;">
     </div>
     <div class="field">
-      <label class="label">📎 Downloadable File</label>
-      <div style="display:flex;gap:8px;margin-bottom:6px;">
-        <input type="file" class="file-inp" id="siFileInput" style="flex:1;">
-        <button class="btn-out" onclick="uploadSiFile()">Upload</button>
+      <label class="label">📎 File / Content URL</label>
+      <input class="inp" id="siFileUrl" placeholder="Paste Google Drive / Cloudinary / any permanent URL" style="font-size:11px;">
+      <div style="font-size:10px;color:#e8b84b;margin-top:5px;line-height:1.5;">
+        ⚠️ <b>Server upload = deleted on restart.</b> Use permanent links only:<br>
+        • <b>Google Drive:</b> Upload → Share → Anyone with link → Copy link<br>
+        • <b>Cloudinary:</b> Upload → Copy URL<br>
+        • <b>Dropbox:</b> Share → Copy link (change ?dl=0 to ?dl=1)
       </div>
-      <div class="file-status" id="siFileStatus"></div>
-      <input class="inp" id="siFileUrl" placeholder="File URL" style="font-size:11px;margin-top:4px;">
     </div>
     <div class="field" style="display:none;"><label class="label">Video URL (embed / YouTube)</label><input class="inp" id="siVid" placeholder="https://..."></div>
     <div class="field" style="margin-top:8px;"><label class="label">Guide Section</label>

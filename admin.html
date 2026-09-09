@@ -1258,9 +1258,20 @@ async function loadDbUsers(){
         </div>
         <div>
           <button class="btn-out" onclick="openAssign(${u.id},'${u.username}','${u.products||''}')" style="font-size:11px;padding:6px 12px;">Assign Products</button>
+          <button class="btn-out" onclick="deleteDbUser(${u.id},'${u.username}')" style="font-size:11px;padding:6px 12px;margin-top:6px;border-color:var(--red);color:var(--red);">🗑 Delete</button>
         </div>
       </div>`).join('');
   }catch(e){el.innerHTML='<div class="empty" style="color:var(--red);">Could not reach server.</div>';}
+}
+
+async function deleteDbUser(uid, uname){
+  if(!confirm('Delete user ' + uname + '? This cannot be undone.')) return;
+  try{
+    const r = await fetch('https://ag-assistant-api.onrender.com/api/admin/users/' + uid, {method:'DELETE'});
+    const d = await r.json();
+    if(d.ok){ toast('User deleted'); loadDbUsers(); }
+    else toast('Error: ' + (d.error||'Failed'), 'err');
+  }catch(e){ toast('Network error','err'); }
 }
 
 let _assignUserId=null;

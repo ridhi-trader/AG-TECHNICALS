@@ -874,6 +874,15 @@ async def assign_products(req: AssignReq):
         await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", req.products, req.user_id)
         return JSONResponse({"ok": True})
 
+@app.delete("/api/admin/users/{user_id}")
+async def admin_delete_user(user_id: int):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "DB unavailable"})
+    async with pool.acquire() as conn:
+        await conn.execute("DELETE FROM ag_otps WHERE email=(SELECT email FROM ag_users WHERE id=$1)", user_id)
+        await conn.execute("DELETE FROM ag_users WHERE id=$1", user_id)
+    return JSONResponse({"ok": True})
+
 @app.get("/api/admin/users")
 async def admin_users():
     pool = await get_db()

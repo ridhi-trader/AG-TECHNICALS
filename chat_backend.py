@@ -634,7 +634,7 @@ async def chat(req: ChatReq):
                 contents.append({"role": role, "parts": [{"text": m["content"]}]})
             async with httpx.AsyncClient(timeout=30) as client:
                 r = await client.post(
-                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}",
+                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_KEY}",
                     headers={"content-type": "application/json"},
                     json={
                         "system_instruction": {"parts": [{"text": SYSTEM}]},

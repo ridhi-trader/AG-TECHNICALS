@@ -649,7 +649,7 @@ if(hero.videoUrl){ const w=document.getElementById('heroVideoWrap'); w.style.dis
 const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',price:'ti',default:'ti'};
 // MARKET PRICE STRIP — live prices from backend
 (function(){
-  var API = 'https://ag-technicals-production.up.railway.app/api/market-data';
+  var API = '/api-proxy/api/market-data';
   var SYMBOLS = [
     {key:'XAU/USD', icon:'🥇', color:'#e8b84b'},
     {key:'BTC/USD', icon:'₿', color:'#f7931a'},
@@ -970,7 +970,7 @@ document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.k
 
 /* ── LIVE MARKET DATA ── */
 (function(){
-  const API = 'https://ag-technicals-production.up.railway.app/api/market-data';
+  const API = '/api-proxy/api/market-data';
   const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',price:'ti',default:'ti'};
   
   function renderTicker(tickerData){ /* replaced by live market strip */ }

@@ -389,7 +389,29 @@ select.inp{cursor:pointer;}
     <!-- ══ CONTACT ══ -->
     <div class="page" id="page-contact">
       <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">Contact <span>Links</span></div></div>
+
+      <!-- Quick Edit -->
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:12px;">⚡ Quick Edit — Main Contacts</div>
+        <div class="field">
+          <label class="label">💬 WhatsApp Number</label>
+          <input class="inp" id="quickWa" placeholder="919876543210 (91 + 10 digit number, no spaces)">
+          <div style="font-size:11px;color:var(--t3);margin-top:4px;">Example: 919876543210</div>
+        </div>
+        <div class="field">
+          <label class="label">✈️ Telegram Handle</label>
+          <input class="inp" id="quickTg" placeholder="agtechnical (without @)">
+        </div>
+        <div class="field">
+          <label class="label">📸 Instagram Handle</label>
+          <input class="inp" id="quickIg" placeholder="agtechnical (without @)">
+        </div>
+        <button class="btn-gold" onclick="saveQuickContact()">💾 Save Contacts</button>
+      </div>
+
+      <!-- Advanced -->
       <div class="form-box">
+        <div class="card-title" style="margin-bottom:12px;">➕ Add Custom Contact</div>
         <div class="g2">
           <div class="field"><label class="label">Platform Name</label><input class="inp" id="ctName" placeholder="WhatsApp"></div>
           <div class="field"><label class="label">URL</label><input class="inp" id="ctUrl" placeholder="https://wa.me/91..."></div>
@@ -398,10 +420,10 @@ select.inp{cursor:pointer;}
           <div class="field"><label class="label">Icon (emoji)</label><input class="inp" id="ctIcon" placeholder="💬"></div>
           <div class="field"><label class="label">Username / Handle</label><input class="inp" id="ctHandle" placeholder="@agtechnical"></div>
         </div>
-        <button class="btn-gold" onclick="addContact()">Add Contact</button>
+        <button class="btn-out" onclick="addContact()">Add Contact</button>
       </div>
-      <div id="contactList"></div>
-      <div style="margin-top:12px;"><button class="btn-gold" onclick="saveContact()">Save All</button></div>
+      <div id="contactList" style="margin-top:12px;"></div>
+      <div style="margin-top:12px;"><button class="btn-gold" onclick="saveContact()">Save All Contacts</button></div>
     </div>
 
     <!-- ══ ABOUT ══ -->
@@ -1158,7 +1180,25 @@ function saveTicker(){ save('ticker',ticker); toast('Ticker saved'); }
 /* ══════════════ CONTACT ══════════════ */
 const D_CONTACT=[{name:'WhatsApp',icon:'💬',url:'https://wa.me/919876543210',handle:'+91 98765 43210'},{name:'Telegram',icon:'✈️',url:'https://t.me/agtechnical',handle:'@agtechnical'},{name:'Instagram',icon:'📸',url:'https://instagram.com/agtechnical',handle:'@agtechnical'}];
 let contact=ls('contact',D_CONTACT);
-function loadContact(){ document.getElementById('contactList').innerHTML=contact.map((c,i)=>`<div class="card-row"><div>${c.icon} <strong>${c.name}</strong> <span style="color:var(--t3);font-size:12px;">${c.handle}</span></div><button class="btn-icon" onclick="contact.splice(${i},1);loadContact();">🗑️</button></div>`).join(''); }
+function loadContact(){
+  var wa=contact.find(function(c){return c.name.toLowerCase().indexOf('whatsapp')>-1;});
+  var tg=contact.find(function(c){return c.name.toLowerCase().indexOf('telegram')>-1;});
+  var ig=contact.find(function(c){return c.name.toLowerCase().indexOf('instagram')>-1;});
+  var qwa=document.getElementById('quickWa'); if(qwa&&wa) qwa.value=wa.url.replace('https://wa.me/','');
+  var qtg=document.getElementById('quickTg'); if(qtg&&tg) qtg.value=tg.url.replace('https://t.me/','');
+  var qig=document.getElementById('quickIg'); if(qig&&ig) qig.value=ig.url.replace('https://instagram.com/','');
+  document.getElementById('contactList').innerHTML=contact.map(function(c,i){return '<div class="card-row"><div>'+c.icon+' <strong>'+c.name+'</strong> <span style="color:var(--t3);font-size:12px;">'+c.handle+'</span> <span style="color:var(--t3);font-size:11px;">· '+c.url+'</span></div><button class="btn-icon" onclick="contact.splice('+i+',1);loadContact();">🗑️</button></div>';}).join('');
+}
+function saveQuickContact(){
+  var waNum=(document.getElementById('quickWa').value||'').replace(/\D/g,'');
+  var tgHandle=(document.getElementById('quickTg').value||'').replace('@','').trim();
+  var igHandle=(document.getElementById('quickIg').value||'').replace('@','').trim();
+  contact=contact.filter(function(c){return !c.name.toLowerCase().match(/whatsapp|telegram|instagram/);});
+  if(waNum) contact.unshift({name:'WhatsApp',icon:'💬',url:'https://wa.me/'+waNum,handle:'+'+waNum});
+  if(tgHandle) contact.push({name:'Telegram',icon:'✈️',url:'https://t.me/'+tgHandle,handle:'@'+tgHandle});
+  if(igHandle) contact.push({name:'Instagram',icon:'📸',url:'https://instagram.com/'+igHandle,handle:'@'+igHandle});
+  save('contact',contact); loadContact(); toast('Contacts saved! All pages updated.');
+}
 function addContact(){ const name=document.getElementById('ctName').value.trim(); if(!name) return; contact.push({name,icon:document.getElementById('ctIcon').value,url:document.getElementById('ctUrl').value,handle:document.getElementById('ctHandle').value}); ['ctName','ctIcon','ctUrl','ctHandle'].forEach(id=>document.getElementById(id).value=''); loadContact(); }
 function saveContact(){ save('contact',contact); toast('Contacts saved'); }
 

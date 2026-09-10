@@ -46,6 +46,7 @@ app.add_middleware(
 )
 
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 FINNHUB_KEY = os.environ.get("FINNHUB_API_KEY", "")
 NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "")
 
@@ -618,29 +619,52 @@ async def get_news(category: str = "", search: str = ""):
 
 @app.post("/api/chat")
 async def chat(req: ChatReq):
-    if not ANTHROPIC_KEY:
-        return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
     try:
-        # pydantic v1 compat
         try:
             msgs = [m.dict() for m in req.messages]
         except Exception:
             msgs = [m.model_dump() for m in req.messages]
-        async with httpx.AsyncClient(timeout=30) as client:
-            r = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800, "system": SYSTEM, "messages": msgs}
-            )
-        rj = r.json()
-        if r.status_code != 200:
-            print(f"Anthropic API error {r.status_code}: {rj}")
-            return {"reply": "AI service error. Please try again or contact us on WhatsApp."}
-        reply = rj.get("content", [{}])[0].get("text", "")
-        if not reply:
-            print(f"Empty reply from Anthropic. Full response: {rj}")
-            return {"reply": "Sorry, please try again."}
-        return {"reply": reply}
+
+        # Try Gemini first, fallback to Anthropic
+        if GEMINI_KEY:
+            # Build Gemini contents
+            contents = []
+            for m in msgs:
+                role = "user" if m["role"] == "user" else "model"
+                contents.append({"role": role, "parts": [{"text": m["content"]}]})
+            async with httpx.AsyncClient(timeout=30) as client:
+                r = await client.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_KEY}",
+                    headers={"content-type": "application/json"},
+                    json={
+                        "system_instruction": {"parts": [{"text": SYSTEM}]},
+                        "contents": contents,
+                        "generationConfig": {"maxOutputTokens": 800}
+                    }
+                )
+            rj = r.json()
+            if r.status_code == 200:
+                reply = rj.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                if reply:
+                    return {"reply": reply}
+            print(f"Gemini error {r.status_code}: {rj}")
+
+        # Fallback to Anthropic
+        if ANTHROPIC_KEY:
+            async with httpx.AsyncClient(timeout=30) as client:
+                r = await client.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+                    json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800, "system": SYSTEM, "messages": msgs}
+                )
+            rj = r.json()
+            if r.status_code == 200:
+                reply = rj.get("content", [{}])[0].get("text", "")
+                if reply:
+                    return {"reply": reply}
+            print(f"Anthropic error {r.status_code}: {rj}")
+
+        return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
     except Exception as e:
         print(f"Chat endpoint exception: {e}")
         return {"reply": "Network error. Please try again."}

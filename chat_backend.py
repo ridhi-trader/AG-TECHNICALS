@@ -632,10 +632,20 @@ async def chat(req: ChatReq):
             for m in msgs:
                 role = "user" if m["role"] == "user" else "model"
                 contents.append({"role": role, "parts": [{"text": m["content"]}]})
+            # Support both AIzaSy (API key) and AQ. (OAuth token) formats
+            is_oauth = GEMINI_KEY.startswith("AQ.")
+            gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent"
+            if is_oauth:
+                gemini_headers = {"content-type": "application/json", "Authorization": f"Bearer {GEMINI_KEY}"}
+                gemini_params = {}
+            else:
+                gemini_headers = {"content-type": "application/json"}
+                gemini_params = {"key": GEMINI_KEY}
             async with httpx.AsyncClient(timeout=30) as client:
                 r = await client.post(
-                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_KEY}",
-                    headers={"content-type": "application/json"},
+                    gemini_url,
+                    headers=gemini_headers,
+                    params=gemini_params,
                     json={
                         "system_instruction": {"parts": [{"text": SYSTEM}]},
                         "contents": contents,

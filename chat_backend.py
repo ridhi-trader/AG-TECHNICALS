@@ -625,54 +625,25 @@ async def chat(req: ChatReq):
         except Exception:
             msgs = [m.model_dump() for m in req.messages]
 
-        # Try Gemini first, fallback to Anthropic
-        if GEMINI_KEY:
-            # Build Gemini contents
-            contents = []
-            for m in msgs:
-                role = "user" if m["role"] == "user" else "model"
-                contents.append({"role": role, "parts": [{"text": m["content"]}]})
-            # Support both AIzaSy (API key) and AQ. (OAuth token) formats
-            is_oauth = GEMINI_KEY.startswith("AQ.")
-            gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent"
-            if is_oauth:
-                gemini_headers = {"content-type": "application/json", "Authorization": f"Bearer {GEMINI_KEY}"}
-                gemini_params = {}
-            else:
-                gemini_headers = {"content-type": "application/json"}
-                gemini_params = {"key": GEMINI_KEY}
+        # Groq AI (free, stable)
+        GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
+        if GROQ_KEY:
             async with httpx.AsyncClient(timeout=30) as client:
                 r = await client.post(
-                    gemini_url,
-                    headers=gemini_headers,
-                    params=gemini_params,
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
                     json={
-                        "system_instruction": {"parts": [{"text": SYSTEM}]},
-                        "contents": contents,
-                        "generationConfig": {"maxOutputTokens": 800}
+                        "model": "llama-3.3-70b-versatile",
+                        "max_tokens": 800,
+                        "messages": [{"role": "system", "content": SYSTEM}] + msgs
                     }
                 )
             rj = r.json()
             if r.status_code == 200:
-                reply = rj.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                reply = rj.get("choices", [{}])[0].get("message", {}).get("content", "")
                 if reply:
                     return {"reply": reply}
-            print(f"Gemini error {r.status_code}: {rj}")
-
-        # Fallback to Anthropic
-        if ANTHROPIC_KEY:
-            async with httpx.AsyncClient(timeout=30) as client:
-                r = await client.post(
-                    "https://api.anthropic.com/v1/messages",
-                    headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                    json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800, "system": SYSTEM, "messages": msgs}
-                )
-            rj = r.json()
-            if r.status_code == 200:
-                reply = rj.get("content", [{}])[0].get("text", "")
-                if reply:
-                    return {"reply": reply}
-            print(f"Anthropic error {r.status_code}: {rj}")
+            print(f"Groq error {r.status_code}: {rj}")
 
         return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
     except Exception as e:

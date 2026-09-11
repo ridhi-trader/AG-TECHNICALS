@@ -633,7 +633,7 @@ async def chat(req: ChatReq):
                     "https://api.groq.com/openai/v1/chat/completions",
                     headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
                     json={
-                        "model": "llama-3.3-70b-versatile",
+                        "model": "llama3-8b-8192",
                         "max_tokens": 800,
                         "messages": [{"role": "system", "content": SYSTEM}] + msgs
                     }

@@ -12,6 +12,7 @@ RUN printf 'server {\n\
     listen 3000;\n\
     root /app;\n\
     index index.html;\n\
+    client_max_body_size 100M;\n\
     location / {\n\
         try_files $uri $uri.html $uri/ /index.html;\n\
     }\n\
@@ -22,7 +23,8 @@ RUN printf 'server {\n\
         proxy_pass http://127.0.0.1:8000/api/;\n\
         proxy_set_header Host $host;\n\
         proxy_set_header X-Real-IP $remote_addr;\n\
-        proxy_read_timeout 60s;\n\
+        proxy_read_timeout 300s;\n\
+        client_max_body_size 100M;\n\
     }\n\
 }\n' > /etc/nginx/sites-available/default
 

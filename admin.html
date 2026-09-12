@@ -1017,7 +1017,7 @@ function openSiEd(pi,ji){
   if(it.img){thumb.src=it.img;prev.style.display='block';}else{prev.style.display='none';}
   document.getElementById('siOverlay').classList.add('open');
 }
-function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siSection').value='ea'; document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; }
+function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siSection').value='ea'; document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; document.getElementById('siPid').value='EDU-'+Date.now().toString().slice(-4); }
 function closeSiEd(){ document.getElementById('siOverlay').classList.remove('open'); }
 function saveSi(){
   const pi=parseInt(document.getElementById('siProdId').value);

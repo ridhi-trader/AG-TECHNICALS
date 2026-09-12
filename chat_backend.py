@@ -638,7 +638,7 @@ async def chat(req: ChatReq):
                         "X-Title": "AG Technicals"
                     },
                     json={
-                        "model": "google/gemma-2-9b-it:free",
+                        "model": os.environ.get("OR_MODEL", "meta-llama/llama-3.2-3b-instruct:free"),
                         "max_tokens": 800,
                         "messages": [{"role": "system", "content": SYSTEM}] + msgs
                     }

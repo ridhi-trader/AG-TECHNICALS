@@ -503,7 +503,7 @@ async def upload_file(file: UploadFile = File(...), category: str = Form(default
                 f.write(chunk)
         
         size = os.path.getsize(save_path)
-        url = f"https://ag-assistant-api.onrender.com/uploads/{final_name}"
+        url = f"/uploaded_files/{final_name}"
         
         return {
             "ok": True,

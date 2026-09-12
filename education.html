@@ -198,7 +198,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   
   function makeCard(it){
     var url = it.fileUrl||it.videoUrl||'#';
-    return '<a class="course-card" href="'+url+'" target="_blank">'+
+    var onClick = url!='#' ? 'onclick="openContent(''+url+'');return false;" href="#"' : 'href="#"';
+    return '<a class="course-card" '+onClick+'>'+
       '<div class="course-icon">'+(it.icon||'📖')+'</div>'+
       '<div class="course-meta">'+
         '<div class="course-tags">'+
@@ -226,5 +227,33 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>
+
+<!-- Content Viewer Modal -->
+<div id="contentModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:99999;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#1a1628;border-bottom:1px solid rgba(232,184,75,0.2);">
+    <span style="color:#e8b84b;font-weight:700;font-size:16px;" id="contentTitle">Course Content</span>
+    <button onclick="closeContent()" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;">✕</button>
+  </div>
+  <iframe id="contentFrame" src="" style="flex:1;width:100%;border:none;background:#fff;"></iframe>
+</div>
+
+<script>
+function openContent(url){
+  var modal = document.getElementById('contentModal');
+  var frame = document.getElementById('contentFrame');
+  modal.style.display='flex';
+  frame.src = url;
+  document.body.style.overflow='hidden';
+}
+function closeContent(){
+  var modal = document.getElementById('contentModal');
+  var frame = document.getElementById('contentFrame');
+  modal.style.display='none';
+  frame.src='';
+  document.body.style.overflow='';
+}
+// Close on Escape key
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeContent(); });
+</script>
 </body>
 </html>

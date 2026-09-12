@@ -207,7 +207,7 @@ async def fetch_finnhub_news():
         print(f"Finnhub error: {e}")
         return []
 
-SYSTEM = """You are AG Assistant — the official AI assistant for AG Technicals (ag-technicals.onrender.com).
+SYSTEM = """You are AG Assistant — the official AI assistant for AG Technicals (ag-technicals-production.up.railway.app).
 
 AG Technicals is a professional trading analysis and tools platform built for serious traders. You know everything about this platform and help users with any question.
 
@@ -536,7 +536,7 @@ async def list_uploads():
             size = os.path.getsize(fpath)
             files.append({
                 "name": fname,
-                "url": f"https://ag-assistant-api.onrender.com/uploads/{fname}",
+                "url": f"/uploaded_files/{fname}",
                 "size": size,
             })
     return {"files": sorted(files, key=lambda x: x["name"])}
@@ -677,7 +677,7 @@ from fastapi.responses import JSONResponse
 DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password
-SITE_URL = "https://ag-technicals.onrender.com"
+SITE_URL = "https://ag-technicals-production.up.railway.app"
 
 _db_pool = None
 

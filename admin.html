@@ -1142,7 +1142,7 @@ function renderStrategy(){ renderCsSent(); previewMsg(); }
 function previewMsg(){
   const name=document.getElementById('csName')?.value||'[User]', market=document.getElementById('csMarket')?.value||'[Market]', tf=document.getElementById('csTf')?.value||'[Timeframe]', notes=document.getElementById('csNotes')?.value||'';
   const fileNote=csFileName?'\\n\\n📎 File: '+csFileName:'';
-  const msg='Hi '+name+'! 👋\\n\\nYour Custom Strategy From AG Technicals Is Ready ✅\\n\\n📊 Market: '+market+'\\n⏱ Timeframe: '+tf+'\\n\\n'+notes+fileNote+'\\n\\n— AG Technicals\\nhttps://ag-technicals.onrender.com';
+  const msg='Hi '+name+'! 👋\\n\\nYour Custom Strategy From AG Technicals Is Ready ✅\\n\\n📊 Market: '+market+'\\n⏱ Timeframe: '+tf+'\\n\\n'+notes+fileNote+'\\n\\n— AG Technicals\\nhttps://ag-technicals-production.up.railway.app';
   const el=document.getElementById('csPreview'); if(el) el.textContent=msg; return msg;
 }
 async function uploadCsFile(){ const f=document.getElementById('csFile').files[0]; if(!f) return; const st=document.getElementById('csFileStatus'); st.textContent='Uploading...'; const url=await uploadToServer(f,m=>{st.textContent=m;}); if(url){csFileUrl=url;csFileName=f.name;st.style.color='var(--green)';previewMsg();} }

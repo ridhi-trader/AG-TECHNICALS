@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.11-slim-bullseye
 
 RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 

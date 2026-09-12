@@ -625,15 +625,20 @@ async def chat(req: ChatReq):
         except Exception:
             msgs = [m.model_dump() for m in req.messages]
 
-        # Groq AI (free, stable)
-        GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
-        if GROQ_KEY:
+        # OpenRouter AI
+        OR_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+        if OR_KEY:
             async with httpx.AsyncClient(timeout=30) as client:
                 r = await client.post(
-                    "https://api.groq.com/openai/v1/chat/completions",
-                    headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {OR_KEY}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "https://ag-technicals-production.up.railway.app",
+                        "X-Title": "AG Technicals"
+                    },
                     json={
-                        "model": os.environ.get("GROQ_MODEL", "mixtral-8x7b-32768"),
+                        "model": "google/gemma-2-9b-it:free",
                         "max_tokens": 800,
                         "messages": [{"role": "system", "content": SYSTEM}] + msgs
                     }
@@ -643,7 +648,7 @@ async def chat(req: ChatReq):
                 reply = rj.get("choices", [{}])[0].get("message", {}).get("content", "")
                 if reply:
                     return {"reply": reply}
-            print(f"Groq error {r.status_code}: {rj}")
+            print(f"OpenRouter error {r.status_code}: {rj}")
 
         return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
     except Exception as e:

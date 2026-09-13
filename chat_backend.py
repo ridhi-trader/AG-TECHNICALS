@@ -542,6 +542,7 @@ async def list_uploads():
     return {"files": sorted(files, key=lambda x: x["name"])}
 
 @app.delete("/api/uploads/{filename}")
+@app.delete("/api/uploads/delete/{filename}")
 async def delete_upload(filename: str):
     filename = os.path.basename(filename)
     path = os.path.join(UPLOAD_DIR, filename)

@@ -198,7 +198,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   
   function makeCard(it){
     var url = it.fileUrl||it.videoUrl||'#';
-    var onClick = url!='#' ? 'onclick="openContent(''+url+'');return false;" href="#"' : 'href="#"';
+    var onClick = url!='#' ? 'onclick="openContent(event,\'' + url + '\')" href="#"' : 'href="#"';
     return '<a class="course-card" '+onClick+'>'+
       '<div class="course-icon">'+(it.icon||'📖')+'</div>'+
       '<div class="course-meta">'+
@@ -238,7 +238,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </div>
 
 <script>
-function openContent(url){
+function openContent(e, url){ e.preventDefault();
   var modal = document.getElementById('contentModal');
   var frame = document.getElementById('contentFrame');
   modal.style.display='flex';

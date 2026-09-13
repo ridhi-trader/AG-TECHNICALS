@@ -230,7 +230,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 </div>
 
 <script>
-const API = '/api-proxy';
+const API = '';
 
 // Featured video news - AG Technicals YouTube/analysis videos
 const AG_VIDEOS = [
@@ -419,7 +419,7 @@ function renderTicker(prices){
   ].join('');
   // MARKET PRICE STRIP — live prices from backend
 (function(){
-  var API = '/api-proxy/api/market-data';
+  var API = '/api/market-data';
   var SYMBOLS = [
     {key:'XAU/USD', icon:'🥇', color:'#e8b84b'},
     {key:'BTC/USD', icon:'₿', color:'#f7931a'},
@@ -506,7 +506,7 @@ renderCats();
 loadNews();
 setInterval(loadNews, 5*60*1000);
 
-const API_BACKEND = '/api-proxy';
+const API_BACKEND = '';
 
 async function openArticle(i){
   const a = window._newsArts && window._newsArts[i];

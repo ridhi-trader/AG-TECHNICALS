@@ -64,3 +64,26 @@
     updateLinks();
   }
 })();
+
+/* ── Mouse Glow Effect ── */
+(function(){
+  var glow = document.createElement('div');
+  glow.style.cssText = 'position:fixed;pointer-events:none;z-index:99998;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(232,184,75,0.08) 0%,rgba(232,184,75,0.03) 40%,transparent 70%);transform:translate(-50%,-50%);transition:opacity 0.3s;opacity:0;';
+  document.body.appendChild(glow);
+
+  var mx=0, my=0, ax=0, ay=0;
+  document.addEventListener('mousemove', function(e){
+    mx = e.clientX; my = e.clientY;
+    glow.style.opacity = '1';
+  });
+  document.addEventListener('mouseleave', function(){ glow.style.opacity = '0'; });
+
+  function animate(){
+    ax += (mx - ax) * 0.12;
+    ay += (my - ay) * 0.12;
+    glow.style.left = ax + 'px';
+    glow.style.top = ay + 'px';
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();

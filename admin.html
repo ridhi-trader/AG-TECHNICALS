@@ -873,10 +873,11 @@ function renderProds(){
     const eaItems = isGuide ? items.filter(it=>it.badge!=='SECTION'&&it.section!=='tv') : [];
     const tvItems = isGuide ? items.filter(it=>it.badge!=='SECTION'&&it.section==='tv') : [];
     function siRow(it,j){ return `
-          <div class="sub-item-row">
+          <div class="sub-item-row" style="${it.hidden?'opacity:0.45;':''}">
             ${it.img?`<img src="${it.img}" style="width:28px;height:28px;border-radius:5px;object-fit:cover;border:1px solid var(--bd);">`:'<span style="font-size:16px;">📄</span>'}
-            <div class="sub-item-name">${it.name||'Unnamed'}</div>
+            <div class="sub-item-name">${it.name||'Unnamed'}${it.hidden?' <span style="color:#f59e0b;font-size:10px;">[HIDDEN]</span>':''}</div>
             <div class="sub-item-badge">${it.pid||it.badge||''}</div>
+            <button class="btn-icon" onclick="toggleSiHide(${i},${j})" title="${it.hidden?'Show':'Hide'}">${it.hidden?'👁️':'🙈'}</button>
             <button class="btn-icon" onclick="openSiEd(${i},${j})" title="Edit">✏️</button>
             <button class="btn-icon" onclick="deleteSi(${i},${j})" title="Delete">🗑️</button>
           </div>`; }
@@ -1028,6 +1029,7 @@ function saveSi(){
   save('ag_products',products); renderProds(); closeSiEd(); toast('Sub-item saved');
 }
 function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].items.splice(ji,1); save('ag_products',products); renderProds(); toast('Deleted','err'); }
+function toggleSiHide(pi,ji){ products[pi].items[ji].hidden=!products[pi].items[ji].hidden; save('ag_products',products); renderProds(); toast(products[pi].items[ji].hidden?'Item hidden':'Item visible'); }
 async function uploadSiImg(){
   const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image','err');return;}
   let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}

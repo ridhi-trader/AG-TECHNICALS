@@ -8,31 +8,8 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . .
 
-RUN echo 'server {
-    listen 3000;
-    root /app;
-    index index.html;
-    client_max_body_size 100M;
-
-    location / {
-        try_files $uri $uri.html $uri/ =404;
-    }
-
-    location /uploaded_files/ {
-        alias /var/data/uploaded_files/;
-    }
-
-    location /api/ {
-        proxy_pass http://127.0.0.1:8000/api/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_read_timeout 300s;
-        client_max_body_size 100M;
-    }
-}' > /etc/nginx/sites-available/default
-
-RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default \
-    && rm -f /etc/nginx/sites-enabled/default.bak \
+RUN cp /app/nginx.conf /etc/nginx/sites-available/default \
+    && ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default \
     && nginx -t
 
 RUN mkdir -p /var/data/uploaded_files && chmod +x /app/start.sh

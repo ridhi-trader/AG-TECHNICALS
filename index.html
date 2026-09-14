@@ -623,7 +623,27 @@ const ticker   = load('ticker',   D.ticker);
   }
 })();
 // No auto-fix — data preserved always
+// Load ag_products from DB, then render
 const products = load('products', D.products);
+(async function syncFromDB(){
+  try{
+    const r = await fetch('/api/config/ag_products');
+    const j = await r.json();
+    if(j.ok && j.value){
+      const dbProds = JSON.parse(j.value);
+      const localStr = localStorage.getItem('ag_products');
+      const localProds = localStr ? JSON.parse(localStr) : null;
+      // If DB has data and it's different from local, update and reload once
+      if(JSON.stringify(dbProds) !== JSON.stringify(localProds)){
+        localStorage.setItem('ag_products', JSON.stringify(dbProds));
+        if(!sessionStorage.getItem('db_synced')){
+          sessionStorage.setItem('db_synced','1');
+          location.reload();
+        }
+      }
+    }
+  }catch(e){}
+})();
 const faqItems = load('faq',      D.faq);
 const contact  = load('contact',  D.contact);
 const about    = load('about',    D.about);

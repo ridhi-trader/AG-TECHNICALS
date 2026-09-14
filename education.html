@@ -192,9 +192,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script>
 (function(){
   function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-  var products = ls('ag_products', []);
-  var eduProd = products.find(function(p){return p.id==='education';});
-  var items = (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;});
+  function renderPage(products){
+    var eduProd = products.find(function(p){return p.id==='education';});
+    var items = (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;});
   
   function makeCard(it, idx){
     var url = it.fileUrl||it.videoUrl||'#';
@@ -221,6 +221,21 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   // Hide downloadSection — no longer needed
   var dl = document.getElementById('downloadSection');
   if(dl) dl.style.display='none';
+  }
+  // Load from DB first, fallback to localStorage
+  fetch('/api/config/ag_products').then(function(r){return r.json();}).then(function(j){
+    if(j.ok && j.value){
+      var prods = JSON.parse(j.value);
+      localStorage.setItem('ag_products', JSON.stringify(prods));
+      renderPage(prods);
+    } else {
+      var prods = (function(){try{var v=localStorage.getItem('ag_products');return v?JSON.parse(v):[];}catch(e){return [];}})();
+      renderPage(prods);
+    }
+  }).catch(function(){
+    var prods = (function(){try{var v=localStorage.getItem('ag_products');return v?JSON.parse(v):[];}catch(e){return [];}})();
+    renderPage(prods);
+  });
 })();
 </script>
 

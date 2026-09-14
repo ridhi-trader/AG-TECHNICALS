@@ -218,6 +218,24 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB
 </script>
 
 <script>
+// Load items from DB first, then localStorage (ag_products key, algo product)
+(async function(){
+  try{
+    const r=await fetch('/api/config/ag_products');
+    const j=await r.json();
+    if(j.ok && j.value){
+      const dbProds=JSON.parse(j.value);
+      const local=localStorage.getItem('ag_products');
+      if(JSON.stringify(dbProds)!==JSON.stringify(local?JSON.parse(local):null)){
+        localStorage.setItem('ag_products',JSON.stringify(dbProds));
+        if(!sessionStorage.getItem('db_synced_algo')){
+          sessionStorage.setItem('db_synced_algo','1');
+          location.reload();
+        }
+      }
+    }
+  }catch(e){}
+})();
 // Load items from localStorage (ag_products key, algo product)
 // Hardcoded Cloudinary defaults — always available
 var D_ALGO_ITEMS = [

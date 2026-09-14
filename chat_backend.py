@@ -723,6 +723,11 @@ async def init_db():
                 expires_at TIMESTAMP,
                 created_at TIMESTAMP DEFAULT NOW()
             );
+            CREATE TABLE IF NOT EXISTS ag_config (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT NOW()
+            );
         """)
         # Load licenses from DB into bridge_module
         rows = await conn.fetch("SELECT lid, secret, user_email, account, active, expires_at FROM bridge_licenses WHERE active=TRUE")
@@ -893,6 +898,24 @@ async def admin_delete_user(user_id: int):
         await conn.execute("DELETE FROM ag_otps WHERE email=(SELECT email FROM ag_users WHERE id=$1)", user_id)
         await conn.execute("DELETE FROM ag_users WHERE id=$1", user_id)
     return JSONResponse({"ok": True})
+
+@app.get("/api/config/{key}")
+async def get_config(key: str):
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT value FROM ag_config WHERE key=$1", key)
+        if row:
+            return JSONResponse({"ok": True, "value": row["value"]})
+        return JSONResponse({"ok": False, "value": None})
+
+class ConfigSetReq(BaseModel):
+    key: str
+    value: str
+
+@app.post("/api/config/set")
+async def set_config(req: ConfigSetReq):
+    async with pool.acquire() as conn:
+        await conn.execute("INSERT INTO ag_config(key,value,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(key) DO UPDATE SET value=$2,updated_at=NOW()", req.key, req.value)
+        return JSONResponse({"ok": True})
 
 @app.get("/api/admin/users")
 async def admin_users():

@@ -901,6 +901,8 @@ async def admin_delete_user(user_id: int):
 
 @app.get("/api/config/{key}")
 async def get_config(key: str):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "value": None})
     async with pool.acquire() as conn:
         row = await conn.fetchrow("SELECT value FROM ag_config WHERE key=$1", key)
         if row:
@@ -913,6 +915,8 @@ class ConfigSetReq(BaseModel):
 
 @app.post("/api/config/set")
 async def set_config(req: ConfigSetReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
     async with pool.acquire() as conn:
         await conn.execute("INSERT INTO ag_config(key,value,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(key) DO UPDATE SET value=$2,updated_at=NOW()", req.key, req.value)
         return JSONResponse({"ok": True})

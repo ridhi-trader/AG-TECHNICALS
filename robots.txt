@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /user-login.html
+Disallow: /user-dashboard.html
+Disallow: /uploaded_files/
+
+Allow: /

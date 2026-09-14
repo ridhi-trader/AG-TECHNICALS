@@ -180,6 +180,7 @@ select.inp{cursor:pointer;}
       <div class="sb-group">Products</div>
       <button class="sb-btn active" onclick="nav('products',this)"><span class="sb-icon">🎯</span>Products & Services</button>
       <button class="sb-btn" onclick="nav('indicators',this)"><span class="sb-icon">📈</span>TV Indicators</button>
+      <div id="sb-product-links"></div>
 
       <div class="sb-group">Users</div>
       <button class="sb-btn" onclick="nav('users',this)"><span class="sb-icon">👥</span>Users & Access</button>
@@ -795,6 +796,22 @@ async function uploadToServer(file, onProg){
 
 /* ── NAV ── */
 function nav(id, btn){
+  // Handle product-specific sidebar links
+  if(id.startsWith('prod_')){
+    const pid = id.replace('prod_','');
+    // Go to products page
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('page-products').classList.add('active');
+    if(btn) btn.classList.add('active');
+    renderProds();
+    // Scroll to that product
+    setTimeout(()=>{
+      const el = document.querySelector('[data-prod-id="'+pid+'"]');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    }, 150);
+    return;
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -866,6 +883,23 @@ let _editSiProdIdx = -1;
 let _editSiIdx = -1;
 let _peTab = 'page';
 
+function renderSidebarProducts(){
+  const container = document.getElementById('sb-product-links');
+  if(!container) return;
+  const icons = {education:'📚',algo:'🤖',bridge:'🌉',indicators:'📈',news:'📰',dossier:'📰',custom:'⚙️'};
+  container.innerHTML = products.filter(p=>!p.hidden).map(p=>{
+    const icon = icons[p.id] || p.icon || '📦';
+    const pid = 'prod_'+p.id;
+    return '<button class="sb-btn" onclick="nav(''+pid+'',this)" id="sbbtn_'+p.id+'"><span class="sb-icon">'+icon+'</span>'+p.name+'</button>';
+  }).join('');
+  // Also add scroll-to handler for each product
+  products.filter(p=>!p.hidden).forEach(p=>{
+    const pid = 'prod_'+p.id;
+    if(!document.getElementById('page-'+pid)){
+      // no separate page — just scroll to product in prodList
+    }
+  });
+}
 function renderProds(){
   const el=document.getElementById('prodList'); if(!el) return;
   // Summary stats
@@ -913,7 +947,7 @@ function renderProds(){
         `:siRow(it,j)).join('')}
         <button class="btn-out" style="font-size:11px;padding:6px 12px;margin-top:4px;" onclick="openAddSi(${i})">+ Add Sub-Item</button>
       </div>` : `<div style="margin-top:10px;"><button class="btn-out" style="font-size:11px;padding:6px 12px;" onclick="openAddSi(${i})">+ Add Sub-Item</button></div>`;
-    return `<div class="prod-row">
+    return `<div class="prod-row" data-prod-id="${p.id}">
       <div class="prod-row-icon">${p.img?`<img src="${p.img}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;">`:p.icon}</div>
       <div class="prod-row-info" style="flex:1;">
         <div class="prod-row-name">${p.name}<span class="prod-row-badge ${p.hidden?'badge-hidden':'badge-live'}">${p.hidden?'HIDDEN':'LIVE'}</span><span class="prod-row-badge ${p.type==='page'?'badge-page':'badge-modal'}">${p.type.toUpperCase()}</span></div>
@@ -935,8 +969,8 @@ function renderProds(){
   }).join('');
 }
 
-function toggleHide(i){ products[i].hidden=!products[i].hidden; save('ag_products',products); renderProds(); toast((products[i].hidden?'Hidden: ':'Visible: ')+products[i].name); }
-function deleteProd(i){ if(!confirm('Delete '+products[i].name+'?')) return; products.splice(i,1); save('ag_products',products); renderProds(); toast('Deleted','err'); }
+function toggleHide(i){ products[i].hidden=!products[i].hidden; save('ag_products',products); renderProds(); renderSidebarProducts(); toast((products[i].hidden?'Hidden: ':'Visible: ')+products[i].name); }
+function deleteProd(i){ if(!confirm('Delete '+products[i].name+'?')) return; products.splice(i,1); save('ag_products',products); renderProds(); renderSidebarProducts(); toast('Deleted','err'); }
 
 function openAddProd(){ _editProdIdx=-1; document.getElementById('peTitle').textContent='Add New Product'; clearPeForm(); document.getElementById('prodOverlay').classList.add('open'); }
 function openProdEd(i){
@@ -999,7 +1033,7 @@ function saveProd(){
   };
   if(_editProdIdx>=0) products[_editProdIdx]=p;
   else products.push(p);
-  save('ag_products',products); renderProds(); closeProdEd(); toast('Saved: '+p.name);
+  save('ag_products',products); renderProds(); renderSidebarProducts(); closeProdEd(); toast('Saved: '+p.name);
 }
 
 async function uploadPeImg(){
@@ -1043,10 +1077,10 @@ function saveSi(){
   const it={name:document.getElementById('siName').value,pid:document.getElementById('siPid').value,badge:document.getElementById('siBadge').value,desc:document.getElementById('siDesc').value,img:document.getElementById('siImgUrl').value,fileUrl:document.getElementById('siFileUrl').value,fileName:document.getElementById('siFileStatus').textContent.replace('File: ','').replace('✓ ','').split(' ')[0]||'',videoUrl:document.getElementById('siVid').value,section:document.getElementById('siSection').value||'ea',hidden:false};
   if(!products[pi].items) products[pi].items=[];
   if(ji>=0) products[pi].items[ji]=it; else products[pi].items.push(it);
-  save('ag_products',products); renderProds(); closeSiEd(); toast('Sub-item saved');
+  save('ag_products',products); renderProds(); renderSidebarProducts(); closeSiEd(); toast('Sub-item saved');
 }
-function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].items.splice(ji,1); save('ag_products',products); renderProds(); toast('Deleted','err'); }
-function toggleSiHide(pi,ji){ products[pi].items[ji].hidden=!products[pi].items[ji].hidden; save('ag_products',products); renderProds(); toast(products[pi].items[ji].hidden?'Item hidden':'Item visible'); }
+function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].items.splice(ji,1); save('ag_products',products); renderProds(); renderSidebarProducts(); toast('Deleted','err'); }
+function toggleSiHide(pi,ji){ products[pi].items[ji].hidden=!products[pi].items[ji].hidden; save('ag_products',products); renderProds(); renderSidebarProducts(); toast(products[pi].items[ji].hidden?'Item hidden':'Item visible'); }
 async function uploadSiImg(){
   const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image','err');return;}
   let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}
@@ -1367,6 +1401,7 @@ async function saveAssign(){
 
 /* ── INIT ── */
 renderProds();
+renderSidebarProducts();
 
 // ── BRIDGE LICENSE FUNCTIONS ──────────────────────────────────────────────────
 const BL_API = '';

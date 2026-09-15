@@ -317,6 +317,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-bg"></div><div class="hero-bg2"></div><div class="hero-bg3"></div>
+  <canvas id="heroCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
   <div class="hero-grid">
     <div class="hero-left reveal">
       <div class="hero-badge"><div class="dot"></div><span id="heroBadge">Live Market Intelligence — 24/7</span></div>
@@ -1081,5 +1082,195 @@ window.addEventListener('load', function(){ loadTVWidget('BINANCE:BTCUSDT'); });
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>
+<script>
+// ═══════════════════════════════════════
+// AG TECHNICALS — HERO 3D ANIMATION
+// Gold particles + floating candlesticks
+// ═══════════════════════════════════════
+(function(){
+  const canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles=[], candles=[], frame=0;
+
+  function resize(){
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = canvas.width = rect.width;
+    H = canvas.height = rect.height || 600;
+  }
+  resize();
+  window.addEventListener('resize', ()=>{ resize(); init(); });
+
+  // Gold color palette
+  const GOLDS = ['rgba(232,184,75,', 'rgba(201,150,12,', 'rgba(255,215,100,', 'rgba(180,130,20,'];
+
+  // ── PARTICLES ──
+  function Particle(){
+    this.reset = function(){
+      this.x = Math.random()*W;
+      this.y = Math.random()*H;
+      this.r = Math.random()*2.2+0.4;
+      this.vx = (Math.random()-0.5)*0.35;
+      this.vy = (Math.random()-0.5)*0.35 - 0.12;
+      this.alpha = Math.random()*0.6+0.1;
+      this.da = (Math.random()-0.5)*0.004;
+      this.color = GOLDS[Math.floor(Math.random()*GOLDS.length)];
+      this.pulse = Math.random()*Math.PI*2;
+    };
+    this.reset();
+    this.y = Math.random()*H; // scatter on init
+    this.update = function(){
+      this.x += this.vx;
+      this.y += this.vy;
+      this.pulse += 0.02;
+      this.alpha += this.da;
+      if(this.alpha > 0.8 || this.alpha < 0.05) this.da *= -1;
+      if(this.y < -10 || this.x < -10 || this.x > W+10) this.reset();
+    };
+    this.draw = function(){
+      const glow = Math.sin(this.pulse)*0.3+0.7;
+      ctx.save();
+      ctx.shadowBlur = 8*glow;
+      ctx.shadowColor = this.color+'0.8)';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r*glow, 0, Math.PI*2);
+      ctx.fillStyle = this.color+this.alpha+')';
+      ctx.fill();
+      ctx.restore();
+    };
+  }
+
+  // ── CANDLESTICKS ──
+  function Candle(){
+    this.reset = function(){
+      this.x = Math.random()*W;
+      this.y = H + 40;
+      this.targetY = Math.random()*H*0.7 + H*0.05;
+      this.w = Math.random()*10+6;
+      this.bodyH = Math.random()*40+15;
+      this.wickH = this.bodyH + Math.random()*20+10;
+      this.bullish = Math.random()>0.42;
+      this.alpha = 0;
+      this.vy = -(Math.random()*0.4+0.15);
+      this.vx = (Math.random()-0.5)*0.2;
+      this.rotation = (Math.random()-0.5)*0.15;
+      this.rotV = (Math.random()-0.5)*0.002;
+      this.phase = 'rising'; // rising, floating, falling
+      this.life = 0;
+      this.maxLife = Math.random()*300+200;
+    };
+    this.reset();
+    this.y = Math.random()*H; // scatter init
+    this.alpha = Math.random()*0.12;
+    this.life = Math.random()*200;
+    this.phase = 'floating';
+    this.targetY = this.y;
+
+    this.update = function(){
+      this.life++;
+      this.rotation += this.rotV;
+      if(this.phase==='rising'){
+        this.y += this.vy;
+        this.alpha = Math.min(0.18, this.alpha+0.005);
+        if(this.y <= this.targetY) this.phase='floating';
+      } else if(this.phase==='floating'){
+        this.x += this.vx;
+        this.y += Math.sin(this.life*0.02)*0.3;
+        if(this.life > this.maxLife) this.phase='falling';
+      } else {
+        this.y -= this.vy*0.5;
+        this.alpha -= 0.003;
+        if(this.alpha <= 0) this.reset();
+      }
+    };
+    this.draw = function(){
+      if(this.alpha <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      const col = this.bullish ? 'rgba(80,200,120,' : 'rgba(220,70,70,';
+      const bord = this.bullish ? 'rgba(100,220,140,' : 'rgba(240,100,100,';
+      // wick
+      ctx.strokeStyle = bord+'0.9)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(0, -this.wickH/2);
+      ctx.lineTo(0, this.wickH/2);
+      ctx.stroke();
+      // body
+      ctx.fillStyle = col+'0.85)';
+      ctx.strokeStyle = bord+'1)';
+      ctx.lineWidth = 1;
+      const bx = -this.w/2, by = -this.bodyH/2;
+      ctx.fillRect(bx, by, this.w, this.bodyH);
+      ctx.strokeRect(bx, by, this.w, this.bodyH);
+      // shine
+      const shine = ctx.createLinearGradient(bx, by, bx+this.w, by);
+      shine.addColorStop(0,'rgba(255,255,255,0.15)');
+      shine.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle = shine;
+      ctx.fillRect(bx, by, this.w/2, this.bodyH);
+      ctx.restore();
+    };
+  }
+
+  // ── GRID LINES ──
+  function drawGrid(){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(232,184,75,0.03)';
+    ctx.lineWidth = 1;
+    const step = 80;
+    for(let x=0; x<W; x+=step){
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+    }
+    for(let y=0; y<H; y+=step){
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // ── CONNECTING LINES (neural network feel) ──
+  function drawConnections(){
+    ctx.save();
+    for(let i=0; i<particles.length; i+=3){
+      for(let j=i+1; j<particles.length; j+=3){
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<120){
+          ctx.strokeStyle = 'rgba(232,184,75,'+(0.06*(1-dist/120))+')';
+          ctx.lineWidth=0.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  function init(){
+    particles=[];
+    candles=[];
+    const pCount = Math.min(120, Math.floor(W*H/8000));
+    const cCount = Math.min(18, Math.floor(W/60));
+    for(let i=0;i<pCount;i++) particles.push(new Particle());
+    for(let i=0;i<cCount;i++) candles.push(new Candle());
+  }
+  init();
+
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    drawGrid();
+    drawConnections();
+    candles.forEach(c=>{ c.update(); c.draw(); });
+    particles.forEach(p=>{ p.update(); p.draw(); });
+    frame++;
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
 </body>
 </html>

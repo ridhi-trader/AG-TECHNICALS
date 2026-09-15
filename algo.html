@@ -343,5 +343,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()
 })();
 renderEAs();
 </script>
+
+<script>/* Matrix rain + circuit lines (green) */
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.15;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,drops=[];const CHARS='01アイウエオ₿$€01101010';function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;drops=Array(Math.floor(W/14)).fill(0).map(()=>Math.random()*H/14|0);}resize();window.addEventListener('resize',resize);function loop(){ctx.fillStyle='rgba(0,0,0,0.04)';ctx.fillRect(0,0,W,H);ctx.font='12px monospace';drops.forEach((y,i)=>{const ch=CHARS[Math.random()*CHARS.length|0];const bright=Math.random()>0.95;ctx.fillStyle=bright?'rgba(180,255,180,0.9)':'rgba(80,220,120,'+(0.3+Math.random()*0.4)+')';ctx.fillText(ch,i*14,y*14);if(y*14>H&&Math.random()>0.975)drops[i]=0;else drops[i]++;});requestAnimationFrame(loop);}loop();})();
+</script>
 </body>
 </html>

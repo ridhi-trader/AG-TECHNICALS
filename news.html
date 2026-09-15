@@ -566,5 +566,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeArticle();});
   </div>
 </div>
 
+
+<script>/* Flowing market wave lines */
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.12;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,t=0;function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const waves=[{amp:30,freq:0.008,speed:0.015,y:0.25,color:'rgba(232,184,75,0.4)'},{amp:20,freq:0.012,speed:0.022,y:0.5,color:'rgba(201,150,12,0.3)'},{amp:25,freq:0.006,speed:0.01,y:0.75,color:'rgba(255,200,80,0.2)'}];function loop(){ctx.clearRect(0,0,W,H);t+=1;waves.forEach(w=>{ctx.strokeStyle=w.color;ctx.lineWidth=1.5;ctx.beginPath();for(let x=0;x<=W;x+=3){const y=H*w.y+Math.sin(x*w.freq+t*w.speed)*w.amp+Math.sin(x*w.freq*2.3+t*w.speed*1.5)*w.amp*0.4;x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.stroke();});requestAnimationFrame(loop);}loop();})();
+</script>
 </body>
 </html>

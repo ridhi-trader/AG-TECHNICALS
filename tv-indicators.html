@@ -294,5 +294,9 @@ document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(nul
 
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>
+
+<script>/* Radar signal pulse rings */
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,pulses=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);function newPulse(){return{x:Math.random()*W,y:Math.random()*H,r:0,maxR:150+Math.random()*100,speed:0.8+Math.random()*0.5};}for(let i=0;i<5;i++){const p=newPulse();p.r=Math.random()*p.maxR;pulses.push(p);}setInterval(()=>{if(pulses.length<8)pulses.push(newPulse());},1200);function loop(){ctx.clearRect(0,0,W,H);pulses=pulses.filter(p=>p.r<p.maxR);pulses.forEach(p=>{p.r+=p.speed;const fade=1-p.r/p.maxR;ctx.strokeStyle='rgba(232,184,75,'+(0.4*fade)+')';ctx.lineWidth=1.5*fade;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke();});requestAnimationFrame(loop);}loop();})();
+</script>
 </body>
 </html>

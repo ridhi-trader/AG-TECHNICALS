@@ -248,5 +248,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>
+
+<script>/* Data stream packets flowing blue/purple */
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H;function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const streams=Array(14).fill(0).map(()=>({x:Math.random(),y:Math.random(),tx:Math.random(),ty:Math.random(),progress:Math.random(),speed:0.003+Math.random()*0.004,color:Math.random()>0.5?'rgba(120,80,255,':'rgba(80,160,255,'}));function loop(){ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(100,80,200,0.03)';ctx.lineWidth=1;for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}streams.forEach(s=>{s.progress+=s.speed;if(s.progress>=1){s.x=s.tx;s.y=s.ty;s.tx=Math.random();s.ty=Math.random();s.progress=0;}const cx=(s.x+(s.tx-s.x)*s.progress)*W,cy=(s.y+(s.ty-s.y)*s.progress)*H;ctx.strokeStyle=s.color+'0.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(s.x*W,s.y*H);ctx.lineTo(cx,cy);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fillStyle=s.color+'0.85)';ctx.shadowBlur=10;ctx.shadowColor=s.color+'0.8)';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
+</script>
 </body>
 </html>

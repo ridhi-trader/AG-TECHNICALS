@@ -890,7 +890,7 @@ function renderSidebarProducts(){
   container.innerHTML = products.filter(p=>!p.hidden).map(p=>{
     const icon = icons[p.id] || p.icon || '📦';
     const pid = 'prod_'+p.id;
-    return '<button class="sb-btn" onclick="nav(''+pid+'',this)" id="sbbtn_'+p.id+'"><span class="sb-icon">'+icon+'</span>'+p.name+'</button>';
+    return '<button class="sb-btn" onclick="nav(\''+pid+'\',this)" id="sbbtn_'+p.id+'"><span class="sb-icon">'+icon+'</span>'+p.name+'</button>';
   }).join('');
   // Also add scroll-to handler for each product
   products.filter(p=>!p.hidden).forEach(p=>{

@@ -899,6 +899,46 @@ async def admin_delete_user(user_id: int):
         await conn.execute("DELETE FROM ag_users WHERE id=$1", user_id)
     return JSONResponse({"ok": True})
 
+# Admin forgot password — OTP to admin email
+import random as _random
+_admin_otp_store = {}
+
+class AdminForgotReq(BaseModel):
+    action: str  # 'send' or 'verify'
+    otp: str = ''
+    newPass: str = ''
+
+@app.post('/api/admin-forgot-otp')
+async def admin_forgot_otp(req: AdminForgotReq):
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', GMAIL_USER)
+    if req.action == 'send':
+        otp = str(_random.randint(100000, 999999))
+        _admin_otp_store['otp'] = otp
+        _admin_otp_store['exp'] = __import__('time').time() + 600  # 10 min
+        body = f"""<div style='font-family:sans-serif;max-width:500px;margin:auto;padding:30px;background:#0d0d0f;color:#fff;border-radius:12px;'>
+<h2 style='color:#e8b84b;'>AG Technicals Admin</h2>
+<p>Password reset OTP:</p>
+<div style='font-size:36px;font-weight:900;letter-spacing:10px;color:#e8b84b;padding:20px;background:#1a1a1f;border-radius:8px;text-align:center;'>{otp}</div>
+<p style='color:#888;font-size:12px;'>Valid for 10 minutes. Do not share.</p>
+</div>"""
+        try:
+            send_email(ADMIN_EMAIL, 'AG Admin — Password Reset OTP', body)
+            return JSONResponse({'ok': True})
+        except Exception as e:
+            return JSONResponse({'ok': False, 'error': str(e)})
+    elif req.action == 'verify':
+        stored = _admin_otp_store.get('otp')
+        exp = _admin_otp_store.get('exp', 0)
+        if not stored:
+            return JSONResponse({'ok': False, 'error': 'No OTP sent'})
+        if __import__('time').time() > exp:
+            return JSONResponse({'ok': False, 'error': 'OTP expired'})
+        if req.otp != stored:
+            return JSONResponse({'ok': False, 'error': 'Wrong OTP'})
+        _admin_otp_store.clear()
+        return JSONResponse({'ok': True})
+    return JSONResponse({'ok': False, 'error': 'Invalid action'})
+
 @app.get("/api/config/{key}")
 async def get_config(key: str):
     pool = await get_db()

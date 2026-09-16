@@ -244,11 +244,11 @@ async function doReset(){
 function showSuccess(){
   showStep('successStep');
   setTimeout(()=>{ document.getElementById('progressBar').style.width='100%'; },100);
-  setTimeout(()=>{ window.location.href='user-dashboard.html'; },2100);
+  setTimeout(()=>{ const redir=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=redir||'user-dashboard.html'; },2100);
 }
 
 // If already logged in, redirect
-if(localStorage.getItem('ag_user')){ window.location.href='user-dashboard.html'; }
+if(localStorage.getItem('ag_user')){ const r=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=r||'user-dashboard.html'; }
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>

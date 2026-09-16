@@ -212,7 +212,18 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div onclick="closeVideoLB()" style="position:absolute;top:24px;right:28px;color:#fff;font-size:22px;cursor:pointer;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;">&times;</div>
 </div>
 <script>
-function videoLB(src){var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.src=src;b.style.display='flex';v.play().catch(function(){});}
+function requireLogin(){
+  var user=null;
+  try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
+  if(!user||!user.email){
+    localStorage.setItem('ag_redirect_after_login',window.location.href);
+    window.location.href='user-login.html';
+    return false;
+  }
+  return true;
+}
+function videoLB(src){
+  if(!requireLogin()) return;var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.src=src;b.style.display='flex';v.play().catch(function(){});}
 function closeVideoLB(){var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.pause();v.removeAttribute('src');v.load();b.style.display='none';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB();});
 </script>
@@ -294,6 +305,7 @@ function renderEAs(){
 }
 
 function openItem(i){
+  if(!requireLogin()) return;
   var items = getAlgoItems();
   var ea = items[i];
   if(!ea) return;

@@ -197,7 +197,18 @@ function renderList(){
   }).join('') : '<div style="color:var(--t3);font-size:13px;padding:12px 0;">No TradingView guides added yet.</div>';
 }
 
+function requireLogin(){
+  var user=null;
+  try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
+  if(!user||!user.email){
+    localStorage.setItem('ag_redirect_after_login',window.location.href);
+    window.location.href='user-login.html';
+    return false;
+  }
+  return true;
+}
 function openReader(id){
+  if(!requireLogin()) return;
   const g = GUIDES.find(x=>x.id===id); if(!g) return;
   document.getElementById('rTag').textContent = g.tag + ' · AG Technicals';
   document.getElementById('rTitle').textContent = g.title;

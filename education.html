@@ -254,7 +254,26 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </div>
 
 <script>
+function requireLogin(){
+  var user=null;
+  try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
+  if(!user||!user.email){
+    localStorage.setItem('ag_redirect_after_login',window.location.href);
+    window.location.href='user-login.html';
+    return false;
+  }
+  return true;
+}
 function openContent(e, url){ e.preventDefault();
+  // LOGIN CHECK
+  var user = null;
+  try{ user = JSON.parse(localStorage.getItem('ag_user')); }catch(err){}
+  if(!user || !user.email){
+    // Not logged in — redirect to login
+    localStorage.setItem('ag_redirect_after_login', window.location.href);
+    window.location.href = 'user-login.html';
+    return;
+  }
   var modal = document.getElementById('contentModal');
   var frame = document.getElementById('contentFrame');
   modal.style.display='flex';

@@ -922,7 +922,9 @@ async def admin_forgot_otp(req: AdminForgotReq):
 <p style='color:#888;font-size:12px;'>Valid for 10 minutes. Do not share.</p>
 </div>"""
         try:
-            send_email(ADMIN_EMAIL, 'AG Admin — Password Reset OTP', body)
+            import asyncio
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, lambda: send_email(ADMIN_EMAIL, 'AG Admin — Password Reset OTP', body))
             return JSONResponse({'ok': True})
         except Exception as e:
             return JSONResponse({'ok': False, 'error': str(e)})

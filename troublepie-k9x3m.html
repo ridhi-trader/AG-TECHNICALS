@@ -153,6 +153,30 @@ select.inp{cursor:pointer;}
 <body>
 
 <!-- LOGIN WALL -->
+<script>function showForgot(){ const m=document.getElementById('forgotModal'); m.style.display='flex'; document.getElementById('forgotStep1').style.display='block'; document.getElementById('forgotStep2').style.display='none'; document.getElementById('forgotErr').textContent=''; }
+function hideForgot(){ document.getElementById('forgotModal').style.display='none'; }
+async function sendAdminOTP(){
+  const btn=event.target; btn.textContent='Sending...'; btn.disabled=true;
+  try{
+    const r=await fetch('/api/admin-forgot-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send'})});
+    const j=await r.json();
+    if(j.ok){ document.getElementById('forgotStep1').style.display='none'; document.getElementById('forgotStep2').style.display='block'; }
+    else{ btn.textContent='Send OTP to Email'; btn.disabled=false; alert(j.error||'Failed'); }
+  }catch(e){ btn.textContent='Send OTP to Email'; btn.disabled=false; alert('Network error'); }
+}
+async function verifyAdminOTP(){
+  const otp=document.getElementById('forgotOTP').value.trim();
+  const np=document.getElementById('forgotNewPass').value.trim();
+  const err=document.getElementById('forgotErr');
+  if(!otp||otp.length!==6){err.textContent='Enter 6-digit OTP';return;}
+  if(!np||np.length<6){err.textContent='Password min 6 chars';return;}
+  try{
+    const r=await fetch('/api/admin-forgot-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',otp,newPass:np})});
+    const j=await r.json();
+    if(j.ok){ localStorage.setItem('ag_admin_pass',np); hideForgot(); alert('Password reset! Login again.'); location.reload(); }
+    else{ err.textContent=j.error||'Wrong OTP'; }
+  }catch(e){ err.textContent='Network error'; }
+}</script>
 <div id="loginWall" style="position:fixed;inset:0;background:var(--bg,#0d0d0f);z-index:9999;display:flex;align-items:center;justify-content:center;">
   <div style="background:#141318;border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:48px 40px;width:100%;max-width:380px;text-align:center;">
     <div style="font-size:36px;margin-bottom:14px;">🔐</div>

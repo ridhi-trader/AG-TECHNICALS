@@ -833,6 +833,25 @@ if(nVideos.length){
 // News items
 const ni=(arr,el)=>{ document.getElementById(el).innerHTML=(arr||[]).map(n=>`<div class="news-item"><div class="news-dot ${n.dir==='up'?'up-dot':'dn-dot'}"></div><div><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div></div>`).join(''); };
 ni(news.latest||D.news.latest,'newsLatest');
+
+// AUTO-LOAD LIVE NEWS FROM BACKEND API
+(async function loadLiveNews(){
+  try{
+    document.getElementById('newsLatest').innerHTML='<div style="color:#555;font-size:12px;padding:10px;">Loading live news...</div>';
+    const r = await fetch('/api/news');
+    const d = await r.json();
+    if(d && d.news){
+      if(d.news.latest && d.news.latest.length) ni(d.news.latest,'newsLatest');
+      if(d.news.analysis && d.news.analysis.length) ni(d.news.analysis,'newsAnalysis');
+      if(d.news.sentiment && d.news.sentiment.length){
+        document.getElementById('newsSentiment').innerHTML=d.news.sentiment.map(function(s){
+          return '<div class="sent-item"><span class="sent-label">'+s.label+'</span><div class="sent-bar"><div class="sent-fill" style="width:'+s.pct+'%;background:'+(s.dir==='up'?'var(--g4)':s.dir==='dn'?'var(--red)':'var(--amber)')+'"></div></div><span class="sent-pct '+(s.dir==='up'?'up':s.dir==='dn'?'dn':'')+'" style="'+(s.dir==='neutral'?'color:var(--amber)':'')+'">'+s.pct+'% Bull</span></div>';
+        }).join('');
+      }
+    }
+  }catch(e){ console.log('Live news error:',e); }
+})();
+
 ni(news.analysis||D.news.analysis,'newsAnalysis');
 
 // Sentiment

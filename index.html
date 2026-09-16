@@ -649,6 +649,22 @@ const faqItems = load('faq',      D.faq);
 const contact  = load('contact',  D.contact);
 const about    = load('about',    D.about);
 const news     = load('news',     D.news);
+// Sync news/dossier from DB
+(async function(){
+  try{
+    const r=await fetch('/api/config/news');
+    const j=await r.json();
+    if(j.ok && j.value){
+      const dbNews=JSON.parse(j.value);
+      localStorage.setItem('ag_news',JSON.stringify(dbNews));
+      // Apply dossierHidden immediately
+      if(dbNews.dossierHidden){
+        const dc=document.getElementById('dossierCard');
+        if(dc) dc.style.display='none';
+      }
+    }
+  }catch(e){}
+})();
 
 /* ── VIDEO EMBED ── */
 function videoEmbed(url){

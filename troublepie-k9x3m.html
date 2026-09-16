@@ -515,7 +515,10 @@ async function verifyAdminOTP(){
           <div class="field"><label class="label">Dossier URL</label><input class="inp" id="ndUrl" placeholder="gold-dossier.html"></div>
         </div>
         <div class="field"><label class="label">Sub Text</label><input class="inp" id="ndSub"></div>
-        <button class="btn-gold" onclick="saveNews()">Save Dossier Settings</button>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:4px;">
+          <button class="btn-gold" onclick="saveNews()">Save Dossier Settings</button>
+          <button onclick="toggleDossierHide()" id="dossierHideBtn" style="background:rgba(232,184,75,.08);border:1px solid rgba(232,184,75,.2);color:#e8b84b;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;">🙈 Hide</button>
+        </div>
       </div>
     </div>
 
@@ -1318,8 +1321,10 @@ function saveFaq(){ save('faq',faq); toast('FAQ saved'); }
 /* ══════════════ NEWS ══════════════ */
 const D_NEWS={dossierTitle:'Gold Dossier — COT + DXY + Institutional Flow',dossierSub:'Live institutional data, COT analysis, and DXY watch — updated regularly.',dossierUrl:'gold-dossier.html'};
 let newsData=ls('news',D_NEWS);
-function loadNews(){ document.getElementById('ndTitle').value=newsData.dossierTitle||''; document.getElementById('ndSub').value=newsData.dossierSub||''; document.getElementById('ndUrl').value=newsData.dossierUrl||''; }
-function saveNews(){ newsData.dossierTitle=document.getElementById('ndTitle').value; newsData.dossierSub=document.getElementById('ndSub').value; newsData.dossierUrl=document.getElementById('ndUrl').value; save('news',newsData); toast('Dossier settings saved'); }
+function loadNews(){ document.getElementById('ndTitle').value=newsData.dossierTitle||''; document.getElementById('ndSub').value=newsData.dossierSub||''; document.getElementById('ndUrl').value=newsData.dossierUrl||''; updateDossierHideBtn(); }
+function saveNews(){ newsData.dossierTitle=document.getElementById('ndTitle').value; newsData.dossierSub=document.getElementById('ndSub').value; newsData.dossierUrl=document.getElementById('ndUrl').value; save('news',newsData); toast('Dossier settings saved'); updateDossierHideBtn(); }
+function toggleDossierHide(){ newsData.dossierHidden=!newsData.dossierHidden; save('news',newsData); updateDossierHideBtn(); toast(newsData.dossierHidden?'Dossier hidden from site':'Dossier visible on site'); }
+function updateDossierHideBtn(){ const btn=document.getElementById('dossierHideBtn'); if(!btn) return; btn.textContent=newsData.dossierHidden?'👁️ Show':'🙈 Hide'; btn.style.opacity=newsData.dossierHidden?'0.6':'1'; }
 async function clearNewsCache(){ const el=document.getElementById('newsCacheMsg'); el.textContent='Clearing...'; try{ const r=await fetch(API+'/api/cache/clear'); const d=await r.json(); el.textContent=d.ok?'✓ Refreshed — reload site':'✗ Failed'; setTimeout(()=>el.textContent='',4000); }catch(e){el.textContent='✗ Server unreachable';} }
 
 /* ══════════════ UPLOADS ══════════════ */

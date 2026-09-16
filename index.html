@@ -785,6 +785,7 @@ if(about.videoUrl){ const w=document.getElementById('aboutVideoWrap'); w.style.d
 
 /* ── NEWS ── */
 // Dossier card
+document.getElementById('dossierCard').style.display=news.dossierHidden?'none':'block';
 document.getElementById('dossierCard').innerHTML = `
   <a href="${news.dossierUrl||'gold-dossier.html'}" style="display:block;text-decoration:none;">
     <div style="background:linear-gradient(135deg,#0f1e12 60%,#1a1400);border:1px solid rgba(201,162,39,0.35);border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;transition:border-color 0.2s,transform 0.2s;"

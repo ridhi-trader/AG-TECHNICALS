@@ -123,7 +123,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </head>
 <body>
 <div style="position:fixed;top:16px;left:16px;z-index:9999;">
-  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.95)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.95)'">
+  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.55)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.55)'">
     ‹ Back To Site
   </a>
 </div>
@@ -212,7 +212,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
   <!-- GUIDE LINK -->
   <div style="text-align:center;margin-bottom:56px;">
-    <a href="bridge-guide.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(232,184,75,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(232,184,75,0.95)'" onmouseout="this.style.background='var(--card)'">
+    <a href="bridge-guide.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(232,184,75,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(232,184,75,0.55)'" onmouseout="this.style.background='var(--card)'">
       📋 View Full Setup Guide →
     </a>
     <div style="margin-top:12px;font-size:13px;color:var(--t3);">Step-by-step: TradingView alert → MT5 setup, inputs, checklist</div>
@@ -250,12 +250,12 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script src="ag-assistant.js"></script>
 
 <script>/* Data stream packets flowing blue/purple */
-(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.35;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H;function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const streams=Array(14).fill(0).map(()=>({x:Math.random(),y:Math.random(),tx:Math.random(),ty:Math.random(),progress:Math.random(),speed:0.003+Math.random()*0.004,color:Math.random()>0.5?'rgba(232,184,75,0.8));function loop(){ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(100,80,200,0.03)';ctx.lineWidth=1;for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}streams.forEach(s=>{s.progress+=s.speed;if(s.progress>=1){s.x=s.tx;s.y=s.ty;s.tx=Math.random();s.ty=Math.random();s.progress=0;}const cx=(s.x+(s.tx-s.x)*s.progress)*W,cy=(s.y+(s.ty-s.y)*s.progress)*H;ctx.strokeStyle=s.color+'0.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(s.x*W,s.y*H);ctx.lineTo(cx,cy);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fillStyle=s.color+'0.85)';ctx.shadowBlur=10;ctx.shadowColor=s.color+'0.8)';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H;function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const streams=Array(14).fill(0).map(()=>({x:Math.random(),y:Math.random(),tx:Math.random(),ty:Math.random(),progress:Math.random(),speed:0.003+Math.random()*0.004,color:Math.random()>0.5?'rgba(232,184,75,0.8));function loop(){ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(100,80,200,0.03)';ctx.lineWidth=1;for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}streams.forEach(s=>{s.progress+=s.speed;if(s.progress>=1){s.x=s.tx;s.y=s.ty;s.tx=Math.random();s.ty=Math.random();s.progress=0;}const cx=(s.x+(s.tx-s.x)*s.progress)*W,cy=(s.y+(s.ty-s.y)*s.progress)*H;ctx.strokeStyle=s.color+'0.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(s.x*W,s.y*H);ctx.lineTo(cx,cy);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fillStyle=s.color+'0.85)';ctx.shadowBlur=10;ctx.shadowColor=s.color+'0.8)';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
 </script>
 <script>/* SYM ANIM */
 (function(){
 const c=document.createElement('canvas');c.id='symAnim';
-c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.35;';
+c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';
 document.body.prepend(c);
 const ctx=c.getContext('2d');
 let W,H,items=[];
@@ -270,7 +270,7 @@ function mkItem(){return{
   rot:(Math.random()-.5)*.4,
   rotV:(Math.random()-.5)*.003,
   phase:Math.random()*Math.PI*2,
-  color:Math.random()>.5?'rgba(232,184,75,0.95)':'rgba(232,184,75,0.85)'
+  color:Math.random()>.5?'rgba(232,184,75,0.55)':'rgba(232,184,75,0.45)'
 };}
 function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;
   items=Array(18).fill(0).map(()=>{const it=mkItem();it.y=Math.random();return it;});}

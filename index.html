@@ -1358,5 +1358,130 @@ window.addEventListener('load', function(){ loadTVWidget('BINANCE:BTCUSDT'); });
   }
   loop();
 })();
+</script><script>
+(function(){
+  const c = document.createElement('canvas');
+  c.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+  document.body.prepend(c);
+  const ctx = c.getContext('2d');
+  let W, H, particles = [], candles = [], symbols = [];
+  const GOLD = 'rgba(232,184,75,';
+  const SYMS = ['$','€','£','¥','₿','Au','$','€'];
+
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', ()=>{ resize(); init(); });
+
+  // ── GOLD PARTICLES ──
+  function mkParticle(){ return {
+    x: Math.random()*W, y: Math.random()*H,
+    r: Math.random()*2.5+0.8,
+    vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4-.15,
+    alpha: Math.random()*.7+.2, da: (Math.random()-.5)*.005,
+    phase: Math.random()*Math.PI*2
+  };}
+
+  // ── FLOATING CANDLES ──
+  function mkCandle(scatter){ return {
+    x: Math.random()*W, y: scatter ? Math.random()*H : H+50,
+    w: Math.random()*12+7, bh: Math.random()*45+20, wh: 0,
+    bull: Math.random()>.4, vy: -(Math.random()*.45+.18),
+    alpha: Math.random()*.35+.15,
+    vx: (Math.random()-.5)*.25,
+    rot: (Math.random()-.5)*.2, rotV: (Math.random()-.5)*.002,
+    phase: Math.random()*Math.PI*2
+  };}
+
+  // ── CURRENCY SYMBOLS ──
+  function mkSym(scatter){ return {
+    x: Math.random()*W, y: scatter ? Math.random()*H : H+60,
+    sym: SYMS[Math.floor(Math.random()*SYMS.length)],
+    size: Math.random()*32+20,
+    vy: -(Math.random()*.4+.15), vx: (Math.random()-.5)*.3,
+    alpha: Math.random()*.45+.2,
+    rot: (Math.random()-.5)*.4, rotV: (Math.random()-.5)*.003,
+    phase: Math.random()*Math.PI*2
+  };}
+
+  function init(){
+    particles = Array(100).fill(0).map(()=>mkParticle());
+    candles   = Array(18).fill(0).map(()=>mkCandle(true));
+    symbols   = Array(14).fill(0).map(()=>mkSym(true));
+  }
+  init();
+
+  function drawConnections(){
+    ctx.save();
+    for(let i=0;i<particles.length;i+=2){
+      for(let j=i+1;j<particles.length;j+=2){
+        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<130){
+          ctx.strokeStyle=GOLD+(0.12*(1-d/130))+')';
+          ctx.lineWidth=0.6;
+          ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y);
+          ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke();
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+
+    // Particles
+    drawConnections();
+    particles.forEach(p=>{
+      p.phase+=.018; p.x+=p.vx; p.y+=p.vy;
+      p.alpha+=p.da; if(p.alpha>.9||p.alpha<.1) p.da*=-1;
+      if(p.y<-10||p.x<-10||p.x>W+10) Object.assign(p,mkParticle());
+      const a = p.alpha*(0.7+0.3*Math.sin(p.phase));
+      ctx.shadowBlur=p.r*8; ctx.shadowColor=GOLD+'.9)';
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=GOLD+a+')'; ctx.fill(); ctx.shadowBlur=0;
+    });
+
+    // Candles
+    candles.forEach(cd=>{
+      cd.phase+=.012; cd.x+=cd.vx; cd.y+=cd.vy; cd.rot+=cd.rotV;
+      if(cd.y<-80) Object.assign(cd,mkCandle(false));
+      const a = cd.alpha*(0.75+0.25*Math.sin(cd.phase));
+      const col = cd.bull?'rgba(60,200,100,':'rgba(220,70,70,';
+      ctx.save();
+      ctx.translate(cd.x,cd.y); ctx.rotate(cd.rot); ctx.globalAlpha=a;
+      // Wick
+      ctx.strokeStyle=col+'0.9)'; ctx.lineWidth=1.5;
+      const wh = cd.bh*0.65;
+      ctx.beginPath(); ctx.moveTo(0,-wh); ctx.lineTo(0,wh); ctx.stroke();
+      // Body
+      ctx.fillStyle=col+'0.75)';
+      ctx.strokeStyle=col+'1)'; ctx.lineWidth=1;
+      ctx.shadowBlur=cd.w*1.5; ctx.shadowColor=col+'0.6)';
+      ctx.fillRect(-cd.w/2,-cd.bh/2,cd.w,cd.bh);
+      ctx.strokeRect(-cd.w/2,-cd.bh/2,cd.w,cd.bh);
+      ctx.shadowBlur=0;
+      ctx.restore();
+    });
+
+    // Currency symbols
+    symbols.forEach(s=>{
+      s.phase+=.012; s.x+=s.vx; s.y+=s.vy; s.rot+=s.rotV;
+      if(s.y<-80) Object.assign(s,mkSym(false));
+      const a = s.alpha*(0.75+0.25*Math.sin(s.phase));
+      ctx.save();
+      ctx.translate(s.x,s.y); ctx.rotate(s.rot);
+      ctx.globalAlpha=a;
+      ctx.font='bold '+s.size+'px serif';
+      ctx.fillStyle=GOLD+'1)';
+      ctx.shadowBlur=s.size*.8; ctx.shadowColor=GOLD+'.7)';
+      ctx.fillText(s.sym,0,0);
+      ctx.shadowBlur=0;
+      ctx.restore();
+    });
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
 </script></body>
 </html>

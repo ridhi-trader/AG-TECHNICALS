@@ -837,7 +837,8 @@ ni(news.latest||D.news.latest,'newsLatest');
 // AUTO-LOAD LIVE NEWS FROM BACKEND API
 (async function loadLiveNews(){
   try{
-    document.getElementById('newsLatest').innerHTML='<div style="color:#555;font-size:12px;padding:10px;">Loading live news...</div>';
+    // Show default data immediately, then update with live
+    // (loading message removed — default data already shown above)
     const r = await fetch('/api/news');
     const d = await r.json();
     if(d && d.news){

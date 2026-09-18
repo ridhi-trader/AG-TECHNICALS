@@ -353,5 +353,48 @@ document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeModal(nul
   }
   loop();
 })();
-</script></body>
+</script><script>
+(function(){
+  const c=document.createElement('canvas');
+  c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+  document.body.prepend(c);
+  const ctx=c.getContext('2d');
+  let W,H,pulses=[],candles=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  function mkPulse(){return{x:Math.random()*W,y:Math.random()*H,r:0,max:100+Math.random()*150,spd:0.8+Math.random()*.6};}
+  for(let i=0;i<7;i++){const p=mkPulse();p.r=Math.random()*p.max;pulses.push(p);}
+  setInterval(()=>{if(pulses.length<10)pulses.push(mkPulse());},900);
+  function mkCandle(sc){return{x:Math.random()*W,y:sc?Math.random()*H:H+50,
+    w:8+Math.random()*12,bh:20+Math.random()*40,bull:Math.random()>.4,
+    vy:-(Math.random()*.35+.15),vx:(Math.random()-.5)*.2,
+    alpha:Math.random()*.4+.2,phase:Math.random()*Math.PI*2,rot:(Math.random()-.5)*.2,rotV:(Math.random()-.5)*.002};}
+  for(let i=0;i<14;i++)candles.push(mkCandle(true));
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    // Radar pulses
+    pulses=pulses.filter(p=>p.r<p.max);
+    pulses.forEach(p=>{p.r+=p.spd;const f=1-p.r/p.max;
+      ctx.strokeStyle='rgba(232,184,75,'+(0.5*f)+')';ctx.lineWidth=2*f;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.stroke();});
+    // Floating candles
+    candles.forEach(cd=>{
+      cd.phase+=.012;cd.y+=cd.vy;cd.x+=cd.vx;cd.rot+=cd.rotV;
+      if(cd.y<-60)Object.assign(cd,mkCandle(false));
+      const a=cd.alpha*(0.75+0.25*Math.sin(cd.phase));
+      const col=cd.bull?'rgba(60,200,100,':'rgba(220,70,70,';
+      ctx.save();ctx.translate(cd.x,cd.y);ctx.rotate(cd.rot);ctx.globalAlpha=a;
+      const wh=cd.bh*.65;
+      ctx.strokeStyle=col+'0.9)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(0,-wh);ctx.lineTo(0,wh);ctx.stroke();
+      ctx.fillStyle=col+'0.8)';ctx.shadowBlur=cd.w*1.5;ctx.shadowColor=col+'.6)';
+      ctx.fillRect(-cd.w/2,-cd.bh/2,cd.w,cd.bh);
+      ctx.shadowBlur=0;ctx.restore();
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+</body>
 </html>

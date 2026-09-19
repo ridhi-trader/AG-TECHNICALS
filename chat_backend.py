@@ -482,7 +482,8 @@ async def market_data():
 # ── FILE UPLOAD SYSTEM ─────────────────────────────────────────────────────────
 
 @app.post("/api/upload")
-async def upload_file(file: UploadFile = File(...), category: str = Form(default="general")):
+async def upload_file(request: Request, file: UploadFile = File(...), category: str = Form(default="general")):
+    verify_admin_token(request)
     """Upload any file — returns public URL to use in admin panel"""
     try:
         # Sanitize filename
@@ -543,7 +544,8 @@ async def list_uploads():
 
 @app.delete("/api/uploads/{filename}")
 @app.delete("/api/uploads/delete/{filename}")
-async def delete_upload(filename: str):
+async def delete_upload(filename: str, request: Request):
+    verify_admin_token(request)
     filename = os.path.basename(filename)
     path = os.path.join(UPLOAD_DIR, filename)
     if os.path.exists(path):
@@ -672,12 +674,23 @@ def root():
 import asyncpg, hashlib, secrets, smtplib, ssl
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
 DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password
+ADMIN_PASS_DEFAULT = "TROUBLE_PIE456"
+
+def get_admin_pass():
+    """Get current admin password — DB value takes priority over env/default."""
+    return os.environ.get('ADMIN_PASS', ADMIN_PASS_DEFAULT)
+
+def verify_admin_token(request):
+    """Check X-Admin-Token header matches current admin password."""
+    token = request.headers.get("X-Admin-Token", "")
+    if not token or token != get_admin_pass():
+        raise HTTPException(status_code=401, detail="Unauthorized")
 SITE_URL = "https://ag-technicals-production.up.railway.app"
 
 _db_pool = None
@@ -882,7 +895,8 @@ class AssignReq(BaseModel):
     products: str  # comma-separated product ids
 
 @app.post("/api/admin/assign-products")
-async def assign_products(req: AssignReq):
+async def assign_products(req: AssignReq, request: Request):
+    verify_admin_token(request)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False})
     async with pool.acquire() as conn:
@@ -890,7 +904,8 @@ async def assign_products(req: AssignReq):
         return JSONResponse({"ok": True})
 
 @app.delete("/api/admin/users/{user_id}")
-async def admin_delete_user(user_id: int):
+async def admin_delete_user(user_id: int, request: Request):
+    verify_admin_token(request)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "DB unavailable"})
     async with pool.acquire() as conn:
@@ -971,7 +986,8 @@ class ConfigSetReq(BaseModel):
     value: str
 
 @app.post("/api/config/set")
-async def set_config(req: ConfigSetReq):
+async def set_config(req: ConfigSetReq, request: Request):
+    verify_admin_token(request)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False})
     async with pool.acquire() as conn:
@@ -979,7 +995,8 @@ async def set_config(req: ConfigSetReq):
         return JSONResponse({"ok": True})
 
 @app.get("/api/admin/users")
-async def admin_users():
+async def admin_users(request: Request):
+    verify_admin_token(request)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "users": []})
     async with pool.acquire() as conn:
@@ -997,7 +1014,8 @@ class BridgeAssignReq(BaseModel):
     account: str = ""
 
 @app.post("/api/admin/bridge/create-license")
-async def create_bridge_license(req: BridgeLicReq):
+async def create_bridge_license(req: BridgeLicReq, request: Request):
+    verify_admin_token(request)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     import secrets as _sec, datetime as _dt
@@ -1022,7 +1040,8 @@ async def list_bridge_licenses():
         return JSONResponse({"ok": True, "licenses": [dict(r) for r in rows]})
 
 @app.delete("/api/admin/bridge/license/{lid}")
-async def delete_bridge_license(lid: str):
+async def delete_bridge_license(lid: str, request: Request):
+    verify_admin_token(request)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:

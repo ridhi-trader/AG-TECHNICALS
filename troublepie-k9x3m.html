@@ -173,7 +173,7 @@ async function verifyAdminOTP(){
   try{
     const r=await fetch('/api/admin-forgot-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',otp,newPass:np})});
     const j=await r.json();
-    if(j.ok){ localStorage.setItem('ag_admin_pass',np); hideForgot(); alert('Password reset! Login again.'); location.reload(); }
+    if(j.ok){ localStorage.setItem('ag_admin_pass', np); _pass = np; hideForgot(); alert('Password reset! Login again.'); location.reload(); }
     else{ err.textContent=j.error||'Wrong OTP'; }
   }catch(e){ err.textContent='Network error'; }
 }</script>
@@ -765,6 +765,12 @@ const API = '';
 const PASS_KEY = 'ag_admin_pass';
 let _pass = localStorage.getItem(PASS_KEY) || 'TROUBLE_PIE456';
 
+// Authenticated fetch — always sends admin token header
+function adminFetch(url, opts={}){
+  opts.headers = Object.assign({}, opts.headers||{}, {'X-Admin-Token': _pass});
+  return fetch(url, opts);
+}
+
 /* ── AUTH ── */
 (function(){
   const wall = document.getElementById('loginWall');
@@ -795,11 +801,11 @@ function ls(k,d){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):d;
 function save(k,v){
   localStorage.setItem(k,JSON.stringify(v));
   // Also sync to DB for cross-domain persistence
-  fetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:JSON.stringify(v)})}).catch(()=>{});
+  adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:JSON.stringify(v)})}).catch(()=>{});
 }
 async function loadFromDB(k,d){
   try{
-    const r=await fetch('/api/config/'+k);
+    const r=await adminFetch('/api/config/'+k);
     const j=await r.json();
     if(j.ok && j.value){
       const parsed=JSON.parse(j.value);
@@ -1401,7 +1407,7 @@ async function loadDbUsers(){
   const el=document.getElementById('dbUserList'); if(!el) return;
   el.innerHTML='<div class="empty">Loading...</div>';
   try{
-    const r=await fetch('/api/admin/users');
+    const r=await adminFetch('/api/admin/users');
     const d=await r.json();
     if(!d.ok||!d.users.length){el.innerHTML='<div class="empty">No registered users yet.</div>';return;}
     el.innerHTML=d.users.map(u=>`
@@ -1423,7 +1429,7 @@ async function loadDbUsers(){
 async function deleteDbUser(uid, uname){
   if(!confirm('Delete user ' + uname + '? This cannot be undone.')) return;
   try{
-    const r = await fetch('/api/admin/users/' + uid, {method:'DELETE'});
+    const r = await adminFetch('/api/admin/users/' + uid, {method:'DELETE'});
     const d = await r.json();
     if(d.ok){ toast('User deleted'); loadDbUsers(); }
     else toast('Error: ' + (d.error||'Failed'), 'err');
@@ -1445,7 +1451,7 @@ function openAssign(uid,uname,currentProds){
 async function saveAssign(){
   const prods=[...document.querySelectorAll('.assign-check:checked')].map(c=>c.value).join(',');
   try{
-    const r=await fetch('/api/admin/assign-products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:_assignUserId,products:prods})});
+    const r=await adminFetch('/api/admin/assign-products',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:_assignUserId,products:prods})});
     const d=await r.json();
     if(d.ok){toast('Products assigned!');document.getElementById('assignOverlay').classList.remove('open');loadDbUsers();}
     else toast('Failed: '+(d.error||'unknown'),'err');

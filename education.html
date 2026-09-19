@@ -198,18 +198,21 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   
   function makeCard(it, idx){
     var url = it.fileUrl||it.videoUrl||'#';
-    var onClick = url!='#' ? 'onclick="openContent(event,\'' + url + '\')" href="#"' : 'href="#"';
-    var numBadge = idx!==undefined ? '<div style="position:absolute;top:10px;right:10px;min-width:24px;height:24px;border-radius:12px;background:rgba(232,184,75,0.15);border:1px solid rgba(232,184,75,0.35);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8b84b;padding:0 6px;">'+(idx+1)+'</div>' : '';
-    return '<a class="course-card" style="position:relative;" '+onClick+'>'+numBadge+
-      '<div class="course-icon">'+(it.icon||'📖')+'</div>'+
-      '<div class="course-meta">'+
-        '<div class="course-tags">'+
+    var onClick = url!='#' ? 'onclick="openContent(event,\''+url+'\')" href="#"' : 'href="#"';
+    var num = idx!==undefined ? '<div style="position:absolute;top:12px;right:12px;min-width:26px;height:26px;border-radius:13px;background:rgba(232,184,75,0.2);border:1px solid rgba(232,184,75,0.5);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#e8b84b;padding:0 6px;">'+(idx+1)+'</div>' : '';
+    var cover = it.img
+      ? '<div style="width:100%;height:160px;overflow:hidden;flex-shrink:0;"><img src="'+it.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:14px 14px 0 0;"></div>'
+      : '<div style="width:100%;height:130px;background:linear-gradient(135deg,rgba(232,184,75,0.1),rgba(201,150,12,0.05));display:flex;align-items:center;justify-content:center;font-size:48px;border-radius:14px 14px 0 0;flex-shrink:0;">'+(it.icon||'📖')+'</div>';
+    return '<a class="course-card" style="position:relative;flex-direction:column;padding:0;overflow:hidden;border-radius:14px;display:flex;" '+onClick+'>'+num+
+      cover+
+      '<div style="padding:16px 18px 20px;display:flex;flex-direction:column;flex:1;">'+
+        '<div class="course-tags" style="margin-bottom:8px;">'+
           (it.badge?'<span class="tag gold">'+it.badge+'</span>':'<span class="tag">Course</span>')+
         '</div>'+
-        '<div class="course-title">'+(it.name||'')+'</div>'+
-        '<div class="course-desc">'+(it.desc||'')+'</div>'+
+        '<div class="course-title" style="font-size:17px;margin-bottom:6px;">'+(it.name||'')+'</div>'+
+        '<div class="course-desc" style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.5;">'+(it.desc||'')+'</div>'+
+        '<div class="course-btn" style="text-align:center;margin-top:auto;">Open Course →</div>'+
       '</div>'+
-      '<div class="course-btn">Open Course →</div>'+
     '</a>';
   }
 

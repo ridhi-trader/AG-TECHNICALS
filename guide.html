@@ -139,9 +139,9 @@ var D_GUIDE_EA = [
   {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', section:'ea', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', videoUrl:'smc-feature-guide.html'},
 ];
 var D_GUIDE_TV = [
-  {name:'TradingView Alert Setup Guide', pid:'GD-0004', badge:'TV GUIDE', section:'tv', desc:'Step-by-step: TradingView alerts, webhook URLs, alert conditions, AG Bridge connection', videoUrl:''},
-  {name:'AG SMC Indicator — Setup & Usage', pid:'GD-0005', badge:'TV GUIDE', section:'tv', desc:'Installing and using AG SMC TradingView indicator — OBs, FVG, BOS/CHoCH confluence', videoUrl:''},
-  {name:'Pine Script Alerts — JSON Format', pid:'GD-0006', badge:'TV GUIDE', section:'tv', desc:'Writing Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, SL, TP', videoUrl:''},
+  {name:'TradingView Alert Setup Guide', pid:'GD-0004', badge:'TradingView GUIDE', section:'tv', desc:'Step-by-step: TradingView alerts, webhook URLs, alert conditions, AG Bridge connection', videoUrl:''},
+  {name:'AG SMC Indicator — Setup & Usage', pid:'GD-0005', badge:'TradingView GUIDE', section:'tv', desc:'Installing and using AG SMC TradingView indicator — OBs, FVG, BOS/CHoCH confluence', videoUrl:''},
+  {name:'Pine Script Alerts — JSON Format', pid:'GD-0006', badge:'TradingView GUIDE', section:'tv', desc:'Writing Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, SL, TP', videoUrl:''},
 ];
 
 function getGuideItems(){
@@ -193,7 +193,7 @@ function renderList(){
     return makeCard({icon:'📄',tag:g.badge||'EA Guide',level:'All Levels',time:'Guide',title:g.name,desc:g.desc||'',url:g.videoUrl||g.fileUrl||''},i,false);
   }).join('') : '<div style="color:var(--t3);font-size:13px;padding:12px 0;">No EA guides added yet.</div>';
   document.getElementById('tvGuideList').innerHTML = tv.length ? tv.map(function(g,i){
-    return makeCard({icon:'📺',tag:g.badge||'TV Guide',level:'All Levels',time:'Guide',title:g.name,desc:g.desc||'',url:g.videoUrl||g.fileUrl||''},i,true);
+    return makeCard({icon:'📺',tag:g.badge||'TradingView Guide',level:'All Levels',time:'Guide',title:g.name,desc:g.desc||'',url:g.videoUrl||g.fileUrl||''},i,true);
   }).join('') : '<div style="color:var(--t3);font-size:13px;padding:12px 0;">No TradingView guides added yet.</div>';
 }
 

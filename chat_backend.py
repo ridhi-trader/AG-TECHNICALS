@@ -741,8 +741,7 @@ def gen_otp(): return str(secrets.randbelow(900000) + 100000)
 
 def send_email(to_email, subject, body):
     if not GMAIL_USER or not GMAIL_PASS:
-        print(f"EMAIL (no creds): To={to_email} Subject={subject}")
-        return True
+        raise Exception("Email credentials not configured (GMAIL_USER/GMAIL_PASS missing in Railway env)")
     try:
         msg = MIMEText(body, 'html')
         msg['Subject'] = subject
@@ -755,7 +754,7 @@ def send_email(to_email, subject, body):
         return True
     except Exception as e:
         print(f"Email error: {e}")
-        return False
+        raise
 
 def otp_email_html(otp, purpose):
     return f"""
@@ -937,7 +936,23 @@ async def admin_forgot_otp(req: AdminForgotReq):
             return JSONResponse({'ok': False, 'error': 'OTP expired'})
         if req.otp != stored:
             return JSONResponse({'ok': False, 'error': 'Wrong OTP'})
+        if not req.newPass or len(req.newPass) < 6:
+            return JSONResponse({'ok': False, 'error': 'New password too short (min 6 chars)'})
         _admin_otp_store.clear()
+        # Save new password in DB so it persists across redeploys
+        try:
+            pool = await get_db()
+            if pool:
+                async with pool.acquire() as conn:
+                    await conn.execute(
+                        "INSERT INTO ag_config(key,value) VALUES('admin_pass',$1) ON CONFLICT(key) DO UPDATE SET value=$1",
+                        req.newPass
+                    )
+            # Also update in-memory so current session works immediately
+            import os
+            os.environ['ADMIN_PASS'] = req.newPass
+        except Exception as e:
+            return JSONResponse({'ok': False, 'error': f'Password save failed: {e}'})
         return JSONResponse({'ok': True})
     return JSONResponse({'ok': False, 'error': 'Invalid action'})
 

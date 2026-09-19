@@ -141,31 +141,65 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <div class="hero">
   <div class="hero-badge"><span class="live-dot"></span> <span id="bridgeBadge">TradingView to MT5 · Live</span></div>
-  <div id="bridgeH1" style="display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap;margin-bottom:18px;">
-    <!-- TradingView real logo -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <img src="https://static.vecteezy.com/system/resources/previews/020/975/579/non_2x/tradingview-logo-tradingview-icon-transparent-free-png.png"
-           alt="TradingView" width="88" height="88"
-           style="object-fit:contain;filter:drop-shadow(0 0 14px rgba(33,150,243,0.4));">
-      <span style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:rgba(255,255,255,0.75);">TradingView</span>
-    </div>
-    <!-- Arrow -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <svg width="56" height="24" viewBox="0 0 56 24" xmlns="http://www.w3.org/2000/svg">
-        <line x1="2" y1="12" x2="44" y2="12" stroke="#e8b84b" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,4"/>
-        <polygon points="42,6 54,12 42,18" fill="#e8b84b"/>
-      </svg>
-      <span style="font-size:10px;font-weight:800;letter-spacing:2.5px;color:rgba(232,184,75,0.55);text-transform:uppercase;">Signal</span>
-    </div>
-    <!-- MetaTrader 5 real logo -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/MetaTrader_5_Logo.png/240px-MetaTrader_5_Logo.png"
-           alt="MetaTrader 5" width="88" height="88"
-           style="object-fit:contain;filter:drop-shadow(0 0 14px rgba(232,184,75,0.35));">
-      <span style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:rgba(232,184,75,0.9);">MetaTrader 5</span>
-    </div>
-  </div>
+  <div id="bridgeH1" style="display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:22px;">
 
+    <!-- TradingView logo SVG — accurate brand style -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+      <div style="width:90px;height:90px;border-radius:18px;background:#131722;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(33,150,243,0.25),0 0 0 1px rgba(33,150,243,0.2);">
+        <svg width="58" height="58" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+          <!-- TV blue line chart — brand accurate -->
+          <polyline points="4,44 14,28 22,36 32,16 42,26 52,8"
+            fill="none" stroke="#2962FF" stroke-width="4.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- candles -->
+          <rect x="4"  y="44" width="8" height="10" rx="1.5" fill="#26a69a"/>
+          <rect x="14" y="40" width="8" height="14" rx="1.5" fill="#ef5350"/>
+          <rect x="24" y="34" width="8" height="20" rx="1.5" fill="#26a69a"/>
+          <rect x="34" y="36" width="8" height="18" rx="1.5" fill="#26a69a"/>
+          <rect x="44" y="26" width="8" height="28" rx="1.5" fill="#26a69a"/>
+          <!-- dot at peak -->
+          <circle cx="52" cy="8" r="4" fill="#2962FF"/>
+        </svg>
+      </div>
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,0.8);letter-spacing:0.3px;">TradingView</span>
+    </div>
+
+    <!-- Arrow -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:-14px;">
+      <svg width="60" height="20" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
+        <line x1="2" y1="10" x2="48" y2="10" stroke="#e8b84b" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,4"/>
+        <polygon points="46,4 58,10 46,16" fill="#e8b84b"/>
+      </svg>
+      <span style="font-size:9px;font-weight:800;letter-spacing:3px;color:rgba(232,184,75,0.5);text-transform:uppercase;">Signal</span>
+    </div>
+
+    <!-- MetaTrader 5 logo SVG — accurate brand style -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+      <div style="width:90px;height:90px;border-radius:18px;background:linear-gradient(145deg,#1c3a6e,#0d2244);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(232,184,75,0.2),0 0 0 1px rgba(232,184,75,0.25);">
+        <svg width="58" height="58" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+          <!-- MT5 wordmark style -->
+          <text x="29" y="18" text-anchor="middle"
+            font-family="Arial Black, sans-serif"
+            font-size="14" font-weight="900"
+            fill="#e8b84b" letter-spacing="0.5">MT5</text>
+          <!-- divider -->
+          <line x1="8" y1="23" x2="50" y2="23" stroke="rgba(232,184,75,0.3)" stroke-width="1"/>
+          <!-- bar chart — MT5 brand colours (blue bg, gold/green bars) -->
+          <rect x="8"  y="42" width="7" height="12" rx="2" fill="#26a69a"/>
+          <rect x="17" y="36" width="7" height="18" rx="2" fill="#26a69a"/>
+          <rect x="26" y="30" width="7" height="24" rx="2" fill="#e8b84b"/>
+          <rect x="35" y="33" width="7" height="21" rx="2" fill="#26a69a"/>
+          <rect x="44" y="26" width="7" height="28" rx="2" fill="#e8b84b"/>
+          <!-- rising line -->
+          <polyline points="11,40 20,34 29,28 38,31 47,24"
+            fill="none" stroke="rgba(232,184,75,0.7)"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:rgba(232,184,75,0.9);letter-spacing:0.3px;">MetaTrader 5</span>
+    </div>
+
+  </div>
   <p id="bridgeSub">Professionalism Comes From Knowledge. Set up once — your TradingView signals execute automatically on MT5, around the clock.</p>
   <div class="hero-cta">
     <a href="bridge-guide.html" class="btn-gold">📋 View Setup Guide</a>

@@ -624,26 +624,21 @@ const ticker   = load('ticker',   D.ticker);
   }
 })();
 // No auto-fix — data preserved always
-// Load ag_products from DB, then render
-const products = load('products', D.products);
-(async function syncFromDB(){
+// Load ag_products — DB first, localStorage fallback
+(async function initProducts(){
   try{
     const r = await fetch('/api/config/ag_products');
     const j = await r.json();
     if(j.ok && j.value){
       const dbProds = JSON.parse(j.value);
-      const localStr = localStorage.getItem('ag_products');
-      const localProds = localStr ? JSON.parse(localStr) : null;
-      // If DB has data and it's different from local, update and reload once
-      if(JSON.stringify(dbProds) !== JSON.stringify(localProds)){
-        localStorage.setItem('ag_products', JSON.stringify(dbProds));
-        if(!sessionStorage.getItem('db_synced')){
-          sessionStorage.setItem('db_synced','1');
-          location.reload();
-        }
-      }
+      localStorage.setItem('ag_products', JSON.stringify(dbProds));
+      renderProducts(dbProds);
+      return;
     }
   }catch(e){}
+  // fallback: localStorage or hardcoded defaults
+  const localStr = localStorage.getItem('ag_products');
+  renderProducts(localStr ? JSON.parse(localStr) : D.products);
 })();
 const faqItems = load('faq',      D.faq);
 const contact  = load('contact',  D.contact);
@@ -732,8 +727,8 @@ const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',price:'ti
 
 
 /* ── PRODUCTS ── */
+function renderProducts(products){
 const visProds = products.filter(p=>!p.hidden);
-
 
 document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   const hasItems = (p.items||[]).filter(it=>!it.hidden).length > 0;
@@ -760,7 +755,7 @@ document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
 
     // ── EDUCATION — beautiful open books ─────────────────────────────────
     education: '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="ebg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#120a06"/><stop offset="100%" stop-color="#0a0604"/></linearGradient><linearGradient id="pg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ffe4b0"/><stop offset="100%" stop-color="#fff8ec"/></linearGradient></defs><rect width="320" height="150" fill="url(#ebg)"/><!-- soft radial glow --><circle cx="160" cy="75" r="90" fill="rgba(232,184,75,0.04)"/><!-- BACK BOOK (left tilt) --><g transform="rotate(-12,120,90)"><rect x="60" y="30" width="110" height="140" rx="6" fill="#6b3a1f"/><rect x="60" y="30" width="14" height="140" rx="4" fill="#4a2810"/><!-- pages --><rect x="74" y="30" width="96" height="140" rx="3" fill="url(#pg)"/><rect x="168" y="30" width="2" height="140" fill="#d4a870" opacity="0.5"/><!-- lines --><line x1="84" y1="55" x2="160" y2="55" stroke="#c49a6c" stroke-width="1.5" stroke-linecap="round"/><line x1="84" y1="66" x2="160" y2="66" stroke="#c49a6c" stroke-width="1" stroke-linecap="round"/><line x1="84" y1="77" x2="150" y2="77" stroke="#c49a6c" stroke-width="1" stroke-linecap="round"/><line x1="84" y1="88" x2="155" y2="88" stroke="#c49a6c" stroke-width="1" stroke-linecap="round"/><line x1="84" y1="99" x2="145" y2="99" stroke="#c49a6c" stroke-width="1" stroke-linecap="round"/><line x1="84" y1="110" x2="158" y2="110" stroke="#c49a6c" stroke-width="1" stroke-linecap="round"/></g><!-- FRONT OPEN BOOK (flat, center) --><g transform="translate(55,28)"><rect x="0" y="0" width="210" height="130" rx="8" fill="#1a0e06"/><!-- spine shadow --><rect x="100" y="0" width="10" height="130" fill="#0d0703"/><!-- LEFT PAGE --><rect x="5" y="5" width="93" height="120" rx="4" fill="#fffdf6" opacity="0.96"/><!-- left page lines --><line x1="14" y1="22" x2="90" y2="22" stroke="#c8a87a" stroke-width="1.5" stroke-linecap="round"/><line x1="14" y1="32" x2="90" y2="32" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="14" y1="42" x2="85" y2="42" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="14" y1="52" x2="90" y2="52" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="14" y1="62" x2="82" y2="62" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="14" y1="72" x2="88" y2="72" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="14" y1="82" x2="80" y2="82" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="14" y1="92" x2="86" y2="92" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><!-- left heading --><text x="14" y="17" font-family="serif" font-size="7" font-weight="700" fill="#8b5e2a" letter-spacing="1">TRADING MASTERY</text><!-- RIGHT PAGE --><rect x="112" y="5" width="93" height="120" rx="4" fill="#fffdf6" opacity="0.93"/><!-- right page lines --><line x1="120" y1="22" x2="197" y2="22" stroke="#c8a87a" stroke-width="1.5" stroke-linecap="round"/><line x1="120" y1="32" x2="197" y2="32" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="120" y1="42" x2="192" y2="42" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="120" y1="52" x2="197" y2="52" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="120" y1="62" x2="190" y2="62" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="120" y1="72" x2="194" y2="72" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="120" y1="82" x2="188" y2="82" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><line x1="120" y1="92" x2="195" y2="92" stroke="#c8a87a" stroke-width="1" stroke-linecap="round"/><!-- right mini chart --><polyline points="120,110 135,104 150,107 165,98 180,102 197,94" fill="none" stroke="#c9960c" stroke-width="1.8" stroke-linecap="round"/><circle cx="197" cy="94" r="3" fill="#e8b84b"/><!-- gold bookmark --><polygon points="195,5 205,5 205,22 200,18 195,22" fill="#e8b84b"/></g><!-- AG seal --><circle cx="160" cy="122" r="14" fill="rgba(232,184,75,0.12)" stroke="rgba(232,184,75,0.4)" stroke-width="1.5"/><text x="160" y="127" text-anchor="middle" font-family="serif" font-size="10" font-weight="800" fill="#e8b84b">AG</text><!-- label --><text x="160" y="14" text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(232,184,75,0.5)" font-weight="700" letter-spacing="2">AG ACADEMY · EDUCATION</text></svg>',
-
+  };
   const imgHtml = p.img
     ? '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">'
     : (svgCovers[p.id] ? '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">' + svgCovers[p.id] + '</div>' : '<div class="prod-img-icon">' + p.icon + '</div>');
@@ -778,6 +773,7 @@ document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
     '</div>' +
     '</button>';
 }).join('');
+} // end renderProducts
 
 /* ── FAQ ── */
 document.getElementById('faq-list').innerHTML = faqItems.filter(f=>!f.hidden).map(f=>`

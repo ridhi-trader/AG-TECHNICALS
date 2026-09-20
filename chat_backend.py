@@ -3,7 +3,7 @@ AG Assistant Chat Backend
 FastAPI proxy → Anthropic API + Market Data + File Upload
 """
 import os, httpx, json, time, shutil, uuid
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -674,7 +674,7 @@ def root():
 import asyncpg, hashlib, secrets, smtplib, ssl
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 
 DB_URL = os.environ.get("DATABASE_URL", "")

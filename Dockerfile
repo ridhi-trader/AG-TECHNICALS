@@ -1,5 +1,6 @@
 FROM python:3.12-slim-bookworm
 
+ARG CACHE_BUST=1
 RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

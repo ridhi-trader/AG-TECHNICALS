@@ -484,7 +484,6 @@ async def market_data():
 @app.post("/api/upload")
 async def upload_file(request: Request, file: UploadFile = File(...), category: str = Form(default="general")):
     verify_admin_token(request)
-    """Upload any file — returns public URL to use in admin panel"""
     try:
         # Sanitize filename
         orig_name = file.filename or "upload"
@@ -513,6 +512,8 @@ async def upload_file(request: Request, file: UploadFile = File(...), category: 
             "size": size,
             "file_id": final_name,
         }
+    except HTTPException:
+        raise
     except Exception as e:
         return {"ok": False, "error": str(e)}
 

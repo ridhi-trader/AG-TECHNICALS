@@ -830,6 +830,7 @@ async function uploadToServer(file, onProg){
     const fd=new FormData(); fd.append('file',file); fd.append('category','admin');
     const xhr=new XMLHttpRequest();
     xhr.open('POST', API+'/api/upload');
+    xhr.setRequestHeader('X-Admin-Token', _pass);
     xhr.timeout=300000;
     xhr.upload.onprogress=(e)=>{
       if(e.lengthComputable&&onProg){

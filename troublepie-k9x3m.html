@@ -1095,8 +1095,10 @@ function saveProd(){
 
 async function uploadPeImg(){
   const f=document.getElementById('peImgFile').files[0]; if(!f){toast('Select image first','err');return;}
-  let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}
-  if(url){document.getElementById('peImgUrl').value=url;document.getElementById('peImgThumb').src=url;document.getElementById('peImgPreview').style.display='block';}
+  toast('Uploading...');
+  const url = await uploadToServer(f, msg=>toast(msg));
+  if(url){document.getElementById('peImgUrl').value=url;document.getElementById('peImgThumb').src=url;document.getElementById('peImgPreview').style.display='block'; toast('✓ Image ready — now click Save Product');}
+  else{toast('Upload failed','err');}
 }
 async function uploadPeFile(){
   const f=document.getElementById('peProdFile').files[0]; if(!f){toast('Select file first','err');return;}
@@ -1140,8 +1142,10 @@ function deleteSi(pi,ji){ if(!confirm('Delete sub-item?')) return; products[pi].
 function toggleSiHide(pi,ji){ products[pi].items[ji].hidden=!products[pi].items[ji].hidden; save('ag_products',products); renderProds(); renderSidebarProducts(); toast(products[pi].items[ji].hidden?'Item hidden':'Item visible'); }
 async function uploadSiImg(){
   const f=document.getElementById('siImgFile').files[0]; if(!f){toast('Select image','err');return;}
-  let url; if(f.size<400*1024){url=await toB64(f);}else{url=await uploadToServer(f,msg=>toast(msg));}
-  if(url){document.getElementById('siImgUrl').value=url;document.getElementById('siImgThumb').src=url;document.getElementById('siImgPrev').style.display='block';}
+  toast('Uploading...');
+  const url = await uploadToServer(f, msg=>toast(msg));
+  if(url){document.getElementById('siImgUrl').value=url;document.getElementById('siImgThumb').src=url;document.getElementById('siImgPrev').style.display='block'; toast('✓ Image ready — save now');}
+  else{toast('Upload failed','err');}
 }
 async function uploadSiFile(){
   const f=document.getElementById('siFileInput').files[0]; if(!f){toast('Select file','err');return;}

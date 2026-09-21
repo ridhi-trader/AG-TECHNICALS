@@ -108,13 +108,16 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(232,184,75,0.5),0 2px 8px rgba(0
 @media(max-width:1100px){.prod-grid{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:760px){.prod-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:480px){.prod-grid{grid-template-columns:1fr;}}
-.prod-btn{background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;cursor:pointer;transition:all 0.3s cubic-bezier(.16,1,.3,1);text-decoration:none;display:flex;flex-direction:column;text-align:left;padding:0;position:relative;}
-.prod-btn::after{content:'';position:absolute;inset:0;border-radius:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);pointer-events:none;}
-.prod-btn:hover{border-color:rgba(232,184,75,0.35);transform:translateY(-8px) scale(1.01);box-shadow:0 24px 48px rgba(0,0,0,0.5),0 0 0 1px rgba(232,184,75,0.15),0 0 40px rgba(201,150,12,0.12);}
-.prod-img-wrap{position:relative;width:100%;height:150px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0d0d12;}
-.prod-img-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(232,184,75,0.08) 0%,transparent 70%);}
-.prod-img-wrap img{width:100%;height:100%;object-fit:contain;display:block;transition:transform 0.4s cubic-bezier(.16,1,.3,1);padding:16px;box-sizing:border-box;}
-.prod-btn:hover .prod-img-wrap img{transform:scale(1.06);}
+.prod-btn{background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;cursor:pointer;transition:all 0.35s cubic-bezier(.16,1,.3,1);text-decoration:none;display:flex;flex-direction:column;text-align:left;padding:0;position:relative;}
+.prod-btn::after{content:'';position:absolute;inset:0;border-radius:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);pointer-events:none;transition:opacity 0.35s;}
+.prod-btn:hover{border-color:rgba(232,184,75,0.5);transform:translateY(-10px) scale(1.02);box-shadow:0 32px 64px rgba(0,0,0,0.6),0 0 0 1.5px rgba(232,184,75,0.4),0 0 60px rgba(201,150,12,0.2);}
+.prod-btn:active{transform:translateY(-4px) scale(0.99);box-shadow:0 8px 24px rgba(0,0,0,0.4),0 0 0 1.5px rgba(232,184,75,0.6),0 0 30px rgba(232,184,75,0.3);}
+.prod-img-wrap{position:relative;width:100%;height:160px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0a0f;}
+.prod-img-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(232,184,75,0.06) 0%,transparent 70%);z-index:1;}
+.prod-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(10,10,15,0.4) 100%);z-index:1;pointer-events:none;}
+.prod-img-wrap img{width:100%;height:100%;object-fit:contain;display:block;transition:transform 0.4s cubic-bezier(.16,1,.3,1);padding:20px;box-sizing:border-box;position:relative;z-index:0;}
+.prod-btn:hover .prod-img-wrap img{transform:scale(1.08);}
+.prod-img-wrap svg{position:relative;z-index:0;}
 .prod-img-icon{font-size:52px;filter:drop-shadow(0 4px 16px rgba(232,184,75,0.25));transition:transform 0.3s;}
 .prod-btn:hover .prod-img-icon{transform:scale(1.1) translateY(-2px);}
 .prod-badge{position:absolute;top:0;left:0;right:0;background:linear-gradient(135deg,rgba(232,184,75,0.18),rgba(201,150,12,0.08));border-bottom:1px solid rgba(232,184,75,0.15);color:var(--g5);font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:800;letter-spacing:2px;padding:6px 14px;text-transform:uppercase;text-align:center;}
@@ -768,7 +771,7 @@ document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   const svgByName = {'custom strategy':'custom','calculator':'calculator','risk calculator':'calculator','custom':'custom','trading view indicator':'tvindicator','tvindicator':'tvindicator','algo':'algo','algo (mt5)':'algo','bridge':'bridge','education':'education','guide':'guide','guides':'guide','news':'news'};
   const resolvedKey = svgCovers[svgKey] ? svgKey : (svgByName[(p.name||'').toLowerCase()] || svgKey);
   const imgHtml = p.img
-    ? '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\'">'
+    ? '<img src="' + p.img + '" alt="' + p.name + '" style="background:#0a0a0f;" onerror="this.style.display=\'none\'">'
     : (svgCovers[resolvedKey] ? '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">' + svgCovers[resolvedKey] + '</div>' : '<div class="prod-img-icon">' + p.icon + '</div>');
   const badge = p.badge || p.sub || 'SERVICE';
   const pid = p.pid || ('PRD-' + String(idx+1).padStart(4,'0'));

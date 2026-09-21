@@ -11,6 +11,19 @@ from typing import List, Optional
 
 app = FastAPI()
 
+# ── GLOBAL ERROR HANDLER — never crash on unhandled exceptions ──────────────
+from fastapi.responses import JSONResponse as _JSONResponse
+from fastapi import Request as _Request
+import traceback as _traceback
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: _Request, exc: Exception):
+    if isinstance(exc, HTTPException):
+        return _JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    print(f"UNHANDLED ERROR on {request.url}: {exc}")
+    _traceback.print_exc()
+    return _JSONResponse(status_code=500, content={"ok": False, "error": "Internal server error"})
+
 from bridge_module import bridge_router, add_strategy, add_license
 app.include_router(bridge_router)
 
@@ -123,6 +136,8 @@ async def fetch_newsapi():
                 except Exception as qe:
                     print(f"NewsAPI query error: {qe}")
                     continue
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"NewsAPI error: {e}")
     all_news.sort(key=lambda x: x.get("time_unix",0), reverse=True)
@@ -176,6 +191,8 @@ async def fetch_rss_news():
                 except Exception as fe:
                     print(f"RSS feed error {feed['source']}: {fe}")
                     continue
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"RSS fetch error: {e}")
     all_news.sort(key=lambda x: x.get("time_unix", 0), reverse=True)
@@ -203,6 +220,8 @@ async def fetch_finnhub_news():
                         })
         all_news.sort(key=lambda x: x.get("time_unix", 0), reverse=True)
         return all_news[:20]
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Finnhub error: {e}")
         return []
@@ -655,6 +674,8 @@ async def chat(req: ChatReq):
             print(f"OpenRouter error {r.status_code}: {rj}")
 
         return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Chat endpoint exception: {e}")
         return {"reply": "Network error. Please try again."}
@@ -702,6 +723,8 @@ async def get_db():
         try:
             _db_pool = await asyncpg.create_pool(DB_URL, ssl='require', min_size=1, max_size=5)
             await init_db()
+        except HTTPException:
+            raise
         except Exception as e:
             print(f"DB connection failed: {e}")
     return _db_pool
@@ -766,6 +789,8 @@ def send_email(to_email, subject, body):
             s.login(GMAIL_USER, GMAIL_PASS)
             s.send_message(msg)
         return True
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Email error: {e}")
         raise
@@ -806,7 +831,30 @@ class ResetReq(BaseModel):
 
 @app.on_event("startup")
 async def startup():
-    await get_db()
+    print("=" * 50)
+    print("AG TECHNICALS — SERVER STARTING")
+    print(f"GMAIL_USER: {'SET' if GMAIL_USER else 'MISSING'}")
+    print(f"GMAIL_PASS: {'SET' if GMAIL_PASS else 'MISSING'}")
+    print(f"DATABASE_URL: {'SET' if DB_URL else 'MISSING'}")
+    print(f"ADMIN_EMAIL: {os.environ.get('ADMIN_EMAIL','NOT SET')}")
+    print(f"NEWSAPI_KEY: {'SET' if os.environ.get('NEWSAPI_KEY') else 'MISSING'}")
+    db = await get_db()
+    if db:
+        print("DB: CONNECTED OK")
+    else:
+        print("DB: CONNECTION FAILED — products/users won't work")
+    print("=" * 50)
+
+
+@app.get("/api/health")
+async def health_check():
+    db = await get_db()
+    return {
+        "ok": True,
+        "db": "connected" if db else "disconnected",
+        "gmail": bool(GMAIL_USER and GMAIL_PASS),
+        "version": "2.0"
+    }
 
 @app.post("/api/auth/signup")
 async def signup(req: SignupReq):
@@ -831,6 +879,8 @@ async def signup(req: SignupReq):
             await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'signup',$3)", req.email, otp, expires)
             send_email(req.email, "AG Technicals — Verify Your Email", otp_email_html(otp, 'signup'))
             return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
+    except HTTPException:
+        raise
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})
 
@@ -941,6 +991,8 @@ async def admin_forgot_otp(req: AdminForgotReq):
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(None, lambda: send_email(ADMIN_EMAIL, 'AG Admin — Password Reset OTP', body))
             return JSONResponse({'ok': True})
+        except HTTPException:
+            raise
         except Exception as e:
             return JSONResponse({'ok': False, 'error': str(e)})
     elif req.action == 'verify':
@@ -967,6 +1019,8 @@ async def admin_forgot_otp(req: AdminForgotReq):
             # Also update in-memory so current session works immediately
             import os
             os.environ['ADMIN_PASS'] = req.newPass
+        except HTTPException:
+            raise
         except Exception as e:
             return JSONResponse({'ok': False, 'error': f'Password save failed: {e}'})
         return JSONResponse({'ok': True})
@@ -1117,5 +1171,7 @@ async def fetch_article(url: str):
             except Exception:
                 pass
         return JSONResponse({"ok": True, "content": text[:3000], "image": img, "title": title})
+    except HTTPException:
+        raise
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})

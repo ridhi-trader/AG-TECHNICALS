@@ -831,19 +831,23 @@ class ResetReq(BaseModel):
 
 @app.on_event("startup")
 async def startup():
-    print("=" * 50)
-    print("AG TECHNICALS — SERVER STARTING")
-    print(f"GMAIL_USER: {'SET' if GMAIL_USER else 'MISSING'}")
-    print(f"GMAIL_PASS: {'SET' if GMAIL_PASS else 'MISSING'}")
-    print(f"DATABASE_URL: {'SET' if DB_URL else 'MISSING'}")
-    print(f"ADMIN_EMAIL: {os.environ.get('ADMIN_EMAIL','NOT SET')}")
-    print(f"NEWSAPI_KEY: {'SET' if os.environ.get('NEWSAPI_KEY') else 'MISSING'}")
-    db = await get_db()
-    if db:
-        print("DB: CONNECTED OK")
-    else:
-        print("DB: CONNECTION FAILED — products/users won't work")
-    print("=" * 50)
+    try:
+        print("=" * 50)
+        print("AG TECHNICALS — SERVER STARTING")
+        print(f"GMAIL_USER: {'SET' if GMAIL_USER else 'MISSING'}")
+        print(f"GMAIL_PASS: {'SET' if GMAIL_PASS else 'MISSING'}")
+        print(f"DATABASE_URL: {'SET' if DB_URL else 'MISSING'}")
+        print(f"ADMIN_EMAIL: {os.environ.get('ADMIN_EMAIL','NOT SET')}")
+        print(f"NEWSAPI_KEY: {'SET' if os.environ.get('NEWSAPI_KEY') else 'MISSING'}")
+        db = await get_db()
+        if db:
+            print("DB: CONNECTED OK")
+        else:
+            print("DB: CONNECTION FAILED — products/users won't work (site still runs)")
+        print("=" * 50)
+    except Exception as e:
+        # NEVER crash on startup errors — log and continue
+        print(f"STARTUP WARNING: {e} — continuing anyway")
 
 
 @app.get("/api/health")

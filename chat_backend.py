@@ -860,44 +860,72 @@ async def health_check():
         "version": "2.0"
     }
 
+async def _send_signup_otp(conn, email):
+    await conn.execute("DELETE FROM ag_otps WHERE email=$1 AND purpose='signup'", email)
+    otp = gen_otp()
+    expires = datetime.utcnow() + timedelta(minutes=10)
+    await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'signup',$3)", email, otp, expires)
+    send_email(email, "AG Technicals — Verify Your Email", otp_email_html(otp, 'signup'))
+
 @app.post("/api/auth/signup")
 async def signup(req: SignupReq):
     pool = await get_db()
     if not pool:
         return JSONResponse({"ok": False, "error": "Database unavailable"})
+    email = (req.email or '').strip().lower()
+    username = (req.username or '').strip()
     if len(req.password) < 6:
         return JSONResponse({"ok": False, "error": "Password must be at least 6 characters"})
-    if len(req.username) < 3:
+    if len(username) < 3:
         return JSONResponse({"ok": False, "error": "Username must be at least 3 characters"})
     try:
         async with pool.acquire() as conn:
-            existing = await conn.fetchrow("SELECT id FROM ag_users WHERE email=$1 OR username=$2", req.email, req.username)
-            if existing:
-                return JSONResponse({"ok": False, "error": "Email or username already registered"})
-            await conn.execute("INSERT INTO ag_users (username, email, password_hash) VALUES ($1,$2,$3)",
-                req.username, req.email, hash_pass(req.password))
-            # Delete old OTPs
-            await conn.execute("DELETE FROM ag_otps WHERE email=$1 AND purpose='signup'", req.email)
-            otp = gen_otp()
-            expires = datetime.utcnow() + timedelta(minutes=10)
-            await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'signup',$3)", req.email, otp, expires)
-            send_email(req.email, "AG Technicals — Verify Your Email", otp_email_html(otp, 'signup'))
+            by_email = await conn.fetchrow("SELECT id,verified FROM ag_users WHERE LOWER(email)=$1", email)
+            by_user = await conn.fetchrow("SELECT id FROM ag_users WHERE LOWER(username)=LOWER($1)", username)
+            if by_email and by_email['verified']:
+                return JSONResponse({"ok": False, "error": "This email is already registered — please Login (or use Forgot Password)"})
+            if by_user and (not by_email or by_user['id'] != by_email['id']):
+                return JSONResponse({"ok": False, "error": "Username already taken — try another username"})
+            if by_email:
+                # Earlier signup never verified — refresh details and resend OTP
+                await conn.execute("UPDATE ag_users SET username=$1, password_hash=$2, email=$3 WHERE id=$4",
+                    username, hash_pass(req.password), email, by_email['id'])
+            else:
+                await conn.execute("INSERT INTO ag_users (username, email, password_hash) VALUES ($1,$2,$3)",
+                    username, email, hash_pass(req.password))
+            await _send_signup_otp(conn, email)
             return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
     except HTTPException:
         raise
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})
 
+class ResendReq(BaseModel):
+    email: str
+
+@app.post("/api/auth/resend-otp")
+async def resend_otp(req: ResendReq):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    email = (req.email or '').strip().lower()
+    async with pool.acquire() as conn:
+        u = await conn.fetchrow("SELECT id,verified FROM ag_users WHERE LOWER(email)=$1", email)
+        if not u: return JSONResponse({"ok": False, "error": "Email not found — please Sign Up again"})
+        if u['verified']: return JSONResponse({"ok": False, "error": "Already verified — please Login"})
+        await _send_signup_otp(conn, email)
+        return JSONResponse({"ok": True, "msg": "New OTP sent"})
+
 @app.post("/api/auth/verify-otp")
 async def verify_otp(req: OtpReq):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
-        row = await conn.fetchrow("SELECT * FROM ag_otps WHERE email=$1 AND otp=$2 AND purpose='signup' AND used=FALSE AND expires_at > NOW()", req.email, req.otp)
+        email = (req.email or '').strip().lower()
+        row = await conn.fetchrow("SELECT * FROM ag_otps WHERE LOWER(email)=$1 AND otp=$2 AND purpose='signup' AND used=FALSE AND expires_at > NOW()", email, req.otp.strip())
         if not row: return JSONResponse({"ok": False, "error": "Invalid or expired OTP"})
         await conn.execute("UPDATE ag_otps SET used=TRUE WHERE id=$1", row['id'])
-        await conn.execute("UPDATE ag_users SET verified=TRUE WHERE email=$1", req.email)
-        user = await conn.fetchrow("SELECT id,username,email,products FROM ag_users WHERE email=$1", req.email)
+        await conn.execute("UPDATE ag_users SET verified=TRUE WHERE LOWER(email)=$1", email)
+        user = await conn.fetchrow("SELECT id,username,email,products FROM ag_users WHERE LOWER(email)=$1", email)
         return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products']}})
 
 @app.post("/api/auth/login")
@@ -905,8 +933,11 @@ async def login(req: LoginReq):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT * FROM ag_users WHERE email=$1 AND password_hash=$2 AND verified=TRUE", req.email, hash_pass(req.password))
-        if not user: return JSONResponse({"ok": False, "error": "Invalid credentials or email not verified"})
+        email = (req.email or '').strip().lower()
+        user = await conn.fetchrow("SELECT * FROM ag_users WHERE LOWER(email)=$1", email)
+        if not user: return JSONResponse({"ok": False, "error": "No account with this email — please Sign Up"})
+        if user['password_hash'] != hash_pass(req.password): return JSONResponse({"ok": False, "error": "Wrong password — try again or use Forgot Password"})
+        if not user['verified']: return JSONResponse({"ok": False, "error": "Email not verified — please Sign Up again with same email to get a new OTP"})
         return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products']}})
 
 @app.post("/api/auth/forgot-password")
@@ -914,13 +945,14 @@ async def forgot_password(req: ForgotReq):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT id FROM ag_users WHERE email=$1", req.email)
+        email = (req.email or '').strip().lower()
+        user = await conn.fetchrow("SELECT id FROM ag_users WHERE LOWER(email)=$1", email)
         if not user: return JSONResponse({"ok": False, "error": "Email not found"})
-        await conn.execute("DELETE FROM ag_otps WHERE email=$1 AND purpose='reset'", req.email)
+        await conn.execute("DELETE FROM ag_otps WHERE LOWER(email)=$1 AND purpose='reset'", email)
         otp = gen_otp()
         expires = datetime.utcnow() + timedelta(minutes=10)
-        await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'reset',$3)", req.email, otp, expires)
-        send_email(req.email, "AG Technicals — Password Reset OTP", otp_email_html(otp, 'reset'))
+        await conn.execute("INSERT INTO ag_otps (email,otp,purpose,expires_at) VALUES ($1,$2,'reset',$3)", email, otp, expires)
+        send_email(email, "AG Technicals — Password Reset OTP", otp_email_html(otp, 'reset'))
         return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
 
 @app.post("/api/auth/reset-password")
@@ -928,11 +960,12 @@ async def reset_password(req: ResetReq):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
-        row = await conn.fetchrow("SELECT * FROM ag_otps WHERE email=$1 AND otp=$2 AND purpose='reset' AND used=FALSE AND expires_at > NOW()", req.email, req.otp)
+        email = (req.email or '').strip().lower()
+        row = await conn.fetchrow("SELECT * FROM ag_otps WHERE LOWER(email)=$1 AND otp=$2 AND purpose='reset' AND used=FALSE AND expires_at > NOW()", email, req.otp.strip())
         if not row: return JSONResponse({"ok": False, "error": "Invalid or expired OTP"})
         if len(req.new_password) < 6: return JSONResponse({"ok": False, "error": "Password too short"})
         await conn.execute("UPDATE ag_otps SET used=TRUE WHERE id=$1", row['id'])
-        await conn.execute("UPDATE ag_users SET password_hash=$1 WHERE email=$2", hash_pass(req.new_password), req.email)
+        await conn.execute("UPDATE ag_users SET password_hash=$1 WHERE LOWER(email)=$2", hash_pass(req.new_password), email)
         return JSONResponse({"ok": True, "msg": "Password reset successfully"})
 
 @app.get("/api/auth/user/{user_id}")
@@ -967,6 +1000,19 @@ async def admin_delete_user(user_id: int, request: Request):
         await conn.execute("DELETE FROM ag_otps WHERE email=(SELECT email FROM ag_users WHERE id=$1)", user_id)
         await conn.execute("DELETE FROM ag_users WHERE id=$1", user_id)
     return JSONResponse({"ok": True})
+
+@app.delete("/api/admin/users/by-email/{email}")
+async def admin_delete_user_by_email(email: str, request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "DB unavailable"})
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT id,username,email,verified FROM ag_users WHERE LOWER(email)=LOWER($1)", email)
+        if not row:
+            return JSONResponse({"ok": False, "error": "User not found"})
+        await conn.execute("DELETE FROM ag_otps WHERE email=$1", row['email'])
+        await conn.execute("DELETE FROM ag_users WHERE id=$1", row['id'])
+    return JSONResponse({"ok": True, "deleted": {"id": row['id'], "username": row['username'], "email": row['email']}})
 
 # Admin forgot password — OTP to admin email
 import random as _random

@@ -111,7 +111,7 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 @media(max-width:760px){.prod-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:480px){.prod-grid{grid-template-columns:1fr;}}
 .prod-btn{background:#0a0a0b;border:1px solid rgba(245,197,66,0.28);border-radius:18px;overflow:hidden;cursor:pointer;transition:transform 0.35s cubic-bezier(.16,1,.3,1),box-shadow 0.35s,border-color 0.35s;text-decoration:none;display:flex;flex-direction:column;text-align:left;padding:0;position:relative;box-shadow:0 12px 32px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.06);min-width:0;}
-.prod-btn:hover{border-color:rgba(245,197,66,0.75);transform:translateY(-8px);box-shadow:0 28px 56px rgba(0,0,0,0.8),0 0 0 1px rgba(245,197,66,0.5),0 0 40px rgba(201,150,12,0.22);}
+.prod-btn:hover{border-color:rgba(245,197,66,0.9);transform:translateY(-12px) scale(1.07);z-index:10;box-shadow:0 30px 70px rgba(0,0,0,0.9),0 0 0 1px rgba(245,197,66,0.7),0 0 50px rgba(245,197,66,0.3);}
 .prod-btn:active{transform:translateY(-3px) scale(0.99);}
 .prod-badge{display:block;background:linear-gradient(135deg,#1c1508,#0f0b04);border-bottom:1px solid rgba(245,197,66,0.3);color:var(--g5);font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:800;letter-spacing:2.5px;padding:8px 14px;text-transform:uppercase;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .prod-img-wrap{position:relative;width:100%;height:160px;overflow:hidden;background:#000;border-bottom:1px solid rgba(245,197,66,0.18);display:flex;align-items:center;justify-content:center;}
@@ -120,8 +120,9 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .prod-img-wrap.light-img img{object-fit:contain;padding:14px;}
 .prod-img-wrap .prod-svg{position:absolute;inset:0;}
 .prod-img-wrap .prod-svg svg{width:100%;height:100%;display:block;}
-.prod-btn:hover .prod-img-wrap img,.prod-btn:hover .prod-img-wrap .prod-svg{transform:scale(1.05);}
-.prod-img-wrap .prod-svg{transition:transform 0.5s cubic-bezier(.16,1,.3,1);}
+.prod-btn:hover .prod-img-wrap img,.prod-btn:hover .prod-img-wrap .prod-svg{transform:scale(1.1);filter:brightness(1.12) contrast(1.06) saturate(1.15);}
+.prod-img-wrap .prod-svg,.prod-img-wrap img{transition:transform 0.5s cubic-bezier(.16,1,.3,1),filter 0.4s;}
+@media(hover:none){.prod-btn:hover{transform:none;}}
 .prod-img-icon{font-size:52px;filter:drop-shadow(0 4px 16px rgba(245,197,66,0.35));transition:transform 0.3s;}
 .prod-btn:hover .prod-img-icon{transform:scale(1.1) translateY(-2px);}
 .prod-body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column;}
@@ -312,7 +313,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <a href="user-login.html" class="btn-login" style="text-decoration:none;">Login</a>
+    <a href="user-login.html" class="btn-login" id="navLoginBtn" style="text-decoration:none;">Login</a>
+    <script>try{var _u=JSON.parse(localStorage.getItem('ag_user')||'null');if(_u){var _b=document.getElementById('navLoginBtn');_b.href='user-dashboard.html';_b.textContent='👤 My Dashboard';}}catch(e){}</script>
     <a href="user-login.html" class="btn-cta" style="text-decoration:none;display:inline-flex;align-items:center;">Join Now</a>
   </div>
 </nav>

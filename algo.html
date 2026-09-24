@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d0d0f; --card:#141318; --d2:#121114; --panel2:#1a1724;
+  --bg:#000000; --card:#141318; --d2:#121114; --panel2:#1a1724;
   --g5:#e8b84b; --g4:#c9960c;
   --t1:#ffffff; --t2:#c8c4d0; --t3:#a0a0b8;
   --border:#2a2736; --red:#f26d6d; --green:#4ade80;
@@ -72,7 +72,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 
 .ea-img{position:relative;aspect-ratio:16/10;background:linear-gradient(135deg,#1a1724 0%,#111018 100%);overflow:hidden;border-bottom:1px solid var(--border);}
 .ea-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0.15;}
-.ea-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--g4),var(--g5));color:#0d0d0f;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:6px;}
+.ea-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--g4),var(--g5));color:#000000;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:6px;}
 .ea-badge.free{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;}
 .ea-chart-preview{width:100%;height:100%;padding:12px;display:flex;align-items:flex-end;}
 .ea-chart-bars{display:flex;align-items:flex-end;gap:3px;width:100%;height:80%;}
@@ -89,7 +89,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
   color:var(--g5);font-size:13px;font-weight:700;cursor:pointer;
   transition:all .2s;font-family:'Space Grotesk',sans-serif;letter-spacing:0.5px;
 }
-.ea-btn:hover{background:linear-gradient(135deg,var(--g4),var(--g5));color:#0d0d0f;border-color:transparent;}
+.ea-btn:hover{background:linear-gradient(135deg,var(--g4),var(--g5));color:#000000;border-color:transparent;}
 
 /* MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
@@ -105,7 +105,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .modal-feat{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2);}
 .modal-feat-icon{color:var(--g5);font-size:14px;flex-shrink:0;margin-top:1px;}
 .modal-actions{display:flex;gap:12px;}
-.modal-wa{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--g4),var(--g5));color:#0d0d0f;font-weight:700;font-size:14px;transition:opacity .2s;font-family:'Space Grotesk',sans-serif;}
+.modal-wa{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--g4),var(--g5));color:#000000;font-weight:700;font-size:14px;transition:opacity .2s;font-family:'Space Grotesk',sans-serif;}
 .modal-wa:hover{opacity:.88;}
 .modal-close-btn{padding:13px 20px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--t3);font-size:14px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
 .modal-close-btn:hover{border-color:var(--t3);color:var(--t1);}
@@ -362,7 +362,7 @@ if(feats && grid){
 </script>
 
 <script>/* Matrix rain + circuit lines (green) */
-(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,drops=[];const CHARS='01アイウエオ₿$€01101010';function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;drops=Array(Math.floor(W/14)).fill(0).map(()=>Math.random()*H/14|0);}resize();window.addEventListener('resize',resize);function loop(){ctx.fillStyle='rgba(0,0,0,0.04)';ctx.fillRect(0,0,W,H);ctx.font='12px monospace';drops.forEach((y,i)=>{const ch=CHARS[Math.random()*CHARS.length|0];const bright=Math.random()>0.95;ctx.fillStyle=bright?'rgba(180,255,180,0.9)':'rgba(232,184,75,0.8)*0.4)+')';ctx.fillText(ch,i*14,y*14);if(y*14>H&&Math.random()>0.975)drops[i]=0;else drops[i]++;});requestAnimationFrame(loop);}loop();})();
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,drops=[];const CHARS='01アイウエオ₿$€01101010';function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;drops=Array(Math.floor(W/14)).fill(0).map(()=>Math.random()*H/14|0);}resize();window.addEventListener('resize',resize);function loop(){ctx.fillStyle='rgba(0,0,0,0.04)';ctx.fillRect(0,0,W,H);ctx.font='12px monospace';drops.forEach((y,i)=>{const ch=CHARS[Math.random()*CHARS.length|0];const bright=Math.random()>0.95;ctx.fillStyle=bright?'rgba(180,255,180,0.9)':'rgba(232,184,75,0.35)';ctx.fillText(ch,i*14,y*14);if(y*14>H&&Math.random()>0.975)drops[i]=0;else drops[i]++;});requestAnimationFrame(loop);}loop();})();
 </script>
 <script>
 (function(){

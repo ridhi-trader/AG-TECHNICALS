@@ -505,7 +505,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script src="ag-contact.js"></script>
 
 <script>/* Gold ember/fire particles rising */
-(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,embers=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);function newEmber(){return{x:Math.random()*W,y:H+10,vx:(Math.random()-0.5)*1.2,vy:-(1+Math.random()*2.5),r:Math.random()*3+1,alpha:0.8,color:Math.random()>0.5?'rgba(255,160,20,':'rgba(232,184,75,',life:0,maxLife:120+Math.random()*100};}for(let i=0;i<60;i++){const e=newEmber();e.y=Math.random()*H;e.life=Math.random()*e.maxLife;embers.push(e);}function loop(){ctx.clearRect(0,0,W,H);if(embers.length<80&&Math.random()>0.7)embers.push(newEmber());embers=embers.filter(e=>e.life<e.maxLife);embers.forEach(e=>{e.life++;e.x+=e.vx+Math.sin(e.life*0.05)*0.5;e.y+=e.vy;const fade=1-e.life/e.maxLife;ctx.shadowBlur=e.r*4;ctx.shadowColor=e.color+'0.8)';ctx.beginPath();ctx.arc(e.x,e.y,e.r*fade,0,Math.PI*2);ctx.fillStyle=e.color+(e.alpha*fade)+')';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,embers=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);function newEmber(){return{x:Math.random()*W,y:H+10,vx:(Math.random()-0.5)*1.2,vy:-(1+Math.random()*2.5),r:Math.random()*3+1,alpha:0.8,color:Math.random()>0.5?'rgba(255,160,20,':'rgba(232,184,75,',life:0,maxLife:120+Math.random()*100};}for(let i=0;i<60;i++){const e=newEmber();e.y=Math.random()*H;e.life=Math.random()*e.maxLife;embers.push(e);}function loop(){ctx.clearRect(0,0,W,H);if(embers.length<80&&Math.random()>0.7)embers.push(newEmber());embers=embers.filter(e=>e.life<e.maxLife);embers.forEach(e=>{e.life++;e.x+=e.vx+Math.sin(e.life*0.05)*0.5;e.y+=e.vy;const fade=1-e.life/e.maxLife;ctx.shadowBlur=e.r*4;ctx.shadowColor=e.color+'0.8)';ctx.beginPath();ctx.arc(e.x,e.y,Math.max(0,e.r*fade),0,Math.PI*2);ctx.fillStyle=e.color+(e.alpha*fade)+')';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
 </script>
 <script>
 (function(){
@@ -539,7 +539,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         ctx.shadowBlur=e.size*.8;ctx.shadowColor=e.color+'.9)';
         ctx.fillText(e.sym,e.x,e.y);
       } else {
-        ctx.beginPath();ctx.arc(e.x,e.y,e.r*fade,0,Math.PI*2);
+        ctx.beginPath();ctx.arc(e.x,e.y,Math.max(0,e.r*fade),0,Math.PI*2);
         ctx.fillStyle=e.color+'1)';
         ctx.shadowBlur=e.r*5;ctx.shadowColor=e.color+'.8)';
         ctx.fill();

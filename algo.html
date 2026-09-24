@@ -222,7 +222,7 @@ function requireLogin(){
   return true;
 }
 function videoLB(src){
-  if(!requireLogin()) return;var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.src=src;b.style.display='flex';v.play().catch(function(){});}
+  var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.src=src;b.style.display='flex';v.play().catch(function(){});}
 function closeVideoLB(){var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.pause();v.removeAttribute('src');v.load();b.style.display='none';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB();});
 </script>
@@ -282,7 +282,7 @@ function renderEAs(){
     var vsrc = ea.fileUrl||ea.videoUrl||'';
     var hasVideo = !!vsrc;
     var cardTop = hasVideo ?
-      '<div onclick="if(requireLogin())videoLB(\''+vsrc+'\')" style="position:relative;background:#0a0a0a;border-radius:10px 10px 0 0;overflow:hidden;cursor:pointer;height:200px;display:flex;align-items:center;justify-content:center;">'+
+      '<div onclick="videoLB(\''+vsrc+'\')" style="position:relative;background:#0a0a0a;border-radius:10px 10px 0 0;overflow:hidden;cursor:pointer;height:200px;display:flex;align-items:center;justify-content:center;">'+
         '<div style="display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none;">'+
           '<div style="width:64px;height:64px;border-radius:50%;background:rgba(245,197,66,0.15);border:2px solid rgba(245,197,66,0.5);display:flex;align-items:center;justify-content:center;font-size:28px;">▶</div>'+
           '<div style="color:#f5c542;font-size:13px;font-weight:700;letter-spacing:0.5px;">Watch Demo</div>'+
@@ -307,7 +307,6 @@ function renderEAs(){
 }
 
 function openItem(i){
-  if(!requireLogin()) return;
   var items = getAlgoItems();
   var ea = items[i];
   if(!ea) return;

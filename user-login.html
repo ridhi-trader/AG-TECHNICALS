@@ -204,8 +204,9 @@ async function doVerifyOtp(){
 
 async function resendOtp(){
   try{
-    const r=await fetch(API+'/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'_resend_',email:_signupEmail,password:'_resend_'})});
-    setErr('otpErr','New OTP sent!');
+    const r=await fetch(API+'/api/auth/resend-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_signupEmail})});
+    const d=await r.json();
+    setErr('otpErr', d.ok ? 'New OTP sent! Check inbox/spam.' : (d.error||'Could not resend'));
   }catch(e){}
 }
 
@@ -252,5 +253,6 @@ if(localStorage.getItem('ag_user')){ const r=localStorage.getItem('ag_redirect_a
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>
+<script src="glow.js"></script>
 </body>
 </html>

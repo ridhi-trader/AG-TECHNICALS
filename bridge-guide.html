@@ -19,10 +19,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#000000;--card:#141318;--panel2:#1a1724;
-  --g5:#e8b84b;--g4:#c9960c;
-  --t1:#ffffff;--t2:#c8c4d0;--t3:#a0a0b8;
-  --border:#2a2736;--green:#4ade80;--violet:#8b7cf0;
+  --bg:#000000;--card:#0b0b0b;--panel2:#1a1724;
+  --g5:#f5c542;--g4:#c9960c;
+  --t1:#ffffff;--t2:#e5e5e5;--t3:#bdbdbd;
+  --border:#262626;--green:#4ade80;--violet:#8b7cf0;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
@@ -35,7 +35,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .nav-back:hover{color:var(--g5);}
 
 .hero{padding:56px 24px 40px;text-align:center;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(232,184,75,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:22px;font-family:'JetBrains Mono',monospace;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,197,66,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:22px;font-family:'JetBrains Mono',monospace;}
 .hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;margin-bottom:14px;}
 .hero h1 span{color:var(--g5);}
 .hero p{font-size:16px;color:var(--t3);max-width:480px;margin:0 auto;}
@@ -43,28 +43,28 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .guide{max-width:760px;margin:0 auto;padding:40px 24px 80px;}
 
 .step{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;margin-bottom:18px;position:relative;}
-.step:hover{border-color:rgba(232,184,75,0.2);}
+.step:hover{border-color:rgba(245,197,66,0.2);}
 .step-header{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
-.step-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(232,184,75,0.15),rgba(201,150,12,0.08));border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(245,197,66,0.15),rgba(201,150,12,0.08));border:1px solid rgba(245,197,66,0.25);color:var(--g5);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .step-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;}
 .step-desc{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:16px;}
 .step-desc:last-child{margin-bottom:0;}
 
-.code-block{background:#0a0a0c;border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#c8c4d0;overflow-x:auto;margin:12px 0;position:relative;}
+.code-block{background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#e5e5e5;overflow-x:auto;margin:12px 0;position:relative;}
 .code-block .url{color:var(--g5);word-break:break-all;}
-.copy-btn{position:absolute;top:10px;right:12px;background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
-.copy-btn:hover{background:rgba(232,184,75,0.2);}
+.copy-btn{position:absolute;top:10px;right:12px;background:rgba(245,197,66,0.1);border:1px solid rgba(245,197,66,0.25);color:var(--g5);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.copy-btn:hover{background:rgba(245,197,66,0.2);}
 
 .input-table{width:100%;border-collapse:collapse;margin-top:14px;}
 .input-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
-.input-table td{padding:12px 14px;border-bottom:1px solid rgba(42,39,54,0.5);font-size:13.5px;color:var(--t2);vertical-align:top;}
+.input-table td{padding:12px 14px;border-bottom:1px solid rgba(38,38,38,0.5);font-size:13.5px;color:var(--t2);vertical-align:top;}
 .input-table td:first-child{font-family:'JetBrains Mono',monospace;color:var(--t3);font-size:12px;white-space:nowrap;}
 .input-table td code{color:var(--g5);}
 .input-table tr:last-child td{border-bottom:none;}
 
 .response-table{width:100%;border-collapse:collapse;margin-top:14px;}
 .response-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
-.response-table td{padding:10px 14px;border-bottom:1px solid rgba(42,39,54,0.5);font-size:12.5px;font-family:'JetBrains Mono',monospace;vertical-align:top;}
+.response-table td{padding:10px 14px;border-bottom:1px solid rgba(38,38,38,0.5);font-size:12.5px;font-family:'JetBrains Mono',monospace;vertical-align:top;}
 .response-table td:first-child{color:#4ade80;}
 .response-table td:last-child{color:var(--t3);}
 .response-table tr:last-child td{border-bottom:none;}
@@ -73,10 +73,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .check-item{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:var(--t2);padding:12px 16px;background:#0f0d14;border:1px solid var(--border);border-radius:10px;}
 .check-icon{color:var(--g5);font-size:16px;flex-shrink:0;margin-top:1px;}
 
-.note{background:rgba(232,184,75,0.07);border:1px solid rgba(232,184,75,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--t2);margin-top:12px;line-height:1.6;}
+.note{background:rgba(245,197,66,0.07);border:1px solid rgba(245,197,66,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--t2);margin-top:12px;line-height:1.6;}
 .note strong{color:var(--g5);}
 
-.cta-band{background:linear-gradient(135deg,rgba(232,184,75,0.1),rgba(139,124,240,0.05));border:1px solid rgba(232,184,75,0.2);border-radius:20px;padding:40px 32px;text-align:center;margin-top:40px;}
+.cta-band{background:linear-gradient(135deg,rgba(245,197,66,0.1),rgba(139,124,240,0.05));border:1px solid rgba(245,197,66,0.2);border-radius:20px;padding:40px 32px;text-align:center;margin-top:40px;}
 .cta-band h2{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-bottom:10px;}
 .cta-band p{color:var(--t3);margin-bottom:24px;}
 .btn-gold{background:linear-gradient(135deg,var(--g4),var(--g5));color:#000000;font-weight:700;font-size:15px;padding:13px 28px;border-radius:12px;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;display:inline-flex;align-items:center;gap:8px;transition:opacity .2s;}
@@ -106,7 +106,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </head>
 <body>
 <div style="position:fixed;top:16px;left:16px;z-index:9999;">
-  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.55)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.55)'">
+  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(245,197,66,0.25);border-radius:10px;color:#f5c542;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.55)'" onmouseout="this.style.borderColor='rgba(245,197,66,0.55)'">
     ‹ Back To Site
   </a>
 </div>
@@ -133,7 +133,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="step-desc">In your TradingView alert, set <strong>Webhook URL</strong> to:</div>
     <div class="code-block">
       <button class="copy-btn" onclick="copy(this,'/api/bridge/master/YOUR-LICENSE-ID')">Copy</button>
-      <span class="url">/api/bridge/master/<span style="color:#e8b84b;">YOUR-LICENSE-ID</span></span>
+      <span class="url">/api/bridge/master/<span style="color:#f5c542;">YOUR-LICENSE-ID</span></span>
     </div>
     <div class="note"><strong>Note:</strong> Replace <code>agbridge</code> with your strategy ID if AG Technicals gave you a custom one.</div>
   </div>
@@ -147,7 +147,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="step-desc">In the alert's <strong>Message</strong> box, paste this JSON exactly — edit values to match your strategy:</div>
     <div class="code-block" style="white-space:pre;">
       <button class="copy-btn" onclick="copy(this,`{\n  \"secret\": \"YOUR_SECRET_KEY\",\n  \"action\": \"{{strategy.order.action}}\",\n  \"symbol\": \"{{ticker}}\",\n  \"price\": {{close}},\n  \"sl\": {{strategy.order.price}},\n  \"tp\": 0,\n  \"lot\": {{strategy.position_size}}\n}`)">Copy</button>{
-  "secret": <span style="color:#e8b84b;">"YOUR_SECRET_KEY"</span>,
+  "secret": <span style="color:#f5c542;">"YOUR_SECRET_KEY"</span>,
   "action": <span style="color:#4ade80;">"{{strategy.order.action}}"</span>,
   "symbol": <span style="color:#a78bfa;">"{{ticker}}"</span>,
   "price": <span style="color:#60d0f0;">{{close}}</span>,
@@ -211,9 +211,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   </div>
 
   <!-- CHECKLIST -->
-  <div class="step" style="border-color:rgba(232,184,75,0.25);">
+  <div class="step" style="border-color:rgba(245,197,66,0.25);">
     <div class="step-header">
-      <div class="step-num" style="background:rgba(232,184,75,0.15);">✓</div>
+      <div class="step-num" style="background:rgba(245,197,66,0.15);">✓</div>
       <div class="step-title">Pre-Live Checklist</div>
     </div>
     <div class="checklist">
@@ -266,7 +266,7 @@ function mkItem(){return{
   rot:(Math.random()-.5)*.4,
   rotV:(Math.random()-.5)*.003,
   phase:Math.random()*Math.PI*2,
-  color:Math.random()>.5?'rgba(232,184,75,0.55)':'rgba(232,184,75,0.45)'
+  color:Math.random()>.5?'rgba(245,197,66,0.55)':'rgba(245,197,66,0.45)'
 };}
 function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;
   items=Array(18).fill(0).map(()=>{const it=mkItem();it.y=Math.random();return it;});}

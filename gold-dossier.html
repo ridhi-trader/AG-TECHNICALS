@@ -19,9 +19,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0b0c0e;
-    --paper:#141419;
-    --paper2:#1a1a21;
+    --ink:#000000;
+    --paper:#0b0b0b;
+    --paper2:#121212;
     --hair:#2a2a33;
     --brass:#c9a227;
     --brass-light:#e8c766;
@@ -214,7 +214,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </head>
 <body>
 <div style="position:fixed;top:16px;left:16px;z-index:9999;">
-  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.55)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.55)'">
+  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(245,197,66,0.25);border-radius:10px;color:#f5c542;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.55)'" onmouseout="this.style.borderColor='rgba(245,197,66,0.55)'">
     ‹ Back To Site
   </a>
 </div>
@@ -464,7 +464,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 (function(){
   var API = '/api/market-data';
   var SYMBOLS = [
-    {key:'XAU/USD', icon:'🥇', color:'#e8b84b'},
+    {key:'XAU/USD', icon:'🥇', color:'#f5c542'},
     {key:'BTC/USD', icon:'₿', color:'#f7931a'},
     {key:'ETH/USD', icon:'Ξ', color:'#627eea'},
     {key:'EUR/USD', icon:'€', color:'#4ade80'},
@@ -481,7 +481,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         ' <span style="color:#fff;">$'+price+'</span>'+
         (chg ? ' <span style="color:'+chgColor+';font-size:11px;">'+chg+'</span>' : '')+
       '</span>';
-    }).join('<span style="color:#2a2736;margin:0 8px;">|</span>');
+    }).join('<span style="color:#262626;margin:0 8px;">|</span>');
   }
   function refreshStrip(){
     var track = document.getElementById('tickerTrack');
@@ -492,7 +492,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
       track.innerHTML = html + html;
     }).catch(function(){
       // fallback static
-      track.innerHTML = '<span style="color:#a0a0b8;margin:0 20px;">Live market data loading...</span>';
+      track.innerHTML = '<span style="color:#bdbdbd;margin:0 20px;">Live market data loading...</span>';
     });
   }
   refreshStrip();
@@ -505,7 +505,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script src="ag-contact.js"></script>
 
 <script>/* Gold ember/fire particles rising */
-(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,embers=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);function newEmber(){return{x:Math.random()*W,y:H+10,vx:(Math.random()-0.5)*1.2,vy:-(1+Math.random()*2.5),r:Math.random()*3+1,alpha:0.8,color:Math.random()>0.5?'rgba(255,160,20,':'rgba(232,184,75,',life:0,maxLife:120+Math.random()*100};}for(let i=0;i<60;i++){const e=newEmber();e.y=Math.random()*H;e.life=Math.random()*e.maxLife;embers.push(e);}function loop(){ctx.clearRect(0,0,W,H);if(embers.length<80&&Math.random()>0.7)embers.push(newEmber());embers=embers.filter(e=>e.life<e.maxLife);embers.forEach(e=>{e.life++;e.x+=e.vx+Math.sin(e.life*0.05)*0.5;e.y+=e.vy;const fade=1-e.life/e.maxLife;ctx.shadowBlur=e.r*4;ctx.shadowColor=e.color+'0.8)';ctx.beginPath();ctx.arc(e.x,e.y,Math.max(0,e.r*fade),0,Math.PI*2);ctx.fillStyle=e.color+(e.alpha*fade)+')';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,embers=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);function newEmber(){return{x:Math.random()*W,y:H+10,vx:(Math.random()-0.5)*1.2,vy:-(1+Math.random()*2.5),r:Math.random()*3+1,alpha:0.8,color:Math.random()>0.5?'rgba(255,160,20,':'rgba(245,197,66,',life:0,maxLife:120+Math.random()*100};}for(let i=0;i<60;i++){const e=newEmber();e.y=Math.random()*H;e.life=Math.random()*e.maxLife;embers.push(e);}function loop(){ctx.clearRect(0,0,W,H);if(embers.length<80&&Math.random()>0.7)embers.push(newEmber());embers=embers.filter(e=>e.life<e.maxLife);embers.forEach(e=>{e.life++;e.x+=e.vx+Math.sin(e.life*0.05)*0.5;e.y+=e.vy;const fade=1-e.life/e.maxLife;ctx.shadowBlur=e.r*4;ctx.shadowColor=e.color+'0.8)';ctx.beginPath();ctx.arc(e.x,e.y,Math.max(0,e.r*fade),0,Math.PI*2);ctx.fillStyle=e.color+(e.alpha*fade)+')';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
 </script>
 <script>
 (function(){
@@ -521,7 +521,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     r:Math.random()*4+1.5,alpha:0.9,
     sym:Math.random()>.7?['$','Au','★','♦'][Math.floor(Math.random()*4)]:null,
     size:Math.random()*22+12,
-    color:Math.random()>.5?'rgba(255,180,20,':'rgba(232,184,75,',
+    color:Math.random()>.5?'rgba(255,180,20,':'rgba(245,197,66,',
     life:0,maxLife:100+Math.random()*120};}
   for(let i=0;i<55;i++){const e=mkEmber();e.y=Math.random()*H;e.life=Math.random()*e.maxLife;embers.push(e);}
   function loop(){

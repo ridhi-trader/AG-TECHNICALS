@@ -18,7 +18,7 @@
   <meta name="twitter:image" content="/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#000000;--card:#141318;--c2:#181620;--g5:#e8b84b;--g4:#c9960c;--t1:#fff;--t2:#c8c4d0;--t3:#a0a0b8;--border:#2a2736;--red:#f26d6d;--green:#4ade80;}
+:root{--bg:#000000;--card:#0b0b0b;--c2:#181620;--g5:#f5c542;--g4:#c9960c;--t1:#fff;--t2:#e5e5e5;--t3:#bdbdbd;--border:#262626;--red:#f26d6d;--green:#4ade80;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
 nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);}
@@ -39,19 +39,19 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 .stat-label{font-size:12px;color:var(--t3);}
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;}
 .prod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:12px;display:flex;align-items:center;gap:16px;transition:border-color .2s;}
-.prod-card:hover{border-color:rgba(232,184,75,.3);}
-.prod-icon{width:46px;height:46px;background:rgba(232,184,75,.08);border:1px solid rgba(232,184,75,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.prod-card:hover{border-color:rgba(245,197,66,.3);}
+.prod-icon{width:46px;height:46px;background:rgba(245,197,66,.08);border:1px solid rgba(245,197,66,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .prod-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
 .prod-sub{font-size:12px;color:var(--t3);}
 .prod-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:var(--green);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;margin-left:8px;}
-.prod-cta{margin-left:auto;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.2);color:var(--g5);font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.prod-cta{margin-left:auto;background:rgba(245,197,66,.1);border:1px solid rgba(245,197,66,.2);color:var(--g5);font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;text-decoration:none;transition:all .2s;white-space:nowrap;}
 .prod-cta:hover{background:var(--g5);color:#000;}
 .empty-prods{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:40px;text-align:center;color:var(--t3);}
 .empty-prods h3{font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--t2);margin-bottom:8px;}
-.wa-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e8b84b,#c9960c);color:#000;font-size:13px;font-weight:700;padding:10px 20px;border-radius:9px;text-decoration:none;margin-top:12px;transition:all .2s;}
+.wa-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;font-size:13px;font-weight:700;padding:10px 20px;border-radius:9px;text-decoration:none;margin-top:12px;transition:all .2s;}
 .wa-cta:hover{transform:translateY(-2px);}
 .profile-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px;display:flex;align-items:center;gap:20px;}
-.avatar{width:56px;height:56px;background:linear-gradient(135deg,#e8b84b,#c9960c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#000;flex-shrink:0;}
+.avatar{width:56px;height:56px;background:linear-gradient(135deg,#f5c542,#c9960c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#000;flex-shrink:0;}
 .profile-name{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#fff;}
 .profile-email{font-size:13px;color:var(--t3);margin-top:2px;}
 .profile-joined{font-size:11px;color:var(--t3);margin-top:4px;}
@@ -61,7 +61,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 </head>
 <body>
 <div style="position:fixed;top:16px;left:16px;z-index:9999;">
-  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.6)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.25)'">
+  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(245,197,66,0.25);border-radius:10px;color:#f5c542;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.6)'" onmouseout="this.style.borderColor='rgba(245,197,66,0.25)'">
     ‹ Back To Site
   </a>
 </div>

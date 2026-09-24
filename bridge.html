@@ -20,10 +20,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#000000;--card:#141318;--d2:#121114;--panel2:#1a1724;
-  --g5:#e8b84b;--g4:#c9960c;
-  --t1:#ffffff;--t2:#c8c4d0;--t3:#a0a0b8;
-  --border:#2a2736;--red:#f26d6d;--green:#4ade80;--violet:#8b7cf0;
+  --bg:#000000;--card:#0b0b0b;--d2:#050505;--panel2:#1a1724;
+  --g5:#f5c542;--g4:#c9960c;
+  --t1:#ffffff;--t2:#e5e5e5;--t3:#bdbdbd;
+  --border:#262626;--red:#f26d6d;--green:#4ade80;--violet:#8b7cf0;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
@@ -37,8 +37,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 
 /* HERO */
 .hero{text-align:center;padding:72px 24px 48px;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(232,184,75,0.07),transparent 70%);pointer-events:none;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(232,184,75,0.3);border-radius:99px;padding:6px 18px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:28px;font-family:'JetBrains Mono',monospace;}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(245,197,66,0.07),transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,197,66,0.3);border-radius:99px;padding:6px 18px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:28px;font-family:'JetBrains Mono',monospace;}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1.6s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 .hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,6vw,58px);font-weight:800;line-height:1.1;margin-bottom:18px;letter-spacing:-0.02em;}
@@ -56,7 +56,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .node{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--panel2);border:1px solid var(--border);border-radius:14px;position:relative;z-index:2;}
 .node-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .node-icon.tv{background:rgba(139,124,240,0.15);}
-.node-icon.cloud{background:rgba(232,184,75,0.15);}
+.node-icon.cloud{background:rgba(245,197,66,0.15);}
 .node-icon.mt5{background:rgba(74,222,128,0.13);}
 .node-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;}
 .node-sub{font-size:11px;color:var(--t3);margin-top:2px;}
@@ -77,7 +77,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .steps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:56px;}
 @media(max-width:640px){.steps-grid{grid-template-columns:1fr;}}
 .step-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px;}
-.step-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(232,184,75,0.15),rgba(201,150,12,0.1));border:1px solid rgba(232,184,75,0.25);color:var(--g5);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.step-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(245,197,66,0.15),rgba(201,150,12,0.1));border:1px solid rgba(245,197,66,0.25);color:var(--g5);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
 .step-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;}
 .step-desc{font-size:13.5px;color:var(--t3);line-height:1.65;}
 
@@ -101,7 +101,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .ep-desc{font-size:12.5px;color:var(--t3);}
 
 /* CTA BAND */
-.cta-band{background:linear-gradient(135deg,rgba(232,184,75,0.1),rgba(139,124,240,0.06));border:1px solid rgba(232,184,75,0.2);border-radius:20px;padding:48px 32px;text-align:center;margin-bottom:40px;}
+.cta-band{background:linear-gradient(135deg,rgba(245,197,66,0.1),rgba(139,124,240,0.06));border:1px solid rgba(245,197,66,0.2);border-radius:20px;padding:48px 32px;text-align:center;margin-bottom:40px;}
 .cta-band h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(22px,3.5vw,32px);font-weight:700;margin-bottom:12px;}
 .cta-band p{color:var(--t3);margin-bottom:28px;font-size:15px;}
 
@@ -123,7 +123,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </head>
 <body>
 <div style="position:fixed;top:16px;left:16px;z-index:9999;">
-  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.55)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.55)'">
+  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(245,197,66,0.25);border-radius:10px;color:#f5c542;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.55)'" onmouseout="this.style.borderColor='rgba(245,197,66,0.55)'">
     ‹ Back To Site
   </a>
 </div>
@@ -156,15 +156,15 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <!-- Arrow -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:-16px;">
       <svg width="60" height="20" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg">
-        <line x1="2" y1="10" x2="48" y2="10" stroke="#e8b84b" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,4"/>
-        <polygon points="46,4 58,10 46,16" fill="#e8b84b"/>
+        <line x1="2" y1="10" x2="48" y2="10" stroke="#f5c542" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5,4"/>
+        <polygon points="46,4 58,10 46,16" fill="#f5c542"/>
       </svg>
-      <span style="font-size:9px;font-weight:800;letter-spacing:3px;color:rgba(232,184,75,0.5);text-transform:uppercase;">Signal</span>
+      <span style="font-size:9px;font-weight:800;letter-spacing:3px;color:rgba(245,197,66,0.5);text-transform:uppercase;">Signal</span>
     </div>
 
     <!-- MetaTrader 5 — brand accurate logo recreation -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-      <div style="width:90px;height:90px;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#0047AB 0%,#002D6E 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px rgba(0,71,171,0.4),0 0 0 1.5px rgba(232,184,75,0.3);">
+      <div style="width:90px;height:90px;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#0047AB 0%,#002D6E 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 28px rgba(0,71,171,0.4),0 0 0 1.5px rgba(245,197,66,0.3);">
         <svg viewBox="0 0 64 64" width="70" height="70" xmlns="http://www.w3.org/2000/svg">
           <!-- MT5 brand: blue background with gold/white wordmark -->
           <text x="32" y="26" text-anchor="middle"
@@ -184,7 +184,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <span style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:rgba(232,184,75,0.9);">MetaTrader 5</span>
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:rgba(245,197,66,0.9);">MetaTrader 5</span>
     </div>
 
   </div>
@@ -258,7 +258,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
   <!-- GUIDE LINK -->
   <div style="text-align:center;margin-bottom:56px;">
-    <a href="bridge-guide.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(232,184,75,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(232,184,75,0.55)'" onmouseout="this.style.background='var(--card)'">
+    <a href="bridge-guide.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(245,197,66,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(245,197,66,0.55)'" onmouseout="this.style.background='var(--card)'">
       📋 View Full Setup Guide →
     </a>
     <div style="margin-top:12px;font-size:13px;color:var(--t3);">Step-by-step: TradingView alert → MT5 setup, inputs, checklist</div>
@@ -296,7 +296,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <script src="ag-assistant.js"></script>
 
 <script>/* Data stream packets flowing blue/purple */
-(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H;function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const streams=Array(14).fill(0).map(()=>({x:Math.random(),y:Math.random(),tx:Math.random(),ty:Math.random(),progress:Math.random(),speed:0.003+Math.random()*0.004,color:Math.random()>0.5?'rgba(232,184,75,':'rgba(120,160,255,'}));function loop(){ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(100,80,200,0.03)';ctx.lineWidth=1;for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}streams.forEach(s=>{s.progress+=s.speed;if(s.progress>=1){s.x=s.tx;s.y=s.ty;s.tx=Math.random();s.ty=Math.random();s.progress=0;}const cx=(s.x+(s.tx-s.x)*s.progress)*W,cy=(s.y+(s.ty-s.y)*s.progress)*H;ctx.strokeStyle=s.color+'0.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(s.x*W,s.y*H);ctx.lineTo(cx,cy);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fillStyle=s.color+'0.85)';ctx.shadowBlur=10;ctx.shadowColor=s.color+'0.8)';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H;function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const streams=Array(14).fill(0).map(()=>({x:Math.random(),y:Math.random(),tx:Math.random(),ty:Math.random(),progress:Math.random(),speed:0.003+Math.random()*0.004,color:Math.random()>0.5?'rgba(245,197,66,':'rgba(120,160,255,'}));function loop(){ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(100,80,200,0.03)';ctx.lineWidth=1;for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}streams.forEach(s=>{s.progress+=s.speed;if(s.progress>=1){s.x=s.tx;s.y=s.ty;s.tx=Math.random();s.ty=Math.random();s.progress=0;}const cx=(s.x+(s.tx-s.x)*s.progress)*W,cy=(s.y+(s.ty-s.y)*s.progress)*H;ctx.strokeStyle=s.color+'0.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(s.x*W,s.y*H);ctx.lineTo(cx,cy);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,3,0,Math.PI*2);ctx.fillStyle=s.color+'0.85)';ctx.shadowBlur=10;ctx.shadowColor=s.color+'0.8)';ctx.fill();ctx.shadowBlur=0;});requestAnimationFrame(loop);}loop();})();
 </script>
 <script>
 (function(){
@@ -317,14 +317,14 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
       if(j<=i)return;
       const d=Math.hypot((a.x-b.x)*W,(a.y-b.y)*H);
       if(d<250){
-        ctx.strokeStyle='rgba(232,184,75,'+(0.25*(1-d/250))+')';
+        ctx.strokeStyle='rgba(245,197,66,'+(0.25*(1-d/250))+')';
         ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x*W,a.y*H);ctx.lineTo(b.x*W,b.y*H);ctx.stroke();
       }
     }));
     // Node dots
     nodes.forEach(n=>{
       ctx.beginPath();ctx.arc(n.x*W,n.y*H,4,0,Math.PI*2);
-      ctx.fillStyle='rgba(232,184,75,0.6)';ctx.shadowBlur=8;ctx.shadowColor='rgba(232,184,75,0.8)';
+      ctx.fillStyle='rgba(245,197,66,0.6)';ctx.shadowBlur=8;ctx.shadowColor='rgba(245,197,66,0.8)';
       ctx.fill();ctx.shadowBlur=0;
     });
     // Data packets

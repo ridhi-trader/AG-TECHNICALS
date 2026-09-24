@@ -20,10 +20,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#000000; --card:#141318; --d2:#121114; --panel2:#1a1724;
-  --g5:#e8b84b; --g4:#c9960c;
-  --t1:#ffffff; --t2:#c8c4d0; --t3:#a0a0b8;
-  --border:#2a2736; --red:#f26d6d; --green:#4ade80;
+  --bg:#000000; --card:#0b0b0b; --d2:#050505; --panel2:#1a1724;
+  --g5:#f5c542; --g4:#c9960c;
+  --t1:#ffffff; --t2:#e5e5e5; --t3:#bdbdbd;
+  --border:#262626; --red:#f26d6d; --green:#4ade80;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
@@ -40,8 +40,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 
 /* HERO */
 .hero{text-align:center;padding:64px 24px 40px;position:relative;}
-.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(232,184,75,0.08),transparent 70%);pointer-events:none;}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(232,184,75,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:24px;font-family:'JetBrains Mono',monospace;}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(245,197,66,0.08),transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,197,66,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:24px;font-family:'JetBrains Mono',monospace;}
 .hero-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.8s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 .hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;line-height:1.1;margin-bottom:16px;letter-spacing:-0.02em;}
@@ -68,7 +68,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
   overflow:hidden;transition:transform .2s,border-color .25s,box-shadow .25s;
   cursor:pointer;
 }
-.ea-card:hover{transform:translateY(-4px);border-color:rgba(232,184,75,0.4);box-shadow:0 12px 40px rgba(232,184,75,0.08);}
+.ea-card:hover{transform:translateY(-4px);border-color:rgba(245,197,66,0.4);box-shadow:0 12px 40px rgba(245,197,66,0.08);}
 
 .ea-img{position:relative;aspect-ratio:16/10;background:linear-gradient(135deg,#1a1724 0%,#111018 100%);overflow:hidden;border-bottom:1px solid var(--border);}
 .ea-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0.15;}
@@ -84,8 +84,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .ea-desc{font-size:13px;color:var(--t3);line-height:1.55;margin-bottom:18px;}
 .ea-btn{
   width:100%;padding:11px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,rgba(232,184,75,0.12),rgba(201,150,12,0.08));
-  border:1px solid rgba(232,184,75,0.3);
+  background:linear-gradient(135deg,rgba(245,197,66,0.12),rgba(201,150,12,0.08));
+  border:1px solid rgba(245,197,66,0.3);
   color:var(--g5);font-size:13px;font-weight:700;cursor:pointer;
   transition:all .2s;font-family:'Space Grotesk',sans-serif;letter-spacing:0.5px;
 }
@@ -140,7 +140,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </head>
 <body>
 <div style="position:fixed;top:16px;left:16px;z-index:9999;">
-  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(232,184,75,0.25);border-radius:10px;color:#e8b84b;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(232,184,75,0.55)'" onmouseout="this.style.borderColor='rgba(232,184,75,0.55)'">
+  <a href="/" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(13,13,15,0.9);border:1px solid rgba(245,197,66,0.25);border-radius:10px;color:#f5c542;font-size:13px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(245,197,66,0.55)'" onmouseout="this.style.borderColor='rgba(245,197,66,0.55)'">
     ‹ Back To Site
   </a>
 </div>
@@ -207,7 +207,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <!-- VIDEO LIGHTBOX -->
 <div id="vlb" onclick="if(event.target.id==='vlb')closeVideoLB()" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.94);align-items:center;justify-content:center;padding:20px">
-  <video id="vlbvid" controls playsinline autoplay style="max-width:94%;max-height:90%;width:auto;border-radius:16px;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(232,184,75,.25),0 0 60px rgba(232,184,75,.12);border:2px solid rgba(232,184,75,.3)"></video>
+  <video id="vlbvid" controls playsinline autoplay style="max-width:94%;max-height:90%;width:auto;border-radius:16px;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(245,197,66,.25),0 0 60px rgba(245,197,66,.12);border:2px solid rgba(245,197,66,.3)"></video>
   <div onclick="closeVideoLB()" style="position:absolute;top:24px;right:28px;color:#fff;font-size:22px;cursor:pointer;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;">&times;</div>
 </div>
 <script>
@@ -290,7 +290,7 @@ function renderEAs(){
         (ea.img?'<img src="'+ea.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">':'<div style="font-size:48px;display:flex;align-items:center;justify-content:center;height:100%;">🤖</div>')+
         (ea.badge?'<div class="ea-badge">'+ea.badge+'</div>':'')+
       '</div>';
-    var numBadge = '<div style="position:absolute;top:10px;left:10px;min-width:24px;height:24px;border-radius:12px;background:rgba(0,0,0,0.7);border:1px solid rgba(232,184,75,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8b84b;padding:0 6px;z-index:5;">'+(i+1)+'</div>';
+    var numBadge = '<div style="position:absolute;top:10px;left:10px;min-width:24px;height:24px;border-radius:12px;background:rgba(0,0,0,0.7);border:1px solid rgba(245,197,66,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#f5c542;padding:0 6px;z-index:5;">'+(i+1)+'</div>';
     return '<div class="ea-card" style="cursor:default;position:relative;">'+numBadge+
       cardTop+
       '<div class="ea-body">'+
@@ -319,7 +319,7 @@ function openItem(i){
     vwrap.style.display='block';
     vwrap.innerHTML='<div style="position:relative;margin-bottom:16px;">'+
       '<video controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;max-height:220px;" src="'+vsrc+'"></video>'+
-      '<div onclick="videoLB(this.getAttribute(\"data-src\"))" data-src="'+vsrc+'" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⛶</div>'+
+      '<div onclick="videoLB(this.getAttribute(\"data-src\"))" data-src="'+vsrc+'" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#f5c542;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⛶</div>'+
     '</div>';
   } else {
     vwrap.style.display='none'; vwrap.innerHTML='';
@@ -362,7 +362,7 @@ if(feats && grid){
 </script>
 
 <script>/* Matrix rain + circuit lines (green) */
-(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,drops=[];const CHARS='01アイウエオ₿$€01101010';function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;drops=Array(Math.floor(W/14)).fill(0).map(()=>Math.random()*H/14|0);}resize();window.addEventListener('resize',resize);function loop(){ctx.fillStyle='rgba(0,0,0,0.04)';ctx.fillRect(0,0,W,H);ctx.font='12px monospace';drops.forEach((y,i)=>{const ch=CHARS[Math.random()*CHARS.length|0];const bright=Math.random()>0.95;ctx.fillStyle=bright?'rgba(180,255,180,0.9)':'rgba(232,184,75,0.35)';ctx.fillText(ch,i*14,y*14);if(y*14>H&&Math.random()>0.975)drops[i]=0;else drops[i]++;});requestAnimationFrame(loop);}loop();})();
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,drops=[];const CHARS='01アイウエオ₿$€01101010';function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;drops=Array(Math.floor(W/14)).fill(0).map(()=>Math.random()*H/14|0);}resize();window.addEventListener('resize',resize);function loop(){ctx.fillStyle='rgba(0,0,0,0.04)';ctx.fillRect(0,0,W,H);ctx.font='12px monospace';drops.forEach((y,i)=>{const ch=CHARS[Math.random()*CHARS.length|0];const bright=Math.random()>0.95;ctx.fillStyle=bright?'rgba(180,255,180,0.9)':'rgba(245,197,66,0.35)';ctx.fillText(ch,i*14,y*14);if(y*14>H&&Math.random()>0.975)drops[i]=0;else drops[i]++;});requestAnimationFrame(loop);}loop();})();
 </script>
 <script>
 (function(){
@@ -380,8 +380,8 @@ if(feats && grid){
     drops.forEach((y,i)=>{
       const bright=Math.random()>0.92;
       ctx.font=(bright?'bold ':'')+'14px monospace';
-      ctx.fillStyle=bright?'rgba(255,220,80,0.95)':'rgba(232,184,75,'+(0.35+Math.random()*0.3)+')';
-      ctx.shadowBlur=bright?12:0;ctx.shadowColor='rgba(232,184,75,0.8)';
+      ctx.fillStyle=bright?'rgba(255,220,80,0.95)':'rgba(245,197,66,'+(0.35+Math.random()*0.3)+')';
+      ctx.shadowBlur=bright?12:0;ctx.shadowColor='rgba(245,197,66,0.8)';
       ctx.fillText(CHARS[Math.random()*CHARS.length|0],i*16,y*16);
       ctx.shadowBlur=0;
       if(y*16>H&&Math.random()>0.97)drops[i]=0;else drops[i]++;

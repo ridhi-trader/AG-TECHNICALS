@@ -1513,7 +1513,13 @@ async function deleteLicense(lid){
 
 // ── PAGE CMS ──────────────────────────────────────────────────────────────────
 function loadPageCMS(){
-  showCMSTab('algo');
+  try{
+    showCMSTab('algo');
+  }catch(e){
+    console.error('PageCMS error:',e);
+    var pg=document.getElementById('page-pagecms');
+    if(pg) pg.innerHTML+='<div style="color:red;padding:20px;">Error loading Page Content: '+e.message+'</div>';
+  }
 }
 
 function showCMSTab(tab){

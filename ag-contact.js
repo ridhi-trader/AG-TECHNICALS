@@ -2,9 +2,9 @@
    Reads contact links from admin localStorage and updates all pages */
 (function(){
   var DEFAULT = [
-    {name:'WhatsApp', icon:'💬', url:'https://wa.me/919876543210', handle:'+91 98765 43210'},
-    {name:'Telegram', icon:'✈️', url:'https://t.me/agtechnical', handle:'@agtechnical'},
-    {name:'Instagram', icon:'📸', url:'https://instagram.com/agtechnical', handle:'@agtechnical'}
+    {name:'WhatsApp', icon:'💬', url:'https://wa.me/917357032456', handle:'+91 73570 32456'},
+    {name:'Telegram', icon:'✈️', url:'https://t.me/AG_Technical_fx', handle:'@AG_Technical_fx'},
+    {name:'Instagram', icon:'📸', url:'https://instagram.com/AG_Technical_fx', handle:'@AG_Technical_fx'}
   ];
 
   function getContacts(){

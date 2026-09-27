@@ -338,7 +338,7 @@
         });
         clearTimeout(timeout);
         const data = await res.json();
-        const reply = data.reply || 'Sorry, kuch problem ho gayi. WhatsApp karo: wa.me/919876543210';
+        const reply = data.reply || 'Sorry, kuch problem ho gayi. WhatsApp karo: wa.me/917357032456';
         typingEl.innerHTML = reply.replace(/\n/g,'<br>');
         typingEl.classList.remove('typing');
         this.msgs.push({role:'assistant', content: reply});

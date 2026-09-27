@@ -334,7 +334,7 @@ TRADING CONCEPTS (Help Users Understand)
 CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - Telegram: @agtechnical | https://t.me/agtechnical
-- WhatsApp: +91 98765 43210 | https://wa.me/919876543210
+- WhatsApp: +91 73570 32456 | https://wa.me/917357032456
 - Instagram: @agtechnical | https://instagram.com/agtechnical
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

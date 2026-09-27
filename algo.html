@@ -113,6 +113,26 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .modal-close-x{background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;transition:color .2s;}
 .modal-close-x:hover{color:var(--t1);}
 
+/* PRICING MODAL */
+.price-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.price-overlay.open{display:flex;}
+.price-modal{background:#16141c;border:1px solid rgba(245,197,66,0.25);border-radius:20px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;animation:modal-in .25s ease;}
+.price-modal-hdr{padding:24px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.price-modal-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:var(--t1);}
+.price-modal-sub{font-size:12px;color:var(--t3);margin-top:4px;}
+.price-plans{display:flex;flex-direction:column;gap:12px;padding:20px 24px 24px;}
+.price-plan{border:1.5px solid var(--border);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all .2s;position:relative;}
+.price-plan:hover{border-color:rgba(245,197,66,0.5);background:rgba(245,197,66,0.04);}
+.price-plan.best{border-color:rgba(245,197,66,0.6);background:rgba(245,197,66,0.06);}
+.price-plan-badge{position:absolute;top:-10px;right:16px;background:linear-gradient(135deg,var(--g4),var(--g5));color:#000;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;font-family:'JetBrains Mono',monospace;}
+.price-plan-row{display:flex;align-items:center;justify-content:space-between;}
+.price-plan-dur{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
+.price-plan-amt{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--g5);}
+.price-plan-save{font-size:11px;color:var(--green);margin-top:4px;}
+.price-plan-btn{width:100%;margin-top:14px;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--g4),var(--g5));color:#000;font-size:13px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;letter-spacing:0.5px;transition:opacity .2s;}
+.price-plan-btn:hover{opacity:.85;}
+.price-plan-note{font-size:11px;color:var(--t3);text-align:center;padding:0 24px 20px;line-height:1.6;}
+
 /* FEATURES STRIP */
 .features-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px;}
 @media(max-width:760px){.features-strip{grid-template-columns:repeat(2,1fr);}}
@@ -199,6 +219,21 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         <button class="modal-close-btn" onclick="closeModal()">Close</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- PRICING MODAL -->
+<div class="price-overlay" id="priceOverlay" onclick="if(event.target===this)closePriceModal()">
+  <div class="price-modal">
+    <div class="price-modal-hdr">
+      <div>
+        <div class="price-modal-title" id="priceMdlName">EA Name</div>
+        <div class="price-modal-sub">Choose your plan — pay via WhatsApp</div>
+      </div>
+      <button style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;margin-top:2px;" onclick="closePriceModal()">✕</button>
+    </div>
+    <div class="price-plans" id="pricePlans"></div>
+    <div class="price-plan-note">💬 After choosing a plan, you'll be redirected to WhatsApp to confirm your order and get the EA file.</div>
   </div>
 </div>
 
@@ -300,7 +335,8 @@ function renderEAs(){
         (ea.pid?'<div class="ea-pid">PID: '+ea.pid+'</div>':'')+
         '<div class="ea-name">'+(ea.name||'')+'</div>'+
         '<div class="ea-desc">'+(ea.desc||'')+'</div>'+
-        '<a href="https://wa.me/917357032456?text=Hi!+Interested+in+'+encodeURIComponent(ea.name||'')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;">💬 Get On WhatsApp</a>'+
+        '<button onclick="event.stopPropagation();openPriceModal('+i+')" class="ea-btn" style="width:100%;margin-bottom:8px;">🛒 Buy Now</button>'+
+        '<a href="https://wa.me/917357032456?text=Hi!+Interested+in+'+encodeURIComponent(ea.name||'')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12);color:var(--t3);font-size:12px;padding:8px;">💬 Ask on WhatsApp</a>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -336,7 +372,58 @@ function closeModal(){
   document.getElementById('eaOverlay').classList.remove('open');
 }
 
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+function openPriceModal(i){
+  var items = getAlgoItems();
+  var ea = items[i];
+  if(!ea) return;
+  document.getElementById('priceMdlName').textContent = ea.name||'EA';
+  // Pricing: use ea.price3m/6m/12m if set, else defaults
+  var p3 = ea.price3m || 30000;
+  var p6 = ea.price6m || 54000;
+  var p12 = ea.price12m || 100000;
+  var waNum = '917357032456';
+  function fmt(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
+  function waLink(plan,price){
+    var msg = 'Hi AG Technicals! I want to buy *'+ea.name+'* — '+plan+' plan at '+fmt(price)+'. Please guide me.';
+    return 'https://wa.me/'+waNum+'?text='+encodeURIComponent(msg);
+  }
+  // Save %
+  var save6 = Math.round(100-(p6/(p3*2)*100));
+  var save12 = Math.round(100-(p12/(p3*4)*100));
+  document.getElementById('pricePlans').innerHTML =
+    '<div class="price-plan">'+
+      '<div class="price-plan-row">'+
+        '<div class="price-plan-dur">3 Months</div>'+
+        '<div class="price-plan-amt">'+fmt(p3)+'</div>'+
+      '</div>'+
+      '<div class="price-plan-save">Starter plan</div>'+
+      '<a href="'+waLink('3 Month',p3)+'" target="_blank"><button class="price-plan-btn">Buy 3-Month Plan</button></a>'+
+    '</div>'+
+    '<div class="price-plan best">'+
+      '<div class="price-plan-badge">BEST VALUE</div>'+
+      '<div class="price-plan-row">'+
+        '<div class="price-plan-dur">6 Months</div>'+
+        '<div class="price-plan-amt">'+fmt(p6)+'</div>'+
+      '</div>'+
+      '<div class="price-plan-save">Save '+save6+'% vs monthly</div>'+
+      '<a href="'+waLink('6 Month',p6)+'" target="_blank"><button class="price-plan-btn">Buy 6-Month Plan</button></a>'+
+    '</div>'+
+    '<div class="price-plan">'+
+      '<div class="price-plan-row">'+
+        '<div class="price-plan-dur">12 Months</div>'+
+        '<div class="price-plan-amt">'+fmt(p12)+'</div>'+
+      '</div>'+
+      '<div class="price-plan-save">Save '+save12+'% vs monthly</div>'+
+      '<a href="'+waLink('12 Month',p12)+'" target="_blank"><button class="price-plan-btn">Buy 12-Month Plan</button></a>'+
+    '</div>';
+  document.getElementById('priceOverlay').classList.add('open');
+}
+
+function closePriceModal(){
+  document.getElementById('priceOverlay').classList.remove('open');
+}
+
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closePriceModal();}});
 // Load page content from localStorage
 (function(){
   try{

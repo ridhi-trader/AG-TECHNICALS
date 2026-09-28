@@ -196,7 +196,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 }
 </style>
 </head>
-<body>
+<body style="visibility:hidden">
 
 <nav>
   <a href="index.html" class="nav-logo">AG Technicals</a>
@@ -312,8 +312,11 @@ function requireLogin(){
     window.location.href='user-login.html';
     return false;
   }
+  document.body.style.visibility='visible';
   return true;
 }
+// Run immediately on page load
+requireLogin();
 function openContent(e, url){ e.preventDefault();
   // LOGIN CHECK
   var user = null;

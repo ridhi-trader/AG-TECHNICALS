@@ -1,6 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" style="visibility:hidden">
+<head><script>
+(function(){
+  var user=null;
+  try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
+  if(!user||!user.email){
+    localStorage.setItem('ag_redirect_after_login',window.location.href);
+    window.location.href='user-login.html';
+  } else {
+    document.documentElement.style.visibility='visible';
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <title>AG Technicals — ATR Grid EA User Guide</title>
 <style>

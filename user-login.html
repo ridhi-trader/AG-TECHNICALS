@@ -166,7 +166,7 @@ async function doLogin(){
   try{
     const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
     const d=await r.json();
-    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
+    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify({...d.user, loginTime: Date.now()})); showSuccess(); }
     else setErr('loginErr', d.error||'Login failed');
   }catch(e){setErr('loginErr','Network error. Try again.');}
 }
@@ -197,7 +197,7 @@ async function doVerifyOtp(){
   try{
     const r=await fetch(API+'/api/auth/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_signupEmail,otp})});
     const d=await r.json();
-    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify(d.user)); showSuccess(); }
+    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify({...d.user, loginTime: Date.now()})); showSuccess(); }
     else setErr('otpErr',d.error||'Invalid OTP');
   }catch(e){setErr('otpErr','Network error');}
 }

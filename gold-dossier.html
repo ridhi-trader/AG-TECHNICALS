@@ -4,7 +4,9 @@
 (function(){
   var user=null;
   try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
-  if(!user||!user.email){
+  var EXPIRE_MS=30*24*60*60*1000; // 30 days
+  if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
+    localStorage.removeItem('ag_user');
     localStorage.setItem('ag_redirect_after_login',window.location.href);
     window.location.href='user-login.html';
   } else {

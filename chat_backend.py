@@ -701,7 +701,8 @@ from fastapi.responses import JSONResponse
 
 DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
-GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password
+GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password (legacy, unused on Railway)
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")  # Brevo HTTP API — works on Railway
 ADMIN_PASS_DEFAULT = "TROUBLE_PIE456"
 
 def get_admin_pass():
@@ -777,22 +778,34 @@ def hash_pass(pw): return hashlib.sha256(pw.encode()).hexdigest()
 def gen_otp(): return str(secrets.randbelow(900000) + 100000)
 
 def send_email(to_email, subject, body):
-    if not GMAIL_USER or not GMAIL_PASS:
-        raise Exception("Email credentials not configured (GMAIL_USER/GMAIL_PASS missing in Railway env)")
+    """Send email via Brevo HTTP API (works on Railway — no SMTP ports needed)."""
+    import urllib.request, json as _json
+    if not BREVO_API_KEY:
+        raise Exception("BREVO_API_KEY not configured in Railway environment variables")
+    sender_email = GMAIL_USER or "noreply@agtechnicals.com"
+    payload = _json.dumps({
+        "sender": {"name": "AG Technicals", "email": sender_email},
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": body
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=payload,
+        headers={
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": BREVO_API_KEY,
+        },
+        method="POST"
+    )
     try:
-        msg = MIMEText(body, 'html')
-        msg['Subject'] = subject
-        msg['From'] = f"AG Technicals <{GMAIL_USER}>"
-        msg['To'] = to_email
-        ctx = ssl.create_default_context()
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ctx) as s:
-            s.login(GMAIL_USER, GMAIL_PASS)
-            s.send_message(msg)
-        return True
-    except HTTPException:
-        raise
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = _json.loads(resp.read())
+            print(f"Brevo sent: {result}")
+            return True
     except Exception as e:
-        print(f"Email error: {e}")
+        print(f"Brevo email error: {e}")
         raise
 
 def otp_email_html(otp, purpose):
@@ -835,7 +848,7 @@ async def startup():
         print("=" * 50)
         print("AG TECHNICALS — SERVER STARTING")
         print(f"GMAIL_USER: {'SET' if GMAIL_USER else 'MISSING'}")
-        print(f"GMAIL_PASS: {'SET' if GMAIL_PASS else 'MISSING'}")
+        print(f"BREVO_API_KEY: {'SET' if BREVO_API_KEY else 'MISSING — email will fail'}")
         print(f"DATABASE_URL: {'SET' if DB_URL else 'MISSING'}")
         print(f"ADMIN_EMAIL: {os.environ.get('ADMIN_EMAIL','NOT SET')}")
         print(f"NEWSAPI_KEY: {'SET' if os.environ.get('NEWSAPI_KEY') else 'MISSING'}")
@@ -856,7 +869,7 @@ async def health_check():
     return {
         "ok": True,
         "db": "connected" if db else "disconnected",
-        "gmail": bool(GMAIL_USER and GMAIL_PASS),
+        "email": "brevo" if BREVO_API_KEY else ("gmail_smtp" if (GMAIL_USER and GMAIL_PASS) else "not_configured"),
         "version": "2.0"
     }
 

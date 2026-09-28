@@ -702,7 +702,7 @@ from fastapi.responses import JSONResponse
 DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password (legacy, unused on Railway)
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")  # Brevo HTTP API — works on Railway
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "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")  # Brevo HTTP API — works on Railway
 ADMIN_PASS_DEFAULT = "TROUBLE_PIE456"
 
 def get_admin_pass():

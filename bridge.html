@@ -8,7 +8,7 @@
   if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
     localStorage.removeItem('ag_user');
     localStorage.setItem('ag_redirect_after_login',window.location.href);
-    window.location.href='user-login.html';
+    window.location.href='user-login';
   } else {
     document.documentElement.style.visibility='visible';
   }
@@ -142,14 +142,14 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </div>
 
 <nav>
-  <a href="index.html" class="nav-logo">AG Technicals</a>
+  <a href="index" class="nav-logo">AG Technicals</a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="algo.html">Algo MT5</a>
-    <a href="tv-indicators.html">TV Indicators</a>
-    <a href="index.html#contact">Contact</a>
+    <a href="index">Home</a>
+    <a href="algo">Algo MT5</a>
+    <a href="tv-indicators">TV Indicators</a>
+    <a href="index#contact">Contact</a>
   </div>
-  <a href="index.html" style="font-size:13px;color:var(--t3);">← Back</a>
+  <a href="index" style="font-size:13px;color:var(--t3);">← Back</a>
 </nav>
 
 <div class="hero">
@@ -203,8 +203,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   </div>
   <p id="bridgeSub">Professionalism Comes From Knowledge. Set up once — your TradingView signals execute automatically on MT5, around the clock.</p>
   <div class="hero-cta">
-    <a href="bridge-guide.html" class="btn-gold">📋 View Setup Guide</a>
-    <a href="index.html#contact" class="btn-out">Contact Us</a>
+    <a href="bridge-guide" class="btn-gold">📋 View Setup Guide</a>
+    <a href="index#contact" class="btn-out">Contact Us</a>
   </div>
 </div>
 
@@ -271,7 +271,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
   <!-- GUIDE LINK -->
   <div style="text-align:center;margin-bottom:56px;">
-    <a href="bridge-guide.html" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(245,197,66,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(245,197,66,0.55)'" onmouseout="this.style.background='var(--card)'">
+    <a href="bridge-guide" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(245,197,66,0.3);border-radius:14px;padding:20px 36px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--g5);transition:all .2s;" onmouseover="this.style.background='rgba(245,197,66,0.55)'" onmouseout="this.style.background='var(--card)'">
       📋 View Full Setup Guide →
     </a>
     <div style="margin-top:12px;font-size:13px;color:var(--t3);">Step-by-step: TradingView alert → MT5 setup, inputs, checklist</div>

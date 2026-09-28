@@ -309,13 +309,13 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
     <li><a href="#news">News</a></li>
-    <li><a href="about.html">About Us</a></li>
+    <li><a href="about">About Us</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <a href="user-login.html" class="btn-login" id="navLoginBtn" style="text-decoration:none;">Login</a>
-    <script>try{var _u=JSON.parse(localStorage.getItem('ag_user')||'null');if(_u){var _b=document.getElementById('navLoginBtn');_b.href='user-dashboard.html';_b.textContent='👤 My Dashboard';}}catch(e){}</script>
-    <a href="user-login.html" class="btn-cta" style="text-decoration:none;display:inline-flex;align-items:center;">Join Now</a>
+    <a href="user-login" class="btn-login" id="navLoginBtn" style="text-decoration:none;">Login</a>
+    <script>try{var _u=JSON.parse(localStorage.getItem('ag_user')||'null');if(_u){var _b=document.getElementById('navLoginBtn');_b.href='user-dashboard';_b.textContent='👤 My Dashboard';}}catch(e){}</script>
+    <a href="user-login" class="btn-cta" style="text-decoration:none;display:inline-flex;align-items:center;">Join Now</a>
   </div>
 </nav>
 
@@ -491,10 +491,10 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="f-logo"><img id="siteLogoFooter" src="logo.png" alt="AG Technicals" style="height:40px;width:auto;"></div>
   <div class="f-copy" id="footerCopy">© 2025 AG Technicals. All rights reserved.</div>
   <div class="f-links">
-    <a href="privacy-policy.html">Privacy Policy</a>
-    <a href="terms.html">Terms Of Service</a>
+    <a href="privacy-policy">Privacy Policy</a>
+    <a href="terms">Terms Of Service</a>
     <a href="#contact">Contact Us</a>
-    <a href="risk-disclaimer.html">Risk Disclaimer</a>
+    <a href="risk-disclaimer">Risk Disclaimer</a>
   </div>
 </footer>
 
@@ -562,7 +562,7 @@ const D = {
     {id:'custom',name:'Custom Strategy',icon:'⚙️',sub:'Built For You',badge:'CUSTOM',title:'Custom Strategy',desc:'Personalised strategy — tailored to your market, risk, and timeframe.',cta:'Contact Us →',type:'modal',url:'',hidden:false,img:'',fileUrl:'',fileName:'',items:[]},
     {id:'news',name:'News',icon:'📰',sub:'Live Market Feed',badge:'LIVE',title:'AG Intel',desc:'Live trading news — Forex, Gold, Crypto, Indices, Macro. Search any market.',cta:'View Live News →',type:'page',url:'news.html',hidden:false,img:'',fileUrl:'',fileName:'',
      items:[
-       {name:'Gold Dossier',pid:'NEWS-0001',badge:'GOLD',desc:'COT, DXY, institutional flow for XAU/USD',img:'',fileUrl:'',fileName:'',videoUrl:'gold-dossier.html',hidden:false},
+       {name:'Gold Dossier',pid:'NEWS-0001',badge:'GOLD',desc:'COT, DXY, institutional flow for XAU/USD',img:'',fileUrl:'',fileName:'',videoUrl:'gold-dossier',hidden:false},
      ]},
   ],
   faq: [
@@ -591,7 +591,7 @@ const D = {
   news: {
     dossierTitle:'Gold Dossier — Fed Rate Cut Watch',
     dossierSub:'XAU/USD at $4,645 · Institutions crowded long · Fed keynote in 72 hours · Full COT + DXY breakdown inside',
-    dossierUrl:'gold-dossier.html',
+    dossierUrl:'gold-dossier',
     videos:[],
     latest:[
       {title:'Fed holds rates — dollar softens across majors',time:'2h ago · Forex',dir:'up'},
@@ -844,7 +844,7 @@ if(about.videoUrl){ const w=document.getElementById('aboutVideoWrap'); w.style.d
 // Dossier card
 document.getElementById('dossierCard').style.display=news.dossierHidden?'none':'block';
 document.getElementById('dossierCard').innerHTML = `
-  <a href="${news.dossierUrl||'gold-dossier.html'}" style="display:block;text-decoration:none;">
+  <a href="${news.dossierUrl||'gold-dossier'}" style="display:block;text-decoration:none;">
     <div style="background:linear-gradient(135deg,#0f1e12 60%,#1a1400);border:1px solid rgba(201,162,39,0.35);border-radius:14px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;transition:border-color 0.2s,transform 0.2s;"
          onmouseover="this.style.borderColor='rgba(201,162,39,0.7)';this.style.transform='translateY(-2px)'"
          onmouseout="this.style.borderColor='rgba(201,162,39,0.35)';this.style.transform='translateY(0)'">

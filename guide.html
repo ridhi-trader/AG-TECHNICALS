@@ -92,8 +92,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo">AG Technicals</a>
-  <a href="index.html" class="nav-back">
+  <a href="index" class="nav-logo">AG Technicals</a>
+  <a href="index" class="nav-back">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
     Back To Site
   </a>
@@ -202,7 +202,7 @@ function requireLogin(){
   try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
   if(!user||!user.email){
     localStorage.setItem('ag_redirect_after_login',window.location.href);
-    window.location.href='user-login.html';
+    window.location.href='user-login';
     return false;
   }
   return true;

@@ -8,7 +8,7 @@
   if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
     localStorage.removeItem('ag_user');
     localStorage.setItem('ag_redirect_after_login',window.location.href);
-    window.location.href='user-login.html';
+    window.location.href='user-login';
   } else {
     document.documentElement.style.visibility='visible';
   }

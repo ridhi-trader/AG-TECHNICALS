@@ -8,7 +8,7 @@
   if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
     localStorage.removeItem('ag_user');
     localStorage.setItem('ag_redirect_after_login',window.location.href);
-    window.location.href='user-login.html';
+    window.location.href='user-login';
   } else {
     document.documentElement.style.visibility='visible';
   }
@@ -125,8 +125,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 </div>
 
 <nav>
-  <a href="index.html" class="nav-logo">AG Technicals</a>
-  <a href="bridge.html" class="nav-back">← Back To Bridge</a>
+  <a href="index" class="nav-logo">AG Technicals</a>
+  <a href="bridge" class="nav-back">← Back To Bridge</a>
 </nav>
 
 <div class="hero">

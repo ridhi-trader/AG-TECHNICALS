@@ -8,7 +8,7 @@
   if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
     localStorage.removeItem('ag_user');
     localStorage.setItem('ag_redirect_after_login',window.location.href);
-    window.location.href='user-login.html';
+    window.location.href='user-login';
   } else {
     document.documentElement.style.visibility='visible';
   }
@@ -80,7 +80,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 </div>
 
 <nav>
-  <a href="index.html" class="logo">AG Technicals</a>
+  <a href="index" class="logo">AG Technicals</a>
   <div class="nav-right">
     <div class="nav-user">Logged in as <span id="navUser">...</span></div>
     <button class="logout-btn" onclick="logout()">Logout</button>
@@ -95,25 +95,25 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 const API = '';
 
 const userRaw = localStorage.getItem('ag_user');
-if(!userRaw){ window.location.href='user-login.html'; }
+if(!userRaw){ window.location.href='user-login'; }
 
 let user = {};
-try{ user = JSON.parse(userRaw) || {}; }catch(e){ localStorage.removeItem('ag_user'); window.location.href='user-login.html'; }
+try{ user = JSON.parse(userRaw) || {}; }catch(e){ localStorage.removeItem('ag_user'); window.location.href='user-login'; }
 document.getElementById('navUser').textContent = user.username || '';
 
 const PROD_MAP = {
-  bridge:      {icon:'🌉', name:'Bridge',               sub:'TradingView → MT5 Connector', url:'bridge.html'},
-  algo:        {icon:'🤖', name:'Algo (MT5)',            sub:'Auto Trading System',         url:'algo.html'},
-  tvindicator: {icon:'📈', name:'TradingView Indicator', sub:'Custom TradingView Indicators',        url:'tv-indicators.html'},
-  education:   {icon:'🧠', name:'Education',             sub:'Courses & Academy',           url:'education.html'},
-  guide:       {icon:'📖', name:'Guide',                 sub:'Written Playbooks',           url:'guide.html'},
-  custom:      {icon:'⚙️', name:'Custom Strategy',       sub:'Built For You',               url:'index.html#services'},
-  news:        {icon:'📰', name:'News',                  sub:'Live Market Feed',            url:'gold-dossier.html'},
+  bridge:      {icon:'🌉', name:'Bridge',               sub:'TradingView → MT5 Connector', url:'bridge'},
+  algo:        {icon:'🤖', name:'Algo (MT5)',            sub:'Auto Trading System',         url:'algo'},
+  tvindicator: {icon:'📈', name:'TradingView Indicator', sub:'Custom TradingView Indicators',        url:'tv-indicators'},
+  education:   {icon:'🧠', name:'Education',             sub:'Courses & Academy',           url:'education'},
+  guide:       {icon:'📖', name:'Guide',                 sub:'Written Playbooks',           url:'guide'},
+  custom:      {icon:'⚙️', name:'Custom Strategy',       sub:'Built For You',               url:'index#services'},
+  news:        {icon:'📰', name:'News',                  sub:'Live Market Feed',            url:'gold-dossier'},
 };
 
 function logout(){
   localStorage.removeItem('ag_user');
-  window.location.href='user-login.html';
+  window.location.href='user-login';
 }
 
 function render(){
@@ -145,7 +145,7 @@ function render(){
 
     <div class="section-title">📦 Your Products</div>
     ${prods.length ? prods.map(pid=>{
-      const p = PROD_MAP[pid] || {icon:'📦', name:pid, sub:'Product', url:'index.html'};
+      const p = PROD_MAP[pid] || {icon:'📦', name:pid, sub:'Product', url:'index'};
       return `<div class="prod-card">
         <div class="prod-icon">${p.icon}</div>
         <div>
@@ -164,10 +164,10 @@ function render(){
     <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
       <div class="section-title">🔗 Quick Links</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="index.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">🏠 Home</div></a>
-        <a href="education.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">🧠 Education</div></a>
-        <a href="guide.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">📖 Guides</div></a>
-        <a href="gold-dossier.html" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">📰 Gold Dossier</div></a>
+        <a href="index" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">🏠 Home</div></a>
+        <a href="education" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">🧠 Education</div></a>
+        <a href="guide" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">📖 Guides</div></a>
+        <a href="gold-dossier" style="text-decoration:none;"><div class="prod-card" style="padding:12px 16px;margin:0;display:inline-flex;gap:8px;font-size:13px;">📰 Gold Dossier</div></a>
       </div>
     </div>`;
 }

@@ -56,8 +56,8 @@ input:focus{border-color:rgba(245,197,66,.5);}
 </head>
 <body>
 <nav>
-  <a href="index.html" class="logo">AG Technicals</a>
-  <a href="index.html" class="nav-back">← Back To Site</a>
+  <a href="index" class="logo">AG Technicals</a>
+  <a href="index" class="nav-back">← Back To Site</a>
 </nav>
 <div class="wrap">
   <div class="box">
@@ -245,11 +245,11 @@ async function doReset(){
 function showSuccess(){
   showStep('successStep');
   setTimeout(()=>{ document.getElementById('progressBar').style.width='100%'; },100);
-  setTimeout(()=>{ const redir=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=redir||'user-dashboard.html'; },2100);
+  setTimeout(()=>{ const redir=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=redir||'user-dashboard'; },2100);
 }
 
 // If already logged in, redirect
-if(localStorage.getItem('ag_user')){ const r=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=r||'user-dashboard.html'; }
+if(localStorage.getItem('ag_user')){ const r=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=r||'user-dashboard'; }
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>

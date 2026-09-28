@@ -199,8 +199,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <body style="visibility:hidden">
 
 <nav>
-  <a href="index.html" class="nav-logo">AG Technicals</a>
-  <a href="index.html" class="nav-back">
+  <a href="index" class="nav-logo">AG Technicals</a>
+  <a href="index" class="nav-back">
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
     Back To Site
   </a>
@@ -311,7 +311,7 @@ function requireLogin(){
   if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
     localStorage.removeItem('ag_user');
     localStorage.setItem('ag_redirect_after_login',window.location.href);
-    window.location.href='user-login.html';
+    window.location.href='user-login';
     return false;
   }
   document.body.style.visibility='visible';
@@ -326,7 +326,7 @@ function openContent(e, url){ e.preventDefault();
   if(!user || !user.email){
     // Not logged in — redirect to login
     localStorage.setItem('ag_redirect_after_login', window.location.href);
-    window.location.href = 'user-login.html';
+    window.location.href = 'user-login';
     return;
   }
   var modal = document.getElementById('contentModal');

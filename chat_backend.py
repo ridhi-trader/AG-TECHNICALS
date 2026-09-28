@@ -782,7 +782,7 @@ def send_email(to_email, subject, body):
     import urllib.request, json as _json
     if not BREVO_API_KEY:
         raise Exception("BREVO_API_KEY not configured in Railway environment variables")
-    sender_email = GMAIL_USER or "noreply@agtechnicals.com"
+    sender_email = GMAIL_USER or "candleagtechnical456@gmail.com"
     payload = _json.dumps({
         "sender": {"name": "AG Technicals", "email": sender_email},
         "to": [{"email": to_email}],

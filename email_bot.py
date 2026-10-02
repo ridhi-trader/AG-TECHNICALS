@@ -130,6 +130,8 @@ def _fetch_unseen():
         status, data = conn.search(None, "UNSEEN")
         if status != "OK":
             return results
+        if data and data[0]:
+            print(f"[email_bot] fetched {len(data[0].split())} unseen mail(s)")
         for num in data[0].split():
             status, msg_data = conn.fetch(num, "(RFC822)")
             if status != "OK" or not msg_data or not msg_data[0]:
@@ -139,6 +141,9 @@ def _fetch_unseen():
 
             to_all = " ".join(filter(None, [msg.get("To", ""), msg.get("Cc", ""), msg.get("Delivered-To", "")]))
             if SUPPORT_ADDR.lower() not in to_all.lower():
+                print(f"[email_bot] skipped (not addressed to {SUPPORT_ADDR}): "
+                      f"From={msg.get('From', '')!r} Subject={_decode(msg.get('Subject', ''))!r} "
+                      f"To={msg.get('To', '')!r} Cc={msg.get('Cc', '')!r} Delivered-To={msg.get('Delivered-To', '')!r}")
                 conn.store(num, "+FLAGS", "\\Seen")
                 continue
 

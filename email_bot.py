@@ -157,19 +157,50 @@ def _fetch_unseen():
     return results
 
 
+BREVO_SENDER = os.environ.get("GMAIL_USER") or "candleagtechnical456@gmail.com"
+
+
+def _brevo_key():
+    key = os.environ.get("BREVO_API_KEY")
+    if key:
+        return key
+    from chat_backend import BREVO_API_KEY  # same key chat_backend.send_email() uses
+    return BREVO_API_KEY
+
+
 def _send_mail_sync(to_addr, subject, body, from_addr=None):
-    from_addr = from_addr or SUPPORT_ADDR
-    msg = MIMEText(body, "plain", "utf-8")
-    msg["Subject"] = subject
-    msg["From"] = from_addr
-    msg["To"] = to_addr
-    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, timeout=20) as server:
-        server.login(EMAIL_USER, EMAIL_PASS)
-        server.sendmail(from_addr, [to_addr], msg.as_string())
+    """Send via Brevo HTTP API (port 443) — raw SMTP (465) times out on Railway's network,
+    same reason chat_backend.py's own send_email() already avoids smtplib."""
+    import urllib.request, json as _json
+
+    reply_to = from_addr or SUPPORT_ADDR
+    html_body = "<pre style='font-family:inherit;white-space:pre-wrap'>" + (
+        body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    ) + "</pre>"
+    payload = _json.dumps({
+        "sender": {"name": "AG Technicals Support", "email": BREVO_SENDER},
+        "to": [{"email": to_addr}],
+        "replyTo": {"email": reply_to},
+        "subject": subject,
+        "htmlContent": html_body,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=payload,
+        headers={
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": _brevo_key(),
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        resp.read()
 
 
 async def _classify_and_reply(from_name, from_addr, subject, body):
     if not ANTHROPIC_KEY:
+        print("[email_bot] ANTHROPIC_API_KEY not set — skipping classify")
         return {"category": "needs_review", "reply": ""}
     user_msg = f"From: {from_name} <{from_addr}>\nSubject: {subject}\n\n{body}"
     try:
@@ -188,6 +219,9 @@ async def _classify_and_reply(from_name, from_addr, subject, body):
                     "messages": [{"role": "user", "content": user_msg}],
                 },
             )
+        if r.status_code != 200:
+            print(f"[email_bot] Anthropic API error {r.status_code}: {r.text[:500]}")
+            return {"category": "needs_review", "reply": ""}
         text = r.json().get("content", [{}])[0].get("text", "").strip()
         if text.startswith("```"):
             text = text.split("```")[1]

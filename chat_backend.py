@@ -862,6 +862,14 @@ async def startup():
         # NEVER crash on startup errors — log and continue
         print(f"STARTUP WARNING: {e} — continuing anyway")
 
+    # ── Support email auto-reply bot (support@agtechnicals.com) ──
+    try:
+        import asyncio as _asyncio
+        from email_bot import email_bot_loop
+        _asyncio.create_task(email_bot_loop())
+    except Exception as e:
+        print(f"[email_bot] failed to start: {e} — continuing anyway")
+
 
 @app.get("/api/health")
 async def health_check():

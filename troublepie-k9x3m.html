@@ -920,7 +920,7 @@ function nav(id, btn){
 const D_PRODS = [
   {id:'bridge', name:'Bridge', icon:'🌉', sub:'TradingView → MT5 Connector', badge:'PREMIUM',
    desc:'The AG Bridge connects TradingView alerts straight to MetaTrader 5 — 24/7 automated. One license, one MT5 account.',
-   cta:'Get Bridge Access →', type:'page', url:'bridge.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   cta:'Get Bridge Access →', type:'page', url:'bridge', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[
      {name:'Bridge Setup Guide', pid:'BRG-0001', badge:'GUIDE', desc:'Step-by-step TradingView → MT5 setup', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
      {name:'Bridge License (1 Month)', pid:'BRG-0002', badge:'1 MONTH', desc:'30-day Bridge access license', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
@@ -929,7 +929,7 @@ const D_PRODS = [
    ]},
   {id:'algo', name:'Algo (MT5)', icon:'🤖', sub:'Auto Trading System (MT5)', badge:'PREMIUM',
    desc:'Fully automated MT5 trading algorithm — runs 24/7, executes entries and exits without manual input.',
-   cta:'View Algo →', type:'page', url:'algo.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   cta:'View Algo →', type:'page', url:'algo', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[
      {name:'AG 3 Logic EA', pid:'EA-0001', badge:'PREMIUM', section:'ea', desc:'AG 3 Logic EA live trading demo', img:'', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559676/signal-2026-08-30-00-48-50-396.mp4', fileName:'', videoUrl:'', hidden:false},
      {name:'AG Signal Demo 2', pid:'EA-0002', badge:'PREMIUM', section:'ea', desc:'Live MT5 signal trading demo', img:'', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559593/signal-2026-09-04-17-06-41-824.mp4', fileName:'', videoUrl:'', hidden:false},
@@ -939,7 +939,7 @@ const D_PRODS = [
    ]},
   {id:'tvindicator', name:'TradingView Indicator', icon:'📈', sub:'Custom TradingView Indicator', badge:'PREMIUM',
    desc:'3 custom TradingView indicators — AG SMC, AG Order Flow, AG-ESB. Auto-detect key levels in real time.',
-   cta:'View Indicators →', type:'page', url:'tv-indicators.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   cta:'View Indicators →', type:'page', url:'tv-indicators', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[
      {name:'AG SMC Indicator', pid:'TVI-0003', badge:'PREMIUM', desc:'Smart Money Concepts auto-detection indicator', img:'img-smc.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
      {name:'AG Order Flow', pid:'TVI-0004', badge:'PREMIUM', desc:'Real-time order flow visualization indicator', img:'img-orderflow.png', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
@@ -947,15 +947,15 @@ const D_PRODS = [
    ]},
   {id:'education', name:'Education', icon:'🧠', sub:'Courses & Academy', badge:'FREE + PAID',
    desc:'Structured courses from beginner to advanced — SMC, ICT, risk management, trading psychology.',
-   cta:'Open Courses →', type:'page', url:'education.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   cta:'Open Courses →', type:'page', url:'education', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[]},
   {id:'guide', name:'Guide', icon:'📖', sub:'Written Playbooks', badge:'PREMIUM',
    desc:'Step-by-step written guides — order flow, stop loss, session timing, prop firm rules and more.',
-   cta:'Open Guides →', type:'page', url:'guide.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   cta:'Open Guides →', type:'page', url:'guide', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[
-     {name:'AG Swing EMA RR EA Guide', pid:'GD-0001', badge:'EA GUIDE', section:'ea', desc:'Complete Swing EMA EA user guide — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'swing-ema-guide.html', hidden:false},
-     {name:'AG ATR Grid EA Guide', pid:'GD-0002', badge:'EA GUIDE', section:'ea', desc:'Complete ATR Grid EA user guide', img:'', fileUrl:'', fileName:'', videoUrl:'atr-grid-guide.html', hidden:false},
-     {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', section:'ea', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', img:'', fileUrl:'', fileName:'', videoUrl:'smc-feature-guide.html', hidden:false},
+     {name:'AG Swing EMA RR EA Guide', pid:'GD-0001', badge:'EA GUIDE', section:'ea', desc:'Complete Swing EMA EA user guide — Hindi & English', img:'', fileUrl:'', fileName:'', videoUrl:'swing-ema-guide', hidden:false},
+     {name:'AG ATR Grid EA Guide', pid:'GD-0002', badge:'EA GUIDE', section:'ea', desc:'Complete ATR Grid EA user guide', img:'', fileUrl:'', fileName:'', videoUrl:'atr-grid-guide', hidden:false},
+     {name:'AG SMC Feature Guide', pid:'GD-0003', badge:'SMC', section:'ea', desc:'SMC feature guide — OBs, FVG, BOS/CHoCH, liquidity', img:'', fileUrl:'', fileName:'', videoUrl:'smc-feature-guide', hidden:false},
      {name:'TradingView Alert Setup Guide', pid:'GD-0004', badge:'TV GUIDE', section:'tv', desc:'Step-by-step: TradingView alerts, webhook URLs, alert conditions, AG Bridge connection', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
      {name:'AG SMC Indicator — Setup & Usage', pid:'GD-0005', badge:'TV GUIDE', section:'tv', desc:'Installing and using AG SMC TradingView indicator — OBs, FVG, BOS/CHoCH confluence', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
      {name:'Pine Script Alerts — JSON Format', pid:'GD-0006', badge:'TV GUIDE', section:'tv', desc:'Writing Pine Script alert messages in JSON format for AG Bridge — buy/sell signals, SL, TP', img:'', fileUrl:'', fileName:'', videoUrl:'', hidden:false},
@@ -965,9 +965,9 @@ const D_PRODS = [
    cta:'Contact Us →', type:'modal', url:'', hidden:false, img:'', fileUrl:'', fileName:'', items:[]},
   {id:'news', name:'News', icon:'📰', sub:'Live Market Feed', badge:'LIVE',
    desc:'AG Intel — live market dossiers, COT analysis, DXY watch, and real-time institutional flow.',
-   cta:'Read Dossier →', type:'page', url:'gold-dossier.html', hidden:false, img:'', fileUrl:'', fileName:'',
+   cta:'Read Dossier →', type:'page', url:'gold-dossier', hidden:false, img:'', fileUrl:'', fileName:'',
    items:[
-     {name:'Gold Dossier', pid:'NEWS-0001', badge:'GOLD', desc:'COT analysis, DXY watch, institutional flow for XAU/USD', img:'', fileUrl:'', fileName:'', videoUrl:'gold-dossier.html', hidden:false},
+     {name:'Gold Dossier', pid:'NEWS-0001', badge:'GOLD', desc:'COT analysis, DXY watch, institutional flow for XAU/USD', img:'', fileUrl:'', fileName:'', videoUrl:'gold-dossier', hidden:false},
    ]},
 ];
 
@@ -1655,5 +1655,6 @@ function saveCMSBridge(){
   </div>
 </div>
 
+<a id="ag-support-widget" href="mailto:support@agtechnicals.com" style="position:fixed;bottom:20px;right:20px;z-index:999;background:#f5c542;color:#000;padding:10px 16px;border-radius:30px;font-family:sans-serif;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,0.4);">✉ Support</a>
 </body>
 </html>

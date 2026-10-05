@@ -24,7 +24,7 @@
   const css = `
   /* ── Bubble ── */
   #ag-ai-bubble {
-    position:fixed; bottom:28px; right:28px;
+    position:fixed; bottom:80px; right:28px;
     width:60px; height:60px; border-radius:50%;
     background:#0d0d0f;
     border:2px solid rgba(232,184,75,0.6);
@@ -57,8 +57,8 @@
 
   /* ── Panel ── */
   #ag-ai-panel {
-    position:fixed; bottom:100px; right:28px;
-    width:360px; max-height:560px;
+    position:fixed; bottom:152px; right:28px;
+    width:360px; max-height:min(560px, calc(100vh - 170px));
     background:#111018;
     border:1px solid rgba(232,184,75,0.18);
     border-radius:20px;
@@ -204,8 +204,8 @@
   #ag-ai-send:disabled { opacity:.3; cursor:not-allowed; transform:none; }
 
   @media(max-width:640px){
-    #ag-ai-panel{ width:calc(100vw - 28px); right:14px; bottom:86px; }
-    #ag-ai-bubble{ bottom:20px; right:14px; }
+    #ag-ai-panel{ width:calc(100vw - 28px); right:14px; bottom:148px; }
+    #ag-ai-bubble{ bottom:80px; right:14px; }
   }
   `;
 

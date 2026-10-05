@@ -229,8 +229,9 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     var eduProd = products.find(function(p){return p.id==='education';});
     var items = (eduProd && eduProd.items||[]).filter(function(it){return !it.hidden;});
   
+  function cleanUrl(u){return String(u||'').replace(/^(?!https?:|\/\/|mailto:|\/?uploaded_files)([^?#]*?)\.html(?=$|[?#])/i,'$1');}
   function makeCard(it, idx){
-    var url = it.fileUrl||it.videoUrl||'#';
+    var url = cleanUrl(it.fileUrl||it.videoUrl||'#');
     var onClick = url!='#' ? 'onclick="openContent(event,\''+url+'\')" href="#"' : 'href="#"';
 
     /* ── per-card unique SVG covers (cycle by index) ── */

@@ -750,11 +750,12 @@ function agImgCheck(img){
 function renderProducts(products){
 const visProds = products.filter(p=>!p.hidden);
 
+function cleanUrl(u){return String(u||'').replace(/^(?!https?:|\/\/|mailto:|\/?uploaded_files)([^?#]*?)\.html(?=$|[?#])/i,'$1');}
 document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   const hasItems = (p.items||[]).filter(it=>!it.hidden).length > 0;
   let onclick;
   if(p.type==='page' && p.url){
-    onclick = "window.location.href='" + p.url + "'";
+    onclick = "window.location.href='" + cleanUrl(p.url) + "'";
   } else if(hasItems){
     onclick = "openSubItems('" + p.id + "')";
   } else {

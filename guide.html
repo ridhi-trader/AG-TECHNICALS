@@ -166,6 +166,7 @@ function getGuideItems(){
 }
 const GUIDES=[];
 
+function cleanUrl(u){return String(u||'').replace(/^(?!https?:|\/\/|mailto:|\/?uploaded_files)([^?#]*?)\.html(?=$|[?#])/i,'$1');}
 function makeCard(g, i, isTV){
   const numBadge = i!==undefined ? `<div style="position:absolute;top:10px;right:10px;min-width:24px;height:24px;border-radius:12px;background:rgba(245,197,66,0.15);border:1px solid rgba(245,197,66,0.35);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#f5c542;padding:0 6px;">${i+1}</div>` : '';
   const inner = `
@@ -182,7 +183,7 @@ function makeCard(g, i, isTV){
         <div class="guide-desc">${g.desc}</div>
       </div>
       <div class="guide-btn">${isTV?'Read Guide →':'Open Guide →'}</div>`;
-  if(g.url) return `<a class="guide-card" href="${g.url}" style="text-decoration:none;position:relative;">${numBadge}${inner}</a>`;
+  if(g.url) return `<a class="guide-card" href="${cleanUrl(g.url)}" style="text-decoration:none;position:relative;">${numBadge}${inner}</a>`;
   return `<div class="guide-card" style="cursor:default;opacity:.8;position:relative;">${numBadge}${inner}</div>`;
 }
 

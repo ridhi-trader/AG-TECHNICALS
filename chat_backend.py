@@ -702,7 +702,7 @@ from fastapi.responses import JSONResponse
 DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password (legacy, unused on Railway)
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "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")  # Brevo HTTP API — works on Railway
+BREVO_API_KEY = (os.environ.get("BREVO_API_KEY") or "").strip()  # Brevo HTTP API — set in Railway env vars, never hardcode
 ADMIN_PASS_DEFAULT = "TROUBLE_PIE456"
 
 def get_admin_pass():
@@ -804,6 +804,13 @@ def send_email(to_email, subject, body):
             result = _json.loads(resp.read())
             print(f"Brevo sent: {result}")
             return True
+    except urllib.error.HTTPError as e:
+        try:
+            detail = e.read().decode("utf-8", "replace")[:300]
+        except Exception:
+            detail = ""
+        print(f"Brevo email error: HTTP {e.code} {detail}")
+        raise Exception(f"Email service error (HTTP {e.code}). Please try again later or contact support@agtechnicals.com")
     except Exception as e:
         print(f"Brevo email error: {e}")
         raise

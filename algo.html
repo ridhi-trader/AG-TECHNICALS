@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" style="visibility:hidden">
-<head>
+<head><script>
+(function(){
+  var user=null;
+  try{user=JSON.parse(localStorage.getItem('ag_user'));}catch(e){}
+  var EXPIRE_MS=30*24*60*60*1000; // 30 days
+  if(!user||!user.email||(user.loginTime&&Date.now()-user.loginTime>EXPIRE_MS)){
+    localStorage.removeItem('ag_user');
+    localStorage.setItem('ag_redirect_after_login',window.location.href);
+    window.location.href='user-login';
+  } else {
+    document.documentElement.style.visibility='visible';
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Algo (MT5) — AG Technicals</title>

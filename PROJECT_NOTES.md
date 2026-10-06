@@ -66,3 +66,10 @@ Fonts: Space Grotesk (headings) + Inter (body)
 - [ ] Modal content for: Bridge, Algo, Education, Guide, Custom Strategy
 - [ ] GitHub PAT needs regeneration
 - [ ] Caveman mode active (/caveman)
+
+## Site footer (Privacy / Terms / Contact / Risk / Support)
+- Single source: `ag-footer.js`. Edit the `LINKS` array there to change footer links on every page.
+- nginx (`nginx.conf`, `sub_filter`) injects the script into every HTML response, so new pages/products
+  get the footer automatically. Pages may also include `<script src="ag-footer.js"></script>` explicitly;
+  the script is idempotent. It skips iframes and admin pages (`admin`, `troublepie-*`).
+- Support email shown in the footer: support@agtechnicals.com (mailto link).

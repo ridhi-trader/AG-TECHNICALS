@@ -90,7 +90,17 @@
     copy.textContent = '© ' + new Date().getFullYear() + ' AG Technicals. All rights reserved.';
     f.appendChild(copy);
     f.appendChild(holder);
-    document.body.appendChild(f);
+
+    // Pages whose <body> is a side-by-side flex/grid layout (guide pages with a sidebar) would
+    // squeeze the content if the footer became another column, so put it inside the content area.
+    var host = document.body;
+    var bs = getComputedStyle(document.body);
+    var sideBySide = (bs.display === 'flex' || bs.display === 'inline-flex') && bs.flexDirection.indexOf('column') !== 0;
+    if (sideBySide || bs.display === 'grid') {
+      host = document.querySelector('#main, .main, main, #content, .content');
+      if (!host) return; // unknown layout: better no footer than a broken page
+    }
+    host.appendChild(f);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);

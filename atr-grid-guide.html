@@ -15,6 +15,7 @@
 })();
 </script>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AG Technicals — ATR Grid EA User Guide</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap');
@@ -31,6 +32,7 @@
   .nav-item:hover { opacity:1; background:rgba(212,175,55,0.06); }
   .nav-item.active { opacity:1; border-left-color:var(--gold); background:rgba(212,175,55,0.08); color:var(--gold); }
   .main { flex:1; padding:40px; position:relative; overflow:hidden; }
+  @media(max-width:800px){ body{ flex-direction:column; } .sidebar{ width:100%; max-height:none; border-right:none; border-bottom:1px solid rgba(212,175,55,0.3); } .main{ padding:24px 16px; } }
   .watermark-bg { position:absolute; inset:0; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><text x="-10" y="130" transform="rotate(-30 120,120)" font-size="20" fill="%23D4AF37" font-family="Inter" opacity="0.32">AG TECHNICALS</text></svg>'); background-repeat:repeat; pointer-events:none; z-index:0; }
   .chapter { display:none; position:relative; z-index:1; max-width:840px; }
   .chapter.active { display:block; }

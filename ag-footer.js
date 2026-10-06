@@ -20,13 +20,32 @@
   var SUPPORT_EMAIL = 'support@agtechnicals.com';
   var onHome = /(^|\/)(index)?(\.html)?$/.test(path) || path === '';
 
+  // WhatsApp / Telegram come from the same admin-editable 'contact' list that ag-contact.js uses.
+  var CONTACT_DEFAULT = [
+    { name: 'WhatsApp', url: 'https://wa.me/917357032456' },
+    { name: 'Telegram', url: 'https://t.me/AG_Technical_fx' }
+  ];
+  function contactUrl(name) {
+    var list = CONTACT_DEFAULT;
+    try { var saved = JSON.parse(localStorage.getItem('contact')); if (saved && saved.length) list = saved; } catch (e) {}
+    for (var i = 0; i < list.length; i++) {
+      if ((list[i].name || '').toLowerCase().indexOf(name.toLowerCase()) > -1 && list[i].url && !list[i].hidden) return list[i].url;
+    }
+    for (var j = 0; j < CONTACT_DEFAULT.length; j++) {
+      if (CONTACT_DEFAULT[j].name === name) return CONTACT_DEFAULT[j].url;
+    }
+    return '';
+  }
+
   var LINKS = [
     { label: 'Privacy Policy',   href: 'privacy-policy' },
     { label: 'Terms Of Service', href: 'terms' },
     { label: 'Contact Us',       href: onHome ? '#contact' : 'index#contact' },
     { label: 'Risk Disclaimer',  href: 'risk-disclaimer' },
-    { label: 'Support',          href: 'mailto:' + SUPPORT_EMAIL, id: 'ag-footer-support' }
-  ];
+    { label: 'Support',          href: 'mailto:' + SUPPORT_EMAIL, id: 'ag-footer-support' },
+    { label: 'WhatsApp',         href: contactUrl('WhatsApp'), ext: true },
+    { label: 'Telegram',         href: contactUrl('Telegram'), ext: true }
+  ].filter(function (l) { return l.href; });
 
   function addStyle() {
     if (document.getElementById('ag-footer-style')) return;
@@ -50,6 +69,7 @@
     a.href = l.href;
     a.textContent = l.label;
     if (l.id) a.id = l.id;
+    if (l.ext) { a.target = '_blank'; a.rel = 'noopener'; }
     return a;
   }
 

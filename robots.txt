@@ -5,3 +5,5 @@ Disallow: /user-dashboard.html
 Disallow: /uploaded_files/
 
 Allow: /
+
+Sitemap: https://www.agtechnicals.com/sitemap.xml

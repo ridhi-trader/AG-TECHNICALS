@@ -102,7 +102,6 @@ try{ user = JSON.parse(userRaw) || {}; }catch(e){ localStorage.removeItem('ag_us
 document.getElementById('navUser').textContent = user.username || '';
 
 const PROD_MAP = {
-  bridge:      {icon:'🌉', name:'Bridge',               sub:'TradingView → MT5 Connector', url:'bridge'},
   algo:        {icon:'🤖', name:'Algo (MT5)',            sub:'Auto Trading System',         url:'algo'},
   tvindicator: {icon:'📈', name:'TradingView Indicator', sub:'Custom TradingView Indicators',        url:'tv-indicators'},
   education:   {icon:'🧠', name:'Education',             sub:'Courses & Academy',           url:'education'},

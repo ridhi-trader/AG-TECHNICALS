@@ -275,7 +275,7 @@
     <div id="ag-ai-msgs">
       <div class="ag-msg-row">
         <div class="ag-msg-avatar">${AVATAR_SM}</div>
-        <div class="ag-msg bot">Namaste! 👋 Main <strong>AG Assistant</strong> hun. AG Technicals ke baare mein kuch bhi pucho — products, courses, indicators, bridge — sab bata dunga!</div>
+        <div class="ag-msg bot">Namaste! 👋 Main <strong>AG Assistant</strong> hun. AG Technicals ke baare mein kuch bhi pucho — products, courses, indicators — sab bata dunga!</div>
       </div>
     </div>
     <div class="ag-ai-input-row">

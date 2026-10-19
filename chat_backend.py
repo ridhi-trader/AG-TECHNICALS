@@ -250,13 +250,7 @@ PRODUCTS & SERVICES (Full Detail)
    - Compatible with any MT5 broker
    - For pricing/access: contact via WhatsApp or Telegram
 
-3. BRIDGE (TradingView → MT5)
-   - Connects TradingView strategies/alerts directly to MetaTrader 5
-   - User gets unique License ID + Secret Key after purchase
-   - Supports Pine Script auto-variables: action, ticker, price, position size
-   - JSON webhook format used for signal passing
-   - Each user gets their own secure bridge license
-   - For pricing/setup: contact via WhatsApp or Telegram
+(Bridge / TradingView-to-MT5 connector is not offered at the moment. If asked, say it is not currently available.)
 
 4. EDUCATION
    - Structured trading courses:
@@ -298,13 +292,12 @@ WEBSITE PAGES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - Home (index.html): Main landing page with all products overview
 - Algo page: MT5 EA demos, videos, details
-- Bridge page: Bridge system explained, license info
 - Education page: Courses listing
 - Guide page: EA Guides + TradingView Guides
 - News page: Live market news, prices, charts
 - About page: About AG Technicals
 - User Login: Email OTP based login for licensed users
-- User Dashboard: Access bridge license details after login
+- User Dashboard: Access license details after login
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 HOW TO GET STARTED
@@ -312,7 +305,6 @@ HOW TO GET STARTED
 1. Browse products on the website
 2. Contact AG Technicals on WhatsApp or Telegram
 3. Choose your product, get access/license
-4. For Bridge: receive License ID + Secret Key via WhatsApp/Telegram
 5. For Indicators: get added to TradingView indicator access
 6. For Algo (MT5): download EA file, install on MT5
 
@@ -324,7 +316,6 @@ TRADING CONCEPTS (Help Users Understand)
 - EA (Expert Advisor): Automated trading bot that runs on MT5
 - TradingView: Online charting platform where custom indicators run
 - Pine Script: Programming language used to build TradingView indicators
-- Bridge/Webhook: System that sends TradingView alerts as trade orders to MT5 automatically
 - Order Block: Price zone where institutional traders placed large orders
 - FVG (Fair Value Gap): Price imbalance zone that tends to get filled
 - BOS (Break of Structure): When price breaks a key swing high/low — trend confirmation

@@ -123,6 +123,20 @@
     host.appendChild(f);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
-  else build();
+  // One-line disclosure under the links on every page.
+  function addDisclaimer() {
+    if (document.getElementById('ag-footer-disc')) return;
+    var a = document.getElementById('ag-footer-support');
+    var host = a && (a.closest('footer') || a.parentNode);
+    if (!host) return;
+    var d = document.createElement('div');
+    d.id = 'ag-footer-disc';
+    d.style.cssText = 'flex-basis:100%;width:100%;margin-top:14px;font-size:11px;line-height:1.5;color:#8a8a8a;text-align:center;';
+    d.textContent = 'AG Technicals provides trading software and educational content only. Nothing here is investment advice or a recommendation to buy or sell. We are not SEBI-registered. Trading involves substantial risk of loss.';
+    host.appendChild(d);
+  }
+
+  function run() { build(); addDisclaimer(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
 })();

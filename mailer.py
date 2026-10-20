@@ -6,7 +6,7 @@ Both use port 443 (raw SMTP is blocked on Railway).
 Railway env vars:
   ZEPTOMAIL_TOKEN  - "Send Mail Token" of the ZeptoMail agent (with or without the
                      "Zoho-enczapikey " prefix)
-  ZEPTOMAIL_HOST   - API host, default api.zeptomail.in (India data centre)
+  ZEPTOMAIL_HOST   - API host, default cpaas.zoho.in (India data centre)
   ZEPTOMAIL_FROM   - default From address on the verified domain (noreply@agtechnicals.com)
   BREVO_API_KEY    - optional fallback
 """
@@ -40,7 +40,7 @@ def _post(url, headers, payload, timeout):
 
 
 def _send_zepto(to_email, subject, html, sender_name, sender_email, reply_to, timeout):
-    host = (os.environ.get("ZEPTOMAIL_HOST") or "api.zeptomail.in").strip()
+    host = (os.environ.get("ZEPTOMAIL_HOST") or "cpaas.zoho.in").strip()
     payload = {
         "from": {"address": sender_email, "name": sender_name},
         "to": [{"email_address": {"address": to_email}}],

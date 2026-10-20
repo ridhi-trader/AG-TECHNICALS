@@ -534,7 +534,6 @@ const D = {
     {text:'COT · Managed Money net long 130,766 contracts',type:'cot'},
     {text:'NAS100  18,920  ▲ 1.20%',type:'default'},
     {text:'CRUDE  82.50  ▼ 0.61%',type:'default'},
-    {text:'AG INTEL · Gold Dossier: Fed Cut Sep 17-18 — XAU at $3,680 — Read ↗',type:'gold'},
   ],
   products: [
     {id:'algo',name:'Algo (MT5)',icon:'🤖',sub:'Auto Trading System (MT5)',badge:'PREMIUM',title:'Algo (MT5)',desc:'5 fully automated MT5 EAs — runs 24/7, no manual input needed.',cta:'View EAs →',type:'page',url:'algo',hidden:false,img:'',fileUrl:'',fileName:'',
@@ -564,7 +563,6 @@ const D = {
     {id:'custom',name:'Custom Strategy',icon:'⚙️',sub:'Built For You',badge:'CUSTOM',title:'Custom Strategy',desc:'Personalised strategy — tailored to your market, risk, and timeframe.',cta:'Contact Us →',type:'modal',url:'',hidden:false,img:'',fileUrl:'',fileName:'',items:[]},
     {id:'news',name:'News',icon:'📰',sub:'Live Market Feed',badge:'LIVE',title:'AG Intel',desc:'Live trading news — Forex, Gold, Crypto, Indices, Macro. Search any market.',cta:'View Live News →',type:'page',url:'news',hidden:false,img:'',fileUrl:'',fileName:'',
      items:[
-       {name:'Gold Dossier',pid:'NEWS-0001',badge:'GOLD',desc:'COT, DXY, institutional flow for XAU/USD',img:'',fileUrl:'',fileName:'',videoUrl:'gold-dossier',hidden:false},
      ]},
   ],
   faq: [
@@ -583,7 +581,7 @@ const D = {
     h:'Traders First. Always.',
     sub:'9+ years of real screen time across every major market — we built the tools we always wished existed.',
     whoText:'AG Technicals is born from 9+ years of real trading experience (2017–2026) in global financial markets. We\'re not just software developers — we\'re traders first, who understand the nuances of every market and the power of disciplined automation.',
-    doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop MT5 Algorithms — manual trading into automated machines','Custom TradingView Indicators — built from real institutional data','Automate Everything — signal to execution, complete pipeline'],
+    doList:['Analyze Charts — 9+ years; we read markets like books','Build Strategies — work across all markets and timeframes','Develop MT5 Algorithms — manual trading into automated machines','Custom TradingView Indicators — built for your charts','Automate Everything — strategy to execution, complete pipeline'],
     marketsSubtitle:'Whatever you trade, we\'ve traded it for the last 9 years.',
     markets:[{icon:'IN',label:'Indian Markets',isText:true},{icon:'🔄',label:'Forex'},{icon:'₿',label:'Bitcoin & Crypto'},{icon:'✨',label:'Gold'},{icon:'⚪',label:'Silver'},{icon:'🌐',label:'And More...'}],
     videoUrl:''
@@ -843,7 +841,7 @@ if(about.videoUrl){ const w=document.getElementById('aboutVideoWrap'); w.style.d
 
 /* ── NEWS ── */
 // Dossier card
-document.getElementById('dossierCard').style.display=news.dossierHidden?'none':'block';
+document.getElementById('dossierCard').style.display='none';
 document.getElementById('dossierCard').innerHTML = `
   <a href="${news.dossierUrl||'gold-dossier'}" style="display:block;text-decoration:none;">
     <div style="background:linear-gradient(135deg,#0f1e12 60%,#1a1400);border:1px solid rgba(201,162,39,0.35);border-radius:14px;padding:28px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;transition:border-color 0.2s,transform 0.2s;"

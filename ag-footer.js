@@ -42,6 +42,7 @@
     { label: 'Terms Of Service', href: 'terms' },
     { label: 'Contact Us',       href: onHome ? '#contact' : '/#contact' },
     { label: 'Risk Disclaimer',  href: 'risk-disclaimer' },
+    { label: 'Refund Policy',    href: 'refund-policy' },
     { label: 'Support',          href: 'mailto:' + SUPPORT_EMAIL, id: 'ag-footer-support' },
     { label: 'WhatsApp',         href: contactUrl('WhatsApp'), ext: true },
     { label: 'Telegram',         href: contactUrl('Telegram'), ext: true }

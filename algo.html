@@ -250,6 +250,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
       <button style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;margin-top:2px;" onclick="closePriceModal()">✕</button>
     </div>
     <div class="price-plans" id="pricePlans"></div>
+    <p style="font-size:11px;color:#bdbdbd;line-height:1.6;margin-top:12px;text-align:center;">Software only — not investment advice. Trading involves risk of loss. Digital products are non-refundable once delivered (see <a href="refund-policy" style="color:#f5c542;">Refund Policy</a>).</p>
     <div class="price-plan-note">💬 After choosing a plan, you'll be redirected to WhatsApp to confirm your order and get the EA file.</div>
   </div>
 </div>
@@ -302,10 +303,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB
 // Hardcoded Cloudinary defaults — always available
 var D_ALGO_ITEMS = [
   {name:'AG 3 Logic EA', pid:'EA-0001', badge:'PREMIUM', desc:'AG 3 Logic EA live trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559676/signal-2026-08-30-00-48-50-396.mp4', hidden:false},
-  {name:'AG Signal Demo 2', pid:'EA-0002', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559593/signal-2026-09-04-17-06-41-824.mp4', hidden:false},
-  {name:'AG Signal Demo 3', pid:'EA-0003', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788555255/signal-2026-09-02-15-17-21-420.mp4', hidden:false},
-  {name:'AG Signal Demo 4', pid:'EA-0004', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788554068/signal-2026-09-02-15-04-34-203.mp4', hidden:false},
-  {name:'AG Signal Demo 5', pid:'EA-0005', badge:'PREMIUM', desc:'Live MT5 signal trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788544257/signal-2026-09-02-16-58-59-388.mp4', hidden:false},
+  {name:'AG Algo Demo 2', pid:'EA-0002', badge:'PREMIUM', desc:'Live MT5 algo trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788559593/signal-2026-09-04-17-06-41-824.mp4', hidden:false},
+  {name:'AG Algo Demo 3', pid:'EA-0003', badge:'PREMIUM', desc:'Live MT5 algo trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788555255/signal-2026-09-02-15-17-21-420.mp4', hidden:false},
+  {name:'AG Algo Demo 4', pid:'EA-0004', badge:'PREMIUM', desc:'Live MT5 algo trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788554068/signal-2026-09-02-15-04-34-203.mp4', hidden:false},
+  {name:'AG Algo Demo 5', pid:'EA-0005', badge:'PREMIUM', desc:'Live MT5 algo trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788544257/signal-2026-09-02-16-58-59-388.mp4', hidden:false},
 ];
 
 function getAlgoItems(){

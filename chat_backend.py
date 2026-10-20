@@ -378,12 +378,23 @@ async def fetch_buysell():
         pass
     return result
 
+async def _yahoo_quote(client, symbol):
+    r = await client.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d")
+    if r.status_code != 200:
+        return None
+    meta = r.json()["chart"]["result"][0]["meta"]
+    price = float(meta["regularMarketPrice"])
+    prev = float(meta.get("chartPreviousClose") or meta.get("previousClose") or 0)
+    chg = ((price - prev) / prev * 100) if prev else 0.0
+    return {"price": price, "chg": chg}
+
 async def fetch_prices():
-    """Real prices only (Binance public API). A symbol that cannot be fetched is simply left out."""
+    """Real prices only. Tries Binance, then CoinGecko (crypto) and Yahoo Finance (gold/FX).
+    A symbol that cannot be fetched from any source is left out - never estimated."""
     prices = {}
-    spot = ["BTCUSDT", "ETHUSDT", "EURUSDT", "GBPUSDT"]
-    async with httpx.AsyncClient(timeout=8) as client:
-        for sym in spot:
+    hdr = {"User-Agent": "Mozilla/5.0 (AG Technicals)"}
+    async with httpx.AsyncClient(timeout=8, headers=hdr) as client:
+        for sym in ["BTCUSDT", "ETHUSDT", "EURUSDT", "GBPUSDT"]:
             try:
                 r = await client.get(f"https://api.binance.com/api/v3/ticker/24hr?symbol={sym}")
                 if r.status_code == 200:
@@ -391,13 +402,25 @@ async def fetch_prices():
                     prices[sym] = {"price": float(j["lastPrice"]), "chg": float(j["priceChangePercent"])}
             except Exception:
                 pass
-        try:
-            r = await client.get("https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=XAUUSDT")
-            if r.status_code == 200:
-                j = r.json()
-                prices["XAUUSDT"] = {"price": float(j["lastPrice"]), "chg": float(j["priceChangePercent"])}
-        except Exception:
-            pass
+        if "BTCUSDT" not in prices or "ETHUSDT" not in prices:
+            try:
+                r = await client.get("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true")
+                if r.status_code == 200:
+                    j = r.json()
+                    for sym, cid in (("BTCUSDT", "bitcoin"), ("ETHUSDT", "ethereum")):
+                        if sym not in prices and cid in j:
+                            prices[sym] = {"price": float(j[cid]["usd"]), "chg": float(j[cid].get("usd_24h_change", 0))}
+            except Exception:
+                pass
+        for sym, ysym in (("XAUUSDT", "GC=F"), ("EURUSDT", "EURUSD=X"), ("GBPUSDT", "GBPUSD=X")):
+            if sym in prices:
+                continue
+            try:
+                q = await _yahoo_quote(client, ysym)
+                if q:
+                    prices[sym] = q
+            except Exception:
+                pass
     return prices
 
 @app.get("/api/market-data")

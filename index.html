@@ -323,7 +323,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="nav-right">
     <a href="user-login" class="btn-login" id="navLoginBtn" style="text-decoration:none;">Login</a>
     <script>try{var _u=JSON.parse(localStorage.getItem('ag_user')||'null');if(_u){var _b=document.getElementById('navLoginBtn');_b.href='user-dashboard';_b.textContent='👤 My Dashboard';}}catch(e){}</script>
-    <a href="user-login" class="btn-cta" style="text-decoration:none;display:inline-flex;align-items:center;">Join Now</a>
+    <a href="user-login" class="btn-cta" id="navJoinBtn" style="text-decoration:none;display:inline-flex;align-items:center;">Join Now</a>
+    <script>try{if(JSON.parse(localStorage.getItem('ag_user')||'null')){document.getElementById('navJoinBtn').style.display='none';}}catch(e){}</script>
   </div>
 </nav>
 

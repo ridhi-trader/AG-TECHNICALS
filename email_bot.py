@@ -174,33 +174,15 @@ def _brevo_key():
 
 
 def _send_mail_sync(to_addr, subject, body, from_addr=None):
-    """Send via Brevo HTTP API (port 443) — raw SMTP (465) times out on Railway's network,
-    same reason chat_backend.py's own send_email() already avoids smtplib."""
-    import urllib.request, json as _json
+    """Send a support reply via ZeptoMail (fallback Brevo) — see mailer.py."""
+    from mailer import send_mail
 
     reply_to = from_addr or SUPPORT_ADDR
     html_body = "<pre style='font-family:inherit;white-space:pre-wrap'>" + (
         body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     ) + "</pre>"
-    payload = _json.dumps({
-        "sender": {"name": "AG Technicals Support", "email": BREVO_SENDER},
-        "to": [{"email": to_addr}],
-        "replyTo": {"email": reply_to},
-        "subject": subject,
-        "htmlContent": html_body,
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        "https://api.brevo.com/v3/smtp/email",
-        data=payload,
-        headers={
-            "accept": "application/json",
-            "content-type": "application/json",
-            "api-key": _brevo_key(),
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        resp.read()
+    send_mail(to_addr, subject, html_body, sender_name="AG Technicals Support",
+              sender_email=SUPPORT_ADDR, reply_to=reply_to, timeout=15)
 
 
 async def _classify_and_reply(from_name, from_addr, subject, body):

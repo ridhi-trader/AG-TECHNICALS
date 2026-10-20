@@ -769,42 +769,15 @@ def hash_pass(pw): return hashlib.sha256(pw.encode()).hexdigest()
 def gen_otp(): return str(secrets.randbelow(900000) + 100000)
 
 def send_email(to_email, subject, body):
-    """Send email via Brevo HTTP API (works on Railway — no SMTP ports needed)."""
-    import urllib.request, json as _json
-    if not BREVO_API_KEY:
-        raise Exception("BREVO_API_KEY not configured in Railway environment variables")
-    sender_email = GMAIL_USER or "candleagtechnical456@gmail.com"
-    payload = _json.dumps({
-        "sender": {"name": "AG Technicals", "email": sender_email},
-        "to": [{"email": to_email}],
-        "subject": subject,
-        "htmlContent": body
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        "https://api.brevo.com/v3/smtp/email",
-        data=payload,
-        headers={
-            "accept": "application/json",
-            "content-type": "application/json",
-            "api-key": BREVO_API_KEY,
-        },
-        method="POST"
-    )
+    """Send an email via ZeptoMail (primary) or Brevo (fallback) — see mailer.py."""
+    from mailer import send_mail
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            result = _json.loads(resp.read())
-            print(f"Brevo sent: {result}")
-            return True
-    except urllib.error.HTTPError as e:
-        try:
-            detail = e.read().decode("utf-8", "replace")[:300]
-        except Exception:
-            detail = ""
-        print(f"Brevo email error: HTTP {e.code} {detail}")
-        raise Exception(f"Email service error (HTTP {e.code}). Please try again later or contact support@agtechnicals.com")
+        used = send_mail(to_email, subject, body, sender_name="AG Technicals")
+        print(f"Email sent via {used}")
+        return True
     except Exception as e:
-        print(f"Brevo email error: {e}")
-        raise
+        print(f"Email error: {e}")
+        raise Exception("Email service error. Please try again later or contact support@agtechnicals.com")
 
 def otp_email_html(otp, purpose):
     return f"""
@@ -846,7 +819,8 @@ async def startup():
         print("=" * 50)
         print("AG TECHNICALS — SERVER STARTING")
         print(f"GMAIL_USER: {'SET' if GMAIL_USER else 'MISSING'}")
-        print(f"BREVO_API_KEY: {'SET' if BREVO_API_KEY else 'MISSING — email will fail'}")
+        from mailer import provider_status as _mail_status
+        print(f"Email provider: {_mail_status()}")
         print(f"DATABASE_URL: {'SET' if DB_URL else 'MISSING'}")
         print(f"ADMIN_EMAIL: {os.environ.get('ADMIN_EMAIL','NOT SET')}")
         print(f"NEWSAPI_KEY: {'SET' if os.environ.get('NEWSAPI_KEY') else 'MISSING'}")
@@ -875,7 +849,7 @@ async def health_check():
     return {
         "ok": True,
         "db": "connected" if db else "disconnected",
-        "email": "brevo" if BREVO_API_KEY else ("gmail_smtp" if (GMAIL_USER and GMAIL_PASS) else "not_configured"),
+        "email": __import__("mailer").provider_status(),
         "version": "2.0"
     }
 

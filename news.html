@@ -157,8 +157,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 <body>
 
 <nav>
-  <a href="index" class="logo">AG Technicals</a>
-  <a href="index" class="nav-back">← Back To Site</a>
+  <a href="/" class="logo">AG Technicals</a>
+  <a href="/" class="nav-back">← Back To Site</a>
 </nav>
 
 <div class="ticker-wrap"><div class="ticker-track" id="tickerTrack">
@@ -169,7 +169,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 <div class="hero">
   <div class="hero-tag"><span class="live-dot"></span>Live Feed · Auto-Refreshes Every 15 Min</div>
   <h1>Market <span>News</span> Feed</h1>
-  <p>Live trading news — Forex, Gold, Crypto, Indices, Macro. Search any market or topic. Powered by real-time data and AG Technicals analysis.</p>
+  <p>Live trading news — Forex, Gold, Crypto, Indices, Macro. Search any market or topic. Headlines from public news sources, updated every few minutes.</p>
 </div>
 
 <div class="controls">
@@ -201,18 +201,6 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
     <div class="widget">
       <div class="widget-title">📊 Live Prices</div>
       <div id="priceWidget">Loading...</div>
-    </div>
-    <div class="widget">
-      <div class="widget-title">📡 Market Sentiment</div>
-      <div id="sentWidget">Loading...</div>
-    </div>
-    <div class="widget" style="background:linear-gradient(135deg,rgba(245,197,66,.04),rgba(0,0,0,0));border-color:rgba(245,197,66,.15);">
-      <div class="widget-title">⚔️ Buyers vs Sellers</div>
-      <div id="bsWidget">Loading...</div>
-    </div>
-    <div class="widget">
-      <div class="widget-title">🔥 Market Pulse</div>
-      <div id="pulseWidget" style="font-size:13px;color:var(--t2);line-height:1.7;">Loading...</div>
     </div>
     <div class="widget">
       <div class="widget-title">📺 Live Chart</div>
@@ -507,7 +495,6 @@ async function loadNews(force){
     _allArticles = d.articles||[];
     renderFeed();
     renderPrices(d.prices);
-    renderSentiment(d.sentiment);
     renderTicker(d.prices);
     const upd = d.updated ? new Date(d.updated*1000).toLocaleTimeString() : '';
     document.getElementById('lastUpdate').textContent = '🟢 Updated: '+upd;

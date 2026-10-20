@@ -143,7 +143,11 @@ async def fetch_newsapi():
     all_news.sort(key=lambda x: x.get("time_unix",0), reverse=True)
     return all_news[:50]
 
+_rss_cache = {"data": [], "ts": 0}
+
 async def fetch_rss_news():
+    if _rss_cache["data"] and time.time() - _rss_cache["ts"] < 300:
+        return _rss_cache["data"]
     all_news = []
     try:
         async with httpx.AsyncClient(timeout=8, headers={"User-Agent": "Mozilla/5.0 (AG Technicals News Bot)"}) as client:
@@ -196,7 +200,18 @@ async def fetch_rss_news():
     except Exception as e:
         print(f"RSS fetch error: {e}")
     all_news.sort(key=lambda x: x.get("time_unix", 0), reverse=True)
-    return all_news[:40]
+    seen, uniq = set(), []
+    cutoff = time.time() - 3 * 86400
+    for n in all_news:
+        key = n["title"].lower()[:80]
+        if key in seen or n.get("time_unix", 0) < cutoff:
+            continue
+        seen.add(key)
+        uniq.append(n)
+    uniq = uniq[:40]
+    if uniq:
+        _rss_cache["data"], _rss_cache["ts"] = uniq, time.time()
+    return uniq
 
 async def fetch_finnhub_news():
     if not FINNHUB_KEY:
@@ -274,8 +289,6 @@ PRODUCTS & SERVICES (Full Detail)
 7. NEWS (AG Intel)
    - Live market news aggregated from: FXStreet, Economic Times, Moneycontrol, CoinTelegraph, Investing.com
    - Live price strip: BTC, ETH, Gold, EUR/USD, GBP/USD
-   - Buyers vs Sellers ratio for BTC, ETH, Gold (Binance data)
-   - Gold Dossier: Daily analysis report on Gold market
    - Available on the News page
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -363,130 +376,45 @@ async def fetch_buysell():
                     pass
     except:
         pass
-    # Fallback with realistic defaults
-    defaults = {"BTC": {"buy":55,"sell":45}, "ETH": {"buy":52,"sell":48}, "XAU": {"buy":60,"sell":40}}
-    for k,v in defaults.items():
-        if k not in result:
-            result[k] = v
     return result
 
 async def fetch_prices():
+    """Real prices only (Binance public API). A symbol that cannot be fetched is simply left out."""
     prices = {}
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            syms = '["BTCUSDT","ETHUSDT","XAUUSDT","EURUSDT","GBPUSDT"]'
-            r = await client.get(f"https://api.binance.com/api/v3/ticker/24hr?symbols={syms}")
+    spot = ["BTCUSDT", "ETHUSDT", "EURUSDT", "GBPUSDT"]
+    async with httpx.AsyncClient(timeout=8) as client:
+        for sym in spot:
+            try:
+                r = await client.get(f"https://api.binance.com/api/v3/ticker/24hr?symbol={sym}")
+                if r.status_code == 200:
+                    j = r.json()
+                    prices[sym] = {"price": float(j["lastPrice"]), "chg": float(j["priceChangePercent"])}
+            except Exception:
+                pass
+        try:
+            r = await client.get("https://fapi.binance.com/fapi/v1/ticker/24hr?symbol=XAUUSDT")
             if r.status_code == 200:
-                for item in r.json():
-                    prices[item["symbol"]] = {
-                        "price": float(item["lastPrice"]),
-                        "chg": float(item["priceChangePercent"])
-                    }
-    except Exception:
-        pass
-    defaults = {
-        "XAUUSDT": {"price": 2645.0, "chg": 0.3},
-        "BTCUSDT": {"price": 68200.0, "chg": 1.2},
-        "ETHUSDT": {"price": 3540.0, "chg": 2.1},
-        "EURUSDT": {"price": 1.0842, "chg": 0.1},
-        "GBPUSDT": {"price": 1.2735, "chg": 0.2},
-    }
-    for k, v in defaults.items():
-        if k not in prices:
-            prices[k] = v
+                j = r.json()
+                prices["XAUUSDT"] = {"price": float(j["lastPrice"]), "chg": float(j["priceChangePercent"])}
+        except Exception:
+            pass
     return prices
-
-async def fetch_news_ai(prices: dict):
-    if not ANTHROPIC_KEY:
-        return None
-    price_str = ", ".join([
-        f"Gold ${prices.get('XAUUSDT',{}).get('price',2645):.0f} ({prices.get('XAUUSDT',{}).get('chg',0):+.1f}%)",
-        f"BTC ${prices.get('BTCUSDT',{}).get('price',68000):.0f} ({prices.get('BTCUSDT',{}).get('chg',0):+.1f}%)",
-        f"ETH ${prices.get('ETHUSDT',{}).get('price',3500):.0f} ({prices.get('ETHUSDT',{}).get('chg',0):+.1f}%)",
-        f"EUR/USD {prices.get('EURUSDT',{}).get('price',1.084):.4f} ({prices.get('EURUSDT',{}).get('chg',0):+.1f}%)",
-        f"GBP/USD {prices.get('GBPUSDT',{}).get('price',1.273):.4f} ({prices.get('GBPUSDT',{}).get('chg',0):+.1f}%)",
-    ])
-    prompt = f"""You are a financial news writer. Today: {time.strftime('%B %d, %Y')}. Prices: {price_str}.
-Generate 12 realistic trading news headlines. Return ONLY valid JSON:
-{{"articles":[
-  {{"title":"Gold headline using actual price","category":"Gold","dir":"up","summary":"2-sentence context","time":"1h ago"}},
-  {{"title":"Forex EUR/USD headline","category":"Forex","dir":"dn","summary":"context","time":"2h ago"}},
-  {{"title":"BTC crypto headline","category":"Crypto","dir":"up","summary":"context","time":"1h ago"}},
-  {{"title":"Indices NAS/SPX headline","category":"Indices","dir":"up","summary":"context","time":"3h ago"}},
-  {{"title":"Fed/Macro headline","category":"Macro","dir":"neutral","summary":"context","time":"4h ago"}},
-  {{"title":"Gold analysis","category":"Analysis","dir":"up","summary":"context","time":"2h ago"}},
-  {{"title":"GBP/USD headline","category":"Forex","dir":"up","summary":"context","time":"3h ago"}},
-  {{"title":"ETH headline","category":"Crypto","dir":"up","summary":"context","time":"5h ago"}},
-  {{"title":"Oil/commodities","category":"Commodities","dir":"dn","summary":"context","time":"4h ago"}},
-  {{"title":"DXY dollar strength","category":"Forex","dir":"up","summary":"context","time":"6h ago"}},
-  {{"title":"COT institutional positioning","category":"Analysis","dir":"up","summary":"context","time":"7h ago"}},
-  {{"title":"JPY/USD headline","category":"Forex","dir":"dn","summary":"context","time":"8h ago"}}
-],
-"sentiment":[
-  {{"label":"Gold","pct":65,"dir":"up"}},{{"label":"Forex","pct":58,"dir":"up"}},
-  {{"label":"Crypto","pct":72,"dir":"up"}},{{"label":"Indices","pct":55,"dir":"up"}},
-  {{"label":"Crude Oil","pct":40,"dir":"dn"}}
-],"ticker_extra":["macro event or central bank note"]}}
-Use actual prices. dir: up/dn/neutral."""
-    try:
-        async with httpx.AsyncClient(timeout=25) as client:
-            r = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-                json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800, "messages": [{"role": "user", "content": prompt}]}
-            )
-        text = r.json().get("content", [{}])[0].get("text", "").strip()
-        if text.startswith("```"):
-            text = text.split("```")[1]
-            if text.startswith("json"): text = text[4:]
-        data = json.loads(text.strip())
-        arts = data.get("articles", [])
-        data["latest"] = [{"title":a["title"],"time":a["time"]+" · "+a["category"],"dir":a["dir"]} for a in arts[:4]]
-        data["analysis"] = [{"title":a["title"],"time":a["time"]+" · AG Analysis","dir":a["dir"]} for a in arts[4:8]]
-        return data
-    except Exception:
-        return None
 
 @app.get("/api/market-data")
 async def market_data():
+    """Live prices only. Nothing here is generated or estimated."""
     global _market_cache
     now = time.time()
-    cache_ttl = _market_cache.get("ttl", CACHE_TTL)
-    if _market_cache["data"] and (now - _market_cache["ts"]) < cache_ttl:
+    if _market_cache["data"] and (now - _market_cache["ts"]) < 120:
         return _market_cache["data"]
-    prices = await fetch_prices()
-    news_ai = await fetch_news_ai(prices)
-    def arrow(chg): return "▲" if chg >= 0 else "▼"
-    def fmt(sym, label, d=2):
-        p = prices.get(sym, {})
-        return f"{label}  {p.get('price',0):.{d}f}  {arrow(p.get('chg',0))} {abs(p.get('chg',0)):.2f}%"
-    ticker = [
-        {"text": fmt("XAUUSDT", "XAU/USD", 2), "type": "gold"},
-        {"text": fmt("BTCUSDT", "BTCUSD", 0), "type": "default"},
-        {"text": fmt("ETHUSDT", "ETHUSD", 0), "type": "default"},
-        {"text": fmt("EURUSDT", "EUR/USD", 4), "type": "default"},
-        {"text": fmt("GBPUSDT", "GBP/USD", 4), "type": "default"},
-        {"text": "COT · Managed Money tracking institutional flow", "type": "cot"},
-        {"text": "AG INTEL · Gold Dossier — Read ↗", "type": "gold"},
-    ]
-    if news_ai and news_ai.get("ticker_extra"):
-        for ev in news_ai["ticker_extra"][:2]:
-            ticker.insert(2, {"text": ev, "type": "jh"})
-    result = {
-        "ticker": ticker,
-        "news": news_ai or {},
-        "prices": {
-            "gold": prices.get("XAUUSDT", {}),
-            "btc": prices.get("BTCUSDT", {}),
-            "eth": prices.get("ETHUSDT", {}),
-            "eurusd": prices.get("EURUSDT", {}),
-            "gbpusd": prices.get("GBPUSDT", {}),
-        },
-        "cached_at": int(now),
-    }
-    # Short TTL if news AI failed — retry sooner
-    has_news = bool(news_ai and news_ai.get("latest"))
-    _market_cache = {"data": result, "ts": now, "ttl": CACHE_TTL if has_news else 600}
+    raw = await fetch_prices()
+    names = {"XAUUSDT": "XAU/USD", "BTCUSDT": "BTC/USD", "ETHUSDT": "ETH/USD",
+             "EURUSDT": "EUR/USD", "GBPUSDT": "GBP/USD"}
+    prices = {names[k]: {"price": v["price"], "change_24h": v["chg"], "chg": v["chg"]}
+              for k, v in raw.items() if k in names}
+    result = {"prices": prices, "ticker": [], "news": {}, "cached_at": int(now)}
+    if prices:  # do not cache an empty result
+        _market_cache = {"data": result, "ts": now}
     return result
 
 # ── FILE UPLOAD SYSTEM ─────────────────────────────────────────────────────────
@@ -577,7 +505,6 @@ async def get_news(category: str = "", search: str = ""):
     finnhub = await fetch_finnhub_news()
     rss = await fetch_rss_news()
     newsapi = await fetch_newsapi()
-    ai = await fetch_news_ai(prices)
 
     articles = []
     # NewsAPI first — real content with full descriptions
@@ -607,14 +534,6 @@ async def get_news(category: str = "", search: str = ""):
             "dir":"up", "real": True, "badge": "LIVE",
             "time": str(int((time.time() - item.get("time_unix",time.time()))/3600))+"h ago",
         })
-    if ai and ai.get("articles"):
-        for a in ai["articles"]:
-            articles.append({
-                "title": a.get("title",""), "summary": a.get("summary",""),
-                "category": a.get("category","Market"), "source":"AG Technicals",
-                "url":"", "dir": a.get("dir","up"), "real": False,
-                "time": a.get("time",""),
-            })
     if category and category != "All":
         articles = [a for a in articles if a["category"].lower()==category.lower()]
     if search:
@@ -622,11 +541,7 @@ async def get_news(category: str = "", search: str = ""):
         articles = [a for a in articles if sl in a["title"].lower() or sl in a.get("summary","").lower()]
     return {
         "articles": articles,
-        "sentiment": (ai or {}).get("sentiment",[
-            {"label":"Gold","pct":60,"dir":"up"},{"label":"Forex","pct":55,"dir":"up"},
-            {"label":"Crypto","pct":65,"dir":"up"},{"label":"Indices","pct":50,"dir":"up"},
-            {"label":"Crude Oil","pct":40,"dir":"dn"},
-        ]),
+        "sentiment": [],
         "prices": {"gold":prices.get("XAUUSDT",{}),"btc":prices.get("BTCUSDT",{}),"eurusd":prices.get("EURUSDT",{})},
         "total": len(articles), "has_live": len(finnhub)>0, "updated": int(time.time()),
     }

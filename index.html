@@ -140,7 +140,11 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .prod-cta{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;background:rgba(245,197,66,0.1);border:1px solid rgba(245,197,66,0.45);color:#f2c65a;font-size:13px;font-weight:700;padding:11px 14px;border-radius:10px;transition:all 0.25s;font-family:'Space Grotesk',sans-serif;letter-spacing:0.3px;}
 .prod-btn:hover .prod-cta{background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;border-color:transparent;box-shadow:0 4px 16px rgba(201,150,12,0.4);}
 /* NEWS */
-.news-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.news-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+.news-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 28px;}
+.news-list a{text-decoration:none;color:inherit;display:block;}
+.news-list a:hover .news-title{color:var(--g5);}
+@media(max-width:700px){.news-list{grid-template-columns:1fr;}}
 .news-col{background:var(--card);border:1px solid rgba(38,38,38,0.9);border-radius:12px;padding:22px;transition:border-color 0.25s,box-shadow 0.25s;}
 .news-col:hover{border-color:rgba(245,197,66,0.2);box-shadow:0 0 20px rgba(201,150,12,0.08);}
 .news-col-label{font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;}
@@ -422,8 +426,8 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <!-- NEWS -->
 <section class="sec reveal" id="news">
   <div class="sec-tag">Market News</div>
-  <div class="sec-h" id="newsSecH">What The Market Thinks Today</div>
-  <div class="sec-sub" id="newsSecSub">Fresh Analysis, Feeds, And Sentiment — Updated Every Session.</div>
+  <div class="sec-h" id="newsSecH">Latest Market News</div>
+  <div class="sec-sub" id="newsSecSub">Live headlines from public news sources, refreshed every few minutes.</div>
 
   <!-- Featured dossier card -->
   <div id="dossierCard" style="margin-bottom:20px;"></div>
@@ -432,17 +436,10 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div id="newsVideosRow" style="margin-bottom:20px;"></div>
 
   <div class="news-grid">
-    <div class="news-col">
-      <div class="news-col-label">📰 Latest</div>
-      <div id="newsLatest"></div>
-    </div>
-    <div class="news-col">
-      <div class="news-col-label">📊 AG Analysis</div>
-      <div id="newsAnalysis"></div>
-    </div>
-    <div class="news-col">
-      <div class="news-col-label">🎯 Sentiment</div>
-      <div id="newsSentiment"></div>
+    <div class="news-col" style="grid-column:1/-1;">
+      <div class="news-col-label">📰 Latest Headlines</div>
+      <div id="newsLatest" class="news-list"><div class="news-time">Loading latest headlines…</div></div>
+      <div style="margin-top:14px;"><a href="/news" style="color:var(--g5);font-weight:700;font-size:13px;text-decoration:none;">View all market news →</a></div>
     </div>
   </div>
 </section>
@@ -587,26 +584,7 @@ const D = {
     videoUrl:''
   },
   news: {
-    dossierTitle:'Gold Dossier — Fed Rate Cut Watch',
-    dossierSub:'XAU/USD at $4,645 · Institutions crowded long · Fed keynote in 72 hours · Full COT + DXY breakdown inside',
-    dossierUrl:'gold-dossier',
-    videos:[],
-    latest:[
-      {title:'Fed holds rates — dollar softens across majors',time:'2h ago · Forex',dir:'up'},
-      {title:'BTC reclaims $68K — bulls eye $72K resistance',time:'3h ago · Crypto',dir:'up'},
-      {title:'Gold slides as risk appetite returns to markets',time:'5h ago · Commodities',dir:'dn'},
-      {title:'Nasdaq breaks all-time high — tech leads rally',time:'6h ago · Indices',dir:'up'},
-    ],
-    analysis:[
-      {title:'EUR/USD: Bullish structure holds above 1.0820',time:'1h ago · AG Analysis',dir:'up'},
-      {title:'XAU/USD: Rejection at $2340 — short setup forming',time:'4h ago · AG Analysis',dir:'dn'},
-      {title:'GBP/USD: BoE minutes signal dovish pivot incoming',time:'7h ago · AG Analysis',dir:'up'},
-      {title:'NAS100: Gap fill complete — momentum buyers active',time:'8h ago · AG Analysis',dir:'up'},
-    ],
-    sentiment:[
-      {label:'Forex',pct:72,dir:'up'},{label:'Crypto',pct:81,dir:'up'},{label:'Gold',pct:38,dir:'dn'},
-      {label:'Indices',pct:68,dir:'up'},{label:'Crude Oil',pct:44,dir:'neutral'},
-    ]
+    videos:[]
   }
 };
 
@@ -870,38 +848,23 @@ if(nVideos.length){
     nVideos.map(v=>`<div><div style="font-size:12px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">${v.label||'Video'}</div>${videoEmbed(v.url)}</div>`).join('') + '</div>';
 }
 
-// News items
-const ni=(arr,el)=>{ document.getElementById(el).innerHTML=(arr||[]).map(n=>`<div class="news-item"><div class="news-dot ${n.dir==='up'?'up-dot':'dn-dot'}"></div><div><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div></div>`).join(''); };
-ni(news.latest||D.news.latest,'newsLatest');
-
-// AUTO-LOAD LIVE NEWS FROM BACKEND API
+// Latest headlines — real articles only (public RSS via backend), each links to its source
+function agEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 (async function loadLiveNews(){
+  var el = document.getElementById('newsLatest');
   try{
-    // Show default data immediately, then update with live
-    // (loading message removed — default data already shown above)
-    const r = await fetch('/api/news');
-    const d = await r.json();
-    if(d && d.news){
-      if(d.news.latest && d.news.latest.length) ni(d.news.latest,'newsLatest');
-      if(d.news.analysis && d.news.analysis.length) ni(d.news.analysis,'newsAnalysis');
-      if(d.news.sentiment && d.news.sentiment.length){
-        document.getElementById('newsSentiment').innerHTML=d.news.sentiment.map(function(s){
-          return '<div class="sent-item"><span class="sent-label">'+s.label+'</span><div class="sent-bar"><div class="sent-fill" style="width:'+s.pct+'%;background:'+(s.dir==='up'?'var(--g4)':s.dir==='dn'?'var(--red)':'var(--amber)')+'"></div></div><span class="sent-pct '+(s.dir==='up'?'up':s.dir==='dn'?'dn':'')+'" style="'+(s.dir==='neutral'?'color:var(--amber)':'')+'">'+s.pct+'% Bull</span></div>';
-        }).join('');
-      }
-    }
-  }catch(e){ console.log('Live news error:',e); }
+    var r = await fetch('/api/news');
+    var d = await r.json();
+    var arts = ((d && d.articles) || []).filter(function(a){ return a.real && a.title && a.url; }).slice(0,8);
+    if(!arts.length){ el.innerHTML = '<div class="news-time">Headlines are temporarily unavailable. Please check the <a href="/news" style="color:var(--g5);">News page</a>.</div>'; return; }
+    el.innerHTML = arts.map(function(a){
+      var safe = /^https?:\/\//i.test(a.url) ? a.url : '/news';
+      return '<a href="'+agEsc(safe)+'" target="_blank" rel="noopener noreferrer"><div class="news-item"><div class="news-dot up-dot"></div><div><div class="news-title">'+agEsc(a.title)+'</div><div class="news-time">'+agEsc(a.time||'')+' · '+agEsc(a.source||'')+(a.category?' · '+agEsc(a.category):'')+'</div></div></div></a>';
+    }).join('');
+  }catch(e){
+    el.innerHTML = '<div class="news-time">Headlines are temporarily unavailable. Please check the <a href="/news" style="color:var(--g5);">News page</a>.</div>';
+  }
 })();
-
-ni(news.analysis||D.news.analysis,'newsAnalysis');
-
-// Sentiment
-document.getElementById('newsSentiment').innerHTML = (news.sentiment||D.news.sentiment).map(s=>`
-  <div class="sent-item">
-    <span class="sent-label">${s.label}</span>
-    <div class="sent-bar"><div class="sent-fill" style="width:${s.pct}%;background:${s.dir==='up'?'var(--g4)':s.dir==='dn'?'var(--red)':'var(--amber)'}"></div></div>
-    <span class="sent-pct ${s.dir==='up'?'up':s.dir==='dn'?'dn':''}" style="${s.dir==='neutral'?'color:var(--amber)':''}">${s.pct}% Bull</span>
-  </div>`).join('');
 
 /* ── SUB-ITEMS MODAL ── */
 function openSubItems(prodId){
@@ -1072,62 +1035,6 @@ function searchIndiaStock(){
 }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(); closeLoginModal({force:true}); closeSubItems(); } });
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
-
-/* ── LIVE MARKET DATA ── */
-(function(){
-  const API = '/api/market-data';
-  const typeClass = {dxy:'ti-dxy',jh:'ti-jh',cot:'ti-cot',gold:'ti-gold',price:'ti',default:'ti'};
-  
-  function renderTicker(tickerData){ /* replaced by live market strip */ }
-  
-  function renderNews(newsData){
-    if(!newsData) return;
-    const ni=(arr,el)=>{
-      if(!arr||!arr.length) return;
-      document.getElementById(el).innerHTML = arr.map(n=>`
-        <div class="news-item">
-          <div class="news-dot ${n.dir==='up'?'up-dot':'dn-dot'}"></div>
-          <div><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>
-        </div>`).join('');
-    };
-    ni(newsData.latest, 'newsLatest');
-    ni(newsData.analysis, 'newsAnalysis');
-    if(newsData.sentiment && newsData.sentiment.length){
-      document.getElementById('newsSentiment').innerHTML = newsData.sentiment.map(s=>`
-        <div class="sent-item">
-          <span class="sent-label">${s.label}</span>
-          <div class="sent-bar"><div class="sent-fill" style="width:${s.pct}%;background:${s.dir==='up'?'var(--g4)':s.dir==='dn'?'var(--red)':'var(--amber)'}"></div></div>
-          <span class="sent-pct ${s.dir==='up'?'up':s.dir==='dn'?'dn':''}" style="${s.dir==='neutral'?'color:var(--amber)':''}">${s.pct}% Bull</span>
-        </div>`).join('');
-    }
-  }
-
-  function updateDossierCard(prices){
-    // Update dossier card sub-text with live gold price
-    const gold = prices && prices.gold;
-    if(!gold) return;
-    const chg = gold.chg >= 0 ? '▲' : '▼';
-    const sub = document.getElementById('dossierSubText');
-    if(sub) sub.textContent = 'XAU/USD ' + chg + ' $' + gold.price.toFixed(2) + ' · Live COT + DXY + Institutional Flow — Updated';
-  }
-
-  async function loadMarketData(){
-    try {
-      const res = await fetch(API, {signal: AbortSignal.timeout(15000)});
-      if(!res.ok) return;
-      const data = await res.json();
-      if(data.ticker && data.ticker.length) renderTicker(data.ticker);
-      if(data.news) renderNews(data.news);
-      if(data.prices) updateDossierCard(data.prices);
-    } catch(e){
-      // silently fail — static defaults already rendered
-    }
-  }
-
-  // Load immediately + refresh every 15 min
-  loadMarketData();
-  setInterval(loadMarketData, 5 * 60 * 1000);
-})();
 
 </script>
 <script src="https://s3.tradingview.com/tv.js"></script>

@@ -430,8 +430,6 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-sub" id="newsSecSub">Live headlines from public news sources, refreshed every few minutes.</div>
 
   <!-- Featured dossier card -->
-  <div id="dossierCard" style="margin-bottom:20px;"></div>
-
   <!-- Videos row -->
   <div id="newsVideosRow" style="margin-bottom:20px;"></div>
 
@@ -521,18 +519,7 @@ const D = {
     btnText:'Join The Community →',
     videoUrl:''
   },
-  ticker: [
-    {text:'XAU/USD  $4,645.00',type:'price'},
-    {text:'DXY WATCH · Dollar softness fueling the rally',type:'dxy'},
-    {text:'BTCUSD  67,420  ▲ 2.41%',type:'default'},
-    {text:'ETHUSD  3,540  ▲ 3.10%',type:'default'},
-    {text:'JACKSON HOLE · Fed speaks — all eyes on Warsh keynote',type:'jh'},
-    {text:'EURUSD  1.0842  ▲ 0.18%',type:'default'},
-    {text:'GBPUSD  1.2735  ▲ 0.22%',type:'default'},
-    {text:'COT · Managed Money net long 130,766 contracts',type:'cot'},
-    {text:'NAS100  18,920  ▲ 1.20%',type:'default'},
-    {text:'CRUDE  82.50  ▼ 0.61%',type:'default'},
-  ],
+  ticker: [],
   products: [
     {id:'algo',name:'Algo (MT5)',icon:'🤖',sub:'Auto Trading System (MT5)',badge:'PREMIUM',title:'Algo (MT5)',desc:'5 fully automated MT5 EAs — runs 24/7, no manual input needed.',cta:'View EAs →',type:'page',url:'algo',hidden:false,img:'',fileUrl:'',fileName:'',
      items:[
@@ -819,29 +806,6 @@ document.getElementById('aboutMarketsGrid').innerHTML = (about.markets||D.about.
 if(about.videoUrl){ const w=document.getElementById('aboutVideoWrap'); w.style.display='block'; w.innerHTML=videoEmbed(about.videoUrl); }
 
 /* ── NEWS ── */
-// Dossier card
-document.getElementById('dossierCard').style.display='none';
-document.getElementById('dossierCard').innerHTML = `
-  <a href="${news.dossierUrl||'gold-dossier'}" style="display:block;text-decoration:none;">
-    <div style="background:linear-gradient(135deg,#0f1e12 60%,#1a1400);border:1px solid rgba(201,162,39,0.35);border-radius:14px;padding:28px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;transition:border-color 0.2s,transform 0.2s;"
-         onmouseover="this.style.borderColor='rgba(201,162,39,0.7)';this.style.transform='translateY(-2px)'"
-         onmouseout="this.style.borderColor='rgba(201,162,39,0.35)';this.style.transform='translateY(0)'">
-      <div style="display:flex;align-items:center;gap:20px;flex:1 1 240px;min-width:0;">
-        <div style="font-size:36px;flex-shrink:0;">📁</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-            <span style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#c9a227;font-family:'Space Grotesk',sans-serif;">AG INTEL · RESTRICTED READ</span>
-            <span style="width:6px;height:6px;border-radius:50%;background:#5fcf94;box-shadow:0 0 8px #5fcf94;display:inline-block;"></span>
-            <span style="font-size:10px;color:#5fcf94;font-weight:600;">LIVE</span>
-          </div>
-          <div style="font-size:20px;font-weight:700;color:#fdfcf9;margin-bottom:5px;font-family:'Space Grotesk',sans-serif;">${news.dossierTitle||D.news.dossierTitle}</div>
-          <div id="dossierSubText" style="font-size:13px;color:#b0ada0;line-height:1.5;">${news.dossierSub||D.news.dossierSub}</div>
-        </div>
-      </div>
-      <div style="flex-shrink:0;background:rgba(201,162,39,0.15);border:1px solid rgba(201,162,39,0.4);color:#e8c766;font-size:13px;font-weight:700;padding:10px 20px;border-radius:8px;white-space:nowrap;font-family:'Space Grotesk',sans-serif;">Read Dossier →</div>
-    </div>
-  </a>`;
-
 // News videos
 const nVideos = (news.videos||[]).filter(v=>v.url&&!v.hidden);
 if(nVideos.length){

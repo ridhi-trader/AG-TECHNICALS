@@ -632,17 +632,23 @@ DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password (legacy, unused on Railway)
 BREVO_API_KEY = (os.environ.get("BREVO_API_KEY") or "").strip()  # Brevo HTTP API — set in Railway env vars, never hardcode
-ADMIN_PASS_DEFAULT = "TROUBLE_PIE456"
-
 def get_admin_pass():
-    """Get current admin password — DB value takes priority over env/default."""
-    return os.environ.get('ADMIN_PASS', ADMIN_PASS_DEFAULT)
+    """Admin password comes only from the ADMIN_PASS env var. No hardcoded default:
+    if it is unset, every admin request is refused."""
+    return os.environ.get('ADMIN_PASS', '')
 
 def verify_admin_token(request):
     """Check X-Admin-Token header matches current admin password."""
     token = request.headers.get("X-Admin-Token", "")
-    if not token or token != get_admin_pass():
+    expected = get_admin_pass()
+    if not expected or not token or not secrets.compare_digest(token.encode(), expected.encode()):
         raise HTTPException(status_code=401, detail="Unauthorized")
+
+@app.get("/api/admin/verify")
+async def admin_verify(request: Request):
+    verify_admin_token(request)
+    return {"ok": True}
+
 SITE_URL = "https://ag-technicals-production.up.railway.app"
 
 _db_pool = None

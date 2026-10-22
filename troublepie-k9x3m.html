@@ -801,7 +801,7 @@ async function verifyAdminOTP(){
 'use strict';
 const API = '';
 const PASS_KEY = 'ag_admin_pass';
-let _pass = localStorage.getItem(PASS_KEY) || 'TROUBLE_PIE456';
+let _pass = localStorage.getItem(PASS_KEY) || '';
 
 // Authenticated fetch — always sends admin token header
 function adminFetch(url, opts={}){
@@ -813,10 +813,14 @@ function adminFetch(url, opts={}){
 (function(){
   const wall = document.getElementById('loginWall');
   function unlock(){ sessionStorage.setItem('ag_auth','1'); wall.style.display='none'; document.body.style.visibility='visible'; }
-  window.doLogin = function(){
-    const v = document.getElementById('loginInp').value;
-    if(v === _pass){ unlock(); document.getElementById('loginInp').value=''; }
-    else { const e=document.getElementById('loginErr'); e.textContent='Wrong password.'; document.getElementById('loginInp').value=''; setTimeout(()=>e.textContent='',2500); }
+  window.doLogin = async function(){
+    const inp = document.getElementById('loginInp');
+    const v = inp.value;
+    let ok = false;
+    try { const r = await fetch(API + '/api/admin/verify', {headers:{'X-Admin-Token': v}}); ok = r.ok; } catch(e){}
+    inp.value = '';
+    if(ok){ _pass = v; localStorage.setItem(PASS_KEY, v); unlock(); }
+    else { const e=document.getElementById('loginErr'); e.textContent='Wrong password.'; setTimeout(()=>e.textContent='',2500); }
   };
   window.logout = function(){ sessionStorage.removeItem('ag_auth'); location.reload(); };
   if(sessionStorage.getItem('ag_auth')==='1'){ wall.style.display='none'; document.body.style.visibility='visible'; }

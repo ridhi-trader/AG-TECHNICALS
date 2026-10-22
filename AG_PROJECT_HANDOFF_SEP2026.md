@@ -5,7 +5,7 @@
 
 ## Live URLs
 - **Site:** https://ag-technicals.onrender.com
-- **Admin:** https://ag-technicals.onrender.com/admin.html (password: `ridhima2307`)
+- **Admin:** https://ag-technicals.onrender.com/admin.html (password: set in ADMIN_PASS env var)
 - **User Login:** https://ag-technicals.onrender.com/user-login.html
 - **User Dashboard:** https://ag-technicals.onrender.com/user-dashboard.html
 - **News Feed:** https://ag-technicals.onrender.com/news.html
@@ -38,7 +38,7 @@ git add -A && git commit -m "msg" && git push https://[PAT]@github.com/ridhi-tra
 ## Full File Structure
 ```
 index.html                    — Main site (localStorage CMS, product cards, hero, news, FAQ)
-admin.html                    — Admin panel (password: ridhima2307)
+admin.html                    — Admin panel (password: set in ADMIN_PASS env var)
 user-login.html               — User signup/login/OTP/forgot-password
 user-dashboard.html           — User dashboard (products, profile, logout)
 news.html                     — Live news feed (search, categories, TV chart, 5min refresh)
@@ -92,7 +92,7 @@ All site content stored in **localStorage**, read at page load.
 | `ag_faq` | FAQ items |
 | `ag_about` | About section |
 | `ag_news` | News dossier settings |
-| `ag_admin_pass` | Admin password (default: ridhima2307) |
+| `ag_admin_pass` | Admin password (set via ADMIN_PASS env var; no default) |
 | `ag_bio_id` | Biometric credential ID |
 | `productPrices` | Product prices for revenue calc |
 | `csSent` | Custom strategy sent history |
@@ -178,7 +178,7 @@ index.html + admin.html both have force-fix code that:
 | 🔐 Security | Biometric setup, change password |
 
 ### Admin Login
-- Password: `ridhima2307`
+- Password: set in the ADMIN_PASS env var (never store it in the repo)
 - Stored in `localStorage['ag_admin_pass']` (changeable from Security tab)
 - Session-based (clears on tab close)
 - Biometric: WebAuthn — setup from Security tab, device-specific

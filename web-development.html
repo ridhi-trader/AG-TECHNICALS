@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website &amp; Software Development — AG Technicals</title>
+<meta name="description" content="AG Technicals builds websites, web apps, CRM and admin panels, member portals, trading tools and custom software for businesses.">
+<link rel="canonical" href="https://www.agtechnicals.com/web-development">
+<meta property="og:title" content="Website &amp; Software Development — AG Technicals">
+<meta property="og:description" content="Websites, web apps, CRM and admin panels, member portals, trading tools and custom software built to your requirements.">
+<meta property="og:url" content="https://www.agtechnicals.com/web-development">
+<meta property="og:image" content="https://www.agtechnicals.com/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000000;--card:#0b0b0b;--g5:#f5c542;--g4:#c9960c;--t1:#ffffff;--t2:#e5e5e5;--t3:#bdbdbd;--border:#262626;--red:#f26d6d;--green:#4ade80;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--g5);text-decoration:none;letter-spacing:1px;}
+.nav-back{display:flex;align-items:center;gap:8px;color:var(--t3);font-size:13px;text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--g5);}
+.nav-back svg{width:16px;height:16px;}
+.hero{text-align:center;padding:72px 24px 48px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,197,66,0.3);border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:24px;}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--g5);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.1;margin-bottom:14px;}
+.hero h1 span{color:var(--g5);}
+.hero p{font-size:16px;color:var(--t3);max-width:500px;margin:0 auto;line-height:1.7;}
+.wrap{max-width:820px;margin:0 auto;padding:8px 24px 80px;}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;}
+@media(max-width:640px){.feat-grid{grid-template-columns:1fr;}}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 20px;}
+.feat-icon{font-size:28px;margin-bottom:12px;}
+.feat-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.feat-desc{font-size:13px;color:var(--t3);line-height:1.6;}
+
+/* STEPS */
+.steps{margin-bottom:40px;}
+.step{display:flex;gap:16px;margin-bottom:24px;align-items:flex-start;}
+.step-num{background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;font-weight:800;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.step-body h3{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.step-body p{font-size:13px;color:var(--t3);line-height:1.6;}
+
+/* FORM */
+.form-card{background:var(--card);border:1px solid rgba(245,197,66,0.2);border-radius:16px;padding:32px;}
+.form-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:6px;}
+.form-sub{font-size:13px;color:var(--t3);margin-bottom:24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:#0d0c11;border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit;transition:border-color .2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--g5);}
+.field select option{background:#0b0b0b;}
+.field textarea{min-height:90px;resize:vertical;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.g2{grid-template-columns:1fr;}}
+.btn-wa{width:100%;background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s;margin-top:8px;}
+.btn-wa:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,150,12,0.45);}
+.btn-tg{width:100%;background:transparent;color:var(--t2);border:1px solid var(--border);padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s;margin-top:8px;}
+.btn-tg:hover{border-color:var(--g5);color:var(--g5);}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:16px;}
+.divider{height:1px;background:var(--border);margin:36px 0;}
+
+.hero p{max-width:640px;}
+.wrap{max-width:980px;}
+.feat-grid{grid-template-columns:repeat(3,1fr);}
+@media(max-width:860px){.feat-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.feat-grid{grid-template-columns:1fr;}}
+.feat-card{transition:border-color .2s,transform .2s;}
+.feat-card:hover{border-color:rgba(245,197,66,0.45);transform:translateY(-3px);}
+.tag{display:inline-block;margin-top:10px;font-size:11px;color:var(--g5);border:1px solid rgba(245,197,66,0.25);border-radius:99px;padding:3px 10px;}
+.note{font-size:12px;color:var(--t3);line-height:1.7;margin-bottom:36px;}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">AG Technicals</a>
+  <a href="/" class="nav-back">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 12L6 8l4-4"/></svg>
+    Back To Site
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge"><span class="hero-badge-dot"></span>Build With Us</div>
+  <h1>Website &amp; <span>Software Development</span></h1>
+  <p>From a simple business website to a full web application: we design, build and support software around your requirements.</p>
+</div>
+
+<div class="wrap">
+
+  <div class="section-label">What We Build</div>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🌐</div>
+      <div class="feat-title">Business Websites</div>
+      <div class="feat-desc">Fast, mobile-friendly websites for companies, coaches, clinics, institutes and local businesses.</div>
+      <span class="tag">Landing pages · Multi-page sites</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🛒</div>
+      <div class="feat-title">Online Stores</div>
+      <div class="feat-desc">Product catalogue, cart and payment-gateway checkout, with an admin panel to manage orders.</div>
+      <span class="tag">E-commerce</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🧩</div>
+      <div class="feat-title">Custom Web Apps</div>
+      <div class="feat-desc">Web software built around how your business works: dashboards, portals, workflows and internal tools.</div>
+      <span class="tag">Web software</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📇</div>
+      <div class="feat-title">CRM &amp; Admin Panels</div>
+      <div class="feat-desc">Lead and customer management, role-based logins, reports and exports in one place.</div>
+      <span class="tag">CRM · Back-office</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔐</div>
+      <div class="feat-title">Member &amp; Subscription Portals</div>
+      <div class="feat-desc">Sign-up, login, plans, renewals and access control for courses, communities and paid content.</div>
+      <span class="tag">Membership</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Booking &amp; Management Systems</div>
+      <div class="feat-desc">Appointments, enquiries, inventory and records with reminders and simple reporting.</div>
+      <span class="tag">Operations</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📈</div>
+      <div class="feat-title">Trading Tools &amp; Dashboards</div>
+      <div class="feat-desc">MT5 Expert Advisors, TradingView indicators, trade copiers and journaling dashboards. Software only, no advice.</div>
+      <span class="tag">Our core work</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <div class="feat-title">Chat &amp; Community Apps</div>
+      <div class="feat-desc">Team chat, group messaging and support-bot integrations for WhatsApp and Telegram.</div>
+      <span class="tag">Messaging</span>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚙️</div>
+      <div class="feat-title">Automation &amp; Integrations</div>
+      <div class="feat-desc">Connect your tools: payment gateways, email and SMS, spreadsheets and APIs, so repeat work runs by itself.</div>
+      <span class="tag">APIs · Workflows</span>
+    </div>
+  </div>
+  <p class="note">Don't see your idea? Describe it in the form below. If we can build it, we'll tell you the scope, price and timeline.</p>
+
+  <div class="section-label">How It Works</div>
+  <div class="steps" style="margin-bottom:36px;">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Tell Us What You Need</h3><p>Share your idea, who will use it and any examples you like.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Scope, Price &amp; Timeline</h3><p>We confirm what will be built, the cost and when it will be ready, before any work starts.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Build &amp; Review</h3><p>You see progress as it is built and give feedback along the way.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h3>Launch &amp; Support</h3><p>We deploy it, hand over the details and help with fixes after launch.</p></div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">Request A Quote</div>
+    <div class="form-sub">Tell us about your project. We'll get back to you within 24 hours.</div>
+    <div class="g2">
+      <div class="field"><label>Your Name</label><input id="wdName" placeholder="Full Name"></div>
+      <div class="field"><label>WhatsApp Number</label><input id="wdWa" placeholder="+91 98765 43210" type="tel"></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Project Type</label>
+        <select id="wdType">
+          <option value="">Select Type</option>
+          <option>Business Website</option><option>Online Store</option>
+          <option>Custom Web App</option><option>CRM / Admin Panel</option>
+          <option>Member / Subscription Portal</option><option>Booking / Management System</option>
+          <option>Trading Tool / Dashboard</option><option>Chat / Community App</option>
+          <option>Automation / Integration</option><option>Something Else</option>
+        </select>
+      </div>
+      <div class="field"><label>Timeline</label>
+        <select id="wdTime">
+          <option value="">Select Timeline</option>
+          <option>As soon as possible</option><option>Within 1 month</option>
+          <option>1–3 months</option><option>Just exploring</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Describe Your Project</label>
+      <textarea id="wdMsg" placeholder="What should it do, who will use it, and any websites or apps you like as reference..."></textarea>
+    </div>
+    <button class="btn-wa" onclick="sendWa()">💬 Send Request On WhatsApp</button>
+    <button class="btn-tg" onclick="sendTg()">✈️ Send Via Telegram Instead</button>
+    <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:12px;">Pricing is shared after we understand your requirements.</div>
+  </div>
+
+</div>
+
+<script>
+function buildMsg(){
+  const v = id => document.getElementById(id).value.trim();
+  const name = v('wdName')||'Interested User', wa = v('wdWa'), type = v('wdType')||'Not specified', time = v('wdTime')||'Not specified', msg = v('wdMsg');
+  return 'Hi AG Technicals!\n\nI want a website / software built.\n\nName: '+name+(wa?'\nWhatsApp: '+wa:'')+'\nProject type: '+type+'\nTimeline: '+time+(msg?'\n\nDetails: '+msg:'');
+}
+function sendWa(){
+  window.open('https://wa.me/917357032456?text='+encodeURIComponent(buildMsg()),'_blank');
+}
+function sendTg(){
+  navigator.clipboard.writeText(buildMsg()).catch(()=>{});
+  window.open('https://t.me/AG_Technical_fx','_blank');
+  setTimeout(()=>alert('Message copied! Paste it in Telegram.'),500);
+}
+</script>
+<script src="ag-assistant.js"></script>
+
+<script>/* BG ANIM */
+(function(){const c=document.createElement('canvas');c.id='bgAnim';c.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.18;';document.body.prepend(c);const ctx=c.getContext('2d');let W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;pts=Array(50).fill(0).map(()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+0.4,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3-.1,phase:Math.random()*Math.PI*2,color:Math.random()>.5?'rgba(245,197,66,':'rgba(201,150,12,'}));}resize();window.addEventListener('resize',resize);function loop(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.phase+=.015;const a=.15+.5*Math.abs(Math.sin(p.phase));ctx.shadowBlur=p.r*5;ctx.shadowColor=p.color+'.7)';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.color+a+')';ctx.fill();ctx.shadowBlur=0;if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}if(p.x<-5||p.x>W+5){p.x=Math.random()*W;p.y=Math.random()*H;}});requestAnimationFrame(loop);}loop();})();
+</script>
+<script src="glow.js"></script>
+<script src="ag-footer.js"></script>
+</body>
+</html>

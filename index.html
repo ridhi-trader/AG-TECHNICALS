@@ -107,6 +107,16 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .sec-tag{font-size:11px;font-weight:700;color:var(--g5);text-transform:uppercase;letter-spacing:1.4px;margin-bottom:9px;}
 .sec-h{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:800;color:#fff;letter-spacing:-1.2px;margin-bottom:10px;line-height:1.1;}
 .sec-sub{font-size:15px;color:#e5e5e5;line-height:1.75;max-width:500px;margin-bottom:40px;}
+.wd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+@media(max-width:900px){.wd-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.wd-grid{grid-template-columns:1fr;}}
+.wd-card{background:#0b0b0b;border:1px solid #262626;border-radius:14px;padding:22px 20px;transition:border-color .2s,transform .2s;}
+.wd-card:hover{border-color:rgba(245,197,66,0.45);transform:translateY(-3px);}
+.wd-ic{font-size:26px;margin-bottom:10px;}
+.wd-t{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.wd-d{font-size:13px;color:#bdbdbd;line-height:1.6;}
+.wd-cta{display:inline-block;background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:10px;text-decoration:none;}
+.wd-cta:hover{box-shadow:0 8px 28px rgba(201,150,12,0.45);}
 .divider{height:1px;background:linear-gradient(90deg,transparent,#262626 20%,#262626 80%,transparent);margin:0 48px;}
 /* PRODUCTS */
 .prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:48px;}
@@ -420,6 +430,23 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-h" id="prodSecH">All We Have — All You Need</div>
   <div class="sec-sub" id="prodSecSub">Click Any Service To Learn More.</div>
   <div class="prod-grid" id="prodGrid"></div>
+</section>
+<div class="divider"></div>
+
+<!-- WEB & SOFTWARE DEVELOPMENT -->
+<section class="sec reveal" id="webdev">
+  <div class="sec-tag">Build With Us</div>
+  <div class="sec-h">Websites &amp; Software, Built For Your Business</div>
+  <div class="sec-sub">We also design and develop websites, web apps and custom software to your requirements.</div>
+  <div class="wd-grid">
+    <div class="wd-card"><div class="wd-ic">🌐</div><div class="wd-t">Business Websites</div><div class="wd-d">Fast, mobile-friendly sites for companies, coaches and institutes.</div></div>
+    <div class="wd-card"><div class="wd-ic">🛒</div><div class="wd-t">Online Stores</div><div class="wd-d">Catalogue, cart, payment checkout and an admin panel.</div></div>
+    <div class="wd-card"><div class="wd-ic">🧩</div><div class="wd-t">Custom Web Apps</div><div class="wd-d">Dashboards, portals and internal tools built around your workflow.</div></div>
+    <div class="wd-card"><div class="wd-ic">📇</div><div class="wd-t">CRM &amp; Admin Panels</div><div class="wd-d">Leads, customers, roles, reports and exports in one place.</div></div>
+    <div class="wd-card"><div class="wd-ic">🔐</div><div class="wd-t">Member Portals</div><div class="wd-d">Sign-up, login, plans and access control for paid content.</div></div>
+    <div class="wd-card"><div class="wd-ic">⚙️</div><div class="wd-t">Automation &amp; Integrations</div><div class="wd-d">Connect payments, email, SMS, sheets and APIs.</div></div>
+  </div>
+  <a class="wd-cta" href="web-development">See All Services &amp; Get A Quote →</a>
 </section>
 <div class="divider"></div>
 

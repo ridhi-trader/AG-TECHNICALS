@@ -17,6 +17,26 @@
   var path = (location.pathname || '').toLowerCase();
   if (/(^|\/)(admin|troublepie-[a-z0-9]+)(\.html)?$/.test(path)) return;
 
+  // "Back To Site" on every inner page: if a page has no back link of its own, add a small pill.
+  // (Pages that already have one — nav link — are left alone so there is never a duplicate.)
+  function addBackLink() {
+    if (onHomePath) return;
+    var links = document.querySelectorAll('a');
+    for (var i = 0; i < links.length; i++) {
+      if (/back to (the )?(site|ag)/i.test(links[i].textContent || '')) return;
+    }
+    var a = document.createElement('a');
+    a.href = '/';
+    a.id = 'ag-back-site';
+    a.textContent = '\u2190 Back To Site';
+    a.setAttribute('style', 'position:fixed;left:16px;bottom:16px;z-index:9998;padding:8px 14px;background:rgba(13,13,15,0.92);' +
+      'border:1px solid rgba(245,197,66,0.35);border-radius:10px;color:#f5c542;font:600 13px Inter,sans-serif;text-decoration:none;');
+    document.body.appendChild(a);
+  }
+  var onHomePath = /(^|\/)(index)?(\.html)?$/.test(path) || path === '';
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addBackLink);
+  else addBackLink();
+
   var SUPPORT_EMAIL = 'support@agtechnicals.com';
   var onHome = /(^|\/)(index)?(\.html)?$/.test(path) || path === '';
 

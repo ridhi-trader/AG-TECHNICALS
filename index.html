@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AG Technicals — Professional Trading Tools & Education</title>
-<meta name="description" content="AG Technicals offers professional trading tools: MT5 algo, TradingView indicators, SMC education and live market analysis.">
+<meta name="description" content="AG Technicals offers professional trading tools: MT5 algo, TradingView indicators and trading education.">
 <link rel="canonical" href="https://www.agtechnicals.com/">
 
   <!-- Favicon -->
@@ -363,7 +363,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   
   <div class="hero-grid">
     <div class="hero-left reveal">
-      <div class="hero-badge"><div class="dot"></div><span id="heroBadge">Live Market Intelligence — 24/7</span></div>
+      <div class="hero-badge"><div class="dot"></div><span id="heroBadge">Software &amp; Education For Traders</span></div>
       <h1 id="heroH1">No Prediction.<br><span class="g">Follow Price Action.</span></h1>
       <p class="hero-sub" id="heroSub">AG Technicals is a software and education service provider. We build MT5 algo tools and TradingView indicators, and teach trading concepts, for traders who make their own decisions.</p>
       <div class="hero-btns">
@@ -376,7 +376,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         <!-- Tab switcher -->
         <div style="display:flex;gap:8px;margin-bottom:10px;">
           <button id="tabForex" onclick="switchChartTab('forex')" style="padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;background:#f5c542;color:#000;">🌐 Forex / Crypto</button>
-          <button id="tabIndia" onclick="switchChartTab('india')" style="padding:6px 14px;border-radius:7px;border:1px solid #262626;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--t2);">🇮🇳 Indian Stocks</button>
+          <button id="tabIndia" hidden onclick="switchChartTab('india')" style="display:none;padding:6px 14px;border-radius:7px;border:1px solid #262626;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--t2);">🇮🇳 Indian Stocks</button>
         </div>
         <!-- Forex panel -->
         <div id="forexPanel">
@@ -566,7 +566,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 /* ── DEFAULTS ── */
 const D = {
   hero: {
-    badge:'Live Market Intelligence — 24/7',
+    badge:'Software & Education For Traders',
     h1:'No Prediction.<br><span class="g">Follow Price Action.</span>',
     sub:'AG Technicals is a software and education service provider. We build MT5 algo tools and TradingView indicators, and teach trading concepts, for traders who make their own decisions.',
     btnText:'Join The Community →',

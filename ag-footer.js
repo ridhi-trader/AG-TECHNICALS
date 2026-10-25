@@ -155,7 +155,7 @@
     var d = document.createElement('div');
     d.id = 'ag-footer-disc';
     d.style.cssText = 'flex-basis:100%;width:100%;margin-top:14px;font-size:11px;line-height:1.5;color:#8a8a8a;text-align:center;';
-    d.textContent = 'AG Technicals is a software and education service provider — we supply tools and learning content only. Nothing here is investment advice or a recommendation to buy or sell. We do not give tips, signals or advice, and we do not handle anyone's funds. Trading involves substantial risk of loss.';
+    d.textContent = 'AG Technicals is a software and education service provider — we supply tools and learning content only. Nothing here is investment advice or a recommendation to buy or sell. We do not give tips, signals or advice, and we do not handle customer funds. Trading involves substantial risk of loss.';
     host.appendChild(d);
   }
 

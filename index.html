@@ -19,8 +19,11 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://s3.tradingview.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --g4:#c9960c;--g5:#f5c542;--g6:#a07008;
@@ -1055,7 +1058,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
 
 </script>
-<script src="https://s3.tradingview.com/tv.js"></script>
+<script src="https://s3.tradingview.com/tv.js" defer></script>
 <script>
 var _tvWidget = null;
 function loadTVWidget(sym){

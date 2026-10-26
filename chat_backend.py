@@ -1213,3 +1213,185 @@ async def fetch_article(url: str):
         raise
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAYMENTS — Razorpay Checkout (orders created on the server, prices from admin catalog)
+# Env: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET  (set in Railway only)
+# ══════════════════════════════════════════════════════════════════════════════
+import hmac as _hmac, re as _re_pay, html as _html_pay
+
+def _rzp_id():      return os.environ.get("RAZORPAY_KEY_ID", "").strip()
+def _rzp_secret():  return os.environ.get("RAZORPAY_KEY_SECRET", "").strip()
+def _rzp_whsec():   return os.environ.get("RAZORPAY_WEBHOOK_SECRET", "").strip()
+def _pay_enabled(): return bool(_rzp_id() and _rzp_secret())
+
+_orders_ready = False
+async def _ensure_orders(conn):
+    global _orders_ready
+    if _orders_ready: return
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS ag_orders (
+            id SERIAL PRIMARY KEY,
+            order_id TEXT UNIQUE NOT NULL,
+            product_key TEXT NOT NULL,
+            product_name TEXT NOT NULL,
+            amount_paise INTEGER NOT NULL,
+            currency TEXT DEFAULT 'INR',
+            name TEXT, email TEXT, phone TEXT,
+            status TEXT DEFAULT 'created',
+            payment_id TEXT,
+            created_at TIMESTAMP DEFAULT NOW(),
+            paid_at TIMESTAMP
+        )""")
+    _orders_ready = True
+
+async def _pay_catalog(conn):
+    row = await conn.fetchrow("SELECT value FROM ag_config WHERE key=$1", "ag_pricing")
+    try:
+        items = json.loads(row["value"]) if row and row["value"] else []
+    except Exception:
+        items = []
+    out = []
+    for it in items if isinstance(items, list) else []:
+        try:
+            price = float(it.get("price", 0))
+        except Exception:
+            price = 0
+        key = str(it.get("key", "")).strip()
+        if key and price > 0 and it.get("active", True):
+            out.append({"key": key, "name": str(it.get("name", key))[:120], "price": price,
+                        "desc": str(it.get("desc", ""))[:400]})
+    return out
+
+@app.get("/api/pay/catalog")
+async def pay_catalog():
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": True, "enabled": False, "items": []})
+    async with pool.acquire() as conn:
+        items = await _pay_catalog(conn)
+    return JSONResponse({"ok": True, "enabled": _pay_enabled(), "key_id": _rzp_id() if _pay_enabled() else "", "items": items})
+
+class PayOrderReq(BaseModel):
+    product_key: str
+    name: str
+    email: str
+    phone: str = ""
+
+@app.post("/api/pay/create-order")
+async def pay_create_order(req: PayOrderReq):
+    if not _pay_enabled():
+        return JSONResponse({"ok": False, "error": "Online payments are not enabled yet. Please contact us on WhatsApp or Telegram."})
+    name = req.name.strip()[:80]; email = req.email.strip().lower()[:120]; phone = _re_pay.sub(r"[^0-9+]", "", req.phone)[:15]
+    if len(name) < 2: return JSONResponse({"ok": False, "error": "Please enter your name."})
+    if not _re_pay.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email): return JSONResponse({"ok": False, "error": "Please enter a valid email."})
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
+    async with pool.acquire() as conn:
+        await _ensure_orders(conn)
+        item = next((i for i in await _pay_catalog(conn) if i["key"] == req.product_key), None)
+        if not item: return JSONResponse({"ok": False, "error": "This item is not available."})
+        amount = int(round(item["price"] * 100))
+        try:
+            async with httpx.AsyncClient(timeout=20) as client:
+                r = await client.post("https://api.razorpay.com/v1/orders", auth=(_rzp_id(), _rzp_secret()),
+                    json={"amount": amount, "currency": "INR", "receipt": "agt_" + uuid.uuid4().hex[:12],
+                          "notes": {"product_key": item["key"], "email": email}})
+            rj = r.json()
+        except Exception as e:
+            print(f"Razorpay create-order error: {e}")
+            return JSONResponse({"ok": False, "error": "Could not start payment. Please try again."})
+        if r.status_code != 200 or not rj.get("id"):
+            print(f"Razorpay order error {r.status_code}: {str(rj)[:200]}")
+            return JSONResponse({"ok": False, "error": "Could not start payment. Please try again."})
+        await conn.execute(
+            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+            rj["id"], item["key"], item["name"], amount, name, email, phone)
+    return JSONResponse({"ok": True, "order_id": rj["id"], "amount": amount, "currency": "INR",
+                         "key_id": _rzp_id(), "name": item["name"]})
+
+import asyncio
+async def _pay_mark_paid(order_id: str, payment_id: str):
+    """Idempotent: mark paid, grant access, send emails. Safe to call from verify AND webhook."""
+    pool = await get_db()
+    if not pool: return None
+    async with pool.acquire() as conn:
+        await _ensure_orders(conn)
+        row = await conn.fetchrow("SELECT * FROM ag_orders WHERE order_id=$1", order_id)
+        if not row: return None
+        if row["status"] == "paid": return row
+        await conn.execute("UPDATE ag_orders SET status='paid', payment_id=$1, paid_at=NOW() WHERE order_id=$2 AND status<>'paid'", payment_id, order_id)
+        # grant access if a user with this email exists
+        user = await conn.fetchrow("SELECT id,products FROM ag_users WHERE LOWER(email)=$1", (row["email"] or "").lower())
+        if user:
+            cur = [p.strip() for p in (user["products"] or "").split(",") if p.strip()]
+            if row["product_key"] not in cur:
+                cur.append(row["product_key"])
+                await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", ",".join(cur), user["id"])
+    amt = f"₹{row['amount_paise']/100:,.2f}"
+    e = _html_pay.escape
+    try:
+        await asyncio.to_thread(send_email, row["email"], "Payment received — AG Technicals",
+            f"<div style='font-family:Arial,sans-serif;max-width:480px'><h2>Thank you, {e(row['name'] or '')}!</h2>"
+            f"<p>We received your payment of <b>{amt}</b> for <b>{e(row['product_name'])}</b>.</p>"
+            f"<p>Order ID: {e(order_id)}<br>Payment ID: {e(payment_id)}</p>"
+            f"<p>We will contact you shortly with access details. Questions? Write to support@agtechnicals.com or message us on WhatsApp/Telegram.</p>"
+            f"<p style='color:#888;font-size:12px'>AG Technicals is a software and education provider. Refunds follow our Refund Policy on agtechnicals.com.</p></div>")
+    except Exception as ex:
+        print(f"receipt email failed: {ex}")
+    admin_to = os.environ.get("ADMIN_EMAIL", "").strip()
+    if admin_to:
+        try:
+            await asyncio.to_thread(send_email, admin_to, f"New order: {row['product_name']} {amt}",
+                f"<p>{e(row['name'] or '')} ({e(row['email'] or '')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>")
+        except Exception as ex:
+            print(f"admin order email failed: {ex}")
+    return row
+
+class PayVerifyReq(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+
+@app.post("/api/pay/verify")
+async def pay_verify(req: PayVerifyReq):
+    if not _pay_enabled(): return JSONResponse({"ok": False})
+    expected = _hmac.new(_rzp_secret().encode(), f"{req.razorpay_order_id}|{req.razorpay_payment_id}".encode(), "sha256").hexdigest()
+    if not _hmac.compare_digest(expected, req.razorpay_signature):
+        return JSONResponse({"ok": False, "error": "Payment could not be verified. If money was deducted, contact support@agtechnicals.com with your payment ID."})
+    row = await _pay_mark_paid(req.razorpay_order_id, req.razorpay_payment_id)
+    return JSONResponse({"ok": bool(row)})
+
+@app.post("/api/pay/webhook")
+async def pay_webhook(request: Request):
+    secret = _rzp_whsec()
+    body = await request.body()
+    sig = request.headers.get("X-Razorpay-Signature", "")
+    if not secret or not sig:
+        return JSONResponse({"ok": False}, status_code=400)
+    expected = _hmac.new(secret.encode(), body, "sha256").hexdigest()
+    if not _hmac.compare_digest(expected, sig):
+        return JSONResponse({"ok": False}, status_code=400)
+    try:
+        ev = json.loads(body)
+        if ev.get("event") in ("payment.captured", "order.paid"):
+            pay = (ev.get("payload", {}).get("payment", {}) or {}).get("entity", {}) or {}
+            oid, pid = pay.get("order_id"), pay.get("id")
+            if oid and pid:
+                await _pay_mark_paid(oid, pid)
+    except Exception as ex:
+        print(f"webhook error: {ex}")
+    return JSONResponse({"ok": True})
+
+@app.get("/api/admin/orders")
+async def admin_orders(request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "orders": []})
+    async with pool.acquire() as conn:
+        await _ensure_orders(conn)
+        rows = await conn.fetch("SELECT order_id,product_name,amount_paise,name,email,phone,status,payment_id,created_at,paid_at FROM ag_orders ORDER BY created_at DESC LIMIT 200")
+    return JSONResponse({"ok": True, "enabled": _pay_enabled(), "orders": [
+        {"order_id": r["order_id"], "product": r["product_name"], "amount": r["amount_paise"]/100, "name": r["name"], "email": r["email"],
+         "phone": r["phone"], "status": r["status"], "payment_id": r["payment_id"],
+         "created": str(r["created_at"])[:16], "paid": str(r["paid_at"])[:16] if r["paid_at"] else ""} for r in rows]})

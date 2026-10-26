@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing &amp; Buy — AG Technicals</title>
+<meta name="description" content="Prices for AG Technicals software tools, indicators, courses and development services. Pay securely online with Razorpay.">
+<link rel="canonical" href="https://www.agtechnicals.com/pricing">
+<meta property="og:title" content="Pricing — AG Technicals">
+<meta property="og:description" content="Software tools, indicators, courses and development services. Secure online payment.">
+<meta property="og:url" content="https://www.agtechnicals.com/pricing">
+<meta property="og:image" content="https://www.agtechnicals.com/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--card:#0b0b0b;--g5:#f5c542;--t3:#bdbdbd;--border:#262626;--red:#ff5c6c;--teal:#2ee6a6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:#fff;font-family:'Inter',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--g5);text-decoration:none;}
+.nav-back{color:var(--t3);font-size:13px;text-decoration:none;}.nav-back:hover{color:var(--g5);}
+@media(max-width:600px){nav{padding:14px 18px;}}
+.hero{text-align:center;padding:60px 20px 30px;}
+.hero h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.035em;line-height:1;font-size:clamp(36px,7vw,64px);}
+.hero h1 span{color:var(--g5);}
+.hero p{color:var(--t3);max-width:540px;margin:14px auto 0;line-height:1.7;font-size:15px;}
+.wrap{max-width:900px;margin:0 auto;padding:12px 16px 80px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;flex-direction:column;}
+.card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;}
+.card p{color:var(--t3);font-size:14px;line-height:1.6;flex:1;margin-bottom:16px;}
+.price{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;color:var(--g5);margin-bottom:14px;}
+.btn{background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;border:0;border-radius:10px;padding:13px 20px;font:700 14px Inter,sans-serif;cursor:pointer;width:100%;}
+.btn:disabled{opacity:.6;cursor:wait;}
+.btn.ghost{background:transparent;color:#fff;border:1px solid var(--border);text-decoration:none;display:block;text-align:center;}
+.empty{text-align:center;color:var(--t3);line-height:1.8;padding:30px 10px;}
+.trust{margin-top:28px;text-align:center;font-size:12px;color:#8a8a8a;line-height:1.7;}
+.trust a{color:var(--g5);}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:16px;z-index:9999;}
+.ov.on{display:flex;}
+.box{background:#0b0b0b;border:1px solid rgba(245,197,66,.3);border-radius:18px;padding:26px;width:100%;max-width:420px;max-height:92vh;overflow:auto;}
+.box h2{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
+.sub{color:var(--t3);font-size:13px;margin-bottom:16px;line-height:1.6;}
+.f{margin-bottom:12px;}.f label{display:block;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:5px;}
+.f input[type=text],.f input[type=email],.f input[type=tel]{width:100%;background:#0d0c11;border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#fff;font-size:15px;font-family:inherit;outline:none;}
+.f input:focus{border-color:var(--g5);}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--t3);line-height:1.5;margin:6px 0 14px;}
+.chk a{color:var(--g5);}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-bottom:8px;}
+.ok{text-align:center;padding:10px 0;}
+.ok .big{font-size:44px;margin-bottom:6px;}
+.btn:focus-visible,.f input:focus-visible{outline:2px solid var(--g5);outline-offset:2px;}
+</style>
+</head>
+<body>
+<nav><a class="nav-logo" href="/">AG TECHNICALS</a><a href="/" class="nav-back">← Back To Site</a></nav>
+
+<div class="hero">
+  <h1>Pricing &amp; <span>Buy</span></h1>
+  <p>Software tools, indicators, courses and development services. Pay securely online. Prices are in Indian Rupees.</p>
+</div>
+
+<div class="wrap">
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden></div>
+  <p class="trust">Payments are processed by Razorpay (UPI, cards, net banking, wallets). We never see or store your card details.<br>
+  By buying you agree to our <a href="/terms">Terms</a>, <a href="/privacy-policy">Privacy Policy</a> and <a href="/refund-policy">Refund &amp; Cancellation Policy</a>.<br>
+  AG Technicals is a software and education provider. We do not give tips, signals or advice, and we do not promise profits.</p>
+</div>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="box">
+    <div id="mForm">
+      <h2 id="mTitle">Checkout</h2>
+      <div class="sub" id="mSub"></div>
+      <div class="f"><label for="cN">Full name</label><input id="cN" type="text" autocomplete="name" maxlength="80"></div>
+      <div class="f"><label for="cE">Email (we send your receipt and access details here)</label><input id="cE" type="email" autocomplete="email" maxlength="120"></div>
+      <div class="f"><label for="cP">WhatsApp / phone</label><input id="cP" type="tel" autocomplete="tel" maxlength="15"></div>
+      <label class="chk"><input type="checkbox" id="cA"> <span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/refund-policy" target="_blank" rel="noopener">Refund Policy</a>.</span></label>
+      <div class="err" id="cErr" role="alert"></div>
+      <button class="btn" id="cGo" type="button">Pay now</button>
+      <button class="btn ghost" id="cX" type="button" style="margin-top:10px">Cancel</button>
+    </div>
+    <div class="ok" id="mOk" hidden>
+      <div class="big">✅</div>
+      <h2>Payment received</h2>
+      <div class="sub">Thank you. A receipt is on its way to your email. We will contact you with access details shortly.</div>
+      <button class="btn ghost" id="oX" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i);};
+  var cat={items:[],enabled:false,key_id:''},cur=null;
+  function inr(n){return '₹'+Number(n).toLocaleString('en-IN',{maximumFractionDigits:2});}
+  function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+  function render(){
+    var g=$('grid'),em=$('empty');g.innerHTML='';
+    if(!cat.items.length){
+      em.hidden=false;
+      em.innerHTML='Our price list is being updated.<br>For prices and purchase, message us on <a style="color:#f5c542" href="https://wa.me/917357032456" target="_blank" rel="noopener">WhatsApp</a> or <a style="color:#f5c542" href="https://t.me/AG_Technical_fx" target="_blank" rel="noopener">Telegram</a>.';
+      return;
+    }
+    em.hidden=true;
+    cat.items.forEach(function(it){
+      var c=document.createElement('div');c.className='card';
+      c.innerHTML='<h3>'+esc(it.name)+'</h3><p>'+esc(it.desc||'')+'</p><div class="price">'+inr(it.price)+'</div>';
+      var b=document.createElement('button');b.type='button';b.className='btn';
+      if(cat.enabled){b.textContent='Buy now';b.addEventListener('click',function(){open(it);});}
+      else{b.textContent='Contact to buy';b.addEventListener('click',function(){location.href='https://wa.me/917357032456?text='+encodeURIComponent('Hi, I want to buy: '+it.name);});}
+      c.appendChild(b);g.appendChild(c);
+    });
+  }
+  function open(it){cur=it;$('mSub').textContent=it.name+' · '+inr(it.price);$('cErr').textContent='';$('mForm').hidden=false;$('mOk').hidden=true;$('ov').classList.add('on');setTimeout(function(){$('cN').focus();},50);}
+  function close(){$('ov').classList.remove('on');}
+  function loadCheckout(cb){
+    if(window.Razorpay)return cb();
+    var s=document.createElement('script');s.src='https://checkout.razorpay.com/v1/checkout.js';s.onload=cb;
+    s.onerror=function(){$('cErr').textContent='Could not load the payment window. Check your connection and try again.';$('cGo').disabled=false;$('cGo').textContent='Pay now';};
+    document.head.appendChild(s);
+  }
+  $('cX').addEventListener('click',close);$('oX').addEventListener('click',close);
+  $('ov').addEventListener('click',function(e){if(e.target===$('ov'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  $('cGo').addEventListener('click',function(){
+    var n=$('cN').value.trim(),e=$('cE').value.trim(),p=$('cP').value.trim();
+    if(n.length<2){$('cErr').textContent='Please enter your name.';return;}
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){$('cErr').textContent='Please enter a valid email.';return;}
+    if(!$('cA').checked){$('cErr').textContent='Please accept the Terms and Refund Policy.';return;}
+    $('cErr').textContent='';$('cGo').disabled=true;$('cGo').textContent='Starting payment…';
+    fetch('/api/pay/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_key:cur.key,name:n,email:e,phone:p})})
+    .then(function(r){return r.json();}).then(function(j){
+      if(!j.ok){$('cErr').textContent=j.error||'Could not start payment.';$('cGo').disabled=false;$('cGo').textContent='Pay now';return;}
+      loadCheckout(function(){
+        var rz=new Razorpay({key:j.key_id,amount:j.amount,currency:j.currency,order_id:j.order_id,name:'AG Technicals',description:j.name,
+          prefill:{name:n,email:e,contact:p},theme:{color:'#c9960c'},
+          modal:{ondismiss:function(){$('cGo').disabled=false;$('cGo').textContent='Pay now';}},
+          handler:function(res){
+            $('cGo').textContent='Confirming…';
+            fetch('/api/pay/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(res)})
+            .then(function(r){return r.json();}).then(function(v){
+              if(v.ok){$('mForm').hidden=true;$('mOk').hidden=false;}
+              else{$('cErr').textContent=v.error||'We could not confirm the payment. If money was deducted, write to support@agtechnicals.com with your payment ID: '+res.razorpay_payment_id;}
+              $('cGo').disabled=false;$('cGo').textContent='Pay now';
+            }).catch(function(){$('cErr').textContent='Network issue while confirming. If money was deducted, write to support@agtechnicals.com with payment ID: '+res.razorpay_payment_id;$('cGo').disabled=false;$('cGo').textContent='Pay now';});
+          }});
+        rz.on('payment.failed',function(){$('cErr').textContent='Payment failed. You were not charged. Please try again.';$('cGo').disabled=false;$('cGo').textContent='Pay now';});
+        rz.open();
+      });
+    }).catch(function(){$('cErr').textContent='Network error. Please try again.';$('cGo').disabled=false;$('cGo').textContent='Pay now';});
+  });
+  fetch('/api/pay/catalog').then(function(r){return r.json();}).then(function(j){cat=j||cat;render();}).catch(render);
+})();
+</script>
+<script src="ag-footer.js"></script>
+</body>
+</html>

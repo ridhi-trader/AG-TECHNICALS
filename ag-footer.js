@@ -62,6 +62,7 @@
     { label: 'Terms Of Service', href: 'terms' },
     { label: 'Contact Us',       href: onHome ? '#contact' : '/#contact' },
     { label: 'Risk Disclaimer',  href: 'risk-disclaimer' },
+    { label: 'Pricing',          href: 'pricing' },
     { label: 'Web & Software',   href: 'web-development' },
     { label: 'Trader Tools',     href: 'trader-tools' },
     { label: 'Refund Policy',    href: 'refund-policy' },

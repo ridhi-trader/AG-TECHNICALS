@@ -246,6 +246,7 @@ async function verifyAdminOTP(){
       <div class="sb-group">Files & System</div>
       <button class="sb-btn" onclick="nav('uploads',this)"><span class="sb-icon">📁</span>File Uploads</button>
       <button class="sb-btn" onclick="nav('export',this)"><span class="sb-icon">📦</span>Export / Backup</button>
+      <button class="sb-btn" onclick="nav('pricing',this)"><span class="sb-icon">💳</span>Pricing &amp; Orders</button>
       <button class="sb-btn" onclick="nav('cleanup',this)"><span class="sb-icon">🧹</span>Compliance Cleanup</button>
       <button class="sb-btn" onclick="nav('password',this)"><span class="sb-icon">🔐</span>Security</button>
       <button class="sb-btn" onclick="nav('bridge_lic',this)"><span class="sb-icon">🌉</span>Bridge Licenses</button>
@@ -560,6 +561,24 @@ async function verifyAdminOTP(){
     </div>
 
     <!-- ══ SECURITY ══ -->
+    <div class="page" id="page-pricing">
+      <div class="ph"><div class="ph-tag">Payments</div><div class="ph-title">Pricing &amp; Orders</div></div>
+      <div class="form-box" style="margin-bottom:16px;">
+        <div class="card-title" style="margin-bottom:6px;">Price list (shown on the Pricing page)</div>
+        <div class="card-sub" style="margin-bottom:12px;">Each row becomes a Buy card at <b>/pricing</b>. Price is in rupees. Customers pay this exact amount (checked on the server). Leave empty to hide the page content.</div>
+        <div id="prRows"></div>
+        <button class="btn-gold" onclick="prAdd()" style="margin-right:8px;">+ Add item</button>
+        <button class="btn-gold" onclick="prSave()">Save price list</button>
+        <div class="file-status" id="prMsg" style="margin-top:10px;"></div>
+      </div>
+      <div class="form-box">
+        <div class="card-title" style="margin-bottom:6px;">Orders</div>
+        <div class="card-sub" id="orStatus" style="margin-bottom:10px;"></div>
+        <button class="btn-gold" onclick="orLoad()">Refresh orders</button>
+        <div id="orList" style="margin-top:12px;overflow-x:auto;"></div>
+      </div>
+    </div>
+
     <div class="page" id="page-cleanup">
       <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Compliance Cleanup</div></div>
       <div class="form-box">
@@ -932,6 +951,7 @@ function nav(id, btn){
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
   const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS};
+  if(id==='pricing') prLoad();
   if(loaders[id]) loaders[id]();
 }
 
@@ -1770,6 +1790,46 @@ async function ccEnsureWebdev(){
   }catch(e){}
 }
 (function(){ let n=0; const t=setInterval(()=>{ n++; if(sessionStorage.getItem('ag_auth')==='1'){ clearInterval(t); setTimeout(ccEnsureWebdev,1500); } else if(n>600) clearInterval(t); },1000); })();
+
+/* ══════════════ PRICING & ORDERS ══════════════ */
+let _pr=[];
+function prSlug(t){return String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);}
+function prDraw(){
+  const el=document.getElementById('prRows'); if(!el) return;
+  const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  el.innerHTML=_pr.map((r,i)=>'<div style="display:grid;grid-template-columns:2fr 1fr 3fr auto auto;gap:8px;margin-bottom:8px;align-items:center;">'
+    +'<input class="inp" placeholder="Name" value="'+esc(r.name)+'" oninput="_pr['+i+'].name=this.value">'
+    +'<input class="inp" type="number" min="0" placeholder="Price ₹" value="'+esc(r.price)+'" oninput="_pr['+i+'].price=this.value">'
+    +'<input class="inp" placeholder="Short description" value="'+esc(r.desc)+'" oninput="_pr['+i+'].desc=this.value">'
+    +'<label style="font-size:12px;white-space:nowrap;"><input type="checkbox" '+(r.active!==false?'checked':'')+' onchange="_pr['+i+'].active=this.checked"> Live</label>'
+    +'<button class="btn-gold" style="padding:6px 10px;background:#3a1a1a;color:#ff8a8a;" onclick="_pr.splice('+i+',1);prDraw()">✕</button></div>').join('') || '<div class="card-sub">No items yet. Click “Add item”.</div>';
+}
+async function prLoad(){ _pr=await loadFromDB('ag_pricing',[])||[]; if(!Array.isArray(_pr)) _pr=[]; prDraw(); orLoad(); }
+function prAdd(){ _pr.push({key:'',name:'',price:'',desc:'',active:true}); prDraw(); }
+async function prSave(){
+  const msg=document.getElementById('prMsg');
+  const out=[]; const used={};
+  for(const r of _pr){
+    const name=String(r.name||'').trim(), price=parseFloat(r.price);
+    if(!name&&!r.price) continue;
+    if(!name||!(price>0)){ msg.textContent='Every item needs a name and a price above 0.'; return; }
+    let key=r.key||prSlug(name)||('item-'+Date.now()); let k=key,n=2; while(used[k]){k=key+'-'+n++;} used[k]=1;
+    out.push({key:k,name:name,price:price,desc:String(r.desc||'').trim(),active:r.active!==false});
+  }
+  const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'ag_pricing',value:JSON.stringify(out)})});
+  const j=await r.json().catch(()=>({}));
+  if(j.ok){ _pr=out; prDraw(); msg.textContent='Saved. '+out.length+' item(s) live on /pricing.'; toast('Price list saved ✓'); } else { msg.textContent='Save failed.'; toast('Save failed','err'); }
+}
+async function orLoad(){
+  const box=document.getElementById('orList'), st=document.getElementById('orStatus'); if(!box) return;
+  try{
+    const r=await adminFetch('/api/admin/orders'); const j=await r.json();
+    st.textContent=j.enabled?'Payments are ON (Razorpay keys found).':'Payments are OFF. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Railway Variables.';
+    const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    box.innerHTML=(j.orders&&j.orders.length)?'<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr style="text-align:left;color:#888"><th>Date</th><th>Item</th><th>₹</th><th>Customer</th><th>Status</th></tr>'
+      +j.orders.map(o=>'<tr style="border-top:1px solid #222"><td>'+esc(o.paid||o.created)+'</td><td>'+esc(o.product)+'</td><td>'+esc(o.amount)+'</td><td>'+esc(o.name)+'<br>'+esc(o.email)+' '+esc(o.phone)+'</td><td style="color:'+(o.status==='paid'?'#2ee6a6':'#aaa')+'">'+esc(o.status)+'</td></tr>').join('')+'</table>':'No orders yet.';
+  }catch(e){ box.textContent='Could not load orders.'; }
+}
 </script>
 
 <!-- ASSIGN PRODUCTS OVERLAY -->

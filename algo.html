@@ -239,13 +239,13 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="price-modal-hdr">
       <div>
         <div class="price-modal-title" id="priceMdlName">EA Name</div>
-        <div class="price-modal-sub">Choose your plan — pay via WhatsApp</div>
+        <div class="price-modal-sub">Choose your plan — secure online payment</div>
       </div>
       <button style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;margin-top:2px;" onclick="closePriceModal()">✕</button>
     </div>
     <div class="price-plans" id="pricePlans"></div>
     <p style="font-size:11px;color:#bdbdbd;line-height:1.6;margin-top:12px;text-align:center;">Software only — not investment advice. Trading involves risk of loss. Digital products are non-refundable once delivered (see <a href="refund-policy" style="color:#f5c542;">Refund Policy</a>).</p>
-    <div class="price-plan-note">💬 After choosing a plan, you'll be redirected to WhatsApp to confirm your order and get the EA file.</div>
+    <div class="price-plan-note">🔒 Pay securely with Razorpay (UPI, cards, netbanking). After payment we contact you with your access details. Questions? <a href="https://wa.me/917357032456" target="_blank" rel="noopener" style="color:var(--g5)">WhatsApp us</a>.</div>
   </div>
 </div>
 
@@ -388,6 +388,7 @@ function openPriceModal(i){
   var items = getAlgoItems();
   var ea = items[i];
   if(!ea) return;
+  _buyEA = ea;
   document.getElementById('priceMdlName').textContent = ea.name||'EA';
   // Pricing: use ea.price3m/6m/12m if set, else defaults
   var p3 = ea.price3m || 30000;
@@ -409,7 +410,7 @@ function openPriceModal(i){
         '<div class="price-plan-amt">'+fmt(p3)+'</div>'+
       '</div>'+
       '<div class="price-plan-save">Starter plan</div>'+
-      '<a href="'+waLink('3 Month',p3)+'" target="_blank"><button class="price-plan-btn">Buy 3-Month Plan</button></a>'+
+      '<button type="button" class="price-plan-btn" onclick="buyPlan(3,'+p3+')">Buy 3-Month Plan</button>'+
     '</div>'+
     '<div class="price-plan best">'+
       '<div class="price-plan-badge">BEST VALUE</div>'+
@@ -418,7 +419,7 @@ function openPriceModal(i){
         '<div class="price-plan-amt">'+fmt(p6)+'</div>'+
       '</div>'+
       '<div class="price-plan-save">Save '+save6+'% vs monthly</div>'+
-      '<a href="'+waLink('6 Month',p6)+'" target="_blank"><button class="price-plan-btn">Buy 6-Month Plan</button></a>'+
+      '<button type="button" class="price-plan-btn" onclick="buyPlan(6,'+p6+')">Buy 6-Month Plan</button>'+
     '</div>'+
     '<div class="price-plan">'+
       '<div class="price-plan-row">'+
@@ -426,11 +427,18 @@ function openPriceModal(i){
         '<div class="price-plan-amt">'+fmt(p12)+'</div>'+
       '</div>'+
       '<div class="price-plan-save">Save '+save12+'% vs monthly</div>'+
-      '<a href="'+waLink('12 Month',p12)+'" target="_blank"><button class="price-plan-btn">Buy 12-Month Plan</button></a>'+
+      '<button type="button" class="price-plan-btn" onclick="buyPlan(12,'+p12+')">Buy 12-Month Plan</button>'+
     '</div>';
   document.getElementById('priceOverlay').classList.add('open');
 }
 
+var _buyEA=null;
+function buyPlan(months,price){
+  if(!_buyEA||!window.AGCheckout) return;
+  var nm=_buyEA.name||'EA';
+  closePriceModal();
+  AGCheckout.open({key:'ea:'+nm+':'+months,name:nm+' — '+months+' months',price:price});
+}
 function closePriceModal(){
   document.getElementById('priceOverlay').classList.remove('open');
 }
@@ -493,6 +501,7 @@ if(feats && grid){
 })();
 </script>
 <script src="glow.js"></script>
+<script src="ag-checkout.js"></script>
 <script src="ag-footer.js"></script>
 </body>
 </html>

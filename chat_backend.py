@@ -1264,6 +1264,41 @@ async def _pay_catalog(conn):
                         "desc": str(it.get("desc", ""))[:400]})
     return out
 
+async def _pay_resolve(conn, key: str):
+    """Find a payable item. Price always comes from the server: either the Admin price list,
+    or an Algo (MT5) plan stored in the product data (key format  ea:<name>:<3|6|12>)."""
+    key = (key or "").strip()
+    item = next((i for i in await _pay_catalog(conn) if i["key"] == key), None)
+    if item or not key.startswith("ea:"):
+        return item
+    try:
+        _, rest = key.split(":", 1)
+        name, months = rest.rsplit(":", 1)
+        months = int(months)
+    except Exception:
+        return None
+    if months not in (3, 6, 12):
+        return None
+    row = await conn.fetchrow("SELECT value FROM ag_config WHERE key=$1", "ag_products")
+    try:
+        prods = json.loads(row["value"]) if row and row["value"] else []
+    except Exception:
+        prods = []
+    algo = next((p for p in prods if isinstance(p, dict) and p.get("id") == "algo"), None)
+    eas = (algo or {}).get("items") or []
+    ea = next((e for e in eas if isinstance(e, dict) and not e.get("hidden") and str(e.get("name", "")).strip().lower() == name.strip().lower()), None)
+    if not ea:
+        return None
+    defaults = {3: 30000, 6: 54000, 12: 100000}
+    field = {3: "price3m", 6: "price6m", 12: "price12m"}[months]
+    try:
+        price = float(ea.get(field) or defaults[months])
+    except Exception:
+        price = float(defaults[months])
+    if price <= 0:
+        return None
+    return {"key": key, "name": f"{str(ea.get('name'))[:90]} — {months} months", "price": price, "desc": ""}
+
 @app.get("/api/pay/catalog")
 async def pay_catalog():
     pool = await get_db()
@@ -1289,7 +1324,7 @@ async def pay_create_order(req: PayOrderReq):
     if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
     async with pool.acquire() as conn:
         await _ensure_orders(conn)
-        item = next((i for i in await _pay_catalog(conn) if i["key"] == req.product_key), None)
+        item = await _pay_resolve(conn, req.product_key)
         if not item: return JSONResponse({"ok": False, "error": "This item is not available."})
         amount = int(round(item["price"] * 100))
         try:

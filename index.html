@@ -752,12 +752,16 @@ function agImgCheck(img){
 }
 function mergeProducts(src){
   var list=(src||[]).slice();
-  var ia=list.findIndex(function(p){return p.id==='algo';}), it=list.findIndex(function(p){return p.id==='tvindicator';});
+  function pu(p){return String(p.url||'').toLowerCase().replace(/\.html$/,'').replace(/^\//,'');}
+  function nm(p){return String(p.name||p.title||'').toLowerCase();}
+  function isAlgo(p){return p.id==='algo'||pu(p)==='algo'||/expert advis|^algo/.test(nm(p));}
+  function isTv(p){return p.id==='tvindicator'||pu(p)==='tv-indicators'||/tradingview indicator/.test(nm(p));}
+  var ia=list.findIndex(isAlgo), it=list.findIndex(isTv);
   if(ia>-1||it>-1){
     var first=Math.min.apply(null,[ia,it].filter(function(i){return i>-1;}));
     var A=ia>-1?list[ia]:null,T=it>-1?list[it]:null;
     var tools={id:'tools',name:'Tools',icon:'🛠️',sub:'Algo (MT5) & TradingView Indicators',badge:'PREMIUM',title:'Tools',desc:'MT5 Expert Advisors and TradingView indicators.',cta:'View Tools →',type:'page',url:'tools',hidden:!!((!A||A.hidden)&&(!T||T.hidden)),img:'',items:[]};
-    list=list.filter(function(p){return p.id!=='algo'&&p.id!=='tvindicator';});
+    list=list.filter(function(p){return !isAlgo(p)&&!isTv(p);});
     list.splice(first,0,tools);
   }
   if(!list.some(function(p){return p.id==='webdev';})){

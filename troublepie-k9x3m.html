@@ -1663,6 +1663,8 @@ const CC_REPL=[
   ['AG Signal Demo','AG Algo Demo'],
   ['Custom Strategy','Custom Indicator & Algo'],
   ['Entry Signal Bar','Swing + EMA break markers'],
+  ['Live MT5 signal trading demo','MT5 algo demo'],
+  ['CALCULATOR FOR HANDLING UR EQUITY ND MANAGE RISK ND PROFIT','Calculator for equity and risk planning'],
   ['live market analysis','trading education'],
   ['analysis on it','education on it']
 ];
@@ -1698,7 +1700,7 @@ async function ccScan(){
     let changed=false;
     before.forEach((b,i)=>{ if(after[i][1]!==b[1]){ changed=true; _ccPlan.changes.push([b[0],b[1],after[i][1]]); } });
     if(changed) _ccPlan.changes.push(['__key__',k,fixed]);
-    ccCollect(fixed,k,(p,v)=>{ if(CC_FLAG.test(v)) review.push([p,v]); });
+    ccCollect(fixed,k,(p,v)=>{ if(!/^(https?:)?\/\//i.test(v) && !/\.(mp4|png|jpe?g|webp|pdf)$/i.test(v) && CC_FLAG.test(v)) review.push([p,v]); });
   }
   const list=_ccPlan.changes.filter(c=>c[0]!=='__key__');
   const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));

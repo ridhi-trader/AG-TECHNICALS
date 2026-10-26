@@ -241,9 +241,9 @@ async def fetch_finnhub_news():
         print(f"Finnhub error: {e}")
         return []
 
-SYSTEM = """You are AG Assistant — the official AI assistant for AG Technicals (ag-technicals-production.up.railway.app).
+SYSTEM = """You are AG Assistant — the official AI assistant for AG Technicals (www.agtechnicals.com).
 
-AG Technicals is a professional trading analysis and tools platform built for serious traders. You know everything about this platform and help users with any question.
+AG Technicals is a software and education service provider. We build trading software (MT5 Expert Advisors, TradingView indicators), websites and custom software, and we teach trading concepts. We do NOT give trading tips, calls, signals or investment advice, and we do not manage anyone's money. You know everything about this platform and help users with any question.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PRODUCTS & SERVICES (Full Detail)
@@ -253,7 +253,7 @@ PRODUCTS & SERVICES (Full Detail)
    - 3 custom Pine Script indicators built by AG Technicals
    - AG SMC: Smart Money Concepts indicator — marks order blocks, fair value gaps, break of structure, change of character
    - AG Order Flow: Tracks institutional order flow, shows buying/selling pressure zones
-   - AG-ESB: Entry Signal Bar — precision entry signal with stop loss and target levels
+   - AG-ESB: Swing + EMA break markers with risk-reward level lines and a live dashboard
    - Works on TradingView platform (any asset — Forex, Crypto, Gold, Stocks)
    - For pricing/access: contact via WhatsApp or Telegram
 
@@ -337,7 +337,7 @@ TRADING CONCEPTS (Help Users Understand)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Telegram: @agtechnical | https://t.me/agtechnical
+- Telegram: @AG_Technical_fx | https://t.me/AG_Technical_fx
 - WhatsApp: +91 73570 32456 | https://wa.me/917357032456
 - Instagram: @agtechnical | https://instagram.com/agtechnical
 
@@ -345,7 +345,8 @@ CONTACT
 STRICT RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - NEVER share: admin panel URL, GitHub details, backend API keys, database info, internal tech stack, server details
-- NEVER give specific buy/sell signals or financial advice — say "not financial advice, contact us for guidance"
+- NEVER give buy/sell signals, tips, price predictions or financial advice. If asked, say: "We are a software and education provider and do not give tips or advice. Trading decisions are yours alone." You may explain concepts and how our tools work.
+- Never promise or imply profits, win rates or guaranteed results
 - For ALL pricing questions: say "Contact us on WhatsApp or Telegram for pricing"
 - Respond in SAME language as user — if user writes Hindi/Hinglish, reply in Hindi/Hinglish
 - Be helpful, friendly, concise — under 200 words unless complex topic needs detail
@@ -577,30 +578,58 @@ async def chat(req: ChatReq):
         except Exception:
             msgs = [m.model_dump() for m in req.messages]
 
-        # OpenRouter AI
-        OR_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+        sysmsg = [{"role": "system", "content": SYSTEM}]
+        clean = [{"role": m.get("role"), "content": m.get("content", "")} for m in msgs
+                 if m.get("role") in ("user", "assistant") and m.get("content")]
+
+        # 1) OpenRouter, 2) Groq, 3) Anthropic. First one that answers wins.
+        async def openai_style(url, key, model, extra_headers=None):
+            headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+            headers.update(extra_headers or {})
+            async with httpx.AsyncClient(timeout=30) as client:
+                r = await client.post(url, headers=headers, json={
+                    "model": model, "max_tokens": 800, "messages": sysmsg + clean})
+            try:
+                rj = r.json()
+            except Exception:
+                rj = {}
+            if r.status_code == 200:
+                return rj.get("choices", [{}])[0].get("message", {}).get("content", "") or ""
+            print(f"{url.split('/')[2]} error {r.status_code}: {str(rj)[:200]}")
+            return ""
+
+        OR_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
         if OR_KEY:
+            reply = await openai_style(
+                "https://openrouter.ai/api/v1/chat/completions", OR_KEY,
+                os.environ.get("OR_MODEL", "meta-llama/llama-3.2-3b-instruct:free"),
+                {"HTTP-Referer": "https://www.agtechnicals.com", "X-Title": "AG Technicals"})
+            if reply:
+                return {"reply": reply}
+
+        GROQ_KEY = os.environ.get("GROQ_API_KEY", "").strip()
+        if GROQ_KEY:
+            reply = await openai_style(
+                "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY,
+                os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant"))
+            if reply:
+                return {"reply": reply}
+
+        ANT_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+        if ANT_KEY and clean:
             async with httpx.AsyncClient(timeout=30) as client:
                 r = await client.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {OR_KEY}",
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "https://ag-technicals-production.up.railway.app",
-                        "X-Title": "AG Technicals"
-                    },
-                    json={
-                        "model": os.environ.get("OR_MODEL", "meta-llama/llama-3.2-3b-instruct:free"),
-                        "max_tokens": 800,
-                        "messages": [{"role": "system", "content": SYSTEM}] + msgs
-                    }
-                )
-            rj = r.json()
+                    "https://api.anthropic.com/v1/messages",
+                    headers={"x-api-key": ANT_KEY, "anthropic-version": "2023-06-01",
+                             "content-type": "application/json"},
+                    json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800,
+                          "system": SYSTEM, "messages": clean})
             if r.status_code == 200:
-                reply = rj.get("choices", [{}])[0].get("message", {}).get("content", "")
+                parts = r.json().get("content", [])
+                reply = "".join(p.get("text", "") for p in parts if p.get("type") == "text")
                 if reply:
                     return {"reply": reply}
-            print(f"OpenRouter error {r.status_code}: {rj}")
+            print(f"anthropic error {r.status_code}: {r.text[:200]}")
 
         return {"reply": "Service unavailable. Please contact us on WhatsApp or Telegram."}
     except HTTPException:

@@ -22,7 +22,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://s3.tradingview.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap"></noscript>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -342,7 +343,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo"><img id="siteLogo" src="logo.png" alt="AG Technicals" style="height:44px;width:auto;"></a>
+  <a href="#" class="logo"><img id="siteLogo" src="logo-sm.png" alt="AG Technicals" width="62" height="44" style="height:44px;width:auto;"></a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
     <li><a href="#news">News</a></li>
@@ -531,7 +532,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 
 <!-- FOOTER -->
 <footer>
-  <div class="f-logo"><img id="siteLogoFooter" src="logo.png" alt="AG Technicals" style="height:40px;width:auto;"></div>
+  <div class="f-logo"><img id="siteLogoFooter" src="logo-sm.png" alt="AG Technicals" width="56" height="40" style="height:40px;width:auto;" loading="lazy"></div>
   <div class="f-copy" id="footerCopy">© 2025 AG Technicals. All rights reserved.</div>
   <div class="f-links">
     <a href="privacy-policy">Privacy Policy</a>
@@ -637,19 +638,24 @@ const ticker   = load('ticker',   D.ticker);
 // No auto-fix — data preserved always
 // Load ag_products — DB first, localStorage fallback
 (async function initProducts(){
+  // Paint immediately from the last saved copy (or built-in defaults) so cards never wait on the network
+  var localStr=null, shown=false;
+  try{ localStr=localStorage.getItem('ag_products'); }catch(e){}
+  try{ renderProducts(localStr ? JSON.parse(localStr) : D.products); shown=true; }catch(e){}
+  // Then check the server copy and re-render only if it differs
   try{
     const r = await fetch('/api/config/ag_products');
     const j = await r.json();
     if(j.ok && j.value){
-      const dbProds = JSON.parse(j.value);
-      localStorage.setItem('ag_products', JSON.stringify(dbProds));
-      renderProducts(dbProds);
+      if(j.value !== localStr || !shown){
+        const dbProds = JSON.parse(j.value);
+        try{ localStorage.setItem('ag_products', j.value); }catch(e){}
+        renderProducts(dbProds);
+      }
       return;
     }
   }catch(e){}
-  // fallback: localStorage or hardcoded defaults
-  const localStr = localStorage.getItem('ag_products');
-  renderProducts(localStr ? JSON.parse(localStr) : D.products);
+  if(!shown) renderProducts(D.products);
 })();
 const faqItems = load('faq',      D.faq);
 const contact  = load('contact',  D.contact);
@@ -1065,11 +1071,10 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect(
 document.getElementById('chartSearchInp').addEventListener('keydown',e=>{ if(e.key==='Enter') searchSym(); });
 
 </script>
-<script src="https://s3.tradingview.com/tv.js" defer></script>
 <script>
 var _tvWidget = null;
 function loadTVWidget(sym){
-  if(typeof TradingView === 'undefined'){ setTimeout(function(){loadTVWidget(sym);},500); return; }
+  if(typeof TradingView === 'undefined'){ if(window._ensureTV) window._ensureTV(); setTimeout(function(){loadTVWidget(sym);},500); return; }
   if(_tvWidget){ try{ _tvWidget.remove(); }catch(e){} _tvWidget=null; }
   document.getElementById('tradingview_chart').innerHTML='';
   _tvWidget = new TradingView.widget({
@@ -1090,7 +1095,23 @@ function loadTVWidget(sym){
   });
 }
 window._loadTVWidget = loadTVWidget;
-window.addEventListener('load', function(){ loadTVWidget('BINANCE:BTCUSDT'); });
+// Load the heavy TradingView script only when the chart area is about to be seen
+(function(){
+  var started=false;
+  function loadTV(){
+    if(started) return; started=true;
+    var sc=document.createElement('script');
+    sc.src='https://s3.tradingview.com/tv.js';
+    sc.onload=function(){ loadTVWidget('BINANCE:BTCUSDT'); };
+    document.head.appendChild(sc);
+  }
+  window._ensureTV=loadTV;
+  var box=document.getElementById('tradingview_chart');
+  if(box && 'IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ if(es[0].isIntersecting){ io.disconnect(); loadTV(); } },{rootMargin:'400px'});
+    io.observe(box);
+  } else { window.addEventListener('load', loadTV); }
+})();
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>

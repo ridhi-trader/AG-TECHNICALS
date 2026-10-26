@@ -1065,6 +1065,28 @@ async def set_config(req: ConfigSetReq, request: Request):
         await conn.execute("INSERT INTO ag_config(key,value,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(key) DO UPDATE SET value=$2,updated_at=NOW()", req.key, req.value)
         return JSONResponse({"ok": True})
 
+@app.post("/api/admin/backup")
+async def admin_backup(request: Request):
+    """Save a copy of config data on the server volume (kept: newest 40)."""
+    verify_admin_token(request)
+    import re
+    body = await request.json()
+    label = re.sub(r"[^a-zA-Z0-9_-]", "", str(body.get("label", "backup")))[:40] or "backup"
+    d = "/var/data/config_backups"
+    try:
+        os.makedirs(d, exist_ok=True)
+        path = os.path.join(d, f"{label}-{int(time.time())}.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(body.get("data"), f, ensure_ascii=False)
+        files = sorted(os.listdir(d))
+        for old in files[:-40]:
+            try: os.remove(os.path.join(d, old))
+            except Exception: pass
+        return {"ok": True, "file": os.path.basename(path)}
+    except Exception as e:
+        print(f"backup failed: {e}")
+        return {"ok": False}
+
 @app.get("/api/admin/users")
 async def admin_users(request: Request):
     verify_admin_token(request)

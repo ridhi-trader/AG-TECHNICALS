@@ -563,7 +563,9 @@ async function verifyAdminOTP(){
     <div class="page" id="page-cleanup">
       <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Compliance Cleanup</div></div>
       <div class="form-box">
-        <div class="card-sub" style="margin-bottom:12px;">Scans saved site content (products, hero, FAQ, about, news, contact, ticker). Step 1 shows what would change. Step 2 applies it. A backup file downloads first.</div>
+        <div class="card-sub" style="margin-bottom:12px;">Scans saved site content (products, hero, FAQ, about, news, contact, ticker). Step 1 shows what would change. Step 2 applies it. A backup copy is saved on the server first.</div>
+        <label style="display:block;margin-bottom:12px;font-size:13px;color:var(--t2,#ccc);"><input type="checkbox" id="ccDl"> Also download a backup file to this computer (a copy is always saved on the server)</label>
+        <button class="btn-gold" onclick="ccDownloadNow()" style="margin-bottom:12px;">⬇ Download backup now</button><br>
         <button class="btn-gold" onclick="ccScan()">1. Scan</button>
         <button class="btn-gold" id="ccApply" onclick="ccApply()" style="display:none;margin-left:8px;">2. Apply changes</button>
         <button class="btn-gold" onclick="ccAddWebdev()" style="margin-left:8px;">+ Add Websites &amp; Software box</button>
@@ -1713,9 +1715,8 @@ async function ccScan(){
 async function ccApply(){
   if(!_ccPlan) return;
   const msg=document.getElementById('ccMsg');
-  // backup download first
-  const blob=new Blob([JSON.stringify(_ccPlan.backup,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ag-config-backup-'+Date.now()+'.json'; a.click();
+  await ccServerBackup('cleanup-before',_ccPlan.backup);
+  if(document.getElementById('ccDl').checked) ccDownload('ag-config-backup',_ccPlan.backup);
   let n=0;
   for(const c of _ccPlan.changes){
     if(c[0]==='__key__'){
@@ -1724,7 +1725,7 @@ async function ccApply(){
       if(j.ok){ localStorage.setItem(c[1],JSON.stringify(c[2])); n++; } else { toast('Save failed for '+c[1],'err'); }
     }
   }
-  msg.textContent='Applied to '+n+' setting(s). Backup file downloaded. Reload the site to see it.';
+  msg.textContent='Applied to '+n+' setting(s). A backup copy is saved on the server. Reload the site to see it.';
   toast('Cleanup applied ✓'); document.getElementById('ccApply').style.display='none'; _ccPlan=null;
 }
 
@@ -1733,16 +1734,42 @@ async function ccAddWebdev(){
   const list=await loadFromDB('ag_products',null);
   if(!Array.isArray(list)){ msg.textContent='Could not read products from the database.'; return; }
   if(list.some(p=>p.id==='webdev')){ msg.textContent='Websites & Software box already exists. Edit it in Products & Services.'; return; }
-  const blob=new Blob([JSON.stringify(list,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ag-products-backup-'+Date.now()+'.json'; a.click();
+  await ccServerBackup('products-before-webdev',list);
   const wd={id:'webdev',name:'Websites & Software',icon:'🌐',sub:'Websites, Web Apps & Custom Software',badge:'BUILD',title:'Websites & Software',desc:'Websites, web apps, CRM and custom software built to your requirements.',cta:'Get A Quote →',type:'page',url:'web-development',hidden:false,img:'',fileUrl:'',fileName:'',items:[]};
   const ic=list.findIndex(p=>/custom/i.test(String(p.name||p.id||'')));
   if(ic>-1) list.splice(ic,0,wd); else list.push(wd);
   const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'ag_products',value:JSON.stringify(list)})});
   const j=await r.json().catch(()=>({}));
-  if(j.ok){ localStorage.setItem('ag_products',JSON.stringify(list)); msg.textContent='Added. Open Products & Services to edit it. Backup downloaded.'; toast('Websites & Software box added ✓'); }
+  if(j.ok){ localStorage.setItem('ag_products',JSON.stringify(list)); msg.textContent='Added. Open Products & Services to edit it.'; toast('Websites & Software box added ✓'); }
   else { msg.textContent='Save failed.'; toast('Save failed','err'); }
 }
+
+async function ccServerBackup(label,data){
+  try{ const r=await adminFetch('/api/admin/backup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:label,data:data})}); const j=await r.json(); return !!j.ok; }catch(e){ return false; }
+}
+function ccDownload(name,data){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name+'-'+Date.now()+'.json'; a.click();
+}
+async function ccDownloadNow(){
+  const all={}; for(const k of CC_KEYS){ const v=await loadFromDB(k,null); if(v!=null) all[k]=v; }
+  ccDownload('ag-config-backup',all); document.getElementById('ccMsg').textContent='Backup downloaded.';
+}
+async function ccEnsureWebdev(){
+  try{
+    const list=await loadFromDB('ag_products',null);
+    if(!Array.isArray(list)||!list.length) return;
+    if(list.some(p=>p.id==='webdev')) return;
+    await ccServerBackup('products-before-webdev',list);
+    const wd={id:'webdev',name:'Websites & Software',icon:'🌐',sub:'Websites, Web Apps & Custom Software',badge:'BUILD',title:'Websites & Software',desc:'Websites, web apps, CRM and custom software built to your requirements.',cta:'Get A Quote →',type:'page',url:'web-development',hidden:false,img:'',fileUrl:'',fileName:'',items:[]};
+    const ic=list.findIndex(p=>/custom/i.test(String(p.name||p.id||'')));
+    if(ic>-1) list.splice(ic,0,wd); else list.push(wd);
+    const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'ag_products',value:JSON.stringify(list)})});
+    const j=await r.json().catch(()=>({}));
+    if(j.ok){ localStorage.setItem('ag_products',JSON.stringify(list)); products=list; try{renderProds();renderSidebarProducts();}catch(e){} toast('Websites & Software box added to Products ✓'); }
+  }catch(e){}
+}
+(function(){ let n=0; const t=setInterval(()=>{ n++; if(sessionStorage.getItem('ag_auth')==='1'){ clearInterval(t); setTimeout(ccEnsureWebdev,1500); } else if(n>600) clearInterval(t); },1000); })();
 </script>
 
 <!-- ASSIGN PRODUCTS OVERLAY -->

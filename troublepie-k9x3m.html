@@ -566,6 +566,7 @@ async function verifyAdminOTP(){
         <div class="card-sub" style="margin-bottom:12px;">Scans saved site content (products, hero, FAQ, about, news, contact, ticker). Step 1 shows what would change. Step 2 applies it. A backup file downloads first.</div>
         <button class="btn-gold" onclick="ccScan()">1. Scan</button>
         <button class="btn-gold" id="ccApply" onclick="ccApply()" style="display:none;margin-left:8px;">2. Apply changes</button>
+        <button class="btn-gold" onclick="ccAddWebdev()" style="margin-left:8px;">+ Add Websites &amp; Software box</button>
         <div class="file-status" id="ccMsg" style="margin-top:12px;"></div>
         <div id="ccOut" style="margin-top:14px;font-size:13px;line-height:1.7;"></div>
       </div>
@@ -1725,6 +1726,22 @@ async function ccApply(){
   }
   msg.textContent='Applied to '+n+' setting(s). Backup file downloaded. Reload the site to see it.';
   toast('Cleanup applied ✓'); document.getElementById('ccApply').style.display='none'; _ccPlan=null;
+}
+
+async function ccAddWebdev(){
+  const msg=document.getElementById('ccMsg');
+  const list=await loadFromDB('ag_products',null);
+  if(!Array.isArray(list)){ msg.textContent='Could not read products from the database.'; return; }
+  if(list.some(p=>p.id==='webdev')){ msg.textContent='Websites & Software box already exists. Edit it in Products & Services.'; return; }
+  const blob=new Blob([JSON.stringify(list,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ag-products-backup-'+Date.now()+'.json'; a.click();
+  const wd={id:'webdev',name:'Websites & Software',icon:'🌐',sub:'Websites, Web Apps & Custom Software',badge:'BUILD',title:'Websites & Software',desc:'Websites, web apps, CRM and custom software built to your requirements.',cta:'Get A Quote →',type:'page',url:'web-development',hidden:false,img:'',fileUrl:'',fileName:'',items:[]};
+  const ic=list.findIndex(p=>/custom/i.test(String(p.name||p.id||'')));
+  if(ic>-1) list.splice(ic,0,wd); else list.push(wd);
+  const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'ag_products',value:JSON.stringify(list)})});
+  const j=await r.json().catch(()=>({}));
+  if(j.ok){ localStorage.setItem('ag_products',JSON.stringify(list)); msg.textContent='Added. Open Products & Services to edit it. Backup downloaded.'; toast('Websites & Software box added ✓'); }
+  else { msg.textContent='Save failed.'; toast('Save failed','err'); }
 }
 </script>
 

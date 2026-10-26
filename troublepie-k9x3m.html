@@ -246,6 +246,7 @@ async function verifyAdminOTP(){
       <div class="sb-group">Files & System</div>
       <button class="sb-btn" onclick="nav('uploads',this)"><span class="sb-icon">📁</span>File Uploads</button>
       <button class="sb-btn" onclick="nav('export',this)"><span class="sb-icon">📦</span>Export / Backup</button>
+      <button class="sb-btn" onclick="nav('cleanup',this)"><span class="sb-icon">🧹</span>Compliance Cleanup</button>
       <button class="sb-btn" onclick="nav('password',this)"><span class="sb-icon">🔐</span>Security</button>
       <button class="sb-btn" onclick="nav('bridge_lic',this)"><span class="sb-icon">🌉</span>Bridge Licenses</button>
       <button class="sb-btn" onclick="nav('pagecms',this)"><span class="sb-icon">✏️</span>Page Content</button>
@@ -559,6 +560,17 @@ async function verifyAdminOTP(){
     </div>
 
     <!-- ══ SECURITY ══ -->
+    <div class="page" id="page-cleanup">
+      <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Compliance Cleanup</div></div>
+      <div class="form-box">
+        <div class="card-sub" style="margin-bottom:12px;">Scans saved site content (products, hero, FAQ, about, news, contact, ticker). Step 1 shows what would change. Step 2 applies it. A backup file downloads first.</div>
+        <button class="btn-gold" onclick="ccScan()">1. Scan</button>
+        <button class="btn-gold" id="ccApply" onclick="ccApply()" style="display:none;margin-left:8px;">2. Apply changes</button>
+        <div class="file-status" id="ccMsg" style="margin-top:12px;"></div>
+        <div id="ccOut" style="margin-top:14px;font-size:13px;line-height:1.7;"></div>
+      </div>
+    </div>
+
     <div class="page" id="page-password">
       <div class="ph"><div class="ph-tag">System</div><div class="ph-title">Security</div></div>
       <div class="form-box" style="margin-bottom:16px;">
@@ -1642,6 +1654,76 @@ function saveCMSBridge(){
   toast('Bridge content saved ✓');
 }
 
+
+/* ══════════════ COMPLIANCE CLEANUP ══════════════ */
+const CC_KEYS=['ag_products','ag_hero','ag_faq','ag_about','ag_news','ag_contact','ag_ticker'];
+const CC_REPL=[
+  ['Live Market Intelligence — 24/7','Software & Education For Traders'],
+  ['Live Market Intelligence','Software & Education For Traders'],
+  ['AG Signal Demo','AG Algo Demo'],
+  ['Custom Strategy','Custom Indicator & Algo'],
+  ['Entry Signal Bar','Swing + EMA break markers'],
+  ['live market analysis','trading education'],
+  ['analysis on it','education on it']
+];
+const CC_FLAG=/\b(signals?|tips?|guarantee[ds]?|assured|sure[- ]?shot|profit(?:s|able)?|win ?rate|sebi|advice|advisory|prediction|predict)\b/i;
+let _ccPlan=null;
+function ccWalk(node,path,out,apply){
+  if(typeof node==='string'){
+    let v=node;
+    CC_REPL.forEach(([a,b])=>{ if(v.indexOf(a)>-1) v=v.split(a).join(b); });
+    return v;
+  }
+  if(Array.isArray(node)) return node.map((x,i)=>ccWalk(x,path+'['+i+']',out,apply));
+  if(node&&typeof node==='object'){ const o={}; for(const k in node) o[k]=ccWalk(node[k],path+'.'+k,out,apply); return o; }
+  return node;
+}
+function ccCollect(node,path,fn){
+  if(typeof node==='string') fn(path,node);
+  else if(Array.isArray(node)) node.forEach((x,i)=>ccCollect(x,path+'['+i+']',fn));
+  else if(node&&typeof node==='object') for(const k in node) ccCollect(node[k],path+'.'+k,fn);
+}
+async function ccScan(){
+  const msg=document.getElementById('ccMsg'), out=document.getElementById('ccOut');
+  msg.textContent='Scanning…'; out.innerHTML=''; document.getElementById('ccApply').style.display='none';
+  _ccPlan={backup:{},changes:[]};
+  let review=[];
+  for(const k of CC_KEYS){
+    const orig=await loadFromDB(k,null);
+    if(orig==null) continue;
+    _ccPlan.backup[k]=orig;
+    const fixed=ccWalk(orig,k,[],true);
+    const before=[],after=[];
+    ccCollect(orig,k,(p,v)=>before.push([p,v])); ccCollect(fixed,k,(p,v)=>after.push([p,v]));
+    let changed=false;
+    before.forEach((b,i)=>{ if(after[i][1]!==b[1]){ changed=true; _ccPlan.changes.push([b[0],b[1],after[i][1]]); } });
+    if(changed) _ccPlan.changes.push(['__key__',k,fixed]);
+    ccCollect(fixed,k,(p,v)=>{ if(CC_FLAG.test(v)) review.push([p,v]); });
+  }
+  const list=_ccPlan.changes.filter(c=>c[0]!=='__key__');
+  const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  let h='<b>Will change ('+list.length+'):</b><br>'+(list.length?list.map(c=>'• <code>'+esc(c[0])+'</code><br>&nbsp;&nbsp;'+esc(c[1].slice(0,120))+' → <b>'+esc(c[2].slice(0,120))+'</b>').join('<br>'):'Nothing to change.');
+  h+='<br><br><b>Review by hand ('+review.length+'):</b> contain words like signal, tips, profit, guarantee, SEBI, advice.<br>'+(review.length?review.map(c=>'• <code>'+esc(c[0])+'</code><br>&nbsp;&nbsp;'+esc(c[1].slice(0,160))).join('<br>'):'None.');
+  out.innerHTML=h; msg.textContent='Scan done.';
+  if(list.length) document.getElementById('ccApply').style.display='inline-block';
+}
+async function ccApply(){
+  if(!_ccPlan) return;
+  const msg=document.getElementById('ccMsg');
+  // backup download first
+  const blob=new Blob([JSON.stringify(_ccPlan.backup,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ag-config-backup-'+Date.now()+'.json'; a.click();
+  let n=0;
+  for(const c of _ccPlan.changes){
+    if(c[0]==='__key__'){
+      const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:c[1],value:JSON.stringify(c[2])})});
+      const j=await r.json().catch(()=>({}));
+      if(j.ok){ localStorage.setItem(c[1],JSON.stringify(c[2])); n++; } else { toast('Save failed for '+c[1],'err'); }
+    }
+  }
+  msg.textContent='Applied to '+n+' setting(s). Backup file downloaded. Reload the site to see it.';
+  toast('Cleanup applied ✓'); document.getElementById('ccApply').style.display='none'; _ccPlan=null;
+}
 </script>
 
 <!-- ASSIGN PRODUCTS OVERLAY -->

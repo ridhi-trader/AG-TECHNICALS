@@ -570,6 +570,8 @@ async def get_news(category: str = "", search: str = ""):
         "total": len(articles), "has_live": len(finnhub)>0, "updated": int(time.time()),
     }
 
+_groq_model = ""
+
 @app.post("/api/chat")
 async def chat(req: ChatReq):
     try:
@@ -609,9 +611,32 @@ async def chat(req: ChatReq):
 
         GROQ_KEY = os.environ.get("GROQ_API_KEY", "").strip()
         if GROQ_KEY:
-            reply = await openai_style(
-                "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY,
-                os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant"))
+            global _groq_model
+            groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            model = _groq_model or os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
+            reply = await openai_style(groq_url, GROQ_KEY, model)
+            if not reply:
+                # The configured model may have been retired or not be enabled for this key.
+                # Ask Groq which chat models this key can use and pick the best available one.
+                try:
+                    async with httpx.AsyncClient(timeout=15) as client:
+                        mr = await client.get("https://api.groq.com/openai/v1/models",
+                                              headers={"Authorization": f"Bearer {GROQ_KEY}"})
+                    ids = [m.get("id", "") for m in (mr.json().get("data") or []) if m.get("id")]
+                except Exception as ex:
+                    print(f"groq model list failed: {ex}")
+                    ids = []
+                skip = ("whisper", "guard", "tts", "playai", "orpheus", "distil", "prompt-guard", "safeguard")
+                chat_ids = [i for i in ids if not any(k in i.lower() for k in skip)]
+                prefer = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b",
+                          "openai/gpt-oss-120b", "meta-llama/llama-4-scout-17b-16e-instruct", "gemma2-9b-it"]
+                order = [m for m in prefer if m in chat_ids and m != model] + [m for m in chat_ids if m not in prefer and m != model]
+                for m in order[:4]:
+                    reply = await openai_style(groq_url, GROQ_KEY, m)
+                    if reply:
+                        _groq_model = m
+                        print(f"groq: using model {m}")
+                        break
             if reply:
                 return {"reply": reply}
 

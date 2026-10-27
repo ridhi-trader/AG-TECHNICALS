@@ -1356,7 +1356,7 @@ async def pay_create_order(req: PayOrderReq):
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 r = await client.post("https://api.razorpay.com/v1/orders", auth=(_rzp_id(), _rzp_secret()),
-                    json={"amount": amount, "currency": "INR", "receipt": "agt_" + uuid.uuid4().hex[:12],
+                    json={"amount": amount, "currency": "INR", "receipt": (_re_pay.sub(r"[^A-Za-z0-9_-]", "", item.get("code", ""))[:20] + "_" if item.get("code") else "agt_") + uuid.uuid4().hex[:12],
                           "notes": {"product_key": item["key"], "product_code": item.get("code", ""), "product": item["name"], "email": email}})
             rj = r.json()
         except Exception as e:
@@ -1369,7 +1369,7 @@ async def pay_create_order(req: PayOrderReq):
             "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone,product_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
             rj["id"], item["key"], item["name"], amount, name, email, phone, item.get("code", ""))
     return JSONResponse({"ok": True, "order_id": rj["id"], "amount": amount, "currency": "INR",
-                         "key_id": _rzp_id(), "name": item["name"]})
+                         "key_id": _rzp_id(), "name": item["name"] + (f" ({item['code']})" if item.get("code") else "")})
 
 import asyncio
 async def _pay_mark_paid(order_id: str, payment_id: str):

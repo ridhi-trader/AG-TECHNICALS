@@ -462,6 +462,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(
   }catch(e){}
 })();
 renderEAs();
+// Always pull the latest product list (names, codes, prices) from the server, so edits made in Admin show up here
+fetch('/api/config/ag_products').then(function(r){return r.json();}).then(function(j){
+  if(!j||!j.ok||!j.value) return;
+  var cur=null; try{cur=localStorage.getItem('ag_products');}catch(e){}
+  if(j.value===cur) return;
+  try{localStorage.setItem('ag_products',j.value);}catch(e){}
+  renderEAs();
+  var f=document.getElementById('algoFeats'),g=document.getElementById('eaGrid');
+  if(f&&g&&g.nextElementSibling!==f) f.parentNode.insertBefore(g,f);
+}).catch(function(){});
 // Move video grid before features strip
 var feats = document.getElementById('algoFeats');
 var grid = document.getElementById('eaGrid');

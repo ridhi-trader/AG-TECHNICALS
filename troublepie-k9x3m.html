@@ -1797,7 +1797,8 @@ function prSlug(t){return String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,'-')
 function prDraw(){
   const el=document.getElementById('prRows'); if(!el) return;
   const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-  el.innerHTML=_pr.map((r,i)=>'<div style="display:grid;grid-template-columns:2fr 1fr 3fr auto auto;gap:8px;margin-bottom:8px;align-items:center;">'
+  el.innerHTML=_pr.map((r,i)=>'<div style="display:grid;grid-template-columns:1fr 2fr 1fr 3fr auto auto;gap:8px;margin-bottom:8px;align-items:center;">'
+    +'<input class="inp" placeholder="Code e.g. WEB-0001" value="'+esc(r.key)+'" oninput="_pr['+i+'].key=this.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g,\'\')">'
     +'<input class="inp" placeholder="Name" value="'+esc(r.name)+'" oninput="_pr['+i+'].name=this.value">'
     +'<input class="inp" type="number" min="0" placeholder="Price ₹" value="'+esc(r.price)+'" oninput="_pr['+i+'].price=this.value">'
     +'<input class="inp" placeholder="Short description" value="'+esc(r.desc)+'" oninput="_pr['+i+'].desc=this.value">'
@@ -1813,7 +1814,7 @@ async function prSave(){
     const name=String(r.name||'').trim(), price=parseFloat(r.price);
     if(!name&&!r.price) continue;
     if(!name||!(price>0)){ msg.textContent='Every item needs a name and a price above 0.'; return; }
-    let key=r.key||prSlug(name)||('item-'+Date.now()); let k=key,n=2; while(used[k]){k=key+'-'+n++;} used[k]=1;
+    let key=String(r.key||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'')||prSlug(name)||('item-'+Date.now()); let k=key,n=2; while(used[k]){k=key+'-'+n++;} used[k]=1;
     out.push({key:k,name:name,price:price,desc:String(r.desc||'').trim(),active:r.active!==false});
   }
   const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'ag_pricing',value:JSON.stringify(out)})});
@@ -1826,8 +1827,8 @@ async function orLoad(){
     const r=await adminFetch('/api/admin/orders'); const j=await r.json();
     st.textContent=j.enabled?'Payments are ON (Razorpay keys found).':'Payments are OFF. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Railway Variables.';
     const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    box.innerHTML=(j.orders&&j.orders.length)?'<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr style="text-align:left;color:#888"><th>Date</th><th>Item</th><th>₹</th><th>Customer</th><th>Status</th></tr>'
-      +j.orders.map(o=>'<tr style="border-top:1px solid #222"><td>'+esc(o.paid||o.created)+'</td><td>'+esc(o.product)+'</td><td>'+esc(o.amount)+'</td><td>'+esc(o.name)+'<br>'+esc(o.email)+' '+esc(o.phone)+'</td><td style="color:'+(o.status==='paid'?'#2ee6a6':'#aaa')+'">'+esc(o.status)+'</td></tr>').join('')+'</table>':'No orders yet.';
+    box.innerHTML=(j.orders&&j.orders.length)?'<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr style="text-align:left;color:#888"><th>Date</th><th>Code</th><th>Item</th><th>₹</th><th>Customer</th><th>Status</th></tr>'
+      +j.orders.map(o=>'<tr style="border-top:1px solid #222"><td>'+esc(o.paid||o.created)+'</td><td>'+esc(o.code)+'</td><td>'+esc(o.product)+'</td><td>'+esc(o.amount)+'</td><td>'+esc(o.name)+'<br>'+esc(o.email)+' '+esc(o.phone)+'</td><td style="color:'+(o.status==='paid'?'#2ee6a6':'#aaa')+'">'+esc(o.status)+'</td></tr>').join('')+'</table>':'No orders yet.';
   }catch(e){ box.textContent='Could not load orders.'; }
 }
 </script>

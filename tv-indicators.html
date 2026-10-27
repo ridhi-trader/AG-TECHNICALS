@@ -210,7 +210,7 @@ function openModal(i) {
   document.getElementById('modalName').textContent = ind.name;
   document.getElementById('modalDesc').textContent = ind.desc;
   const cta = document.getElementById('modalCta');
-  cta.href = 'https://wa.me/' + (ind.waNum || '917357032456');
+  cta.href = 'https://wa.me/' + (ind.waNum || '917357032456') + '?text=' + encodeURIComponent('Hi AG Technicals! I am interested in ' + ind.name + ' (Code: ' + ind.pid + '). Please share details.');
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }

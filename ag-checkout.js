@@ -74,7 +74,7 @@
     }).catch(function(){ $('agcErr').textContent='Network error. Please try again.'; reset(); });
   }
   window.AGCheckout={open:function(it){
-    build(); cur=it; $('agcSub').textContent=it.name+(it.price?' · '+inr(it.price):'');
+    build(); cur=it; $('agcSub').textContent=it.name+(it.code?' ('+it.code+')':'')+(it.price?' · '+inr(it.price):'');
     $('agcErr').textContent=''; $('agcForm').hidden=false; $('agcOk').hidden=true; reset();
     $('agcOv').classList.add('on'); setTimeout(function(){$('agcN').focus();},50);
   }};

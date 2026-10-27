@@ -107,14 +107,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     em.hidden=true;
     cat.items.forEach(function(it){
       var c=document.createElement('div');c.className='card';
-      c.innerHTML='<h3>'+esc(it.name)+'</h3><p>'+esc(it.desc||'')+'</p><div class="price">'+inr(it.price)+'</div>';
+      c.innerHTML='<h3>'+esc(it.name)+'</h3><p style="font-size:12px;opacity:.7;margin:0 0 6px">Code: '+esc(it.key)+'</p><p>'+esc(it.desc||'')+'</p><div class="price">'+inr(it.price)+'</div>';
       var b=document.createElement('button');b.type='button';b.className='btn';
       if(cat.enabled){b.textContent='Buy now';b.addEventListener('click',function(){open(it);});}
       else{b.textContent='Contact to buy';b.addEventListener('click',function(){location.href='https://wa.me/917357032456?text='+encodeURIComponent('Hi, I want to buy: '+it.name);});}
       c.appendChild(b);g.appendChild(c);
     });
   }
-  function open(it){cur=it;$('mSub').textContent=it.name+' · '+inr(it.price);$('cErr').textContent='';$('mForm').hidden=false;$('mOk').hidden=true;$('ov').classList.add('on');setTimeout(function(){$('cN').focus();},50);}
+  function open(it){cur=it;$('mSub').textContent=it.name+' ('+it.key+') · '+inr(it.price);$('cErr').textContent='';$('mForm').hidden=false;$('mOk').hidden=true;$('ov').classList.add('on');setTimeout(function(){$('cN').focus();},50);}
   function close(){$('ov').classList.remove('on');}
   function loadCheckout(cb){
     if(window.Razorpay)return cb();

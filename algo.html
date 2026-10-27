@@ -348,7 +348,7 @@ function renderEAs(){
         '<div class="ea-name">'+(ea.name||'')+'</div>'+
         '<div class="ea-desc">'+(ea.desc||'')+'</div>'+
         '<button onclick="event.stopPropagation();openPriceModal('+i+')" class="ea-btn" style="width:100%;margin-bottom:8px;">🛒 Buy Now</button>'+
-        '<a href="https://wa.me/917357032456?text=Hi!+Interested+in+'+encodeURIComponent(ea.name||'')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12);color:var(--t3);font-size:12px;padding:8px;">💬 Ask on WhatsApp</a>'+
+        '<a href="https://wa.me/917357032456?text='+encodeURIComponent('Hi AG Technicals! I am interested in '+(ea.name||'')+(ea.pid?' (Code: '+ea.pid+')':'')+'. Please share details.')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12);color:var(--t3);font-size:12px;padding:8px;">💬 Ask on WhatsApp</a>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -437,7 +437,7 @@ function buyPlan(months,price){
   if(!_buyEA||!window.AGCheckout) return;
   var nm=_buyEA.name||'EA';
   closePriceModal();
-  AGCheckout.open({key:'ea:'+nm+':'+months,name:nm+' — '+months+' months',price:price});
+  AGCheckout.open({key:'ea:'+nm+':'+months,code:_buyEA.pid||'',name:nm+' — '+months+' months',price:price});
 }
 function closePriceModal(){
   document.getElementById('priceOverlay').classList.remove('open');

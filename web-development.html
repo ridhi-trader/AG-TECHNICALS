@@ -200,7 +200,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 function buildMsg(){
   const v = id => document.getElementById(id).value.trim();
   const name = v('wdName')||'Interested User', wa = v('wdWa'), type = v('wdType')||'Not specified', time = v('wdTime')||'Not specified', msg = v('wdMsg');
-  return 'Hi AG Technicals!\n\nI want a website / software built.\n\nName: '+name+(wa?'\nWhatsApp: '+wa:'')+'\nProject type: '+type+'\nTimeline: '+time+(msg?'\n\nDetails: '+msg:'');
+  return 'Hi AG Technicals!\n\nI want a website / software built. (Code: WEB-0001)\n\nName: '+name+(wa?'\nWhatsApp: '+wa:'')+'\nProject type: '+type+'\nTimeline: '+time+(msg?'\n\nDetails: '+msg:'');
 }
 function sendWa(){
   window.open('https://wa.me/917357032456?text='+encodeURIComponent(buildMsg()),'_blank');

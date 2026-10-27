@@ -1244,6 +1244,7 @@ async def _ensure_orders(conn):
             created_at TIMESTAMP DEFAULT NOW(),
             paid_at TIMESTAMP
         )""")
+    await conn.execute("ALTER TABLE ag_orders ADD COLUMN IF NOT EXISTS product_code TEXT")
     _orders_ready = True
 
 async def _pay_catalog(conn):
@@ -1260,7 +1261,7 @@ async def _pay_catalog(conn):
             price = 0
         key = str(it.get("key", "")).strip()
         if key and price > 0 and it.get("active", True):
-            out.append({"key": key, "name": str(it.get("name", key))[:120], "price": price,
+            out.append({"key": key, "code": key, "name": str(it.get("name", key))[:120], "price": price,
                         "desc": str(it.get("desc", ""))[:400]})
     return out
 
@@ -1297,7 +1298,7 @@ async def _pay_resolve(conn, key: str):
         price = float(defaults[months])
     if price <= 0:
         return None
-    return {"key": key, "name": f"{str(ea.get('name'))[:90]} — {months} months", "price": price, "desc": ""}
+    return {"key": key, "code": str(ea.get("pid") or "")[:30], "name": f"{str(ea.get('name'))[:90]} — {months} months", "price": price, "desc": ""}
 
 @app.get("/api/pay/catalog")
 async def pay_catalog():
@@ -1331,7 +1332,7 @@ async def pay_create_order(req: PayOrderReq):
             async with httpx.AsyncClient(timeout=20) as client:
                 r = await client.post("https://api.razorpay.com/v1/orders", auth=(_rzp_id(), _rzp_secret()),
                     json={"amount": amount, "currency": "INR", "receipt": "agt_" + uuid.uuid4().hex[:12],
-                          "notes": {"product_key": item["key"], "email": email}})
+                          "notes": {"product_key": item["key"], "product_code": item.get("code", ""), "product": item["name"], "email": email}})
             rj = r.json()
         except Exception as e:
             print(f"Razorpay create-order error: {e}")
@@ -1340,8 +1341,8 @@ async def pay_create_order(req: PayOrderReq):
             print(f"Razorpay order error {r.status_code}: {str(rj)[:200]}")
             return JSONResponse({"ok": False, "error": "Could not start payment. Please try again."})
         await conn.execute(
-            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone) VALUES ($1,$2,$3,$4,$5,$6,$7)",
-            rj["id"], item["key"], item["name"], amount, name, email, phone)
+            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone,product_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+            rj["id"], item["key"], item["name"], amount, name, email, phone, item.get("code", ""))
     return JSONResponse({"ok": True, "order_id": rj["id"], "amount": amount, "currency": "INR",
                          "key_id": _rzp_id(), "name": item["name"]})
 
@@ -1368,7 +1369,7 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
     try:
         await asyncio.to_thread(send_email, row["email"], "Payment received — AG Technicals",
             f"<div style='font-family:Arial,sans-serif;max-width:480px'><h2>Thank you, {e(row['name'] or '')}!</h2>"
-            f"<p>We received your payment of <b>{amt}</b> for <b>{e(row['product_name'])}</b>.</p>"
+            f"<p>We received your payment of <b>{amt}</b> for <b>{e(row['product_name'])}</b>{(' (Code: ' + e(row['product_code']) + ')') if row['product_code'] else ''}.</p>"
             f"<p>Order ID: {e(order_id)}<br>Payment ID: {e(payment_id)}</p>"
             f"<p>We will contact you shortly with access details. Questions? Write to support@agtechnicals.com or message us on WhatsApp/Telegram.</p>"
             f"<p style='color:#888;font-size:12px'>AG Technicals is a software and education provider. Refunds follow our Refund Policy on agtechnicals.com.</p></div>")
@@ -1377,8 +1378,8 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
     admin_to = os.environ.get("ADMIN_EMAIL", "").strip()
     if admin_to:
         try:
-            await asyncio.to_thread(send_email, admin_to, f"New order: {row['product_name']} {amt}",
-                f"<p>{e(row['name'] or '')} ({e(row['email'] or '')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>")
+            await asyncio.to_thread(send_email, admin_to, f"New order: {('[' + row['product_code'] + '] ') if row['product_code'] else ''}{row['product_name']} {amt}",
+                f"<p>{e(row['name'] or '')} ({e(row['email'] or '')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>{(' · Code ' + e(row['product_code'])) if row['product_code'] else ''}.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>")
         except Exception as ex:
             print(f"admin order email failed: {ex}")
     return row
@@ -1425,8 +1426,8 @@ async def admin_orders(request: Request):
     if not pool: return JSONResponse({"ok": False, "orders": []})
     async with pool.acquire() as conn:
         await _ensure_orders(conn)
-        rows = await conn.fetch("SELECT order_id,product_name,amount_paise,name,email,phone,status,payment_id,created_at,paid_at FROM ag_orders ORDER BY created_at DESC LIMIT 200")
+        rows = await conn.fetch("SELECT order_id,product_name,product_code,amount_paise,name,email,phone,status,payment_id,created_at,paid_at FROM ag_orders ORDER BY created_at DESC LIMIT 200")
     return JSONResponse({"ok": True, "enabled": _pay_enabled(), "orders": [
-        {"order_id": r["order_id"], "product": r["product_name"], "amount": r["amount_paise"]/100, "name": r["name"], "email": r["email"],
+        {"order_id": r["order_id"], "product": r["product_name"], "code": r["product_code"] or "", "amount": r["amount_paise"]/100, "name": r["name"], "email": r["email"],
          "phone": r["phone"], "status": r["status"], "payment_id": r["payment_id"],
          "created": str(r["created_at"])[:16], "paid": str(r["paid_at"])[:16] if r["paid_at"] else ""} for r in rows]})

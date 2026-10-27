@@ -75,7 +75,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
       <h2 id="mTitle">Checkout</h2>
       <div class="sub" id="mSub"></div>
       <div class="f"><label for="cN">Full name</label><input id="cN" type="text" autocomplete="name" maxlength="80"></div>
-      <div class="f"><label for="cE">Email (we send your receipt and access details here)</label><input id="cE" type="email" autocomplete="email" maxlength="120"></div>
+      <div class="f"><label for="cE">Email (we send your receipt and access details here)</label><input id="cE" type="email" autocomplete="email" maxlength="120"><div id="cEN" style="font-size:11px;color:#9a9a9a;margin-top:5px;line-height:1.45"></div></div>
       <div class="f"><label for="cP">WhatsApp / phone</label><input id="cP" type="tel" autocomplete="tel" maxlength="15"></div>
       <label class="chk"><input type="checkbox" id="cA"> <span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/refund-policy" target="_blank" rel="noopener">Refund Policy</a>.</span></label>
       <div class="err" id="cErr" role="alert"></div>
@@ -85,7 +85,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     <div class="ok" id="mOk" hidden>
       <div class="big">✅</div>
       <h2>Payment received</h2>
-      <div class="sub">Thank you. A receipt is on its way to your email. We will contact you with access details shortly.</div>
+      <div class="sub" id="okMsg">Thank you. A receipt is on its way to your email. We will contact you with access details shortly.</div>
       <button class="btn ghost" id="oX" type="button">Close</button>
     </div>
   </div>
@@ -114,7 +114,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
       c.appendChild(b);g.appendChild(c);
     });
   }
-  function open(it){cur=it;$('mSub').textContent=it.name+' ('+it.key+') · '+inr(it.price);$('cErr').textContent='';$('mForm').hidden=false;$('mOk').hidden=true;$('ov').classList.add('on');setTimeout(function(){$('cN').focus();},50);}
+  function getUser(){try{var u=JSON.parse(localStorage.getItem('ag_user')||'null');return(u&&u.email)?u:null;}catch(e){return null;}}
+  function open(it){cur=it;$('mSub').textContent=it.name+' ('+it.key+') · '+inr(it.price);
+    var u=getUser();
+    if(u){$('cE').value=u.email;$('cE').readOnly=true;$('cEN').textContent='Logged in as '+u.email+'. This purchase will be linked to your account automatically.';}
+    else{$('cE').readOnly=false;$('cEN').textContent='Use the same email as your AG Technicals account so your purchase links to it. No account yet? You can still pay and sign up later with this email.';}$('cErr').textContent='';$('mForm').hidden=false;$('mOk').hidden=true;$('ov').classList.add('on');setTimeout(function(){$('cN').focus();},50);}
   function close(){$('ov').classList.remove('on');}
   function loadCheckout(cb){
     if(window.Razorpay)return cb();
@@ -142,7 +146,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
             $('cGo').textContent='Confirming…';
             fetch('/api/pay/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(res)})
             .then(function(r){return r.json();}).then(function(v){
-              if(v.ok){$('mForm').hidden=true;$('mOk').hidden=false;}
+              if(v.ok){$('okMsg').textContent=v.linked?('Thank you. Your purchase is linked to your account ('+e+'). A receipt is on its way to your email, and we will contact you shortly with access details.'):('Thank you. A receipt is on its way to '+e+'. We could not find an AG Technicals account with this email, so create one with the same email to see your purchase on the website. We will contact you shortly with access details.');$('mForm').hidden=true;$('mOk').hidden=false;}
               else{$('cErr').textContent=v.error||'We could not confirm the payment. If money was deducted, write to support@agtechnicals.com with your payment ID: '+res.razorpay_payment_id;}
               $('cGo').disabled=false;$('cGo').textContent='Pay now';
             }).catch(function(){$('cErr').textContent='Network issue while confirming. If money was deducted, write to support@agtechnicals.com with payment ID: '+res.razorpay_payment_id;$('cGo').disabled=false;$('cGo').textContent='Pay now';});

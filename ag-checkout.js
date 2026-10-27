@@ -3,7 +3,7 @@
    The price shown is only a label; the server decides the real amount from its own data. */
 (function(){
   if(window.AGCheckout) return;
-  var WA='917357032456', cur=null, built=false, $;
+  var WA='917357032456', cur=null, onPaidCb=null, built=false, $;
   function inr(n){return '₹'+Number(n).toLocaleString('en-IN',{maximumFractionDigits:2});}
   function build(){
     if(built) return; built=true;
@@ -18,17 +18,18 @@
     '.agc .go{width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,#c9960c,#f5c542);color:#000;font-weight:800;font-size:15px;cursor:pointer}.agc .go:disabled{opacity:.6;cursor:wait}'+
     '.agc .x{float:right;background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;line-height:1}'+
     '.agc .e{color:#f26d6d;font-size:13px;min-height:18px;margin-top:8px}.agc .n{font-size:11px;color:#888;margin-top:12px;line-height:1.5;text-align:center}'+
-    '.agc .ok{text-align:center;padding:12px 0}.agc .ok b{display:block;font-size:20px;color:#4ade80;margin-bottom:8px}';
+    '.agc .ok{text-align:center;padding:12px 0}.agc .ok b{display:block;font-size:20px;color:#4ade80;margin-bottom:8px}'+
+    '.agc .en{font-size:11px;color:#9a9a9a;margin-top:5px;line-height:1.45}.agc input[readonly]{opacity:.8;cursor:not-allowed;border-color:rgba(245,197,66,.35)}';
     document.head.appendChild(st);
     var d=document.createElement('div'); d.className='agc-ov'; d.id='agcOv'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true');
     d.innerHTML='<div class="agc"><button class="x" id="agcX" aria-label="Close">×</button><div id="agcForm"><h3>Complete your purchase</h3><div class="s" id="agcSub"></div>'+
     '<label for="agcN">Full name</label><input id="agcN" type="text" autocomplete="name">'+
-    '<label for="agcE">Email (receipt and access details come here)</label><input id="agcE" type="email" autocomplete="email">'+
+    '<label for="agcE">Email (receipt and access details come here)</label><input id="agcE" type="email" autocomplete="email"><div class="en" id="agcEN"></div>'+
     '<label for="agcP">WhatsApp / phone</label><input id="agcP" type="tel" autocomplete="tel">'+
     '<div class="t"><input type="checkbox" id="agcA"><span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a>, <a href="/refund-policy" target="_blank" rel="noopener">Refund Policy</a> and <a href="/risk-disclaimer" target="_blank" rel="noopener">Risk Disclaimer</a>. This is software only, not investment advice.</span></div>'+
     '<button class="go" id="agcGo" type="button">Pay now</button><div class="e" id="agcErr" role="alert"></div>'+
     '<div class="n">Secure payment by Razorpay (UPI, cards, netbanking). We never see your card details.</div></div>'+
-    '<div class="ok" id="agcOk" hidden><b>Payment received</b>Thank you. A receipt is on its way to your email. We will contact you shortly with your access details.<br><br><button class="go" id="agcDone" type="button">Close</button></div></div>';
+    '<div class="ok" id="agcOk" hidden><b>Payment received</b><span id="agcOkMsg">Thank you. A receipt is on its way to your email. We will contact you shortly with your access details.</span><br><br><button class="go" id="agcDone" type="button">Close</button></div></div>';
     document.body.appendChild(d);
     $=function(i){return document.getElementById(i);};
     $('agcX').onclick=close; $('agcDone').onclick=close;
@@ -36,7 +37,14 @@
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
     $('agcGo').onclick=pay;
   }
+  function getUser(){ try{ var u=JSON.parse(localStorage.getItem('ag_user')||'null'); return (u&&u.email)?u:null; }catch(e){ return null; } }
   function close(){ if($) $('agcOv').classList.remove('on'); }
+  function showOk(v,e){
+    var m=(v&&v.linked)
+      ? 'Thank you. Your purchase is linked to your account ('+e+'). A receipt is on its way to your email, and we will contact you shortly with your access details.'
+      : 'Thank you. A receipt is on its way to '+e+'. We could not find an AG Technicals account with this email, so create one with the same email to see your purchase on the website. We will contact you shortly with your access details.';
+    $('agcOkMsg').textContent=m; $('agcForm').hidden=true; $('agcOk').hidden=false;
+  }
   function reset(){ $('agcGo').disabled=false; $('agcGo').textContent='Pay now'; }
   function loadRzp(cb){
     if(window.Razorpay) return cb();
@@ -63,7 +71,7 @@
             $('agcGo').textContent='Confirming…';
             fetch('/api/pay/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(res)})
             .then(function(r){return r.json();}).then(function(v){
-              if(v.ok){ $('agcForm').hidden=true; $('agcOk').hidden=false; }
+              if(v.ok){ showOk(v,e); if(onPaidCb){ try{ onPaidCb(v); }catch(x){} } }
               else $('agcErr').textContent=v.error||'We could not confirm the payment. If money was deducted, write to support@agtechnicals.com with payment ID: '+res.razorpay_payment_id;
               reset();
             }).catch(function(){ $('agcErr').textContent='Network issue while confirming. If money was deducted, write to support@agtechnicals.com with payment ID: '+res.razorpay_payment_id; reset(); });
@@ -73,8 +81,11 @@
       });
     }).catch(function(){ $('agcErr').textContent='Network error. Please try again.'; reset(); });
   }
-  window.AGCheckout={open:function(it){
-    build(); cur=it; $('agcSub').textContent=it.name+(it.code?' ('+it.code+')':'')+(it.price?' · '+inr(it.price):'');
+  window.AGCheckout={open:function(it,opts){
+    build(); cur=it; onPaidCb=(opts&&opts.onPaid)||null; $('agcSub').textContent=it.name+(it.code?' ('+it.code+')':'')+(it.price?' · '+inr(it.price):'');
+    var u=getUser();
+    if(u){ $('agcE').value=u.email; $('agcE').readOnly=true; $('agcEN').textContent='Logged in as '+u.email+'. This purchase will be linked to your account automatically.'; }
+    else { $('agcE').readOnly=false; $('agcEN').textContent='Use the same email as your AG Technicals account so your purchase links to it. No account yet? You can still pay and sign up later with this email.'; }
     $('agcErr').textContent=''; $('agcForm').hidden=false; $('agcOk').hidden=true; reset();
     $('agcOv').classList.add('on'); setTimeout(function(){$('agcN').focus();},50);
   }};

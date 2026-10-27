@@ -51,7 +51,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:16px 4
 .stat-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px;}
 .stat-label{font-size:12px;color:var(--t3);}
 .section-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;}
-.prod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:12px;display:flex;align-items:center;gap:16px;transition:border-color .2s;}
+.prod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:12px;display:flex;align-items:center;gap:16px;transition:border-color .2s;color:var(--t2);}
 .prod-card:hover{border-color:rgba(245,197,66,.3);}
 .prod-icon{width:46px;height:46px;background:rgba(245,197,66,.08);border:1px solid rgba(245,197,66,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .prod-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;}
@@ -105,6 +105,9 @@ const PROD_MAP = {
   news:        {icon:'📰', name:'News',                  sub:'Live Market Feed',            url:'news'},
 };
 
+let plans = {eas:[], other:[]};
+function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 function logout(){
   localStorage.removeItem('ag_user');
   window.location.href='user-login';
@@ -112,6 +115,36 @@ function logout(){
 
 function render(){
   const prods = (user.products||'').split(',').map(p=>p.trim()).filter(Boolean);
+  const otherKeys = new Set((plans.other||[]).map(o=>o.key));
+  const manual = prods.filter(pid=>!pid.startsWith('ea:') && !otherKeys.has(pid));
+  const eaCards = (plans.eas||[]).map(e=>`<div class="prod-card">
+        <div class="prod-icon">🤖</div>
+        <div>
+          <div class="prod-name">${esc(e.name)}${e.active?'<span class="prod-badge">✓ Active</span>':'<span class="prod-badge" style="background:rgba(245,197,66,.08);border-color:rgba(245,197,66,.25);color:var(--g5);">Expired</span>'}</div>
+          <div class="prod-sub">Algo (MT5)${e.code?' · '+esc(e.code):''} · ${e.active?'Active till ':'Ended on '}${esc(e.expires)}</div>
+        </div>
+        <a href="algo" class="prod-cta">${e.active?'Open →':'Renew →'}</a>
+      </div>`);
+  const otherCards = (plans.other||[]).map(o=>`<div class="prod-card">
+        <div class="prod-icon">📦</div>
+        <div>
+          <div class="prod-name">${esc(o.name)}<span class="prod-badge">✓ Purchased</span></div>
+          <div class="prod-sub">${o.code?esc(o.code)+' · ':''}Paid on ${esc(o.paid)}</div>
+        </div>
+      </div>`);
+  const manualCards = manual.map(pid=>{
+      const p = PROD_MAP[pid] || {icon:'📦', name:pid, sub:'Product', url:'/'};
+      return `<div class="prod-card">
+        <div class="prod-icon">${p.icon}</div>
+        <div>
+          <div class="prod-name">${esc(p.name)}<span class="prod-badge">✓ Access</span></div>
+          <div class="prod-sub">${p.sub}</div>
+        </div>
+        <a href="${p.url}" class="prod-cta">Open →</a>
+      </div>`;
+  });
+  const allCards = eaCards.concat(otherCards, manualCards);
+  const activeCount = (plans.eas||[]).filter(e=>e.active).length + otherCards.length + manualCards.length;
   const joined = user.joined || 'Recently';
   const firstLetter = (user.username||'A')[0].toUpperCase();
 
@@ -132,23 +165,13 @@ function render(){
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="stat-val" style="color:var(--g5);">${prods.length}</div><div class="stat-label">Products Access</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--g5);">${activeCount}</div><div class="stat-label">Products Access</div></div>
       <div class="stat"><div class="stat-val" style="color:var(--green);">Active</div><div class="stat-label">Account Status</div></div>
       <div class="stat"><div class="stat-val" style="color:#fff;font-size:16px;">${joined}</div><div class="stat-label">Member Since</div></div>
     </div>
 
     <div class="section-title">📦 Your Products</div>
-    ${prods.length ? prods.map(pid=>{
-      const p = PROD_MAP[pid] || {icon:'📦', name:pid, sub:'Product', url:'/'};
-      return `<div class="prod-card">
-        <div class="prod-icon">${p.icon}</div>
-        <div>
-          <div class="prod-name">${p.name}<span class="prod-badge">✓ Access</span></div>
-          <div class="prod-sub">${p.sub}</div>
-        </div>
-        <a href="${p.url}" class="prod-cta">Open →</a>
-      </div>`;
-    }).join('') : `
+    ${allCards.length ? allCards.join('') : `
       <div class="empty-prods">
         <h3>No Products Yet</h3>
         <p style="font-size:13px;">Contact us on WhatsApp to get access to products.</p>
@@ -179,7 +202,14 @@ async function refreshUser(){
   render();
 }
 
-refreshUser();
+async function loadPlans(){
+  try{
+    const r = await fetch(API+'/api/pay/my-plans?user_id='+encodeURIComponent(user.id)+'&email='+encodeURIComponent(user.email||''));
+    const d = await r.json();
+    if(d && d.ok){ plans = {eas:d.eas||[], other:d.other||[]}; render(); }
+  }catch(e){}
+}
+refreshUser().then(loadPlans);
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>

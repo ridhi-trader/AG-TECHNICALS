@@ -97,6 +97,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 
 .ea-body{padding:18px 20px 20px;}
 .ea-pid{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:1px;margin-bottom:8px;}
+.ea-own{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:9px;padding:8px 10px;font-size:12px;font-weight:600;margin-bottom:10px;line-height:1.4;}
+.ea-own.off{background:rgba(245,197,66,.07);border-color:rgba(245,197,66,.3);color:#f5c542;}
 .ea-name{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;color:var(--t1);}
 .ea-desc{font-size:13px;color:var(--t3);line-height:1.55;margin-bottom:18px;}
 .ea-btn{
@@ -303,6 +305,25 @@ var D_ALGO_ITEMS = [
   {name:'AG Algo Demo 5', pid:'EA-0005', badge:'PREMIUM', desc:'Live MT5 algo trading demo', fileUrl:'https://res.cloudinary.com/ox5azsyk/video/upload/v1788544257/signal-2026-09-02-16-58-59-388.mp4', hidden:false},
 ];
 
+var _plans={eas:[],other:[]};
+function escH(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function planFor(ea){
+  var n=String((ea&&ea.name)||'').trim().toLowerCase();
+  for(var i=0;i<_plans.eas.length;i++){ if(String(_plans.eas[i].name).trim().toLowerCase()===n) return _plans.eas[i]; }
+  return null;
+}
+function loadPlans(){
+  var u=null; try{u=JSON.parse(localStorage.getItem('ag_user')||'null');}catch(e){}
+  if(!u||!u.id||!u.email) return;
+  fetch('/api/pay/my-plans?user_id='+encodeURIComponent(u.id)+'&email='+encodeURIComponent(u.email)).then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.ok) return;
+    _plans={eas:j.eas||[],other:j.other||[]};
+    renderEAs();
+    var f=document.getElementById('algoFeats'),g=document.getElementById('eaGrid');
+    if(f&&g&&g.nextElementSibling!==f) f.parentNode.insertBefore(g,f);
+  }).catch(function(){});
+}
+
 function getAlgoItems(){
   try{
     var prods = JSON.parse(localStorage.getItem('ag_products')||'null');
@@ -341,13 +362,16 @@ function renderEAs(){
         (ea.badge?'<div class="ea-badge">'+ea.badge+'</div>':'')+
       '</div>';
     var numBadge = '<div style="position:absolute;top:10px;left:10px;min-width:24px;height:24px;border-radius:12px;background:rgba(0,0,0,0.7);border:1px solid rgba(245,197,66,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#f5c542;padding:0 6px;z-index:5;">'+(i+1)+'</div>';
+    var pl=planFor(ea);
+    var own=pl?(pl.active?'<div class="ea-own">✓ Purchased · Active till '+escH(pl.expires)+'</div>':'<div class="ea-own off">Your plan ended on '+escH(pl.expires)+'. Renew to continue.</div>'):'';
+    var btnTxt=(pl&&pl.active)?'🔁 Renew / Extend Plan':(pl?'🔁 Renew Plan':'🛒 Buy Now');
     return '<div class="ea-card" style="cursor:default;position:relative;">'+numBadge+
       cardTop+
       '<div class="ea-body">'+
         (ea.pid?'<div class="ea-pid">PID: '+ea.pid+'</div>':'')+
         '<div class="ea-name">'+(ea.name||'')+'</div>'+
-        '<div class="ea-desc">'+(ea.desc||'')+'</div>'+
-        '<button onclick="event.stopPropagation();openPriceModal('+i+')" class="ea-btn" style="width:100%;margin-bottom:8px;">🛒 Buy Now</button>'+
+        '<div class="ea-desc">'+(ea.desc||'')+'</div>'+own+
+        '<button onclick="event.stopPropagation();openPriceModal('+i+')" class="ea-btn" style="width:100%;margin-bottom:8px;">'+btnTxt+'</button>'+
         '<a href="https://wa.me/917357032456?text='+encodeURIComponent('Hi AG Technicals! I am interested in '+(ea.name||'')+(ea.pid?' (Code: '+ea.pid+')':'')+'. Please share details.')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12);color:var(--t3);font-size:12px;padding:8px;">💬 Ask on WhatsApp</a>'+
       '</div>'+
     '</div>';
@@ -403,7 +427,9 @@ function openPriceModal(i){
   // Save %
   var save6 = Math.round(100-(p6/(p3*2)*100));
   var save12 = Math.round(100-(p12/(p3*4)*100));
-  document.getElementById('pricePlans').innerHTML =
+  var _pl=planFor(ea);
+  var _banner=_pl?('<div class="ea-own'+(_pl.active?'':' off')+'" style="margin:0">'+(_pl.active?('You already have this plan active till '+escH(_pl.expires)+'. If you buy again, the new plan starts after your current end date, so you lose nothing.'):('Your earlier plan ended on '+escH(_pl.expires)+'. Buy a plan to continue.'))+'</div>'):'';
+  document.getElementById('pricePlans').innerHTML = _banner +
     '<div class="price-plan">'+
       '<div class="price-plan-row">'+
         '<div class="price-plan-dur">3 Months</div>'+
@@ -437,7 +463,7 @@ function buyPlan(months,price){
   if(!_buyEA||!window.AGCheckout) return;
   var nm=_buyEA.name||'EA';
   closePriceModal();
-  AGCheckout.open({key:'ea:'+nm+':'+months,code:_buyEA.pid||'',name:nm+' — '+months+' months',price:price});
+  AGCheckout.open({key:'ea:'+nm+':'+months,code:_buyEA.pid||'',name:nm+' — '+months+' months',price:price},{onPaid:function(){ loadPlans(); setTimeout(loadPlans,4000); }});
 }
 function closePriceModal(){
   document.getElementById('priceOverlay').classList.remove('open');
@@ -462,6 +488,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(
   }catch(e){}
 })();
 renderEAs();
+loadPlans();
 // Always pull the latest product list (names, codes, prices) from the server, so edits made in Admin show up here
 fetch('/api/config/ag_products').then(function(r){return r.json();}).then(function(j){
   if(!j||!j.ok||!j.value) return;

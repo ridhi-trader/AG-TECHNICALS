@@ -764,6 +764,22 @@ async def init_db():
             add_strategy(sid=row['lid'], secret=row['secret'], name=f"Bridge-{row['lid']}")
 
 def hash_pass(pw): return hashlib.sha256(pw.encode()).hexdigest()
+
+async def _sync_paid_products(conn, user_id, email, current):
+    """If someone paid before they had an account (or with a different login), the purchase links up
+    the moment an account with that email logs in. Never raises: login must not break because of this."""
+    try:
+        await _ensure_orders(conn)
+        rows = await conn.fetch("SELECT DISTINCT product_key FROM ag_orders WHERE LOWER(email)=$1 AND status='paid'", (email or "").strip().lower())
+        cur = [p.strip() for p in (current or "").split(",") if p.strip()]
+        add = [r["product_key"] for r in rows if r["product_key"] and "," not in r["product_key"] and r["product_key"] not in cur]
+        if add:
+            cur += add
+            await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", ",".join(cur), user_id)
+        return ",".join(cur)
+    except Exception as ex:
+        print(f"sync paid products failed: {ex}")
+        return current or ""
 def gen_otp(): return str(secrets.randbelow(900000) + 100000)
 
 def send_email(to_email, subject, body):
@@ -917,7 +933,8 @@ async def verify_otp(req: OtpReq):
         await conn.execute("UPDATE ag_otps SET used=TRUE WHERE id=$1", row['id'])
         await conn.execute("UPDATE ag_users SET verified=TRUE WHERE LOWER(email)=$1", email)
         user = await conn.fetchrow("SELECT id,username,email,products FROM ag_users WHERE LOWER(email)=$1", email)
-        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products']}})
+        prods = await _sync_paid_products(conn, user['id'], user['email'], user['products'])
+        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": prods}})
 
 @app.post("/api/auth/login")
 async def login(req: LoginReq):
@@ -929,7 +946,8 @@ async def login(req: LoginReq):
         if not user: return JSONResponse({"ok": False, "error": "No account with this email — please Sign Up"})
         if user['password_hash'] != hash_pass(req.password): return JSONResponse({"ok": False, "error": "Wrong password — try again or use Forgot Password"})
         if not user['verified']: return JSONResponse({"ok": False, "error": "Email not verified — please Sign Up again with same email to get a new OTP"})
-        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products']}})
+        prods = await _sync_paid_products(conn, user['id'], user['email'], user['products'])
+        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": prods}})
 
 @app.post("/api/auth/forgot-password")
 async def forgot_password(req: ForgotReq):
@@ -1372,30 +1390,54 @@ async def pay_create_order(req: PayOrderReq):
                          "key_id": _rzp_id(), "name": item["name"] + (f" ({item['code']})" if item.get("code") else "")})
 
 import asyncio
+import calendar as _cal
+
+async def _pay_user_by_email(conn, email):
+    return await conn.fetchrow("SELECT id,products FROM ag_users WHERE LOWER(email)=$1", (email or "").strip().lower())
+
 async def _pay_mark_paid(order_id: str, payment_id: str):
-    """Idempotent: mark paid, grant access, send emails. Safe to call from verify AND webhook."""
+    """Idempotent and race-safe. Razorpay can call verify and two webhooks at the same moment;
+    only the request that really flips the order from 'created' to 'paid' grants access and sends emails.
+    Returns a dict (the order) with an extra key `linked` = an account with this email exists."""
     pool = await get_db()
     if not pool: return None
     async with pool.acquire() as conn:
         await _ensure_orders(conn)
         row = await conn.fetchrow("SELECT * FROM ag_orders WHERE order_id=$1", order_id)
         if not row: return None
-        if row["status"] == "paid": return row
-        await conn.execute("UPDATE ag_orders SET status='paid', payment_id=$1, paid_at=NOW() WHERE order_id=$2 AND status<>'paid'", payment_id, order_id)
-        # grant access if a user with this email exists
-        user = await conn.fetchrow("SELECT id,products FROM ag_users WHERE LOWER(email)=$1", (row["email"] or "").lower())
-        if user:
+        user = await _pay_user_by_email(conn, row["email"])
+        out = dict(row); out["linked"] = bool(user)
+        if row["status"] != "created":
+            return out
+        won = await conn.fetchrow(
+            "UPDATE ag_orders SET status='paid', payment_id=$1, paid_at=NOW() WHERE order_id=$2 AND status='created' RETURNING *",
+            payment_id, order_id)
+        if not won:
+            return out   # another request got there first and is sending the emails
+        out = dict(won); out["linked"] = bool(user)
+        # grant access if a user with this email exists (keys with a comma cannot live in the comma-separated list)
+        if user and "," not in (row["product_key"] or ""):
             cur = [p.strip() for p in (user["products"] or "").split(",") if p.strip()]
             if row["product_key"] not in cur:
                 cur.append(row["product_key"])
                 await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", ",".join(cur), user["id"])
+    row = out
+    linked = row["linked"]
     amt = f"₹{row['amount_paise']/100:,.2f}"
     e = _html_pay.escape
+    if linked:
+        acct_line = (f"<p>Your purchase is linked to your AG Technicals account (<b>{e(row['email'] or '')}</b>). "
+                     f"You can see it any time in <b>My Dashboard</b> on agtechnicals.com.</p>")
+    else:
+        acct_line = (f"<p>We could not find an AG Technicals account with <b>{e(row['email'] or '')}</b>. "
+                     f"To see your purchase on the website, create an account at agtechnicals.com using this same email. "
+                     f"It will show up automatically after you log in.</p>")
     try:
         await asyncio.to_thread(send_email, row["email"], "Payment received — AG Technicals",
             f"<div style='font-family:Arial,sans-serif;max-width:480px'><h2>Thank you, {e(row['name'] or '')}!</h2>"
             f"<p>We received your payment of <b>{amt}</b> for <b>{e(row['product_name'])}</b>{(' (Code: ' + e(row['product_code']) + ')') if row['product_code'] else ''}.</p>"
             f"<p>Order ID: {e(order_id)}<br>Payment ID: {e(payment_id)}</p>"
+            f"{acct_line}"
             f"<p>We will contact you shortly with access details. Questions? Write to support@agtechnicals.com or message us on WhatsApp/Telegram.</p>"
             f"<p style='color:#888;font-size:12px'>AG Technicals is a software and education provider. Refunds follow our Refund Policy on agtechnicals.com.</p></div>")
     except Exception as ex:
@@ -1403,8 +1445,9 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
     admin_to = os.environ.get("ADMIN_EMAIL", "").strip()
     if admin_to:
         try:
-            await asyncio.to_thread(send_email, admin_to, f"New order: {('[' + row['product_code'] + '] ') if row['product_code'] else ''}{row['product_name']} {amt}",
-                f"<p>{e(row['name'] or '')} ({e(row['email'] or '')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>{(' · Code ' + e(row['product_code'])) if row['product_code'] else ''}.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>")
+            warn = "" if linked else f"<p style='color:#b00'><b>No account found for this email.</b> The customer's dashboard will not show this purchase until they sign up with {e(row['email'] or '')} (it links automatically at login). You can also add access by hand in Admin → Users & Access.</p>"
+            await asyncio.to_thread(send_email, admin_to, f"{'' if linked else 'NO ACCOUNT - '}New order: {('[' + row['product_code'] + '] ') if row['product_code'] else ''}{row['product_name']} {amt}",
+                f"<p>{e(row['name'] or '')} ({e(row['email'] or '')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>{(' · Code ' + e(row['product_code'])) if row['product_code'] else ''}.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>{warn}")
         except Exception as ex:
             print(f"admin order email failed: {ex}")
     return row
@@ -1421,7 +1464,7 @@ async def pay_verify(req: PayVerifyReq):
     if not _hmac.compare_digest(expected, req.razorpay_signature):
         return JSONResponse({"ok": False, "error": "Payment could not be verified. If money was deducted, contact support@agtechnicals.com with your payment ID."})
     row = await _pay_mark_paid(req.razorpay_order_id, req.razorpay_payment_id)
-    return JSONResponse({"ok": bool(row)})
+    return JSONResponse({"ok": bool(row), "linked": bool(row and row.get("linked")), "email": (row or {}).get("email", "")})
 
 @app.post("/api/pay/webhook")
 async def pay_webhook(request: Request):
@@ -1451,8 +1494,79 @@ async def admin_orders(request: Request):
     if not pool: return JSONResponse({"ok": False, "orders": []})
     async with pool.acquire() as conn:
         await _ensure_orders(conn)
-        rows = await conn.fetch("SELECT order_id,product_name,product_code,amount_paise,name,email,phone,status,payment_id,created_at,paid_at FROM ag_orders ORDER BY created_at DESC LIMIT 200")
+        rows = await conn.fetch("SELECT o.order_id,o.product_name,o.product_code,o.amount_paise,o.name,o.email,o.phone,o.status,o.payment_id,o.created_at,o.paid_at, EXISTS(SELECT 1 FROM ag_users u WHERE LOWER(u.email)=LOWER(o.email)) AS linked FROM ag_orders o ORDER BY o.created_at DESC LIMIT 200")
     return JSONResponse({"ok": True, "enabled": _pay_enabled(), "orders": [
         {"order_id": r["order_id"], "product": r["product_name"], "code": r["product_code"] or "", "amount": r["amount_paise"]/100, "name": r["name"], "email": r["email"],
-         "phone": r["phone"], "status": r["status"], "payment_id": r["payment_id"],
+         "phone": r["phone"], "status": r["status"], "payment_id": r["payment_id"], "linked": bool(r["linked"]),
          "created": str(r["created_at"])[:16], "paid": str(r["paid_at"])[:16] if r["paid_at"] else ""} for r in rows]})
+
+
+# ── Customer: my plans (expiry computed from paid orders; renewals stack on the current end date) ──
+def _add_months(dt, m):
+    y = dt.year + (dt.month - 1 + m) // 12
+    mo = (dt.month - 1 + m) % 12 + 1
+    d = min(dt.day, _cal.monthrange(y, mo)[1])
+    return dt.replace(year=y, month=mo, day=d)
+
+def _fmt_d(dt):
+    return dt.strftime("%d %b %Y")
+
+@app.get("/api/pay/my-plans")
+async def pay_my_plans(user_id: int, email: str):
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    em = (email or "").strip().lower()
+    async with pool.acquire() as conn:
+        await _ensure_orders(conn)
+        u = await conn.fetchrow("SELECT email FROM ag_users WHERE id=$1", user_id)
+        if not u or (u["email"] or "").strip().lower() != em:
+            return JSONResponse({"ok": False})
+        rows = await conn.fetch(
+            "SELECT product_key,product_name,product_code,paid_at FROM ag_orders WHERE LOWER(email)=$1 AND status='paid' AND paid_at IS NOT NULL ORDER BY paid_at ASC", em)
+    now = datetime.utcnow()
+    eas, other = {}, []
+    for r in rows:
+        key = r["product_key"] or ""
+        if key.startswith("ea:"):
+            try:
+                nm, months = key[3:].rsplit(":", 1)
+                months = int(months)
+            except Exception:
+                continue
+            if months not in (3, 6, 12):
+                continue
+            ent = eas.setdefault(nm.strip().lower(), {"name": nm.strip(), "code": "", "exp": None, "months": 0})
+            start = r["paid_at"] if (ent["exp"] is None or r["paid_at"] > ent["exp"]) else ent["exp"]
+            ent["exp"] = _add_months(start, months)
+            ent["months"] += months
+            if r["product_code"]: ent["code"] = r["product_code"]
+        else:
+            other.append({"key": key, "name": r["product_name"], "code": r["product_code"] or "", "paid": _fmt_d(r["paid_at"])})
+    ea_out = [{"name": v["name"], "code": v["code"], "expires": _fmt_d(v["exp"]), "active": v["exp"] > now, "months": v["months"]} for v in eas.values()]
+    return JSONResponse({"ok": True, "eas": ea_out, "other": other})
+
+# ── Admin: mark an order refunded (does NOT move money; refund in Razorpay first) ──
+class OrderStatusReq(BaseModel):
+    order_id: str
+    status: str
+
+@app.post("/api/admin/order-status")
+async def admin_order_status(req: OrderStatusReq, request: Request):
+    verify_admin_token(request)
+    if req.status != "refunded":
+        return JSONResponse({"ok": False, "error": "Only 'refunded' is supported."})
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        await _ensure_orders(conn)
+        row = await conn.fetchrow("UPDATE ag_orders SET status='refunded' WHERE order_id=$1 AND status='paid' RETURNING product_key,email", req.order_id)
+        if not row:
+            return JSONResponse({"ok": False, "error": "Order not found or not in paid state."})
+        em = (row["email"] or "").strip().lower()
+        still = await conn.fetchval("SELECT COUNT(*) FROM ag_orders WHERE LOWER(email)=$1 AND product_key=$2 AND status='paid'", em, row["product_key"])
+        if not still:
+            user = await _pay_user_by_email(conn, em)
+            if user:
+                cur = [p.strip() for p in (user["products"] or "").split(",") if p.strip() and p.strip() != row["product_key"]]
+                await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", ",".join(cur), user["id"])
+    return JSONResponse({"ok": True})

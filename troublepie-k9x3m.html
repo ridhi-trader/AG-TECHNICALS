@@ -1825,14 +1825,23 @@ async function prSave(){
   const j=await r.json().catch(()=>({}));
   if(j.ok){ _pr=out; prDraw(); msg.textContent='Saved. '+out.length+' item(s) live on /pricing.'; toast('Price list saved ✓'); } else { msg.textContent='Save failed.'; toast('Save failed','err'); }
 }
+async function orRefund(id){
+  if(!confirm('Mark this order as refunded?\n\nFirst refund the money in your Razorpay dashboard. This only updates the site: the plan is removed from the customer account.')) return;
+  try{
+    const r=await adminFetch('/api/admin/order-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order_id:id,status:'refunded'})});
+    const j=await r.json().catch(()=>({}));
+    if(j.ok) toast('Marked refunded ✓'); else toast(j.error||'Failed','err');
+  }catch(e){ toast('Failed','err'); }
+  orLoad();
+}
 async function orLoad(){
   const box=document.getElementById('orList'), st=document.getElementById('orStatus'); if(!box) return;
   try{
     const r=await adminFetch('/api/admin/orders'); const j=await r.json();
     st.textContent=j.enabled?'Payments are ON (Razorpay keys found).':'Payments are OFF. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Railway Variables.';
     const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    box.innerHTML=(j.orders&&j.orders.length)?'<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr style="text-align:left;color:#888"><th>Date</th><th>Code</th><th>Item</th><th>₹</th><th>Customer</th><th>Status</th></tr>'
-      +j.orders.map(o=>'<tr style="border-top:1px solid #222"><td>'+esc(o.paid||o.created)+'</td><td>'+esc(o.code)+'</td><td>'+esc(o.product)+'</td><td>'+esc(o.amount)+'</td><td>'+esc(o.name)+'<br>'+esc(o.email)+' '+esc(o.phone)+'</td><td style="color:'+(o.status==='paid'?'#2ee6a6':'#aaa')+'">'+esc(o.status)+'</td></tr>').join('')+'</table>':'No orders yet.';
+    box.innerHTML=(j.orders&&j.orders.length)?'<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr style="text-align:left;color:#888"><th>Date</th><th>Code</th><th>Item</th><th>₹</th><th>Customer</th><th>Account</th><th>Status</th><th></th></tr>'
+      +j.orders.map(o=>'<tr style="border-top:1px solid #222"><td>'+esc(o.paid||o.created)+'</td><td>'+esc(o.code)+'</td><td>'+esc(o.product)+'</td><td>'+esc(o.amount)+'</td><td>'+esc(o.name)+'<br>'+esc(o.email)+' '+esc(o.phone)+'</td><td style="color:'+(o.linked?'#2ee6a6':'#f5c542')+'">'+(o.linked?'✓ Linked':'⚠ No account')+'</td><td style="color:'+(o.status==='paid'?'#2ee6a6':(o.status==='refunded'?'#f5c542':'#aaa'))+'">'+esc(o.status)+'</td><td>'+(o.status==='paid'?'<button type="button" data-id="'+esc(o.order_id).replace(/"/g,'&quot;')+'" onclick="orRefund(this.dataset.id)" style="background:none;border:1px solid #555;color:#ccc;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer">Mark refunded</button>':'')+'</td></tr>').join('')+'</table>':'No orders yet.';
   }catch(e){ box.textContent='Could not load orders.'; }
 }
 </script>

@@ -54,6 +54,15 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;l
 .opt:hover{border-color:var(--g5);}
 .res-name{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(34px,8vw,52px);font-weight:800;letter-spacing:-.035em;line-height:1;color:var(--g5);margin:6px 0 12px;}
 .res p{color:var(--t3);line-height:1.7;font-size:15px;}
+.fit{margin-top:26px;border-top:1px solid var(--border);padding-top:22px;}
+.fit h3{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;margin:0 0 4px;color:#fff;}
+.fit .sub{margin-bottom:14px}
+.fit-list{display:grid;gap:12px}
+.fit-card{display:block;text-decoration:none;color:inherit;border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.02);transition:border-color .2s}
+.fit-card:hover,.fit-card:focus-visible{border-color:rgba(245,197,66,.6);outline:none}
+.fit-card b{display:block;color:var(--g5);font-size:16px;margin-bottom:4px}
+.fit-card span{color:var(--t3);font-size:14px;line-height:1.6}
+.fit-card.custom{border-style:dashed}
 .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
 .cardprev{width:100%;max-width:300px;border-radius:14px;border:1px solid var(--border);margin-top:18px;display:block;}
 .more{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;justify-content:center;}
@@ -119,6 +128,11 @@ input[type=range]{padding:0;accent-color:#f5c542;}
       <div class="sub" style="margin-bottom:0">Your trading style</div>
       <div class="res-name" id="rName"></div>
       <p id="rDesc"></p>
+      <div class="fit">
+        <h3>AG tools that match your style</h3>
+        <div class="sub">Matched by how each tool works, not a recommendation to trade. Pick what suits you.</div>
+        <div class="fit-list" id="fitList"></div>
+      </div>
       <canvas id="card" class="cardprev" width="1080" height="1350" aria-label="Your shareable result card"></canvas>
       <div class="acts">
         <button class="btn" id="dl" type="button">Save card</button>
@@ -241,6 +255,15 @@ input[type=range]{padding:0;accent-color:#f5c542;}
    W:{n:'The Patient Swinger',d:'You are calm and can wait for the bigger picture. Longer timeframes suit your temperament. Learning trends, structure and how to size positions will help you.'},
    T:{n:'The System Builder',d:'You like rules, tests and automation. You want your plan written down and followed the same way every time. Indicators and algo tools are a natural fit for you.'}
   };
+  var FIT={
+   S:[{n:'AG Order Flow',u:'/tv-indicators',w:'Shows buying and selling pressure, absorption and imbalance breaks on your TradingView chart. Made for fast charts where speed matters.'}],
+   D:[{n:'AG SMC Indicator',u:'/tv-indicators',w:'Marks order blocks, fair value gaps, structure breaks and liquidity sweeps, with a dashboard. Fits traders who plan around levels in one session.'},
+      {n:'AG-ESB (Swing + EMA + R:R)',u:'/tv-indicators',w:'Break markers, risk-reward lines and a live dashboard, so your plan is on the chart before you act.'}],
+   W:[{n:'AG-ESB (Swing + EMA + R:R)',u:'/tv-indicators',w:'Combines trend (EMA) and swing structure on any timeframe, with risk-reward lines for longer holds.'},
+      {n:'AG Education',u:'/education',w:'Learn structure, trends and position sizing step by step at your own pace.'}],
+   T:[{n:'AG Algo (MT5)',u:'/algo',w:'Expert advisors for MetaTrader 5 that run your rules automatically. Built for traders who like systems.'},
+      {n:'Custom Indicator & Algo',u:'/custom-strategy',w:'Write your rules down and we build them as an indicator or an algo.'}]
+  };
   var i=0,score={S:0,D:0,W:0,T:0},res=null;
   function ask(){
     var x=Q[i];$('qCount').textContent='Question '+(i+1)+' of '+Q.length;$('qText').textContent=x.q;
@@ -253,6 +276,17 @@ input[type=range]{padding:0;accent-color:#f5c542;}
     var k=Object.keys(score).sort(function(a,b){return score[b]-score[a];})[0];res=R[k];
     $('qBox').hidden=true;$('resBox').hidden=false;$('rName').textContent=res.n;$('rDesc').textContent=res.d;
     draw(k);
+    var fl=$('fitList');fl.innerHTML='';
+    function card(n,u,w,cls){var a=document.createElement('a');a.className='fit-card'+(cls?' '+cls:'');a.href=u;a.target=u.charAt(0)==='h'?'_blank':'';a.rel='noopener';
+      var b=document.createElement('b');b.textContent=n;var sp=document.createElement('span');sp.textContent=w;a.appendChild(b);a.appendChild(sp);fl.appendChild(a);}
+    FIT[k].forEach(function(f){card(f.n,f.u,f.w);});
+    if(k!=='T'){
+      var msg='Hi AG Technicals! My trading style quiz result is "'+res.n+'". I want a custom indicator or algo built for my style.';
+      card('Need something made just for you?','https://wa.me/917357032456?text='+encodeURIComponent(msg),'If none of these fit, we can build a custom indicator or algo to your own rules. Tap to tell us what you need on WhatsApp.','custom');
+    } else {
+      var m2='Hi AG Technicals! My trading style quiz result is "'+res.n+'". I want a custom algo built from my rules.';
+      card('Prefer to talk first?','https://wa.me/917357032456?text='+encodeURIComponent(m2),'Tell us your rules on WhatsApp and we will tell you what can be built, the price and the time.','custom');
+    }
     var t='I got "'+res.n+'" on the AG Technicals trading style quiz. Try it: https://www.agtechnicals.com/trader-tools#quiz';
     $('wa').href='https://wa.me/?text='+encodeURIComponent(t);
   }

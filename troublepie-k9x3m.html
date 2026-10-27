@@ -796,6 +796,8 @@ async function verifyAdminOTP(){
     </div>
     <div class="g2">
       <div class="field"><label class="label">Badge</label><input class="inp" id="siBadge" placeholder="PREMIUM"></div>
+      <div class="field"><label class="label">Price ₹ (Algo only): 3 months / 6 months / 12 months. Leave empty for default (30000 / 54000 / 100000)</label>
+        <div style="display:flex;gap:8px"><input class="inp" id="siP3" type="number" min="1" placeholder="3 months"><input class="inp" id="siP6" type="number" min="1" placeholder="6 months"><input class="inp" id="siP12" type="number" min="1" placeholder="12 months"></div></div>
       <div class="field"><label class="label">Description</label><input class="inp" id="siDesc" placeholder="Short description"></div>
     </div>
     <div class="field">
@@ -1202,16 +1204,18 @@ function openSiEd(pi,ji){
   document.getElementById('siFileStatus').textContent=it.fileName?'File: '+it.fileName:'';
   document.getElementById('siVid').value=it.videoUrl||'';
   document.getElementById('siSection').value=it.section||'ea';
+  document.getElementById('siP3').value=it.price3m||''; document.getElementById('siP6').value=it.price6m||''; document.getElementById('siP12').value=it.price12m||'';
   const prev=document.getElementById('siImgPrev'),thumb=document.getElementById('siImgThumb');
   if(it.img){thumb.src=it.img;prev.style.display='block';}else{prev.style.display='none';}
   document.getElementById('siOverlay').classList.add('open');
 }
-function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siSection').value='ea'; document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; document.getElementById('siPid').value='EDU-'+Date.now().toString().slice(-4); }
+function clearSiForm(){ ['siName','siPid','siBadge','siDesc','siImgUrl','siFileUrl','siVid','siP3','siP6','siP12'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siSection').value='ea'; document.getElementById('siFileStatus').textContent=''; document.getElementById('siImgPrev').style.display='none'; document.getElementById('siPid').value='EDU-'+Date.now().toString().slice(-4); }
 function closeSiEd(){ document.getElementById('siOverlay').classList.remove('open'); }
 function saveSi(){
   const pi=parseInt(document.getElementById('siProdId').value);
   const ji=_editSiIdx;
   const it={name:document.getElementById('siName').value,pid:document.getElementById('siPid').value,badge:document.getElementById('siBadge').value,desc:document.getElementById('siDesc').value,img:document.getElementById('siImgUrl').value,fileUrl:document.getElementById('siFileUrl').value,fileName:document.getElementById('siFileStatus').textContent.replace('File: ','').replace('✓ ','').split(' ')[0]||'',videoUrl:document.getElementById('siVid').value,section:document.getElementById('siSection').value||'ea',hidden:false};
+  [['siP3','price3m'],['siP6','price6m'],['siP12','price12m']].forEach(function(x){var v=parseFloat(document.getElementById(x[0]).value); if(v>0) it[x[1]]=v;});
   if(!products[pi].items) products[pi].items=[];
   if(ji>=0) products[pi].items[ji]=it; else products[pi].items.push(it);
   save('ag_products',products); renderProds(); renderSidebarProducts(); closeSiEd(); toast('Sub-item saved');

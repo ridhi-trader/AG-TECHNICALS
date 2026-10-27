@@ -17,6 +17,24 @@
   var path = (location.pathname || '').toLowerCase();
   if (/(^|\/)(admin|troublepie-[a-z0-9]+)(\.html)?$/.test(path)) return;
 
+  // "Back To Site" goes back to the page the visitor came from (inside this site), not always Home.
+  // If there is no earlier page on this site (opened directly, from Google, from a new tab) or the earlier
+  // page was the login page, the link works as before and opens Home.
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target && e.target.closest ? e.target.closest('a') : null;
+    if (!a) return;
+    if (!(a.id === 'ag-back-site' || /back to (the )?(site|ag)/i.test(a.textContent || ''))) return;
+    var prev;
+    try { prev = new URL(document.referrer); } catch (x) { return; }
+    if (prev.origin !== location.origin) return;
+    if (prev.pathname === location.pathname) return;
+    if (/(^|\/)(user-login|login)(\.html)?$/i.test(prev.pathname)) return;
+    if (history.length < 2) return;
+    e.preventDefault();
+    history.back();
+  }, true);
+
   // "Back To Site" on every inner page: if a page has no back link of its own, add a small pill.
   // (Pages that already have one — nav link — are left alone so there is never a duplicate.)
   function addBackLink() {

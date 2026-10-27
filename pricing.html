@@ -156,7 +156,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
       });
     }).catch(function(){$('cErr').textContent='Network error. Please try again.';$('cGo').disabled=false;$('cGo').textContent='Pay now';});
   });
-  fetch('/api/pay/catalog').then(function(r){return r.json();}).then(function(j){cat=j||cat;render();}).catch(render);
+  fetch('/api/pay/catalog').then(function(r){return r.json();}).then(function(j){if(j&&Array.isArray(j.items))cat=j;render();}).catch(render);
 })();
 </script>
 <script src="ag-footer.js"></script>

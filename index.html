@@ -114,11 +114,14 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .wd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
 @media(max-width:900px){.wd-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:520px){.wd-grid{grid-template-columns:1fr;}}
-.wd-card{background:#0b0b0b;border:1px solid #262626;border-radius:14px;padding:22px 20px;transition:border-color .2s,transform .2s;}
-.wd-card:hover{border-color:rgba(245,197,66,0.45);transform:translateY(-3px);}
-.wd-ic{font-size:26px;margin-bottom:10px;}
-.wd-t{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
-.wd-d{font-size:13px;color:#bdbdbd;line-height:1.6;}
+.hl-card{background:linear-gradient(150deg,rgba(245,197,66,.15),rgba(245,197,66,.05) 55%,rgba(18,13,3,.92));border:1px solid rgba(245,197,66,.38);box-shadow:0 8px 26px rgba(0,0,0,.55),0 0 24px rgba(245,197,66,.09),inset 0 1px 0 rgba(255,255,255,.08);transition:border-color .2s,transform .2s,box-shadow .2s;}
+.hl-card:hover{border-color:rgba(245,197,66,.95);transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.65),0 0 34px rgba(245,197,66,.28),inset 0 1px 0 rgba(255,255,255,.1);}
+.wd-card{display:block;position:relative;text-decoration:none;color:inherit;border-radius:14px;padding:22px 20px;}
+.wd-card.feat{background:linear-gradient(150deg,rgba(245,197,66,.3),rgba(245,197,66,.1) 55%,rgba(18,13,3,.92));border-color:rgba(245,197,66,.85);box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 36px rgba(245,197,66,.28),inset 0 1px 0 rgba(255,255,255,.14);}
+.wd-tag{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:4px 9px;border-radius:99px;}
+.wd-ic{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;font-size:24px;margin-bottom:12px;border-radius:12px;background:rgba(245,197,66,.16);border:1px solid rgba(245,197,66,.4);}
+.wd-t{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;}
+.wd-d{font-size:13px;color:#e5e5e5;line-height:1.6;}
 .wd-cta{display:inline-block;background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;font-weight:700;font-size:14px;padding:12px 24px;border-radius:10px;text-decoration:none;}
 .wd-cta:hover{box-shadow:0 8px 28px rgba(201,150,12,0.45);}
 .divider{height:1px;background:linear-gradient(90deg,transparent,#262626 20%,#262626 80%,transparent);margin:0 48px;}
@@ -182,9 +185,9 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .up{color:var(--g4);}
 .dn{color:var(--red);}
 /* FAQ */
-.faq-item{background:var(--card);border:1px solid rgba(38,38,38,0.9);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.25s;}
-.faq-item:hover{border-color:rgba(245,197,66,0.25);box-shadow:0 4px 20px rgba(0,0,0,0.3);}
-.faq-item.open{border-color:rgba(245,197,66,0.4);box-shadow:0 0 24px rgba(201,150,12,0.12);}
+.faq-item{background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.03) 60%,rgba(10,10,11,.95));border:1px solid rgba(245,197,66,0.28);border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.25s;}
+.faq-item:hover{border-color:rgba(245,197,66,0.7);box-shadow:0 4px 22px rgba(245,197,66,0.14);}
+.faq-item.open{background:linear-gradient(150deg,rgba(245,197,66,.2),rgba(245,197,66,.06) 60%,rgba(10,10,11,.95));border-color:rgba(245,197,66,0.85);box-shadow:0 0 28px rgba(245,197,66,0.2);}
 .faq-q{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;font-size:14px;font-weight:600;color:#fff;font-family:'Space Grotesk',sans-serif;}
 .faq-arrow{color:var(--g5);font-size:16px;transition:transform 0.25s;flex-shrink:0;margin-left:16px;}
 .faq-item.open .faq-arrow{transform:rotate(180deg);}
@@ -455,11 +458,11 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-h">Play With Our Trader Tools</div>
   <div class="sec-sub">Build a candle, decode trading jargon in plain Hinglish, and find your trading style. Built for learning.</div>
   <div class="wd-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
-    <div class="wd-card"><div class="wd-ic">🕯️</div><div class="wd-t">Candle Lab</div><div class="wd-d">Drag open, high, low and close. Watch a candle build itself.</div></div>
-    <div class="wd-card"><div class="wd-ic">📖</div><div class="wd-t">Jargon Decoder</div><div class="wd-d">Pip, lot, spread, leverage. Explained in simple Hinglish.</div></div>
-    <div class="wd-card"><div class="wd-ic">🎯</div><div class="wd-t">What's Your Trading Style?</div><div class="wd-d">7 quick questions. Get your type and a card to share.</div></div>
+    <a class="wd-card hl-card feat" href="trader-tools#quiz"><span class="wd-tag">Start here</span><div class="wd-ic">🎯</div><div class="wd-t">What's Your Trading Style?</div><div class="wd-d">7 quick questions. Get your type and a card to share.</div></a>
+    <a class="wd-card hl-card" href="trader-tools#lab"><div class="wd-ic">🕯️</div><div class="wd-t">Candle Lab</div><div class="wd-d">Drag open, high, low and close. Watch a candle build itself.</div></a>
+    <a class="wd-card hl-card" href="trader-tools#jargon"><div class="wd-ic">📖</div><div class="wd-t">Jargon Decoder</div><div class="wd-d">Pip, lot, spread, leverage. Explained in simple Hinglish.</div></a>
   </div>
-  <a class="wd-cta" href="trader-tools">Try The Tools →</a>
+  <a class="wd-cta" href="trader-tools#quiz">Try The Tools →</a>
 </section>
 <div class="divider"></div>
 
@@ -489,18 +492,18 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-h" id="aboutH">Traders First. <span style="color:var(--g4)">Always.</span></div>
   <div class="sec-sub" id="aboutSub" style="margin-bottom:36px;">9+ years of real screen time across every major market — we built the tools we always wished existed.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
-    <div style="background:#0b0b0b;border:1px solid #262626;border-left:3px solid var(--amber);border-radius:14px;padding:30px 32px;">
+    <div style="background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.025) 55%,#0b0b0b);border:1px solid rgba(245,197,66,.25);border-left:3px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 26px rgba(245,197,66,.06);border-radius:14px;padding:30px 32px;">
       <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:14px;">🎯 Who We Are</div>
       <div id="aboutWhoText" style="font-size:13.5px;color:#e5e5e5;line-height:1.8;"></div>
     </div>
-    <div style="background:#0b0b0b;border:1px solid #262626;border-left:3px solid var(--amber);border-radius:14px;padding:30px 32px;">
+    <div style="background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.025) 55%,#0b0b0b);border:1px solid rgba(245,197,66,.25);border-left:3px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 26px rgba(245,197,66,.06);border-radius:14px;padding:30px 32px;">
       <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:14px;">💡 What We Do</div>
       <div id="aboutDoList" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
   </div>
-  <div style="background:#0b0b0b;border:1px solid #262626;border-left:3px solid var(--amber);border-radius:14px;padding:30px 32px;margin-bottom:20px;">
+  <div style="background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.025) 55%,#0b0b0b);border:1px solid rgba(245,197,66,.25);border-left:3px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 26px rgba(245,197,66,.06);border-radius:14px;padding:30px 32px;margin-bottom:20px;">
     <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;">📊 Markets We Master</div>
-    <div id="aboutMarketsSubtitle" style="font-size:12px;color:var(--t3);margin-bottom:20px;"></div>
+    <div id="aboutMarketsSubtitle" style="font-size:12px;color:#d4d4d4;margin-bottom:20px;"></div>
     <div id="aboutMarketsGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;"></div>
   </div>
   <div id="aboutVideoWrap" style="display:none;margin-bottom:20px;"></div>
@@ -850,12 +853,10 @@ document.getElementById('faq-list').innerHTML = faqItems.filter(f=>!f.hidden).ma
 /* ── CONTACT ── */
 document.getElementById('contactGrid').innerHTML = contact.filter(c=>!c.hidden).map(c=>`
   <a href="${c.url}" target="_blank" style="text-decoration:none;">
-    <div style="background:var(--card);border:1px solid #262626;border-radius:12px;padding:28px 20px;text-align:center;transition:border-color 0.2s,transform 0.2s;"
-         onmouseover="this.style.borderColor='rgba(245,197,66,0.55)';this.style.transform='translateY(-3px)'"
-         onmouseout="this.style.borderColor='#262626';this.style.transform='translateY(0)'">
+    <div class="hl-card" style="border-radius:12px;padding:28px 20px;text-align:center;">
       <div style="font-size:32px;margin-bottom:12px;">${c.icon}</div>
       <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:5px;">${c.name}</div>
-      <div style="font-size:12px;color:var(--t3);">${c.sub}</div>
+      <div style="font-size:12px;color:#d4d4d4;">${c.sub}</div>
     </div>
   </a>`).join('');
 
@@ -868,7 +869,7 @@ document.getElementById('aboutDoList').innerHTML = (about.doList||D.about.doList
 }).join('');
 document.getElementById('aboutMarketsSubtitle').textContent = about.marketsSubtitle||D.about.marketsSubtitle;
 document.getElementById('aboutMarketsGrid').innerHTML = (about.markets||D.about.markets).map(m=>`
-  <div style="background:#0b0b0b;border:1px solid #262626;border-radius:10px;padding:26px 14px;text-align:center;">
+  <div class="hl-card" style="border-radius:10px;padding:26px 14px;text-align:center;">
     <div style="font-size:${m.isText?'22px':'28px'};font-weight:${m.isText?800:400};font-family:${m.isText?"'Space Grotesk',sans-serif":'inherit'};color:var(--amber);margin-bottom:10px;">${m.icon}</div>
     <div style="font-size:13px;font-weight:700;color:var(--amber);">${m.label}</div>
   </div>`).join('');

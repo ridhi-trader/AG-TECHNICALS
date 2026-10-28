@@ -74,6 +74,16 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;l
 .jc .d{font-size:14px;line-height:1.6;color:var(--t3);margin-top:6px;}
 .jc .h{font-size:12px;color:#8a8a8a;margin-top:6px;}
 input[type=range]{padding:0;accent-color:#f5c542;}
+
+/* highlighted look: gold-tinted cards instead of flat black */
+.panel{background:linear-gradient(150deg,rgba(245,197,66,.11),rgba(245,197,66,.03) 45%,#0b0b0b 100%);border-color:rgba(245,197,66,.32);box-shadow:0 10px 40px rgba(0,0,0,.55),0 0 36px rgba(245,197,66,.07);}
+.tab{background:rgba(245,197,66,.07);border-color:rgba(245,197,66,.3);color:#e5e5e5;}
+.tab:hover{border-color:var(--g5);color:#fff;}
+.tab[aria-selected=true]{box-shadow:0 4px 20px rgba(245,197,66,.35);}
+.opt,.jc,.field input,.field select{background:rgba(245,197,66,.05);border-color:rgba(245,197,66,.22);}
+.opt:hover,.jc:hover{background:rgba(245,197,66,.12);}
+.fit-card{background:rgba(245,197,66,.06);border-color:rgba(245,197,66,.25);}
+.sub,.jc .d{color:#d4d4d4;}
 @media(prefers-reduced-motion:reduce){.bar i{transition:none;}}
 </style>
 </head>
@@ -86,38 +96,13 @@ input[type=range]{padding:0;accent-color:#f5c542;}
 </div>
 
 <div class="tabs" role="tablist">
-  <button class="tab" role="tab" id="t-calc" aria-selected="true" aria-controls="p-calc">Candle Lab</button>
+  <button class="tab" role="tab" id="t-quiz" aria-selected="true" aria-controls="p-quiz">&#127919; Style quiz</button>
+  <button class="tab" role="tab" id="t-calc" aria-selected="false" aria-controls="p-calc">Candle Lab</button>
   <button class="tab" role="tab" id="t-jar" aria-selected="false" aria-controls="p-jar">Jargon Decoder</button>
-  <button class="tab" role="tab" id="t-quiz" aria-selected="false" aria-controls="p-quiz">Style quiz</button>
 </div>
 
 <div class="wrap">
-  <section class="panel" id="p-calc" role="tabpanel" aria-labelledby="t-calc">
-    <h2>Candle Lab</h2>
-    <p class="sub">Drag the four prices and watch one candle form. This is how every candle on a chart is built.</p>
-    <canvas id="lab" width="640" height="320" style="width:100%;border-radius:12px;background:#050505;border:1px solid var(--border);display:block" aria-label="Candle preview"></canvas>
-    <div class="g2" style="margin-top:16px">
-      <div class="field"><label for="lo">Open: <b id="lov"></b></label><input id="lo" type="range" min="0" max="100" value="40"></div>
-      <div class="field"><label for="lc">Close: <b id="lcv"></b></label><input id="lc" type="range" min="0" max="100" value="68"></div>
-      <div class="field"><label for="lh">High: <b id="lhv"></b></label><input id="lh" type="range" min="0" max="100" value="80"></div>
-      <div class="field"><label for="ll">Low: <b id="llv"></b></label><input id="ll" type="range" min="0" max="100" value="25"></div>
-    </div>
-    <div class="out" id="labout">
-      <div class="big" id="labname" style="font-size:30px"></div>
-      <p class="sub" id="labdesc" style="margin:8px 0 0"></p>
-    </div>
-    <p class="note">Learning visual only. The numbers are made up. A candle describes what price did in the past, it does not predict anything.</p>
-  </section>
-
-  <section class="panel" id="p-jar" role="tabpanel" aria-labelledby="t-jar" hidden>
-    <h2>Jargon Decoder</h2>
-    <p class="sub">Trading words in plain Hinglish. Tap a card to flip it.</p>
-    <div class="field"><label for="jq">Search a word</label><input id="jq" type="search" placeholder="e.g. spread, lot, pip"></div>
-    <div class="jgrid" id="jgrid"></div>
-    <p class="note">Plain-language definitions for learning. Not advice. For the full course, see our Education page.</p>
-  </section>
-
-  <section class="panel" id="p-quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
+  <section class="panel" id="p-quiz" role="tabpanel" aria-labelledby="t-quiz">
     <div id="qBox">
       <div class="bar" aria-hidden="true"><i id="qBar"></i></div>
       <div class="sub" id="qCount" style="margin-bottom:8px"></div>
@@ -143,6 +128,31 @@ input[type=range]{padding:0;accent-color:#f5c542;}
     </div>
   </section>
 
+  <section class="panel" id="p-calc" role="tabpanel" aria-labelledby="t-calc" hidden>
+    <h2>Candle Lab</h2>
+    <p class="sub">Drag the four prices and watch one candle form. This is how every candle on a chart is built.</p>
+    <canvas id="lab" width="640" height="320" style="width:100%;border-radius:12px;background:#050505;border:1px solid var(--border);display:block" aria-label="Candle preview"></canvas>
+    <div class="g2" style="margin-top:16px">
+      <div class="field"><label for="lo">Open: <b id="lov"></b></label><input id="lo" type="range" min="0" max="100" value="40"></div>
+      <div class="field"><label for="lc">Close: <b id="lcv"></b></label><input id="lc" type="range" min="0" max="100" value="68"></div>
+      <div class="field"><label for="lh">High: <b id="lhv"></b></label><input id="lh" type="range" min="0" max="100" value="80"></div>
+      <div class="field"><label for="ll">Low: <b id="llv"></b></label><input id="ll" type="range" min="0" max="100" value="25"></div>
+    </div>
+    <div class="out" id="labout">
+      <div class="big" id="labname" style="font-size:30px"></div>
+      <p class="sub" id="labdesc" style="margin:8px 0 0"></p>
+    </div>
+    <p class="note">Learning visual only. The numbers are made up. A candle describes what price did in the past, it does not predict anything.</p>
+  </section>
+
+  <section class="panel" id="p-jar" role="tabpanel" aria-labelledby="t-jar" hidden>
+    <h2>Jargon Decoder</h2>
+    <p class="sub">Trading words in plain Hinglish. Tap a card to flip it.</p>
+    <div class="field"><label for="jq">Search a word</label><input id="jq" type="search" placeholder="e.g. spread, lot, pip"></div>
+    <div class="jgrid" id="jgrid"></div>
+    <p class="note">Plain-language definitions for learning. Not advice. For the full course, see our Education page.</p>
+  </section>
+
   <div class="more">
     <a class="btn ghost" href="/education">Learn trading concepts</a>
     <a class="btn ghost" href="/algo">MT5 algo tools</a>
@@ -153,11 +163,11 @@ input[type=range]{padding:0;accent-color:#f5c542;}
 <script>
 // ---------- tabs ----------
 (function(){
-  var tabs=[document.getElementById('t-calc'),document.getElementById('t-jar'),document.getElementById('t-quiz')];
+  var tabs=[document.getElementById('t-quiz'),document.getElementById('t-calc'),document.getElementById('t-jar')];
   function show(i){tabs.forEach(function(t,j){t.setAttribute('aria-selected',i===j);document.getElementById(t.getAttribute('aria-controls')).hidden=i!==j;});
-    try{history.replaceState(null,'',['#lab','#jargon','#quiz'][i]);}catch(e){}}
+    try{history.replaceState(null,'',['#quiz','#lab','#jargon'][i]);}catch(e){}}
   tabs.forEach(function(t,i){t.addEventListener('click',function(){show(i);});});
-  if(location.hash==='#jargon')show(1);else if(location.hash==='#quiz')show(2);
+  if(location.hash==='#lab')show(1);else if(location.hash==='#jargon')show(2);
 })();
 
 // ---------- candle lab ----------

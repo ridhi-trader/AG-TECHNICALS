@@ -84,6 +84,18 @@ input[type=range]{padding:0;accent-color:#f5c542;}
 .opt:hover,.jc:hover{background:rgba(245,197,66,.12);}
 .fit-card{background:rgba(245,197,66,.06);border-color:rgba(245,197,66,.25);}
 .sub,.jc .d{color:#d4d4d4;}
+.allst{margin-top:24px;border-top:1px solid var(--border);padding-top:20px;}
+.allst h3{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;margin:0 0 12px;color:#fff;}
+.st{border:1px solid rgba(245,197,66,.22);background:rgba(245,197,66,.05);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+.st.me{border-color:var(--g5);background:rgba(245,197,66,.16);box-shadow:0 0 22px rgba(245,197,66,.2);}
+.st .top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:15px;color:#fff;}
+.st .top em{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;background:var(--g5);color:#000;padding:3px 8px;border-radius:99px;margin-left:8px;}
+.st .top span{color:var(--g5);font-size:14px;}
+.st .meter{height:6px;background:#1c1c1c;border-radius:9px;margin:8px 0;overflow:hidden;}
+.st .meter i{display:block;height:100%;background:linear-gradient(90deg,#c9960c,#f5c542);}
+.st p{font-size:13px;line-height:1.55;color:#d4d4d4;}
+.pw{text-align:center;margin:18px 0 0;font-size:12px;letter-spacing:.6px;color:#bdbdbd;}
+.pw b{color:var(--g5);font-weight:800;letter-spacing:1.5px;}
 @media(prefers-reduced-motion:reduce){.bar i{transition:none;}}
 </style>
 </head>
@@ -113,6 +125,7 @@ input[type=range]{padding:0;accent-color:#f5c542;}
       <div class="sub" style="margin-bottom:0">Your trading style</div>
       <div class="res-name" id="rName"></div>
       <p id="rDesc"></p>
+      <div class="allst"><h3>All trading styles</h3><div id="allSt"></div></div>
       <div class="fit">
         <h3>AG tools that match your style</h3>
         <div class="sub">Matched by how each tool works, not a recommendation to trade. Pick what suits you.</div>
@@ -126,6 +139,7 @@ input[type=range]{padding:0;accent-color:#f5c542;}
       </div>
       <p class="note">For fun and self-awareness only. This quiz describes habits, not skill or results, and it is not trading advice.</p>
     </div>
+    <div class="pw">Powered by <b>JAJOT</b></div>
   </section>
 
   <section class="panel" id="p-calc" role="tabpanel" aria-labelledby="t-calc" hidden>
@@ -286,6 +300,18 @@ input[type=range]{padding:0;accent-color:#f5c542;}
     var k=Object.keys(score).sort(function(a,b){return score[b]-score[a];})[0];res=R[k];
     $('qBox').hidden=true;$('resBox').hidden=false;$('rName').textContent=res.n;$('rDesc').textContent=res.d;
     draw(k);
+    var tot=0;for(var q in score)tot+=score[q];
+    var as=$('allSt');as.innerHTML='';
+    Object.keys(R).sort(function(a,b){return score[b]-score[a];}).forEach(function(key){
+      var pc=tot?Math.round(score[key]/tot*100):0;
+      var d=document.createElement('div');d.className='st'+(key===k?' me':'');
+      var t=document.createElement('div');t.className='top';
+      var l=document.createElement('div');l.textContent=R[key].n;
+      if(key===k){var e=document.createElement('em');e.textContent='You';l.appendChild(e);}
+      var sp=document.createElement('span');sp.textContent=pc+'% match';t.appendChild(l);t.appendChild(sp);
+      var m=document.createElement('div');m.className='meter';var bi=document.createElement('i');bi.style.width=pc+'%';m.appendChild(bi);
+      var pp=document.createElement('p');pp.textContent=R[key].d.split('. ')[0]+'.';
+      d.appendChild(t);d.appendChild(m);d.appendChild(pp);as.appendChild(d);});
     var fl=$('fitList');fl.innerHTML='';
     function card(n,u,w,cls){var a=document.createElement('a');a.className='fit-card'+(cls?' '+cls:'');a.href=u;a.target=u.charAt(0)==='h'?'_blank':'';a.rel='noopener';
       var b=document.createElement('b');b.textContent=n;var sp=document.createElement('span');sp.textContent=w;a.appendChild(b);a.appendChild(sp);fl.appendChild(a);}
@@ -319,6 +345,7 @@ input[type=range]{padding:0;accent-color:#f5c542;}
     x.fillText(ln,80,ty);
     x.fillStyle='#f5c542';x.font='800 40px "Bricolage Grotesque", Inter, sans-serif';x.fillText('AG TECHNICALS',80,1270);
     x.fillStyle='#8a8a8a';x.font='500 28px Inter, sans-serif';x.fillText('agtechnicals.com/trader-tools  ·  for fun, not advice',80,1315);
+    x.textAlign='right';x.fillStyle='#bdbdbd';x.font='600 26px Inter, sans-serif';x.fillText('Powered by',W-250,1270);x.fillStyle='#f5c542';x.font='800 40px "Bricolage Grotesque", Inter, sans-serif';x.fillText('JAJOT',W-80,1270);x.textAlign='left';
   }
   $('dl').addEventListener('click',function(){var a=document.createElement('a');a.download='my-trading-style.png';a.href=$('card').toDataURL('image/png');a.click();});
   $('again').addEventListener('click',function(){i=0;score={S:0,D:0,W:0,T:0};$('resBox').hidden=true;$('qBox').hidden=false;ask();});

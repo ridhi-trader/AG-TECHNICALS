@@ -40,6 +40,7 @@ body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--t1);overf
 nav{display:flex;align-items:center;justify-content:space-between;padding:16px 48px;border-bottom:1px solid rgba(38,38,38,0.8);background:rgba(0,0,0,0.96);position:sticky;top:0;z-index:200;backdrop-filter:blur(20px);}
 .logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--g5);letter-spacing:-0.5px;text-decoration:none;}
 .logo span{color:var(--t1);}
+.jd{font-style:normal;position:relative;}.jd::after{content:'';position:absolute;left:.34em;top:-.12em;width:.17em;height:.17em;border-radius:50%;background:#f5c542;box-shadow:0 0 6px rgba(245,197,66,.9);}
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-img{display:inline-flex;cursor:zoom-in;border:0;background:none;padding:0;border-radius:50%;transition:transform .25s,filter .25s;}
 .brand-img:hover{transform:scale(1.08) rotate(-3deg);filter:drop-shadow(0 0 14px rgba(245,197,66,.6));}
@@ -382,7 +383,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
 <nav>
   <div class="brand">
     <button type="button" class="brand-img" id="logoBtn" aria-label="View AG Technicals logo"><img id="siteLogo" src="logo-sm.png" alt="AG Technicals" width="79" height="56"></button>
-    <a href="#" class="brand-txt"><span class="brand-name">AG <b>Technicals</b></span><span class="brand-pw">Powered by <b>JAJOT.</b></span></a>
+    <a href="#" class="brand-txt"><span class="brand-name">AG <b>Technicals</b></span><span class="brand-pw">Powered by <b><i class="jd">J</i>A<i class="jd">J</i>OT</b></span></a>
   </div>
   <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
@@ -1345,7 +1346,7 @@ window._loadTVWidget = loadTVWidget;
 </script>
 <script src="ag-hero-fx.js"></script>
 <script src="glow.js"></script>
-<div id="logoPop" role="dialog" aria-modal="true" aria-label="AG Technicals"><div class="lp-card"><button type="button" class="lp-x" id="logoX" aria-label="Close">&times;</button><img id="logoBig" src="logo.png" alt="AG Technicals"><div class="lp-name">AG <b>Technicals</b></div><div class="lp-pw">Powered by <b>JAJOT.</b></div></div></div>
+<div id="logoPop" role="dialog" aria-modal="true" aria-label="AG Technicals"><div class="lp-card"><button type="button" class="lp-x" id="logoX" aria-label="Close">&times;</button><img id="logoBig" src="logo.png" alt="AG Technicals"><div class="lp-name">AG <b>Technicals</b></div><div class="lp-pw">Powered by <b><i class="jd">J</i>A<i class="jd">J</i>OT</b></div></div></div>
 <script>
 (function(){
   var pop=document.getElementById('logoPop'),btn=document.getElementById('logoBtn'),big=document.getElementById('logoBig'),small=document.getElementById('siteLogo');

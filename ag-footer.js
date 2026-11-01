@@ -99,6 +99,7 @@
       '.ag-f-links a:hover,.f-links a#ag-footer-support:hover{color:#f5c542;}' +
       /* keep the last row clear of the floating AI assistant bubble (bottom-right) */
       'footer,#ag-site-footer{padding-bottom:96px !important;}' +
+      '.jd{font-style:normal;position:relative;}.jd::after{content:\'\';position:absolute;left:.34em;top:-.12em;width:.17em;height:.17em;border-radius:50%;background:#f5c542;box-shadow:0 0 6px rgba(245,197,66,.9);}' +
       '@media(max-width:900px){#ag-site-footer{padding:24px 20px;padding-bottom:96px !important;}}';
     var s = document.createElement('style');
     s.id = 'ag-footer-style';
@@ -181,7 +182,7 @@
       var pw = document.createElement('div');
       pw.id = 'ag-footer-pw';
       pw.style.cssText = 'flex-basis:100%;width:100%;margin-top:16px;text-align:center;';
-      pw.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px;padding:9px 22px;border-radius:99px;border:1.5px solid rgba(245,197,66,.55);background:linear-gradient(135deg,rgba(245,197,66,.18),rgba(245,197,66,.05));box-shadow:0 0 22px rgba(245,197,66,.22);font:600 13px Inter,sans-serif;letter-spacing:.8px;color:#e5e5e5;text-transform:uppercase;">Powered by <b style="font:900 20px Inter,sans-serif;letter-spacing:2.5px;background:linear-gradient(135deg,#ffe08a,#f5c542 50%,#c9960c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#f5c542;">JAJOT.</b></span>';
+      pw.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px;padding:9px 22px;border-radius:99px;border:1.5px solid rgba(245,197,66,.55);background:linear-gradient(135deg,rgba(245,197,66,.18),rgba(245,197,66,.05));box-shadow:0 0 22px rgba(245,197,66,.22);font:600 13px Inter,sans-serif;letter-spacing:.8px;color:#e5e5e5;text-transform:uppercase;">Powered by <b style="font:900 20px Inter,sans-serif;letter-spacing:2.5px;background:linear-gradient(135deg,#ffe08a,#f5c542 50%,#c9960c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#f5c542;"><i class="jd">J</i>A<i class="jd">J</i>OT</b></span>';
       host.appendChild(pw);
     }
   }

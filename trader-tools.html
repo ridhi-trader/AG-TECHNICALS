@@ -95,6 +95,7 @@ input[type=range]{padding:0;accent-color:#f5c542;}
 .st .meter i{display:block;height:100%;background:linear-gradient(90deg,#c9960c,#f5c542);}
 .st p{font-size:13px;line-height:1.55;color:#d4d4d4;}
 .pw{text-align:center;margin:22px 0 0;font-size:13px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#e5e5e5;}
+.jd{font-style:normal;position:relative;}.jd::after{content:'';position:absolute;left:.34em;top:-.12em;width:.17em;height:.17em;border-radius:50%;background:#f5c542;box-shadow:0 0 6px rgba(245,197,66,.9);}
 .pw b{display:inline-block;margin-left:8px;font-size:20px;font-weight:900;letter-spacing:2.5px;background:linear-gradient(135deg,#ffe08a,#f5c542 50%,#c9960c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 @media(prefers-reduced-motion:reduce){.bar i{transition:none;}}
 </style>
@@ -139,7 +140,7 @@ input[type=range]{padding:0;accent-color:#f5c542;}
       </div>
       <p class="note">For fun and self-awareness only. This quiz describes habits, not skill or results, and it is not trading advice.</p>
     </div>
-    <div class="pw">Powered by <b>JAJOT.</b></div>
+    <div class="pw">Powered by <b><i class="jd">J</i>A<i class="jd">J</i>OT</b></div>
   </section>
 
   <section class="panel" id="p-calc" role="tabpanel" aria-labelledby="t-calc" hidden>
@@ -345,7 +346,9 @@ input[type=range]{padding:0;accent-color:#f5c542;}
     x.fillText(ln,80,ty);
     x.fillStyle='#f5c542';x.font='800 40px "Bricolage Grotesque", Inter, sans-serif';x.fillText('AG TECHNICALS',80,1270);
     x.fillStyle='#8a8a8a';x.font='500 28px Inter, sans-serif';x.fillText('agtechnicals.com/trader-tools  ·  for fun, not advice',80,1315);
-    x.textAlign='right';x.fillStyle='#bdbdbd';x.font='600 26px Inter, sans-serif';x.fillText('Powered by',W-250,1270);x.fillStyle='#f5c542';x.font='800 40px "Bricolage Grotesque", Inter, sans-serif';x.fillText('JAJOT.',W-80,1270);x.textAlign='left';
+    x.textAlign='right';x.fillStyle='#bdbdbd';x.font='600 26px Inter, sans-serif';x.fillText('Powered by',W-250,1270);x.fillStyle='#f5c542';x.font='800 40px "Bricolage Grotesque", Inter, sans-serif';var jw=x.measureText('JAJOT').width,j0=W-80-jw,wj=x.measureText('J').width,wa=x.measureText('A').width;
+    x.fillText('JAJOT',W-80,1270);
+    x.fillStyle='#f5c542';[j0+wj*0.55,j0+wj+wa+x.measureText('J').width*0.55].forEach(function(cx){x.beginPath();x.arc(cx,1270-38,6,0,Math.PI*2);x.fill();});x.textAlign='left';
   }
   $('dl').addEventListener('click',function(){var a=document.createElement('a');a.download='my-trading-style.png';a.href=$('card').toDataURL('image/png');a.click();});
   $('again').addEventListener('click',function(){i=0;score={S:0,D:0,W:0,T:0};$('resBox').hidden=true;$('qBox').hidden=false;ask();});

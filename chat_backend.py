@@ -63,6 +63,7 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 FINNHUB_KEY = os.environ.get("FINNHUB_API_KEY", "")
 NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "")
 
+import asyncio
 import xml.etree.ElementTree as ET
 import hashlib as _hashlib
 
@@ -80,25 +81,44 @@ RSS_FEEDS = [
     {"url": "https://www.moneycontrol.com/rss/marketreports.xml", "source": "Moneycontrol", "category": "Indices"},
     {"url": "https://www.livemint.com/rss/markets", "source": "LiveMint", "category": "Indices"},
     {"url": "https://economictimes.indiatimes.com/markets/commodities/rssfeeds/2146791.cms", "source": "Economic Times", "category": "Gold"},
+    # Google News search feeds: no key, updated every few minutes (keeps the list fresh daily)
+    {"url": "https://news.google.com/rss/search?q=gold+price+XAUUSD+when:1d&hl=en-IN&gl=IN&ceid=IN:en", "source": "Google News", "category": "Gold"},
+    {"url": "https://news.google.com/rss/search?q=forex+EURUSD+dollar+when:1d&hl=en-IN&gl=IN&ceid=IN:en", "source": "Google News", "category": "Forex"},
+    {"url": "https://news.google.com/rss/search?q=bitcoin+crypto+when:1d&hl=en-IN&gl=IN&ceid=IN:en", "source": "Google News", "category": "Crypto"},
+    {"url": "https://news.google.com/rss/search?q=Nifty+Sensex+stock+market+when:1d&hl=en-IN&gl=IN&ceid=IN:en", "source": "Google News", "category": "Indices"},
 ]
 
+def _ago(ts):
+    """'12m ago' / '5h ago' / '2d ago' from a unix timestamp."""
+    try:
+        d = max(0, int(time.time() - float(ts)))
+    except Exception:
+        return ""
+    if not ts:
+        return ""
+    if d < 3600:
+        return str(max(1, d // 60)) + "m ago"
+    if d < 86400:
+        return str(d // 3600) + "h ago"
+    return str(d // 86400) + "d ago"
+
+_newsapi_cache = {"data": [], "ts": 0}
+
 async def fetch_newsapi():
-    """Fetch real news from NewsAPI with full descriptions"""
+    """Fetch real news from NewsAPI with full descriptions.
+    Cached for 2 hours: the free plan allows only 100 requests/day (and delays articles by 24h),
+    so it is only a backfill. Fresh headlines come from the RSS feeds."""
     if not NEWSAPI_KEY:
         return []
+    if _newsapi_cache["data"] and time.time() - _newsapi_cache["ts"] < 7200:
+        return _newsapi_cache["data"]
     queries = [
         {"q": "gold XAU price trading analysis", "cat": "Gold"},
         {"q": "forex EUR USD GBP JPY trading", "cat": "Forex"},
         {"q": "bitcoin ethereum crypto trading", "cat": "Crypto"},
         {"q": "Nifty Sensex NSE BSE Indian stock market", "cat": "Indices"},
-        {"q": "S&P500 Nasdaq Dow Jones stock market indices", "cat": "Indices"},
         {"q": "Federal Reserve interest rate inflation CPI macroeconomics", "cat": "Macro"},
-        {"q": "RBI India economy GDP inflation rupee", "cat": "Macro"},
         {"q": "oil silver commodity futures trading", "cat": "Commodities"},
-        {"q": "forex trading technical analysis chart levels", "cat": "Analysis"},
-        {"q": "gold technical analysis support resistance", "cat": "Analysis"},
-        {"q": "India stock market Nifty Bank Nifty today", "cat": "Indices"},
-        {"q": "Mumbai Delhi finance business economy India", "cat": "Macro"},
     ]
     all_news = []
     try:
@@ -141,7 +161,11 @@ async def fetch_newsapi():
     except Exception as e:
         print(f"NewsAPI error: {e}")
     all_news.sort(key=lambda x: x.get("time_unix",0), reverse=True)
-    return all_news[:50]
+    all_news = all_news[:50]
+    if all_news:
+        _newsapi_cache["data"], _newsapi_cache["ts"] = all_news, time.time()
+        return all_news
+    return _newsapi_cache["data"]  # on failure / quota hit, keep showing the last good list
 
 _rss_cache = {"data": [], "ts": 0}
 
@@ -151,11 +175,12 @@ async def fetch_rss_news():
     all_news = []
     try:
         async with httpx.AsyncClient(timeout=8, headers={"User-Agent": "Mozilla/5.0 (AG Technicals News Bot)"}) as client:
-            for feed in RSS_FEEDS:
+            async def _one(feed):
+                out = []
                 try:
                     r = await client.get(feed["url"])
                     if r.status_code != 200:
-                        continue
+                        return out
                     root = ET.fromstring(r.text)
                     ns = {"media": "http://search.yahoo.com/mrss/"}
                     for item in root.findall(".//item")[:6]:
@@ -167,7 +192,9 @@ async def fetch_rss_news():
                         pub = item.findtext("pubDate", "")
                         # Try to get image
                         img = ""
-                        media = item.find("media:thumbnail", ns) or item.find("media:content", ns)
+                        media = item.find("media:thumbnail", ns)
+                        if media is None:
+                            media = item.find("media:content", ns)
                         if media is not None:
                             img = media.get("url", "")
                         if not img:
@@ -181,20 +208,31 @@ async def fetch_rss_news():
                         try:
                             ts = int(_eu.parsedate_to_datetime(pub).timestamp()) if pub else 0
                         except: pass
+                        src_name = feed["source"]
+                        if "news.google.com" in feed["url"]:
+                            gsrc = (item.findtext("source", "") or "").strip()
+                            if gsrc:
+                                src_name = gsrc
+                                if title.endswith(" - " + gsrc):
+                                    title = title[: -len(gsrc) - 3].strip()
+                            desc = ""  # Google News description is just a link list
                         if title and link:
-                            all_news.append({
+                            out.append({
                                 "title": title,
                                 "summary": desc,
                                 "url": link,
                                 "image": img,
-                                "source": feed["source"],
+                                "source": src_name,
                                 "category": feed["category"],
                                 "time_unix": ts,
                                 "badge": "LIVE",
                             })
+
                 except Exception as fe:
                     print(f"RSS feed error {feed['source']}: {fe}")
-                    continue
+                return out
+            for chunk in await asyncio.gather(*[_one(f) for f in RSS_FEEDS]):
+                all_news.extend(chunk)
     except HTTPException:
         raise
     except Exception as e:
@@ -208,7 +246,7 @@ async def fetch_rss_news():
             continue
         seen.add(key)
         uniq.append(n)
-    uniq = uniq[:40]
+    uniq = uniq[:60]
     if uniq:
         _rss_cache["data"], _rss_cache["ts"] = uniq, time.time()
     return uniq
@@ -523,51 +561,56 @@ class Msg(BaseModel):
 class ChatReq(BaseModel):
     messages: List[Msg]
 
-@app.get("/api/news")
-async def get_news(category: str = "", search: str = ""):
-    prices = await fetch_prices()
+_news_cache = {"data": None, "ts": 0}
+
+async def _build_news():
     finnhub = await fetch_finnhub_news()
     rss = await fetch_rss_news()
     newsapi = await fetch_newsapi()
+    merged = []
+    for item in list(rss) + list(finnhub) + list(newsapi):
+        ts = item.get("time_unix", 0) or 0
+        merged.append({
+            "title": item.get("title", ""), "summary": item.get("summary", "") or "",
+            "category": item.get("category", "Market"), "source": item.get("source", ""),
+            "url": item.get("url", ""), "image": item.get("image", "") or "",
+            "dir": "up", "real": True, "badge": "LIVE",
+            "time": _ago(ts), "time_unix": ts,
+        })
+    # newest first across ALL sources (previously NewsAPI, which is 24h delayed, was listed first)
+    merged.sort(key=lambda x: x["time_unix"], reverse=True)
+    seen, out = set(), []
+    for a in merged:
+        key = (a["title"] or "").lower()[:80]
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        out.append(a)
+    return out
 
-    articles = []
-    # NewsAPI first — real content with full descriptions
-    for item in newsapi:
-        articles.append({
-            "title": item["title"], "summary": item.get("summary",""),
-            "category": item.get("category","Market"), "source": item.get("source",""),
-            "url": item.get("url",""), "image": item.get("image",""),
-            "dir":"up", "real": True, "badge": "LIVE",
-            "time": item.get("time",""),
-        })
-    # RSS news first (real, with covers)
-    for item in rss:
-        t_diff = int((time.time() - item.get("time_unix", time.time())) / 3600)
-        articles.append({
-            "title": item["title"], "summary": item.get("summary",""),
-            "category": item.get("category","Market"), "source": item.get("source",""),
-            "url": item.get("url",""), "image": item.get("image",""),
-            "dir":"up", "real": True, "badge": "LIVE",
-            "time": (str(t_diff)+"h ago") if t_diff < 24 else (str(t_diff//24)+"d ago"),
-        })
-    for item in finnhub:
-        articles.append({
-            "title": item["title"], "summary": item.get("summary",""),
-            "category": item.get("category","Market"), "source": item.get("source",""),
-            "url": item.get("url",""), "image": item.get("image",""),
-            "dir":"up", "real": True, "badge": "LIVE",
-            "time": str(int((time.time() - item.get("time_unix",time.time()))/3600))+"h ago",
-        })
+@app.get("/api/news")
+async def get_news(category: str = "", search: str = ""):
+    prices = await fetch_prices()
+    if _news_cache["data"] is None or time.time() - _news_cache["ts"] > 180:
+        try:
+            data = await _build_news()
+            if data or _news_cache["data"] is None:
+                _news_cache["data"], _news_cache["ts"] = data, time.time()
+        except Exception as e:
+            print(f"news build error: {e}")
+            if _news_cache["data"] is None:
+                _news_cache["data"] = []
+    articles = list(_news_cache["data"])
     if category and category != "All":
-        articles = [a for a in articles if a["category"].lower()==category.lower()]
+        articles = [a for a in articles if a["category"].lower() == category.lower()]
     if search:
-        sl=search.lower()
-        articles = [a for a in articles if sl in a["title"].lower() or sl in a.get("summary","").lower()]
+        sl = search.lower()
+        articles = [a for a in articles if sl in a["title"].lower() or sl in a.get("summary", "").lower()]
     return {
         "articles": articles,
         "sentiment": [],
-        "prices": {"gold":prices.get("XAUUSDT",{}),"btc":prices.get("BTCUSDT",{}),"eurusd":prices.get("EURUSDT",{})},
-        "total": len(articles), "has_live": len(finnhub)>0, "updated": int(time.time()),
+        "prices": {"gold": prices.get("XAUUSDT", {}), "btc": prices.get("BTCUSDT", {}), "eurusd": prices.get("EURUSDT", {})},
+        "total": len(articles), "has_live": len(articles) > 0, "updated": int(time.time()),
     }
 
 _groq_model = ""

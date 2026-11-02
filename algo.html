@@ -147,6 +147,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .price-plan-row{display:flex;align-items:center;justify-content:space-between;}
 .price-plan-dur{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
 .price-plan-amt{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--g5);}
+.price-plan-amt{text-align:right;line-height:1.1;}
+.price-plan-amt .mrp{display:block;font-size:13px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a;}
+.price-plan-amt .dv{display:inline-block;margin-top:5px;font-size:10px;font-weight:800;letter-spacing:.5px;color:#000;background:linear-gradient(135deg,#ffd23f,#ff9d2e);padding:2px 8px;border-radius:99px;font-family:'JetBrains Mono',monospace;}
 .price-plan-save{font-size:11px;color:var(--green);margin-top:4px;}
 .price-plan-btn{width:100%;margin-top:14px;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--g4),var(--g5));color:#000;font-size:13px;font-weight:800;cursor:pointer;font-family:'Space Grotesk',sans-serif;letter-spacing:0.5px;transition:opacity .2s;}
 .price-plan-btn:hover{opacity:.85;}
@@ -420,6 +423,8 @@ function openPriceModal(i){
   var p12 = ea.price12m || 100000;
   var waNum = '917357032456';
   function fmt(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
+  // Diwali offer display: show a higher original price (struck), then the real price. Real amount is always decided by the server.
+  function offer(n){ var m=Math.round(n*4/3/100)*100; var pc=Math.round(100-(n/m*100)); return '<span class="mrp">'+fmt(m)+'</span>'+fmt(n)+'<br><span class="dv">🪔 DIWALI OFFER '+pc+'% OFF</span>'; }
   function waLink(plan,price){
     var msg = 'Hi AG Technicals! I want to buy *'+ea.name+'* — '+plan+' plan at '+fmt(price)+'. Please guide me.';
     return 'https://wa.me/'+waNum+'?text='+encodeURIComponent(msg);
@@ -433,7 +438,7 @@ function openPriceModal(i){
     '<div class="price-plan">'+
       '<div class="price-plan-row">'+
         '<div class="price-plan-dur">3 Months</div>'+
-        '<div class="price-plan-amt">'+fmt(p3)+'</div>'+
+        '<div class="price-plan-amt">'+offer(p3)+'</div>'+
       '</div>'+
       '<div class="price-plan-save">Starter plan</div>'+
       '<button type="button" class="price-plan-btn" onclick="buyPlan(3,'+p3+')">Buy 3-Month Plan</button>'+
@@ -442,7 +447,7 @@ function openPriceModal(i){
       '<div class="price-plan-badge">BEST VALUE</div>'+
       '<div class="price-plan-row">'+
         '<div class="price-plan-dur">6 Months</div>'+
-        '<div class="price-plan-amt">'+fmt(p6)+'</div>'+
+        '<div class="price-plan-amt">'+offer(p6)+'</div>'+
       '</div>'+
       '<div class="price-plan-save">Save '+save6+'% vs monthly</div>'+
       '<button type="button" class="price-plan-btn" onclick="buyPlan(6,'+p6+')">Buy 6-Month Plan</button>'+
@@ -450,7 +455,7 @@ function openPriceModal(i){
     '<div class="price-plan">'+
       '<div class="price-plan-row">'+
         '<div class="price-plan-dur">12 Months</div>'+
-        '<div class="price-plan-amt">'+fmt(p12)+'</div>'+
+        '<div class="price-plan-amt">'+offer(p12)+'</div>'+
       '</div>'+
       '<div class="price-plan-save">Save '+save12+'% vs monthly</div>'+
       '<button type="button" class="price-plan-btn" onclick="buyPlan(12,'+p12+')">Buy 12-Month Plan</button>'+

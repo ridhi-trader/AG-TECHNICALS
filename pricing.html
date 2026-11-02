@@ -30,6 +30,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;}
 .card p{color:var(--t3);font-size:14px;line-height:1.6;flex:1;margin-bottom:16px;}
 .price{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;color:var(--g5);margin-bottom:14px;}
+.price .mrp{display:block;font-size:16px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a;}
+.price .dv{display:inline-block;margin-top:6px;font-size:11px;font-weight:800;letter-spacing:.5px;color:#000;background:linear-gradient(135deg,#ffd23f,#ff9d2e);padding:3px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;}
 .btn{background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;border:0;border-radius:10px;padding:13px 20px;font:700 14px Inter,sans-serif;cursor:pointer;width:100%;}
 .btn:disabled{opacity:.6;cursor:wait;}
 .btn.ghost{background:transparent;color:#fff;border:1px solid var(--border);text-decoration:none;display:block;text-align:center;}
@@ -96,6 +98,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
   var $=function(i){return document.getElementById(i);};
   var cat={items:[],enabled:false,key_id:''},cur=null;
   function inr(n){return '₹'+Number(n).toLocaleString('en-IN',{maximumFractionDigits:2});}
+  function offerHtml(n){n=Number(n);var m=Math.round(n*4/3/100)*100;if(!(m>n))return inr(n);var pc=Math.round(100-(n/m*100));return '<span class="mrp">'+inr(m)+'</span>'+inr(n)+'<br><span class="dv">\uD83E\uDE94 DIWALI OFFER '+pc+'% OFF</span>';}
   function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
   function render(){
     var g=$('grid'),em=$('empty');g.innerHTML='';
@@ -107,7 +110,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     em.hidden=true;
     cat.items.forEach(function(it){
       var c=document.createElement('div');c.className='card';
-      c.innerHTML='<h3>'+esc(it.name)+'</h3><p style="font-size:12px;opacity:.7;margin:0 0 6px">Code: '+esc(it.key)+'</p><p>'+esc(it.desc||'')+'</p><div class="price">'+inr(it.price)+'</div>';
+      c.innerHTML='<h3>'+esc(it.name)+'</h3><p style="font-size:12px;opacity:.7;margin:0 0 6px">Code: '+esc(it.key)+'</p><p>'+esc(it.desc||'')+'</p><div class="price">'+offerHtml(it.price)+'</div>';
       var b=document.createElement('button');b.type='button';b.className='btn';
       if(cat.enabled){b.textContent='Buy now';b.addEventListener('click',function(){open(it);});}
       else{b.textContent='Contact to buy';b.addEventListener('click',function(){location.href='https://wa.me/917357032456?text='+encodeURIComponent('Hi, I want to buy: '+it.name);});}

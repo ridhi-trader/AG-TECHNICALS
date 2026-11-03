@@ -148,6 +148,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .price-plan-dur{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--t1);}
 .price-plan-amt{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--g5);}
 .price-plan-amt{text-align:right;line-height:1.1;}
+.ea-cp{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin:10px 0 12px;padding:10px 12px;border:1px solid rgba(245,197,66,.28);border-radius:10px;background:rgba(245,197,66,.05)}
+.ea-cp-from{font-size:11px;color:#a3a3a3;width:100%}
+.ea-cp-mrp{font-size:14px;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
+.ea-cp-now{font-size:22px;font-weight:800;color:#f5c542}
+.ea-cp-dv{font-size:11px;font-weight:700;color:#000;background:#f5c542;border-radius:6px;padding:3px 8px;margin-left:auto}
 .price-plan-amt .mrp{display:block;font-size:13px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a;}
 .price-plan-amt .dv{display:inline-block;margin-top:5px;font-size:10px;font-weight:800;letter-spacing:.5px;color:#000;background:linear-gradient(135deg,#ffd23f,#ff9d2e);padding:2px 8px;border-radius:99px;font-family:'JetBrains Mono',monospace;}
 .price-plan-save{font-size:11px;color:var(--green);margin-top:4px;}
@@ -380,7 +385,7 @@ function renderEAs(){
       '<div class="ea-body">'+
         (ea.pid?'<div class="ea-pid">PID: '+ea.pid+'</div>':'')+
         '<div class="ea-name">'+(ea.name||'')+'</div>'+
-        '<div class="ea-desc">'+(ea.desc||'')+'</div>'+own+
+        '<div class="ea-desc">'+(ea.desc||'')+'</div>'+cardPrice(ea)+own+
         '<button onclick="event.stopPropagation();openPriceModal('+i+')" class="ea-btn" style="width:100%;margin-bottom:8px;">'+btnTxt+'</button>'+
         '<a href="https://wa.me/917357032456?text='+encodeURIComponent('Hi AG Technicals! I am interested in '+(ea.name||'')+(ea.pid?' (Code: '+ea.pid+')':'')+'. Please share details.')+'" target="_blank" class="ea-btn" style="display:block;text-align:center;text-decoration:none;background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.12);color:var(--t3);font-size:12px;padding:8px;">💬 Ask on WhatsApp</a>'+
       '</div>'+
@@ -388,6 +393,11 @@ function renderEAs(){
   }).join('');
 }
 
+function cardPrice(ea){
+  var n=Number(ea.price3m)||30000, m=Math.round(n*4/3/100)*100, pc=Math.round(100-(n/m*100));
+  function f(x){return '₹'+Number(x).toLocaleString('en-IN');}
+  return '<div class="ea-cp"><span class="ea-cp-from">3 months from</span><span class="ea-cp-mrp">'+f(m)+'</span><span class="ea-cp-now">'+f(n)+'</span><span class="ea-cp-dv">🪔 DIWALI OFFER '+pc+'% OFF</span></div>';
+}
 function openItem(i){
   var items = getAlgoItems();
   var ea = items[i];

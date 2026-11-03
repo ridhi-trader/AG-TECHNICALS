@@ -238,6 +238,7 @@ async function verifyAdminOTP(){
       <div class="sb-group">Content</div>
       <button class="sb-btn" onclick="nav('hero',this)"><span class="sb-icon">🏠</span>Hero Section</button>
       <button class="sb-btn" onclick="nav('ticker',this)"><span class="sb-icon">📡</span>Ticker Strip</button>
+      <button class="sb-btn" onclick="nav('toolcards',this)"><span class="sb-icon">🎮</span>Trader Tool Cards</button>
       <button class="sb-btn" onclick="nav('contact',this)"><span class="sb-icon">📞</span>Contact Links</button>
       <button class="sb-btn" onclick="nav('about',this)"><span class="sb-icon">👤</span>About Us</button>
       <button class="sb-btn" onclick="nav('faq',this)"><span class="sb-icon">❓</span>FAQ</button>
@@ -476,6 +477,14 @@ async function verifyAdminOTP(){
       </div>
       <div id="contactList" style="margin-top:12px;"></div>
       <div style="margin-top:12px;"><button class="btn-gold" onclick="saveContact()">Save All Contacts</button></div>
+    </div>
+
+    <!-- ══ TRADER TOOL CARDS ══ -->
+    <div class="page" id="page-toolcards">
+      <div class="ph"><div class="ph-tag">Site Content</div><div class="ph-title">Trader Tool <span>Cards</span></div></div>
+      <div class="form-box" style="margin-bottom:16px;">Home page ke 3 game-style cards (Quiz, Candle Lab, Jargon Decoder). Yahan jo badlega, Save dabane pe site pe apne aap aa jayega. Image khali chhodo to default sundar illustration dikhegi.</div>
+      <div id="tcList"></div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;"><button class="btn-gold" onclick="saveToolCards()">Save Tool Cards</button><button class="btn-out" onclick="resetToolCards()">Reset to default</button></div>
     </div>
 
     <!-- ══ ABOUT ══ -->
@@ -952,7 +961,7 @@ function nav(id, btn){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
-  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS};
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS};
   if(id==='pricing') prLoad();
   if(loaders[id]) loaders[id]();
 }
@@ -1372,6 +1381,47 @@ function loadTicker(){ renderTickerList(); }
 function addTicker(){ const t=document.getElementById('tkText').value.trim(); if(!t){toast('Enter text','err');return;} ticker.push({text:t,type:document.getElementById('tkType').value}); renderTickerList(); document.getElementById('tkText').value=''; }
 function renderTickerList(){ document.getElementById('tickerList').innerHTML=ticker.map((t,i)=>`<div class="card-row"><div><div style="font-size:13px;color:#fff;">${t.text}</div><div style="font-size:10px;color:var(--t3);">${t.type}</div></div><button class="btn-icon" onclick="ticker.splice(${i},1);renderTickerList();">🗑️</button></div>`).join('')||'<div class="empty">No pills.</div>'; }
 function saveTicker(){ save('ticker',ticker); toast('Ticker saved'); }
+
+/* ══════════════ TRADER TOOL CARDS ══════════════ */
+const D_TC=[
+  {tag:'Start here',title:"What's Your Trading Style?",desc:'7 quick questions. Get your type and a card to share.',cta:'Play now',img:'',hidden:false},
+  {tag:'',title:'Candle Lab',desc:'Drag open, high, low and close. Watch a candle build itself.',cta:'Try it',img:'',hidden:false},
+  {tag:'',title:'Jargon Decoder',desc:'Pip, lot, spread, leverage. Explained in simple Hinglish.',cta:'Open',img:'',hidden:false}
+];
+let toolcards=ls('toolcards',D_TC);
+function tcEsc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+async function loadToolCards(){
+  const v=await loadFromDB('toolcards',null);
+  if(Array.isArray(v)&&v.length) toolcards=v;
+  while(toolcards.length<3) toolcards.push(Object.assign({},D_TC[toolcards.length]));
+  drawToolCards();
+}
+function drawToolCards(){
+  document.getElementById('tcList').innerHTML=toolcards.slice(0,3).map(function(c,i){
+    return '<div class="form-box"><div class="card-title" style="margin-bottom:12px;">Card '+(i+1)+' — '+tcEsc(D_TC[i].title)+'</div>'+
+    '<div class="g2"><div class="field"><label class="label">Title</label><input class="inp" id="tcT'+i+'" value="'+tcEsc(c.title)+'"></div>'+
+    '<div class="field"><label class="label">Badge (e.g. Start here, khali = no badge)</label><input class="inp" id="tcG'+i+'" value="'+tcEsc(c.tag)+'"></div></div>'+
+    '<div class="field"><label class="label">Description</label><textarea class="inp" id="tcD'+i+'" rows="2">'+tcEsc(c.desc)+'</textarea></div>'+
+    '<div class="g2"><div class="field"><label class="label">Button text</label><input class="inp" id="tcC'+i+'" value="'+tcEsc(c.cta)+'"></div>'+
+    '<div class="field"><label class="label">Image URL (khali = default illustration)</label><input class="inp" id="tcI'+i+'" value="'+tcEsc(c.img)+'" placeholder="https://..."></div></div>'+
+    '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><input type="file" id="tcF'+i+'" accept="image/*"><button class="btn-out" onclick="uploadTcImg('+i+')">Upload image</button>'+
+    '<label style="color:var(--t2);font-size:13px;"><input type="checkbox" id="tcH'+i+'" '+(c.hidden?'checked':'')+'> Hide this card</label></div></div>';
+  }).join('');
+}
+async function uploadTcImg(i){
+  const f=document.getElementById('tcF'+i).files[0]; if(!f){toast('Select image first','err');return;}
+  toast('Uploading...');
+  const url=await uploadToServer(f,function(m){toast(m);});
+  if(url){document.getElementById('tcI'+i).value=url;toast('Image ready — ab Save Tool Cards dabao');}else{toast('Upload failed','err');}
+}
+function saveToolCards(){
+  toolcards=[0,1,2].map(function(i){return {
+    title:document.getElementById('tcT'+i).value.trim(),tag:document.getElementById('tcG'+i).value.trim(),
+    desc:document.getElementById('tcD'+i).value.trim(),cta:document.getElementById('tcC'+i).value.trim(),
+    img:document.getElementById('tcI'+i).value.trim(),hidden:document.getElementById('tcH'+i).checked};});
+  save('toolcards',toolcards); toast('Tool cards saved! Site pe live.');
+}
+function resetToolCards(){ if(!confirm('Default pe wapas?')) return; toolcards=JSON.parse(JSON.stringify(D_TC)); save('toolcards',toolcards); drawToolCards(); toast('Reset ho gaya'); }
 
 /* ══════════════ CONTACT ══════════════ */
 const D_CONTACT=[{name:'WhatsApp',icon:'💬',url:'https://wa.me/917357032456',handle:'+91 73570 32456'},{name:'Telegram',icon:'✈️',url:'https://t.me/agtechnical',handle:'@agtechnical'},{name:'Instagram',icon:'📸',url:'https://instagram.com/agtechnical',handle:'@agtechnical'}];

@@ -187,6 +187,24 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .ab-do:hover{transform:translateX(6px);border-color:var(--g5);background:rgba(245,197,66,.1);}
 .ab-do b{color:var(--g5);font-weight:800;font-size:16.5px;}
 @media(max-width:640px){#about .sec-h{font-size:32px;}.ab-h{font-size:21px;}.ab-who{font-size:15.5px;}.ab-stat b{font-size:22px;}}
+/* PARTNER — JAJOT */
+.pt-card{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center;border-radius:20px;padding:34px 36px;margin-bottom:20px;background:linear-gradient(135deg,rgba(245,197,66,.2),rgba(245,197,66,.05) 50%,#0b0b0b);border:2px solid rgba(245,197,66,.6);box-shadow:0 12px 36px rgba(0,0,0,.6),0 0 40px rgba(245,197,66,.18);}
+.pt-logo{display:flex;flex-direction:column;align-items:center;gap:12px;min-width:200px;}
+.pt-logo .box{background:#fff;border-radius:18px;padding:16px 22px;box-shadow:0 0 26px rgba(245,197,66,.4);}
+.pt-logo .box img{display:block;max-width:170px;max-height:70px;height:auto;width:auto;}
+.pt-x{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.6px;color:var(--g5);text-transform:uppercase;}
+.pt-tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,#f5c542,#c9960c);padding:5px 14px;border-radius:99px;margin-bottom:12px;}
+.pt-h{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:10px;letter-spacing:-.4px;}
+.pt-h b{color:var(--g5);}
+.pt-p{font-size:16.5px;line-height:1.8;color:#eee;margin-bottom:14px;}
+.pt-p b{color:var(--g5);font-weight:800;}
+.pt-q{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:var(--g5);margin-bottom:18px;}
+.pt-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.pt-btn{display:inline-block;text-decoration:none;font-weight:800;font-size:14.5px;padding:12px 22px;border-radius:10px;}
+.pt-btn.p{background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;}
+.pt-btn.s{border:1.5px solid rgba(245,197,66,.7);color:var(--g5);background:rgba(245,197,66,.08);}
+.pt-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,150,12,.4);}
+@media(max-width:760px){.pt-card{grid-template-columns:1fr;padding:26px 22px;text-align:center;gap:20px;}.pt-btns{justify-content:center;}.pt-h{font-size:24px;}.pt-p{font-size:15.5px;}}
 #aboutMarketsGrid>*,#contactGrid>*{min-width:0;}
 @media(max-width:900px){#aboutMarketsGrid{grid-template-columns:repeat(3,1fr)!important;}}
 @media(max-width:640px){#contactGrid,#about div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}}
@@ -567,6 +585,16 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
     <div class="ab-h" style="margin-bottom:8px;"><i>📊</i>Markets We Master</div>
     <div id="aboutMarketsSubtitle" style="font-size:15px;color:#e5e5e5;margin-bottom:22px;"></div>
     <div id="aboutMarketsGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;"></div>
+  </div>
+  <div class="pt-card" id="partner">
+    <div class="pt-logo"><div class="box"><a href="https://jajot.in/" target="_blank" rel="noopener"><img src="https://jajot.in/wp-content/uploads/2024/05/jajot-logo.png" alt="JAJOT" loading="lazy" onerror="this.parentNode.parentNode.innerHTML='<b style=&quot;font:900 30px Space Grotesk,sans-serif;letter-spacing:3px;color:#000&quot;>JAJOT</b>'"></a></div><div class="pt-x">AG Technicals &times; JAJOT</div></div>
+    <div>
+      <span class="pt-tag">🤝 Our Partner</span>
+      <div class="pt-h">Proudly <b>Powered by <i class="jd" style="font-style:normal">J</i>A<i class="jd" style="font-style:normal">J</i>OT</b></div>
+      <div class="pt-p"><b>JAJOT</b> is an Ajmer-born electronics brand, <b>founded in 2018</b> by <b>Mr. Shiv Choudhary</b>, on a simple idea: smart, stylish, high-performance tech should be <b>affordable for everyone</b>. We are happy to work hand in hand with the JAJOT family, two Ajmer-rooted brands built on quality, value and trust.</div>
+      <div class="pt-q">“Stay sharp. Stay connected. Stay Jajot.”</div>
+      <div class="pt-btns"><a class="pt-btn p" href="https://jajot.in/about/" target="_blank" rel="noopener">About JAJOT →</a><a class="pt-btn s" href="https://jajot.in/" target="_blank" rel="noopener">Visit jajot.in</a></div>
+    </div>
   </div>
   <div id="aboutVideoWrap" style="display:none;margin-bottom:20px;"></div>
 </section>
@@ -1408,7 +1436,7 @@ window._loadTVWidget = loadTVWidget;
 </script>
 <script src="ag-hero-fx.js"></script>
 <script src="glow.js"></script>
-<div id="logoPop" role="dialog" aria-modal="true" aria-label="AG Technicals"><div class="lp-card"><button type="button" class="lp-x" id="logoX" aria-label="Close">&times;</button><img id="logoBig" src="logo.png" alt="AG Technicals"><div class="lp-name">AG <b>Technicals</b></div><div class="lp-pw">Powered by <b><i class="jd">J</i>A<i class="jd">J</i>OT</b></div></div></div>
+<div id="logoPop" role="dialog" aria-modal="true" aria-label="AG Technicals"><div class="lp-card"><button type="button" class="lp-x" id="logoX" aria-label="Close">&times;</button><img id="logoBig" src="logo.png" alt="AG Technicals"><div class="lp-name">AG <b>Technicals</b></div><a class="lp-pw" href="https://jajot.in/about/" target="_blank" rel="noopener" style="text-decoration:none;">Powered by <b><i class="jd">J</i>A<i class="jd">J</i>OT</b></a></div></div>
 <script>
 (function(){
   var pop=document.getElementById('logoPop'),btn=document.getElementById('logoBtn'),big=document.getElementById('logoBig'),small=document.getElementById('siteLogo');
@@ -1420,6 +1448,6 @@ window._loadTVWidget = loadTVWidget;
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
 })();
 </script>
-<script src="ag-footer.js?v=7"></script>
+<script src="ag-footer.js?v=8"></script>
 </body>
 </html>

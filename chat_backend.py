@@ -384,6 +384,8 @@ CONTACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PRICING, PAYMENTS & ACCESS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- WEBSITES & SOFTWARE (custom builds): minimum price is Rs 15,000, never lower. If the customer's budget is lower, say the minimum is Rs 15,000. Final price is confirmed after reviewing requirements and can be higher than the budget when scope is bigger or demand is high. Work starts only after the customer approves the price and the payment is made. Server (hosting) and domain fee are NOT included in the price. Send quote requests to the Web & Software page form or WhatsApp.
+- CUSTOM INDICATOR & ALGO: same process (rules reviewed, final price shared, work starts only after approval and payment). Page: agtechnicals.com/custom-strategy.
 - Prices are on the website: Pricing page (agtechnicals.com/pricing), Indicators page, Algo page. NEVER quote or invent amounts (they change); say where to look. Festive offers show a struck-out original price, the offer price and an OFFER % OFF badge.
 - TradingView indicators (AG SMC, AG Order Flow, AG-ESB): LIFETIME access WITH SOURCE CODE; Buy Now opens secure checkout when the item is live.
 - Algo (MT5) EAs: 3, 6 or 12 month plans (longer = bigger saving), bought on the Algo page after login. Buying while a plan is active starts the new plan after the current end date.
@@ -1477,6 +1479,9 @@ async def _pay_catalog(conn):
         except Exception:
             price = 0
         key = str(it.get("key", "")).strip()
+        _nm = (str(it.get("name", "")) + " " + key).lower()
+        if price > 0 and ("website" in _nm or "software" in _nm or "web app" in _nm or key.upper().startswith("WEB")) and price < 15000:
+            price = 15000.0  # minimum price for websites & software
         if key and price > 0 and it.get("active", True):
             try:
                 mrp = float(it.get("mrp") or 0)

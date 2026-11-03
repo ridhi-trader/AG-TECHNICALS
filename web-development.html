@@ -150,12 +150,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
       <span class="tag">APIs · Workflows</span>
     </div>
   </div>
+  <p class="note" style="border-color:rgba(245,197,66,.5)"><b style="color:#f5c542">Websites &amp; software start from ₹15,000 (minimum).</b> Final price depends on scope and demand. Server and domain fee is not included.</p>
   <p class="note">Don't see your idea? Describe it in the form below. If we can build it, we'll tell you the scope, price and timeline.</p>
 
   <div class="section-label">How It Works</div>
   <div class="steps" style="margin-bottom:36px;">
     <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Tell Us What You Need</h3><p>Share your idea, who will use it and any examples you like.</p></div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Scope, Price &amp; Timeline</h3><p>We confirm what will be built, the cost and when it will be ready, before any work starts.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Scope, Price &amp; Approval</h3><p>If your budget is below what the work needs, or demand is high, we will tell you the final price. Work starts only after you approve the price and the payment is made. We confirm what will be built, the cost and when it will be ready, before any work starts.</p></div></div>
     <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Build &amp; Review</h3><p>You see progress as it is built and give feedback along the way.</p></div></div>
     <div class="step"><div class="step-num">4</div><div class="step-body"><h3>Launch &amp; Support</h3><p>We deploy it, hand over the details and help with fixes after launch.</p></div></div>
   </div>
@@ -186,12 +187,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
         </select>
       </div>
     </div>
+    <div class="field"><label>Your Budget (₹) — minimum ₹15,000</label><input id="wdBudget" type="number" min="15000" step="500" placeholder="15000"></div>
     <div class="field"><label>Describe Your Project</label>
       <textarea id="wdMsg" placeholder="What should it do, who will use it, and any websites or apps you like as reference..."></textarea>
+      <div style="font-size:12px;color:#f5c542;margin-top:6px">Note: server and domain fee is not included in the price.</div>
     </div>
     <button class="btn-wa" onclick="sendWa()">💬 Send Request On WhatsApp</button>
     <button class="btn-tg" onclick="sendTg()">✈️ Send Via Telegram Instead</button>
-    <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:12px;">Pricing is shared after we understand your requirements.</div>
+    <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:12px;">Minimum ₹15,000. Final price is confirmed after we understand your requirements. Server and domain fee not included.</div>
   </div>
 
 </div>
@@ -199,13 +202,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 <script>
 function buildMsg(){
   const v = id => document.getElementById(id).value.trim();
-  const name = v('wdName')||'Interested User', wa = v('wdWa'), type = v('wdType')||'Not specified', time = v('wdTime')||'Not specified', msg = v('wdMsg');
-  return 'Hi AG Technicals!\n\nI want a website / software built. (Code: WEB-0001)\n\nName: '+name+(wa?'\nWhatsApp: '+wa:'')+'\nProject type: '+type+'\nTimeline: '+time+(msg?'\n\nDetails: '+msg:'');
+  const name = v('wdName')||'Interested User', wa = v('wdWa'), type = v('wdType')||'Not specified', time = v('wdTime')||'Not specified', msg = v('wdMsg'), bud = v('wdBudget');
+  return 'Hi AG Technicals!\n\nI want a website / software built. (Code: WEB-0001)\n\nName: '+name+(wa?'\nWhatsApp: '+wa:'')+'\nProject type: '+type+'\nTimeline: '+time+(bud?'\nBudget: ₹'+bud:'')+(msg?'\n\nDetails: '+msg:'');
 }
+function budOk(){var b=Number(document.getElementById('wdBudget').value);if(!b||b<15000){alert('Minimum budget for websites and software is ₹15,000. Please enter 15000 or more.');return false;}return true;}
 function sendWa(){
+  if(!budOk())return;
   window.open('https://wa.me/917357032456?text='+encodeURIComponent(buildMsg()),'_blank');
 }
 function sendTg(){
+  if(!budOk())return;
   navigator.clipboard.writeText(buildMsg()).catch(()=>{});
   window.open('https://t.me/AG_Technical_fx','_blank');
   setTimeout(()=>alert('Message copied! Paste it in Telegram.'),500);

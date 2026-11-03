@@ -107,6 +107,14 @@
     document.head.appendChild(s);
   }
 
+  // Support opens the site AI assistant chat (mailto does nothing on PCs without a mail app). Falls back to the email link.
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a#ag-footer-support') : null;
+    if (!a || !window.agAI) return;
+    e.preventDefault();
+    if (!window.agAI.open) window.agAI.toggle();
+  });
+
   function makeLink(l) {
     var a = document.createElement('a');
     a.href = l.href;

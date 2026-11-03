@@ -777,7 +777,9 @@ function agVid(u){
   // Cloudinary videos: serve a smaller auto-quality copy + a still poster. Anything else is left untouched.
   var m=/^(https:\/\/res\.cloudinary\.com\/[^\/]+\/video\/upload\/)(.+)$/.exec(String(u||''));
   if(!m) return {src:u,poster:'',orig:u};
-  return {src:m[1]+'q_auto:eco,w_960,vc_auto/'+m[2],poster:m[1]+'so_0.5,w_640,f_jpg,q_auto/'+m[2].replace(/\.[a-z0-9]+$/i,'.jpg'),orig:u};
+  var mob=false;try{mob=matchMedia('(max-width:820px)').matches||!!(navigator.connection&&navigator.connection.saveData);}catch(e){}
+  var tr=mob?'w_540,q_auto:low,f_mp4,vc_h264/':'w_960,q_auto:eco,f_mp4,vc_h264/';
+  return {src:m[1]+tr+m[2],poster:m[1]+'so_0.5,w_640,f_jpg,q_auto/'+m[2].replace(/\.[a-z0-9]+$/i,'.jpg'),orig:u};
 }
 function agVidFallback(v){ var o=v.getAttribute('data-orig'); if(o&&v.getAttribute('src')!==o){ v.setAttribute('src',o); v.load(); } }
 function videoEmbed(url){

@@ -77,6 +77,11 @@
   .premium-badge{position:absolute;top:12px;right:12px;background:#f39c12;color:#000;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:4px 10px;border-radius:4px;}
 
   .ind-body{padding:22px 22px 24px;}
+  .tvp{margin:0 0 14px;text-align:left}
+  .tvp .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#bfe8cf;background:rgba(46,230,166,.12);border:1px solid rgba(46,230,166,.4);padding:3px 10px;border-radius:99px;margin-bottom:8px}
+  .tvp .mrp{display:block;font-size:15px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
+  .tvp .now{display:block;font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:900;color:#f5c542;line-height:1.15}
+  .tvp .dv{display:inline-block;margin-top:6px;font-size:11px;font-weight:800;letter-spacing:.5px;color:#000;background:linear-gradient(135deg,#ffd23f,#ff9d2e);padding:3px 10px;border-radius:99px}
   .ind-pid{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a8a4b8;letter-spacing:2px;margin-bottom:7px;}
   .ind-name{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
   .ind-desc{font-size:13px;color:#e5e5e5;line-height:1.65;margin-bottom:20px;}
@@ -160,6 +165,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
         <div class="modal-about-title">About the product</div>
         <div class="modal-about-text" id="modalDesc"></div>
       </div>
+      <div class="tvp" id="modalPrice" style="margin-top:14px"></div>
       <a class="modal-cta" id="modalCta" href="https://wa.me/917357032456" target="_blank">💬 Get This On WhatsApp</a>
       <p style="font-size:11px;color:#bdbdbd;line-height:1.6;margin-top:10px;text-align:center;">Software only — not investment advice. Trading involves risk of loss. See <a href="refund-policy" style="color:#f5c542;">Refund Policy</a>.</p>
       <div class="modal-note">Tap the button — it opens WhatsApp with your request ready. We'll reply with pricing and setup.</div>
@@ -195,11 +201,36 @@ if(visible.length === 0){
         <div class="ind-pid">PID: ${ind.pid}</div>
         <div class="ind-name">${ind.name}</div>
         <div class="ind-desc">${ind.shortDesc || ind.desc.slice(0,120)+'...'}</div>
+        <div class="tvp" data-ip="${i}"></div>
         <button class="ind-btn">View Details</button>
       </div>
     </div>
   `).join('');
 }
+
+/* ── Prices (from Admin → Pricing; item Code must match the PID, e.g. TVI-0005) ── */
+var _prices = {};
+function _norm(t){ return String(t||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function _priceFor(ind){
+  var items = _prices.items || [];
+  for (var k = 0; k < items.length; k++) if (String(items[k].key).toUpperCase() === String(ind.pid).toUpperCase()) return items[k];
+  var n = _norm(ind.name);
+  for (var j = 0; j < items.length; j++) { var m = _norm(items[j].name); if (m && n && (m.indexOf(n) > -1 || n.indexOf(m) > -1)) return items[j]; }
+  return null;
+}
+function _inr(n){ return '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits: 0}); }
+function _priceHtml(it){
+  if (!it) return '';
+  var n = Number(it.price), m = Number(it.mrp) > n ? Number(it.mrp) : Math.round(n * 4 / 3 / 100) * 100;
+  var pc = Math.round(100 - (n / m * 100));
+  return '<span class="tag">Lifetime · With Source Code</span><span class="mrp">' + _inr(m) + '</span><span class="now">' + _inr(n) + '</span><span class="dv">🪔 DIWALI OFFER ' + pc + '% OFF</span>';
+}
+fetch('/api/pay/catalog').then(function(r){ return r.json(); }).then(function(j){
+  _prices = j || {};
+  document.querySelectorAll('.tvp[data-ip]').forEach(function(el){
+    var ind = visible[+el.getAttribute('data-ip')]; if (ind) el.innerHTML = _priceHtml(_priceFor(ind));
+  });
+}).catch(function(){});
 
 /* ── Modal ── */
 function openModal(i) {
@@ -209,6 +240,7 @@ function openModal(i) {
   document.getElementById('modalPid').textContent = 'PID: ' + ind.pid;
   document.getElementById('modalName').textContent = ind.name;
   document.getElementById('modalDesc').textContent = ind.desc;
+  document.getElementById('modalPrice').innerHTML = _priceHtml(_priceFor(ind));
   const cta = document.getElementById('modalCta');
   cta.href = 'https://wa.me/' + (ind.waNum || '917357032456') + '?text=' + encodeURIComponent('Hi AG Technicals! I am interested in ' + ind.name + ' (Code: ' + ind.pid + '). Please share details.');
   document.getElementById('modalOverlay').classList.add('open');

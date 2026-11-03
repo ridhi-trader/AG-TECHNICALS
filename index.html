@@ -168,6 +168,23 @@ h1 .g{color:var(--g5);text-shadow:0 0 40px rgba(245,197,66,0.5),0 2px 8px rgba(0
 .prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:48px;}
 @media(max-width:1100px){.prod-grid{grid-template-columns:repeat(3,1fr);}}
 /* phone-fit: these two grids use inline column counts, so override with !important */
+/* ABOUT — bolder, easier to read */
+#about .sec-tag{font-size:14px;letter-spacing:2.4px;font-weight:800;color:var(--g5);display:inline-block;padding:6px 16px;border-radius:99px;border:1.5px solid rgba(245,197,66,.55);background:rgba(245,197,66,.1);box-shadow:0 0 18px rgba(245,197,66,.2);}
+#about .sec-h{font-size:44px;font-weight:900;margin-top:10px;}
+#about .sec-sub{font-size:17px;color:#eee;line-height:1.7;max-width:760px;}
+.ab-card{background:linear-gradient(150deg,rgba(245,197,66,.16),rgba(245,197,66,.04) 55%,#0b0b0b);border:1.5px solid rgba(245,197,66,.5);border-left:5px solid var(--g5);box-shadow:0 10px 32px rgba(0,0,0,.55),0 0 30px rgba(245,197,66,.14);border-radius:18px;padding:30px 32px;}
+.ab-h{display:flex;align-items:center;gap:14px;font-family:'Space Grotesk',sans-serif;font-size:25px;font-weight:900;color:#fff;margin-bottom:18px;letter-spacing:-.3px;}
+.ab-h i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;font-size:24px;border-radius:14px;background:rgba(245,197,66,.2);border:1.5px solid rgba(245,197,66,.6);box-shadow:0 0 20px rgba(245,197,66,.35);}
+.ab-who{font-size:17px;line-height:1.85;color:#f1f1f1;}
+.ab-who b{color:var(--g5);font-weight:800;background:linear-gradient(transparent 62%,rgba(245,197,66,.28) 62%);padding:0 2px;}
+.ab-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;}
+.ab-stat{text-align:center;padding:16px 8px;border-radius:14px;background:rgba(0,0,0,.4);border:1.5px solid rgba(245,197,66,.4);}
+.ab-stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:900;color:var(--g5);line-height:1.1;text-shadow:0 0 16px rgba(245,197,66,.5);}
+.ab-stat span{display:block;margin-top:5px;font-size:12px;font-weight:700;color:#ddd;letter-spacing:.4px;text-transform:uppercase;}
+.ab-do{background:rgba(0,0,0,.35);border:1px solid rgba(245,197,66,.28);border-left:4px solid var(--g5);border-radius:12px;padding:14px 18px;font-size:15.5px;line-height:1.5;color:#f1f1f1;transition:transform .2s,border-color .2s,background .2s;}
+.ab-do:hover{transform:translateX(6px);border-color:var(--g5);background:rgba(245,197,66,.1);}
+.ab-do b{color:var(--g5);font-weight:800;font-size:16.5px;}
+@media(max-width:640px){#about .sec-h{font-size:32px;}.ab-h{font-size:21px;}.ab-who{font-size:15.5px;}.ab-stat b{font-size:22px;}}
 #aboutMarketsGrid>*,#contactGrid>*{min-width:0;}
 @media(max-width:900px){#aboutMarketsGrid{grid-template-columns:repeat(3,1fr)!important;}}
 @media(max-width:640px){#contactGrid,#about div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}}
@@ -534,18 +551,19 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-h" id="aboutH">Traders First. <span style="color:var(--g4)">Always.</span></div>
   <div class="sec-sub" id="aboutSub" style="margin-bottom:36px;">9+ years of real screen time across every major market — we built the tools we always wished existed.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
-    <div style="background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.025) 55%,#0b0b0b);border:1px solid rgba(245,197,66,.25);border-left:3px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 26px rgba(245,197,66,.06);border-radius:14px;padding:30px 32px;">
-      <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:14px;">🎯 Who We Are</div>
-      <div id="aboutWhoText" style="font-size:13.5px;color:#e5e5e5;line-height:1.8;"></div>
+    <div class="ab-card">
+      <div class="ab-h"><i>🎯</i>Who We Are</div>
+      <div id="aboutWhoText" class="ab-who"></div>
+      <div class="ab-stats"><div class="ab-stat"><b>9+</b><span>Years</span></div><div class="ab-stat"><b>MT5</b><span>Algos</span></div><div class="ab-stat"><b>TV</b><span>Indicators</span></div></div>
     </div>
-    <div style="background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.025) 55%,#0b0b0b);border:1px solid rgba(245,197,66,.25);border-left:3px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 26px rgba(245,197,66,.06);border-radius:14px;padding:30px 32px;">
-      <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:14px;">💡 What We Do</div>
-      <div id="aboutDoList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div class="ab-card">
+      <div class="ab-h"><i>💡</i>What We Do</div>
+      <div id="aboutDoList" style="display:flex;flex-direction:column;gap:12px;"></div>
     </div>
   </div>
-  <div style="background:linear-gradient(150deg,rgba(245,197,66,.10),rgba(245,197,66,.025) 55%,#0b0b0b);border:1px solid rgba(245,197,66,.25);border-left:3px solid var(--amber);box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 26px rgba(245,197,66,.06);border-radius:14px;padding:30px 32px;margin-bottom:20px;">
-    <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;">📊 Markets We Master</div>
-    <div id="aboutMarketsSubtitle" style="font-size:12px;color:#d4d4d4;margin-bottom:20px;"></div>
+  <div class="ab-card" style="margin-bottom:20px;">
+    <div class="ab-h" style="margin-bottom:8px;"><i>📊</i>Markets We Master</div>
+    <div id="aboutMarketsSubtitle" style="font-size:15px;color:#e5e5e5;margin-bottom:22px;"></div>
     <div id="aboutMarketsGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;"></div>
   </div>
   <div id="aboutVideoWrap" style="display:none;margin-bottom:20px;"></div>
@@ -925,17 +943,22 @@ document.getElementById('contactGrid').innerHTML = contact.filter(c=>!c.hidden).
   </a>`).join('');
 
 /* ── ABOUT ── */
-document.getElementById('aboutWhoText').textContent = about.whoText||D.about.whoText;
+(function(){
+  var t=String(about.whoText||D.about.whoText||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // bold + highlight the key phrases so it is easy to scan
+  t=t.replace(/(\d+\+?\s*years[^,.;(]*|real trading experience|traders first|traders,? for traders|disciplined automation|(?:the )?power of[^.]*automation)/gi,'<b>$1</b>');
+  document.getElementById('aboutWhoText').innerHTML=t;
+})();
 document.getElementById('aboutDoList').innerHTML = (about.doList||D.about.doList).map(item=>{
   const [title,...rest] = item.split(' — ');
   const desc = rest.join(' — ');
-  return `<div style="background:rgba(0,0,0,0.25);border:1px solid #262626;border-left:2px solid var(--g4);border-radius:8px;padding:11px 16px;font-size:13px;color:#e5e5e5;">✓ <span style="color:var(--g4);font-weight:700;">${title||item}</span>${desc?' — '+desc:''}</div>`;
+  return `<div class="ab-do">✓ <b>${title||item}</b>${desc?' — '+desc:''}</div>`;
 }).join('');
 document.getElementById('aboutMarketsSubtitle').textContent = about.marketsSubtitle||D.about.marketsSubtitle;
 document.getElementById('aboutMarketsGrid').innerHTML = (about.markets||D.about.markets).map(m=>`
   <div class="hl-card" style="border-radius:10px;padding:26px 14px;text-align:center;">
-    <div style="font-size:${m.isText?'22px':'28px'};font-weight:${m.isText?800:400};font-family:${m.isText?"'Space Grotesk',sans-serif":'inherit'};color:var(--amber);margin-bottom:10px;">${m.icon}</div>
-    <div style="font-size:13px;font-weight:700;color:var(--amber);">${m.label}</div>
+    <div style="font-size:${m.isText?'26px':'34px'};font-weight:${m.isText?900:400};font-family:${m.isText?"'Space Grotesk',sans-serif":'inherit'};color:var(--amber);margin-bottom:10px;">${m.icon}</div>
+    <div style="font-size:15px;font-weight:800;color:var(--amber);">${m.label}</div>
   </div>`).join('');
 if(about.videoUrl){ const w=document.getElementById('aboutVideoWrap'); w.style.display='block'; w.innerHTML=videoEmbed(about.videoUrl); }
 

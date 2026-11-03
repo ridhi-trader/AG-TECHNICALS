@@ -31,6 +31,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .card p{color:var(--t3);font-size:14px;line-height:1.6;flex:1;margin-bottom:16px;}
 .price{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:800;color:var(--g5);margin-bottom:14px;}
 .price .mrp{display:block;font-size:16px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a;}
+.price .bn{font-size:13px;color:#f5c542}.price .bn b{font-weight:700;text-decoration:none}.bn{text-decoration:none!important}.bn s{color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
 .price .dv{display:inline-block;margin-top:6px;font-size:11px;font-weight:800;letter-spacing:.5px;color:#000;background:linear-gradient(135deg,#ffd23f,#ff9d2e);padding:3px 10px;border-radius:99px;font-family:'JetBrains Mono',monospace;}
 .btn{background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;border:0;border-radius:10px;padding:13px 20px;font:700 14px Inter,sans-serif;cursor:pointer;width:100%;}
 .btn:disabled{opacity:.6;cursor:wait;}
@@ -98,7 +99,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
   var $=function(i){return document.getElementById(i);};
   var cat={items:[],enabled:false,key_id:''},cur=null;
   function inr(n){return '₹'+Number(n).toLocaleString('en-IN',{maximumFractionDigits:2});}
-  function offerHtml(n,mrp){n=Number(n);var m=Number(mrp)>n?Number(mrp):Math.round(n*4/3/100)*100;if(!(m>n))return inr(n);var pc=Math.round(100-(n/m*100));return '<span class="mrp">'+inr(m)+'</span>'+inr(n)+'<br><span class="dv">\uD83E\uDE94 DIWALI OFFER '+pc+'% OFF</span>';}
+  function offerHtml(n,mrp){n=Number(n);if(!(n>=100))return inr(n);var m=Number(mrp)>n?Number(mrp):Math.round(n*4/3/100)*100;if(!(m>n))return inr(n);var hi=Math.round(m*1.5/100)*100,pc=Math.round(100-(n/m*100));return '<span class="mrp">'+inr(hi)+'</span><span class="mrp bn"><b>\uD83C\uDF81 Diwali Bonus</b> <s>'+inr(m)+'</s></span>'+inr(n)+'<br><span class="dv">\uD83E\uDE94 DIWALI OFFER '+pc+'% OFF</span>';}
   function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
   function render(){
     var g=$('grid'),em=$('empty');g.innerHTML='';

@@ -80,6 +80,7 @@
   .tvp{margin:0 0 14px;text-align:left}
   .tvp .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#bfe8cf;background:rgba(46,230,166,.12);border:1px solid rgba(46,230,166,.4);padding:3px 10px;border-radius:99px;margin-bottom:8px}
   .tvp .mrp{display:block;font-size:15px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
+  .tvp .bn{font-size:13px;color:#f5c542;text-decoration:none}.tvp .bn b{font-weight:700;text-decoration:none}.bn{text-decoration:none!important}.bn s{color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
   .tvp .now{display:block;font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:900;color:#f5c542;line-height:1.15}
   .tvp .dv{display:inline-block;margin-top:6px;font-size:11px;font-weight:800;letter-spacing:.5px;color:#000;background:linear-gradient(135deg,#ffd23f,#ff9d2e);padding:3px 10px;border-radius:99px}
   .ind-pid{font-family:'JetBrains Mono',monospace;font-size:11px;color:#a8a4b8;letter-spacing:2px;margin-bottom:7px;}
@@ -222,9 +223,10 @@ function _priceFor(ind){
 function _inr(n){ return '₹' + Number(n).toLocaleString('en-IN', {maximumFractionDigits: 0}); }
 function _priceHtml(it){
   if (!it) return '';
-  var n = Number(it.price), m = Number(it.mrp) > n ? Number(it.mrp) : Math.round(n * 4 / 3 / 100) * 100;
-  var pc = Math.round(100 - (n / m * 100));
-  return '<span class="tag">Lifetime · With Source Code</span><span class="mrp">' + _inr(m) + '</span><span class="now">' + _inr(n) + '</span><span class="dv">🪔 DIWALI OFFER ' + pc + '% OFF</span>';
+  var n = Number(it.price); if (!(n >= 100)) return '<span class="now">' + _inr(n) + '</span>';
+  var m = Number(it.mrp) > n ? Number(it.mrp) : Math.round(n * 4 / 3 / 100) * 100;
+  var hi = Math.round(m * 1.5 / 100) * 100, pc = Math.round(100 - (n / m * 100));
+  return '<span class="tag">Lifetime · With Source Code</span><span class="mrp">' + _inr(hi) + '</span><span class="mrp bn"><b>🎁 Diwali Bonus</b> <s>' + _inr(m) + '</s></span><span class="now">' + _inr(n) + '</span><span class="dv">🪔 DIWALI OFFER ' + pc + '% OFF</span>';
 }
 fetch('/api/pay/catalog').then(function(r){ return r.json(); }).then(function(j){
   _prices = j || {};

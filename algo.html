@@ -151,6 +151,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .ea-cp{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin:10px 0 12px;padding:10px 12px;border:1px solid rgba(245,197,66,.28);border-radius:10px;background:rgba(245,197,66,.05)}
 .ea-cp-from{font-size:11px;color:#a3a3a3;width:100%}
 .ea-cp-mrp{font-size:14px;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
+.ea-cp-bn{font-size:12px;font-weight:700;color:#f5c542}.ea-cp-bn s{color:#9a9a9a;text-decoration-color:#ff5a5a;font-size:14px;margin-left:4px}
+.price-plan-amt .mrp{line-height:1.55}.price-plan-amt .bn{font-size:12px;color:#f5c542}.price-plan-amt .bn b{font-weight:700;text-decoration:none}.bn{text-decoration:none!important}.bn s{color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a}
 .ea-cp-now{font-size:22px;font-weight:800;color:#f5c542}
 .ea-cp-dv{font-size:11px;font-weight:700;color:#000;background:#f5c542;border-radius:6px;padding:3px 8px;margin-left:auto}
 .price-plan-amt .mrp{display:block;font-size:13px;font-weight:600;color:#9a9a9a;text-decoration:line-through;text-decoration-color:#ff5a5a;}
@@ -394,9 +396,11 @@ function renderEAs(){
 }
 
 function cardPrice(ea){
-  var n=Number(ea.price3m)||30000, m=Math.round(n*4/3/100)*100, pc=Math.round(100-(n/m*100));
+  var n=Number(ea.price3m)||30000;
   function f(x){return '₹'+Number(x).toLocaleString('en-IN');}
-  return '<div class="ea-cp"><span class="ea-cp-from">3 months from</span><span class="ea-cp-mrp">'+f(m)+'</span><span class="ea-cp-now">'+f(n)+'</span><span class="ea-cp-dv">🪔 DIWALI OFFER '+pc+'% OFF</span></div>';
+  if(!(n>=100)) return '<div class="ea-cp"><span class="ea-cp-from">3 months from</span><span class="ea-cp-now">'+f(n)+'</span></div>';
+  var m=Math.round(n*4/3/100)*100, hi=Math.round(m*1.5/100)*100, pc=Math.round(100-(n/m*100));
+  return '<div class="ea-cp"><span class="ea-cp-from">3 months from</span><span class="ea-cp-mrp">'+f(hi)+'</span><span class="ea-cp-bn">🎁 Diwali Bonus <s>'+f(m)+'</s></span><span class="ea-cp-now">'+f(n)+'</span><span class="ea-cp-dv">🪔 DIWALI OFFER '+pc+'% OFF</span></div>';
 }
 function openItem(i){
   var items = getAlgoItems();
@@ -441,7 +445,7 @@ function openPriceModal(i){
   var waNum = '917357032456';
   function fmt(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
   // Diwali offer display: show a higher original price (struck), then the real price. Real amount is always decided by the server.
-  function offer(n){ var m=Math.round(n*4/3/100)*100; var pc=Math.round(100-(n/m*100)); return '<span class="mrp">'+fmt(m)+'</span>'+fmt(n)+'<br><span class="dv">🪔 DIWALI OFFER '+pc+'% OFF</span>'; }
+  function offer(n){ n=Number(n); if(!(n>=100)) return fmt(n); var m=Math.round(n*4/3/100)*100, hi=Math.round(m*1.5/100)*100; var pc=Math.round(100-(n/m*100)); return '<span class="mrp">'+fmt(hi)+'</span><span class="mrp bn"><b>🎁 Diwali Bonus</b> <s>'+fmt(m)+'</s></span>'+fmt(n)+'<br><span class="dv">🪔 DIWALI OFFER '+pc+'% OFF</span>'; }
   function waLink(plan,price){
     var msg = 'Hi AG Technicals! I want to buy *'+ea.name+'* — '+plan+' plan at '+fmt(price)+'. Please guide me.';
     return 'https://wa.me/'+waNum+'?text='+encodeURIComponent(msg);

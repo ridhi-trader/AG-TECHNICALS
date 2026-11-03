@@ -263,6 +263,7 @@
           <span class="ag-online-txt">Online — Ask Me Anything</span>
         </div>
       </div>
+      <select id="ag-ai-lang" class="notranslate" translate="no" title="Reply language" onchange="agAI.setLang(this.value)" style="margin-left:auto;margin-right:8px;max-width:112px;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:5px 6px;font-size:12px;font-weight:700;cursor:pointer;"><option value="">🌐 Auto</option><option>English</option><option>Hindi</option><option>Hinglish</option><option>Bengali</option><option>Marathi</option><option>Gujarati</option><option>Tamil</option><option>Telugu</option><option>Kannada</option><option>Malayalam</option><option>Punjabi</option><option>Urdu</option><option>Nepali</option><option>Odia</option><option>Arabic</option><option>Spanish</option><option>French</option><option>German</option><option>Portuguese</option><option>Russian</option><option>Chinese</option><option>Japanese</option><option>Korean</option><option>Indonesian</option><option>Turkish</option><option>Italian</option><option>Thai</option><option>Vietnamese</option></select>
       <button class="ag-ai-close" onclick="agAI.toggle()">✕</button>
     </div>
     <div class="ag-ai-quick" id="ag-chips">
@@ -296,6 +297,17 @@
   const agAI = {
     msgs: [],
     open: false,
+
+    lang: '',
+    setLang(v){
+      this.lang = v || '';
+      try{ localStorage.setItem('ag_bot_lang', this.lang); }catch(e){}
+    },
+    _replyLang(){
+      if(this.lang) return this.lang;
+      try{ var l = window.agSiteLang && window.agSiteLang(); if(l && l.code !== 'en') return l.name; }catch(e){}
+      return '';
+    },
 
     toggle(){
       const panel = document.getElementById('ag-ai-panel');
@@ -333,7 +345,7 @@
         const res = await fetch('/api/chat',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ messages: this.msgs }),
+          body: JSON.stringify({ messages: this.msgs, lang: this._replyLang() }),
           signal: controller.signal
         });
         clearTimeout(timeout);
@@ -418,6 +430,7 @@
   };
 
   window.agAI = agAI;
+  try{ var _bl=localStorage.getItem('ag_bot_lang'); if(_bl){ agAI.lang=_bl; var _sel=document.getElementById('ag-ai-lang'); if(_sel) _sel.value=_bl; } }catch(e){}
 
   document.getElementById('ag-ai-input').addEventListener('input', function(){
     this.style.height = 'auto';

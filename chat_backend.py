@@ -560,6 +560,7 @@ class Msg(BaseModel):
 
 class ChatReq(BaseModel):
     messages: List[Msg]
+    lang: str = ""
 
 _news_cache = {"data": None, "ts": 0}
 
@@ -623,7 +624,14 @@ async def chat(req: ChatReq):
         except Exception:
             msgs = [m.model_dump() for m in req.messages]
 
-        sysmsg = [{"role": "system", "content": SYSTEM}]
+        import re as _re
+        _lang = _re.sub(r"[^A-Za-z \-()]", "", str(getattr(req, "lang", "") or ""))[:30].strip()
+        _sys = SYSTEM
+        if _lang:
+            _sys += (f"\n\nLANGUAGE: The user chose {_lang}. Reply ONLY in {_lang}"
+                     + (" (Hindi words written in English letters, casual Hinglish)" if _lang.lower() == "hinglish" else " using its normal native script")
+                     + ". Keep product names, prices rules and the other rules above unchanged.")
+        sysmsg = [{"role": "system", "content": _sys}]
         clean = [{"role": m.get("role"), "content": m.get("content", "")} for m in msgs
                  if m.get("role") in ("user", "assistant") and m.get("content")]
 
@@ -691,7 +699,7 @@ async def chat(req: ChatReq):
                     headers={"x-api-key": ANT_KEY, "anthropic-version": "2023-06-01",
                              "content-type": "application/json"},
                     json={"model": "claude-haiku-4-5-20251001", "max_tokens": 800,
-                          "system": SYSTEM, "messages": clean})
+                          "system": _sys, "messages": clean})
             if r.status_code == 200:
                 parts = r.json().get("content", [])
                 reply = "".join(p.get("text", "") for p in parts if p.get("type") == "text")

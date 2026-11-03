@@ -115,6 +115,9 @@
     if (!window.agAI.open) window.agAI.toggle();
   });
 
+  // Language switcher (all pages). Separate file so it can be changed without touching the footer.
+  (function(){ if (window.__agLangLoaded || document.getElementById('ag-lang-js')) return; var s=document.createElement('script'); s.id='ag-lang-js'; s.src='/ag-lang.js?v=1'; s.async=true; document.head.appendChild(s); })();
+
   function makeLink(l) {
     var a = document.createElement('a');
     a.href = l.href;

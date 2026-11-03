@@ -52,7 +52,7 @@
       '.goog-te-banner-frame,.skiptranslate>iframe,#goog-gt-tt,.goog-te-balloon-frame{display:none!important}' +
       'body{top:0!important;position:static!important}.goog-text-highlight{background:none!important;box-shadow:none!important}' +
       '#google_translate_element{position:absolute;left:-9999px;top:0;height:0;overflow:hidden}' +
-      '#ag-lang-btn{position:fixed;left:16px;bottom:18px;z-index:99990;display:flex;align-items:center;gap:8px;padding:11px 16px;border-radius:99px;background:#0b0b0b;border:1.5px solid rgba(245,197,66,.65);color:#f5c542;font:800 14px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 18px rgba(245,197,66,.25);}' +
+      '#ag-lang-btn{position:relative;display:flex;align-items:center;gap:8px;padding:11px 16px;border-radius:99px;background:#0b0b0b;border:1.5px solid rgba(245,197,66,.65);color:#f5c542;font:800 14px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 18px rgba(245,197,66,.25);}' +
       '#ag-lang-btn:hover{background:#17130a}' +
       '#ag-lang-pop{position:fixed;left:16px;bottom:72px;z-index:99991;width:260px;max-height:min(60vh,420px);overflow:auto;background:#0b0b0b;border:1.5px solid rgba(245,197,66,.6);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.8);padding:8px;display:none;font-family:Inter,system-ui,sans-serif;}' +
       '#ag-lang-pop.on{display:block}' +
@@ -61,7 +61,7 @@
       '#ag-lang-pop button:hover{background:rgba(245,197,66,.14)}' +
       '#ag-lang-pop button.sel{background:rgba(245,197,66,.22);color:#f5c542}' +
       '#ag-lang-pop button small{color:#999;font-weight:500;font-size:12px}' +
-      '@media(max-width:600px){#ag-lang-btn{left:10px;bottom:14px;padding:10px 13px}#ag-lang-pop{left:10px;bottom:66px}}';
+      '@media(max-width:600px){#ag-lang-btn{padding:10px 13px}#ag-lang-pop{left:10px;bottom:66px}}';
     document.head.appendChild(s);
   }
 
@@ -82,7 +82,9 @@
     });
     document.addEventListener('click', function () { p.classList.remove('on'); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') p.classList.remove('on'); });
-    document.body.appendChild(b); document.body.appendChild(p);
+    var f = document.getElementById('ag-fab-left');
+    if (!f) { f = document.createElement('div'); f.id = 'ag-fab-left'; f.style.cssText = 'position:fixed;left:16px;bottom:18px;z-index:99990;display:flex;gap:8px;align-items:center;'; document.body.appendChild(f); }
+    f.appendChild(b); document.body.appendChild(p);
   }
 
   function loadTranslator(){

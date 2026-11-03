@@ -1,0 +1,22 @@
+/* AG Technicals — site themes. Default = dark (the original design).
+   light  = soft white page, dark text
+   sun    = high-contrast bright theme for reading outdoors / in sunlight
+   Done with a colour inversion of the whole page; pictures and illustrations are flipped back so they look normal. */
+html[data-theme="light"],html[data-theme="sun"]{background:#fff;}
+html[data-theme="light"]{filter:invert(1) hue-rotate(180deg);}
+html[data-theme="sun"]{filter:invert(1) hue-rotate(180deg) contrast(1.35) brightness(1.06);}
+html[data-theme="light"] img,html[data-theme="sun"] img,
+html[data-theme="light"] video,html[data-theme="sun"] video,
+html[data-theme="light"] iframe,html[data-theme="sun"] iframe,
+html[data-theme="light"] .wd-img svg,html[data-theme="sun"] .wd-img svg,
+html[data-theme="light"] .prod-svg svg,html[data-theme="sun"] .prod-svg svg,
+html[data-theme="light"] .ag-keep,html[data-theme="sun"] .ag-keep{filter:invert(1) hue-rotate(180deg);}
+/* heavy decorative animation layers off in light themes (faster, cleaner) */
+html[data-theme="light"] #heroCanvas,html[data-theme="sun"] #heroCanvas,
+html[data-theme="light"] #bgAnim,html[data-theme="sun"] #bgAnim{display:none !important;}
+/* sunlight: no faint glow/blur effects, crisper edges */
+html[data-theme="sun"] *{text-shadow:none !important;}
+html[data-theme="sun"] body{-webkit-font-smoothing:antialiased;}
+/* logo image has square black corners: make it round on light pages */
+html[data-theme="light"] #siteLogo,html[data-theme="sun"] #siteLogo,
+html[data-theme="light"] #siteLogoFooter,html[data-theme="sun"] #siteLogoFooter{border-radius:50%;}

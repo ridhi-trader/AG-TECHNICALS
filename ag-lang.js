@@ -5,13 +5,22 @@
   if (window.__agLangLoaded) return; window.__agLangLoaded = true;
   if (/troublepie|admin/i.test(location.pathname)) return; // never translate the admin panel
   var LANGS = [
-    ['en','English','English'],['hi','हिन्दी','Hindi'],['bn','বাংলা','Bengali'],['mr','मराठी','Marathi'],['gu','ગુજરાતી','Gujarati'],
-    ['ta','தமிழ்','Tamil'],['te','తెలుగు','Telugu'],['kn','ಕನ್ನಡ','Kannada'],['ml','മലയാളം','Malayalam'],['pa','ਪੰਜਾਬੀ','Punjabi'],
-    ['ur','اردو','Urdu'],['ne','नेपाली','Nepali'],['or','ଓଡ଼ିଆ','Odia'],['as','অসমীয়া','Assamese'],
-    ['ar','العربية','Arabic'],['es','Español','Spanish'],['fr','Français','French'],['de','Deutsch','German'],['pt','Português','Portuguese'],
-    ['ru','Русский','Russian'],['zh-CN','中文','Chinese'],['ja','日本語','Japanese'],['ko','한국어','Korean'],['id','Bahasa Indonesia','Indonesian'],
-    ['ms','Bahasa Melayu','Malay'],['tr','Türkçe','Turkish'],['it','Italiano','Italian'],['th','ไทย','Thai'],['vi','Tiếng Việt','Vietnamese'],
-    ['fa','فارسی','Persian'],['sw','Kiswahili','Swahili'],['nl','Nederlands','Dutch'],['pl','Polski','Polish'],['uk','Українська','Ukrainian']
+    ['en','English','English'],['hi','हिन्दी','Hindi'],['zh-CN','中文 (简体)','Chinese (Simplified)'],['zh-TW','中文 (繁體)','Chinese (Traditional)'],
+    ['es','Español','Spanish'],['ar','العربية','Arabic'],['fr','Français','French'],['de','Deutsch','German'],['pt','Português','Portuguese'],
+    ['ru','Русский','Russian'],['ja','日本語','Japanese'],['ko','한국어','Korean'],['it','Italiano','Italian'],['tr','Türkçe','Turkish'],
+    ['bn','বাংলা','Bengali'],['mr','मराठी','Marathi'],['gu','ગુજરાતી','Gujarati'],['ta','தமிழ்','Tamil'],['te','తెలుగు','Telugu'],
+    ['kn','ಕನ್ನಡ','Kannada'],['ml','മലയാളം','Malayalam'],['pa','ਪੰਜਾਬੀ','Punjabi'],['ur','اردو','Urdu'],['ne','नेपाली','Nepali'],
+    ['or','ଓଡ଼ିଆ','Odia'],['as','অসমীয়া','Assamese'],['si','සිංහල','Sinhala'],
+    ['id','Bahasa Indonesia','Indonesian'],['ms','Bahasa Melayu','Malay'],['tl','Filipino','Filipino'],['th','ไทย','Thai'],['vi','Tiếng Việt','Vietnamese'],
+    ['my','မြန်မာ','Burmese'],['km','ខ្មែរ','Khmer'],['lo','ລາວ','Lao'],['mn','Монгол','Mongolian'],
+    ['fa','فارسی','Persian'],['iw','עברית','Hebrew'],['ps','پښتو','Pashto'],['ku','Kurdî','Kurdish'],['az','Azərbaycan','Azerbaijani'],['hy','Հայերեն','Armenian'],['ka','ქართული','Georgian'],
+    ['kk','Қазақша','Kazakh'],['uz','Oʻzbek','Uzbek'],['sw','Kiswahili','Swahili'],['am','አማርኛ','Amharic'],['so','Soomaali','Somali'],['ha','Hausa','Hausa'],
+    ['yo','Yorùbá','Yoruba'],['ig','Igbo','Igbo'],['zu','isiZulu','Zulu'],['af','Afrikaans','Afrikaans'],
+    ['nl','Nederlands','Dutch'],['pl','Polski','Polish'],['uk','Українська','Ukrainian'],['el','Ελληνικά','Greek'],['ro','Română','Romanian'],
+    ['hu','Magyar','Hungarian'],['cs','Čeština','Czech'],['sk','Slovenčina','Slovak'],['sv','Svenska','Swedish'],['da','Dansk','Danish'],
+    ['no','Norsk','Norwegian'],['fi','Suomi','Finnish'],['bg','Български','Bulgarian'],['sr','Српски','Serbian'],['hr','Hrvatski','Croatian'],
+    ['sl','Slovenščina','Slovenian'],['lt','Lietuvių','Lithuanian'],['lv','Latviešu','Latvian'],['et','Eesti','Estonian'],['is','Íslenska','Icelandic'],
+    ['ga','Gaeilge','Irish'],['ca','Català','Catalan'],['sq','Shqip','Albanian'],['be','Беларуская','Belarusian']
   ];
   function lsGet(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
@@ -54,8 +63,9 @@
       '#google_translate_element{position:absolute;left:-9999px;top:0;height:0;overflow:hidden}' +
       '#ag-lang-btn{position:relative;display:flex;align-items:center;gap:8px;padding:11px 16px;border-radius:99px;background:#0b0b0b;border:1.5px solid rgba(245,197,66,.65);color:#f5c542;font:800 14px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 18px rgba(245,197,66,.25);}' +
       '#ag-lang-btn:hover{background:#17130a}' +
-      '#ag-lang-pop{position:fixed;left:16px;bottom:72px;z-index:99991;width:260px;max-height:min(60vh,420px);overflow:auto;background:#0b0b0b;border:1.5px solid rgba(245,197,66,.6);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.8);padding:8px;display:none;font-family:Inter,system-ui,sans-serif;}' +
+      '#ag-lang-pop{position:fixed;left:16px;bottom:72px;z-index:99991;width:260px;max-height:min(72vh,520px);overflow:auto;background:#0b0b0b;border:1.5px solid rgba(245,197,66,.6);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.8);padding:8px;display:none;font-family:Inter,system-ui,sans-serif;}' +
       '#ag-lang-pop.on{display:block}' +
+      '#ag-lang-q{position:sticky;top:0;width:100%;box-sizing:border-box;margin:0 0 6px;padding:10px 12px;border-radius:10px;border:1px solid rgba(245,197,66,.4);background:#111;color:#fff;font:500 14px Inter,system-ui,sans-serif;outline:none}' +
       '#ag-lang-pop .t{padding:8px 10px 10px;font-size:11px;font-weight:800;letter-spacing:1.2px;color:#aaa;text-transform:uppercase}' +
       '#ag-lang-pop button{display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 12px;border:0;border-radius:10px;background:transparent;color:#eee;font:600 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}' +
       '#ag-lang-pop button:hover{background:rgba(245,197,66,.14)}' +
@@ -72,10 +82,15 @@
     b.innerHTML = '🌐 <span>' + find(cur)[1] + '</span>';
     var p = document.createElement('div');
     p.id = 'ag-lang-pop'; p.className = 'notranslate'; p.setAttribute('translate', 'no');
-    p.innerHTML = '<div class="t">🌐 Language / भाषा</div>' + LANGS.map(function (l) {
+    p.innerHTML = '<div class="t">🌐 Language / भाषा / 语言 / لغة</div><input id="ag-lang-q" type="search" placeholder="Search language… (e.g. Chinese)" autocomplete="off">' + LANGS.map(function (l) {
       return '<button type="button" data-c="' + l[0] + '"' + (l[0] === cur ? ' class="sel"' : '') + '>' + l[1] + '<small>' + (l[1] === l[2] ? '' : l[2]) + '</small></button>';
     }).join('');
-    b.addEventListener('click', function (e) { e.stopPropagation(); p.classList.toggle('on'); });
+    b.addEventListener('click', function (e) { e.stopPropagation(); p.classList.toggle('on'); if (p.classList.contains('on')) { var q0 = p.querySelector('#ag-lang-q'); if (q0 && window.innerWidth > 700) q0.focus(); } });
+    p.addEventListener('input', function (e) {
+      if (e.target.id !== 'ag-lang-q') return;
+      var v = e.target.value.toLowerCase().trim(), bs = p.querySelectorAll('button[data-c]');
+      for (var i = 0; i < bs.length; i++) bs[i].style.display = (!v || bs[i].textContent.toLowerCase().indexOf(v) > -1) ? '' : 'none';
+    });
     p.addEventListener('click', function (e) {
       var t = e.target.closest ? e.target.closest('button[data-c]') : null;
       if (t) choose(t.getAttribute('data-c'));

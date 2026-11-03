@@ -151,14 +151,14 @@ function render(){
   document.getElementById('mainWrap').innerHTML = `
     <div class="greeting">
       <div class="greeting-tag">Member Dashboard</div>
-      <div class="greeting-h">Welcome, ${user.username} 👋</div>
+      <div class="greeting-h">Welcome, ${(user.username||'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';')} 👋</div>
       <div class="greeting-sub">Here's everything you have access to.</div>
     </div>
 
     <div class="profile-card">
       <div class="avatar">${firstLetter}</div>
       <div>
-        <div class="profile-name">${user.username}</div>
+        <div class="profile-name">${(user.username||'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';')}</div>
         <div class="profile-email">${user.email}</div>
         <div class="profile-joined">Member since ${joined}</div>
       </div>
@@ -191,7 +191,7 @@ function render(){
 // Try to refresh user data from server
 async function refreshUser(){
   try{
-    const r = await fetch(API+'/api/auth/user/'+user.id);
+    const r = await fetch(API+'/api/auth/user/'+user.id+'?email='+encodeURIComponent(user.email||''));
     const d = await r.json();
     if(d.ok){
       const updated = {...user, ...d.user};

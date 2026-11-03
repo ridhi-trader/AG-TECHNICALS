@@ -153,7 +153,10 @@ select.inp{cursor:pointer;}
 <body>
 
 <!-- LOGIN WALL -->
-<script>function showForgot(){ const m=document.getElementById('forgotModal'); m.style.display='flex'; document.getElementById('forgotStep1').style.display='block'; document.getElementById('forgotStep2').style.display='none'; document.getElementById('forgotErr').textContent=''; }
+<script>
+function escH(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function escA(x){return escH(x).replace(/\\/g,'&#92;')}
+function showForgot(){ const m=document.getElementById('forgotModal'); m.style.display='flex'; document.getElementById('forgotStep1').style.display='block'; document.getElementById('forgotStep2').style.display='none'; document.getElementById('forgotErr').textContent=''; }
 function hideForgot(){ document.getElementById('forgotModal').style.display='none'; }
 async function sendAdminOTP(){
   const btn=event.target; btn.textContent='Sending...'; btn.disabled=true;
@@ -1548,15 +1551,15 @@ async function loadDbUsers(){
     if(!d.ok||!d.users.length){el.innerHTML='<div class="empty">No registered users yet.</div>';return;}
     el.innerHTML=d.users.map(u=>`
       <div class="user-row">
-        <div class="user-avatar">${(u.username||'?')[0].toUpperCase()}</div>
+        <div class="user-avatar">${escH((u.username||'?')[0].toUpperCase())}</div>
         <div style="flex:1;">
-          <div class="user-name">${u.username} <span style="font-size:10px;color:${u.verified?'var(--green)':'var(--red)'};">${u.verified?'✓ Verified':'✗ Unverified'}</span></div>
-          <div class="user-meta">${u.email} · Joined ${u.joined}</div>
+          <div class="user-name">${escH(u.username)} <span style="font-size:10px;color:${u.verified?'var(--green)':'var(--red)'};">${u.verified?'✓ Verified':'✗ Unverified'}</span></div>
+          <div class="user-meta">${escH(u.email)} · Joined ${escH(u.joined)}</div>
           <div style="margin-top:4px;">${(u.products||'').split(',').filter(Boolean).map(pid=>{const p=products.find(x=>x.id===pid);return p?'<span class="product-chip">'+p.icon+' '+p.name+'</span>':''}).join('')||'<span style="font-size:11px;color:var(--t3);">No products assigned</span>'}</div>
         </div>
         <div>
-          <button class="btn-out" onclick="openAssign(${u.id},'${u.username}','${u.products||''}')" style="font-size:11px;padding:6px 12px;">Assign Products</button>
-          <button class="btn-out" onclick="deleteDbUser(${u.id},'${u.username}')" style="font-size:11px;padding:6px 12px;margin-top:6px;border-color:var(--red);color:var(--red);">🗑 Delete</button>
+          <button class="btn-out" onclick="openAssign(${u.id},'${escA(u.username)}','${escA(u.products||'')}')" style="font-size:11px;padding:6px 12px;">Assign Products</button>
+          <button class="btn-out" onclick="deleteDbUser(${u.id},'${escA(u.username)}')" style="font-size:11px;padding:6px 12px;margin-top:6px;border-color:var(--red);color:var(--red);">🗑 Delete</button>
         </div>
       </div>`).join('');
   }catch(e){el.innerHTML='<div class="empty" style="color:var(--red);">Could not reach server.</div>';}

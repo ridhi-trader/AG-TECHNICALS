@@ -53,9 +53,10 @@ for _vid_id, _vid_file in [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[],
+    allow_origin_regex=r"^https://([a-z0-9-]+\.)?agtechnicals\.com$|^https://[a-z0-9-]+\.up\.railway\.app$|^http://localhost(:\d+)?$|^http://127\.0\.0\.1(:\d+)?$",
     allow_methods=["GET", "POST", "OPTIONS", "DELETE"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "X-Admin-Token"],
 )
 
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -572,8 +573,9 @@ async def serve_upload(filename: str):
     return FileResponse(path)
 
 @app.get("/api/uploads/list")
-async def list_uploads():
-    """List all uploaded files"""
+async def list_uploads(request: Request):
+    """List all uploaded files (admin only)"""
+    verify_admin_token(request)
     files = []
     if os.path.exists(UPLOAD_DIR):
         for fname in os.listdir(UPLOAD_DIR):
@@ -661,8 +663,11 @@ async def get_news(category: str = "", search: str = ""):
 _groq_model = ""
 
 @app.post("/api/chat")
-async def chat(req: ChatReq):
+async def chat(req: ChatReq, request: Request):
+    rate_limit(request, "chat", 20, 60)
+    rate_limit(request, "chatday", 400, 86400)
     try:
+        req.messages = [Msg(role=m.role, content=(m.content or "")[:2000]) for m in req.messages[-16:]]
         try:
             msgs = [m.dict() for m in req.messages]
         except Exception:
@@ -785,6 +790,45 @@ DB_URL = os.environ.get("DATABASE_URL", "")
 GMAIL_USER = os.environ.get("GMAIL_USER", "")
 GMAIL_PASS = os.environ.get("GMAIL_PASS", "")  # App Password (legacy, unused on Railway)
 BREVO_API_KEY = (os.environ.get("BREVO_API_KEY") or "").strip()  # Brevo HTTP API — set in Railway env vars, never hardcode
+
+# ── SECURITY HELPERS: rate limit, brute-force lockout, strong password hash ──
+import hmac as _sec_hmac
+_RL = {}
+def client_ip(request):
+    return (request.headers.get("X-Real-IP") or (request.client.host if request.client else "") or "?").split(",")[0].strip()
+
+def rate_limit(request, bucket, limit, window, ident=""):
+    """Allow `limit` hits per `window` seconds per IP(+ident). Raises 429 when exceeded."""
+    now = time.time()
+    k = f"{bucket}|{client_ip(request)}|{ident}"
+    hits = [t for t in _RL.get(k, []) if now - t < window]
+    if len(hits) >= limit:
+        _RL[k] = hits
+        raise HTTPException(status_code=429, detail="Too many attempts. Please wait a few minutes and try again.")
+    hits.append(now)
+    _RL[k] = hits
+    if len(_RL) > 20000:  # keep memory bounded
+        for kk in list(_RL.keys())[:5000]:
+            _RL.pop(kk, None)
+
+_PBKDF_ITERS = 200000
+def hash_pass(pw):
+    salt = secrets.token_hex(16)
+    h = hashlib.pbkdf2_hmac("sha256", pw.encode(), bytes.fromhex(salt), _PBKDF_ITERS).hex()
+    return f"pbkdf2${_PBKDF_ITERS}${salt}${h}"
+
+def check_pass(pw, stored):
+    """Returns True if password matches. Accepts new pbkdf2 format and legacy unsalted sha256."""
+    stored = stored or ""
+    if stored.startswith("pbkdf2$"):
+        try:
+            _, it, salt, h = stored.split("$")
+            calc = hashlib.pbkdf2_hmac("sha256", pw.encode(), bytes.fromhex(salt), int(it)).hex()
+            return _sec_hmac.compare_digest(calc, h)
+        except Exception:
+            return False
+    return _sec_hmac.compare_digest(hashlib.sha256(pw.encode()).hexdigest(), stored)
+
 def get_admin_pass():
     """Admin password comes only from the ADMIN_PASS env var. No hardcoded default:
     if it is unset, every admin request is refused."""
@@ -794,7 +838,12 @@ def verify_admin_token(request):
     """Check X-Admin-Token header matches current admin password."""
     token = request.headers.get("X-Admin-Token", "")
     expected = get_admin_pass()
+    ip = client_ip(request)
+    fails = [t for t in _RL.get("adminfail|"+ip, []) if time.time() - t < 900]
+    if len(fails) >= 8:
+        raise HTTPException(status_code=429, detail="Too many failed attempts. Try later.")
     if not expected or not token or not secrets.compare_digest(token.encode(), expected.encode()):
+        fails.append(time.time()); _RL["adminfail|"+ip] = fails
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 @app.get("/api/admin/verify")
@@ -862,7 +911,6 @@ async def init_db():
             add_license(row['lid'], days=days_left)
             add_strategy(sid=row['lid'], secret=row['secret'], name=f"Bridge-{row['lid']}")
 
-def hash_pass(pw): return hashlib.sha256(pw.encode()).hexdigest()
 
 async def _sync_paid_products(conn, user_id, email, current):
     """If someone paid before they had an account (or with a different login), the purchase links up
@@ -974,13 +1022,18 @@ async def _send_signup_otp(conn, email):
     send_email(email, "AG Technicals — Verify Your Email", otp_email_html(otp, 'signup'))
 
 @app.post("/api/auth/signup")
-async def signup(req: SignupReq):
+async def signup(req: SignupReq, request: Request):
+    rate_limit(request, "signup", 6, 900)
     pool = await get_db()
     if not pool:
         return JSONResponse({"ok": False, "error": "Database unavailable"})
     email = (req.email or '').strip().lower()
-    username = (req.username or '').strip()
-    if len(req.password) < 6:
+    import re as _re_u
+    username = _re_u.sub(r"[^A-Za-z0-9 _.\-]", "", (req.username or '')).strip()[:30]
+    email = email[:120]
+    if not _re_u.match(r"^[^@\s<>'\"]+@[^@\s<>'\"]+\.[^@\s<>'\"]+$", email):
+        return JSONResponse({"ok": False, "error": "Please enter a valid email"})
+    if len(req.password) < 6 or len(req.password) > 200:
         return JSONResponse({"ok": False, "error": "Password must be at least 6 characters"})
     if len(username) < 3:
         return JSONResponse({"ok": False, "error": "Username must be at least 3 characters"})
@@ -1010,7 +1063,8 @@ class ResendReq(BaseModel):
     email: str
 
 @app.post("/api/auth/resend-otp")
-async def resend_otp(req: ResendReq):
+async def resend_otp(req: ResendReq, request: Request):
+    rate_limit(request, "otpsend", 5, 900, (req.email or "").strip().lower())
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     email = (req.email or '').strip().lower()
@@ -1022,7 +1076,8 @@ async def resend_otp(req: ResendReq):
         return JSONResponse({"ok": True, "msg": "New OTP sent"})
 
 @app.post("/api/auth/verify-otp")
-async def verify_otp(req: OtpReq):
+async def verify_otp(req: OtpReq, request: Request):
+    rate_limit(request, "otpver", 8, 900, (req.email or "").strip().lower())
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
@@ -1036,20 +1091,27 @@ async def verify_otp(req: OtpReq):
         return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": prods}})
 
 @app.post("/api/auth/login")
-async def login(req: LoginReq):
+async def login(req: LoginReq, request: Request):
+    rate_limit(request, "login", 8, 600, (req.email or "").strip().lower())
+    rate_limit(request, "loginip", 30, 600)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
         email = (req.email or '').strip().lower()
         user = await conn.fetchrow("SELECT * FROM ag_users WHERE LOWER(email)=$1", email)
         if not user: return JSONResponse({"ok": False, "error": "No account with this email — please Sign Up"})
-        if user['password_hash'] != hash_pass(req.password): return JSONResponse({"ok": False, "error": "Wrong password — try again or use Forgot Password"})
+        if not check_pass(req.password, user['password_hash']): return JSONResponse({"ok": False, "error": "Wrong password — try again or use Forgot Password"})
+        if not (user['password_hash'] or "").startswith("pbkdf2$"):
+            try: await conn.execute("UPDATE ag_users SET password_hash=$1 WHERE id=$2", hash_pass(req.password), user['id'])
+            except Exception as _e: print("rehash failed", _e)
         if not user['verified']: return JSONResponse({"ok": False, "error": "Email not verified — please Sign Up again with same email to get a new OTP"})
         prods = await _sync_paid_products(conn, user['id'], user['email'], user['products'])
         return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": prods}})
 
 @app.post("/api/auth/forgot-password")
-async def forgot_password(req: ForgotReq):
+async def forgot_password(req: ForgotReq, request: Request):
+    rate_limit(request, "forgot", 5, 900, (req.email or "").strip().lower())
+    rate_limit(request, "forgotip", 15, 900)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
@@ -1064,7 +1126,8 @@ async def forgot_password(req: ForgotReq):
         return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
 
 @app.post("/api/auth/reset-password")
-async def reset_password(req: ResetReq):
+async def reset_password(req: ResetReq, request: Request):
+    rate_limit(request, "reset", 8, 900, (req.email or "").strip().lower())
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
@@ -1077,12 +1140,14 @@ async def reset_password(req: ResetReq):
         return JSONResponse({"ok": True, "msg": "Password reset successfully"})
 
 @app.get("/api/auth/user/{user_id}")
-async def get_user(user_id: int):
+async def get_user(user_id: int, request: Request, email: str = ""):
+    rate_limit(request, "getuser", 30, 300)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False})
     async with pool.acquire() as conn:
         user = await conn.fetchrow("SELECT id,username,email,products,created_at FROM ag_users WHERE id=$1", user_id)
-        if not user: return JSONResponse({"ok": False, "error": "User not found"})
+        if not user or (user['email'] or "").strip().lower() != (email or "").strip().lower():
+            return JSONResponse({"ok": False, "error": "User not found"})
         return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products'], "joined": str(user['created_at'])[:10]}})
 
 # Admin: assign products to user
@@ -1132,7 +1197,8 @@ class AdminForgotReq(BaseModel):
     newPass: str = ''
 
 @app.post('/api/admin-forgot-otp')
-async def admin_forgot_otp(req: AdminForgotReq):
+async def admin_forgot_otp(req: AdminForgotReq, request: Request):
+    rate_limit(request, "adminotp", 5, 900)
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', GMAIL_USER)
     if req.action == 'send':
         otp = str(_random.randint(100000, 999999))
@@ -1186,6 +1252,9 @@ async def admin_forgot_otp(req: AdminForgotReq):
 
 @app.get("/api/config/{key}")
 async def get_config(key: str):
+    _k = (key or "").lower()
+    if any(w in _k for w in ("pass", "secret", "token", "key_", "_key", "otp", "private")) and _k not in ("ag_products",):
+        return JSONResponse({"ok": False, "value": None})
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "value": None})
     async with pool.acquire() as conn:
@@ -1462,7 +1531,8 @@ class PayOrderReq(BaseModel):
     phone: str = ""
 
 @app.post("/api/pay/create-order")
-async def pay_create_order(req: PayOrderReq):
+async def pay_create_order(req: PayOrderReq, request: Request):
+    rate_limit(request, "order", 15, 600)
     if not _pay_enabled():
         return JSONResponse({"ok": False, "error": "Online payments are not enabled yet. Please contact us on WhatsApp or Telegram."})
     name = req.name.strip()[:80]; email = req.email.strip().lower()[:120]; phone = _re_pay.sub(r"[^0-9+]", "", req.phone)[:15]

@@ -249,7 +249,7 @@ function openModal(i) {
   document.getElementById('modalDesc').textContent = ind.desc;
   document.getElementById('modalPrice').innerHTML = _priceHtml(_priceFor(ind));
   _curInd = ind; _curItem = _priceFor(ind);
-  document.getElementById('modalBuy').style.display = (_curItem && _prices.enabled && window.AGCheckout) ? 'flex' : 'none';
+  document.getElementById('modalBuy').style.display = (_curItem && window.AGCheckout) ? 'flex' : 'none';
   const cta = document.getElementById('modalCta');
   cta.href = 'https://wa.me/' + (ind.waNum || '917357032456') + '?text=' + encodeURIComponent('Hi AG Technicals! I am interested in ' + ind.name + ' (Code: ' + ind.pid + '). Please share details.');
   document.getElementById('modalOverlay').classList.add('open');

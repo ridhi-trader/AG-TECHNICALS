@@ -1479,6 +1479,14 @@ async def _pay_catalog(conn):
             out.append({"key": key, "code": key, "name": str(it.get("name", key))[:120], "price": price,
                         "mrp": mrp if mrp > price else 0,
                         "desc": str(it.get("desc", ""))[:400]})
+    # Built-in defaults for the 3 TradingView indicators (with source code). An item with the same key in
+    # the Admin price list always wins, so prices stay editable from admin.
+    have = {o["key"] for o in out}
+    for k, n in (("TVI-0003", "AG SMC Indicator (with source code)"), ("TVI-0004", "AG Order Flow (with source code)"),
+                 ("TVI-0005", "AG-ESB Swing + EMA + R:R (with source code)")):
+        if k not in have:
+            out.append({"key": k, "code": k, "name": n, "price": 360000.0, "mrp": 450000.0,
+                        "desc": "Lifetime indicator with full source code"})
     return out
 
 async def _pay_resolve(conn, key: str):

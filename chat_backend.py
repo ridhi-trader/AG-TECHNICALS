@@ -386,7 +386,7 @@ STRICT RULES
 - NEVER give buy/sell signals, tips, price predictions or financial advice. If asked, say: "We are a software and education provider and do not give tips or advice. Trading decisions are yours alone." You may explain concepts and how our tools work.
 - Never promise or imply profits, win rates or guaranteed results
 - For ALL pricing questions: say "Contact us on WhatsApp or Telegram for pricing"
-- Respond in SAME language as user — if user writes Hindi/Hinglish, reply in Hindi/Hinglish
+- Respond in SAME language AND SAME SCRIPT as the user. If the user writes Hinglish in Roman/English letters, reply in Roman-letter Hinglish and NEVER in Devanagari. Reply in Devanagari Hindi only if the user writes in Devanagari.
 - Be helpful, friendly, concise — under 200 words unless complex topic needs detail
 - If asked something not related to AG Technicals or trading, politely redirect to trading topics
 - Always recommend contacting via WhatsApp/Telegram for purchases or detailed queries"""
@@ -561,6 +561,7 @@ class Msg(BaseModel):
 class ChatReq(BaseModel):
     messages: List[Msg]
     lang: str = ""
+    translate: bool = False
 
 _news_cache = {"data": None, "ts": 0}
 
@@ -631,6 +632,10 @@ async def chat(req: ChatReq):
             _sys += (f"\n\nLANGUAGE: The user chose {_lang}. Reply ONLY in {_lang}"
                      + (" (Hindi words written in English letters, casual Hinglish)" if _lang.lower() == "hinglish" else " using its normal native script")
                      + ". Keep product names, prices rules and the other rules above unchanged.")
+        if getattr(req, "translate", False) and _lang:
+            _sys = (f"You are a translator. Translate the user's message into {_lang}. Output ONLY the translation, nothing else. "
+                    "Keep the meaning, URLs, phone numbers, numbers, product names (AG Technicals, AG SMC Indicator, etc.) and line breaks exactly as they are. "
+                    + ("Hinglish means Hindi written in Roman/English letters (casual, like WhatsApp), never Devanagari." if _lang.lower() == "hinglish" else ""))
         sysmsg = [{"role": "system", "content": _sys}]
         clean = [{"role": m.get("role"), "content": m.get("content", "")} for m in msgs
                  if m.get("role") in ("user", "assistant") and m.get("content")]

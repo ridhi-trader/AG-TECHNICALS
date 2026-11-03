@@ -351,8 +351,8 @@
         clearTimeout(timeout);
         const data = await res.json();
         const reply = data.reply || 'Sorry, kuch problem ho gayi. WhatsApp karo: wa.me/917357032456';
-        typingEl.innerHTML = reply.replace(/\n/g,'<br>');
         typingEl.classList.remove('typing');
+        this._setBot(typingEl, reply);
         this.msgs.push({role:'assistant', content: reply});
         if(this.msgs.length > 20) this.msgs = this.msgs.slice(-16);
       } catch(e){
@@ -360,6 +360,43 @@
         typingEl.classList.remove('typing');
       }
       sendBtn.disabled = false;
+      this._scroll();
+    },
+
+    _fmt(t){
+      var h = String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      h = h.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener" style="color:#f5c542;text-decoration:underline;">$1</a>');
+      h = h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+      return h.replace(/\n/g,'<br>');
+    },
+    // show a bot reply + a small "Translate" bar under it (Hinglish / Hindi / English / more)
+    _setBot(el, text){
+      el._raw = text;
+      el.innerHTML = '<div class="ag-body">'+this._fmt(text)+'</div>'+
+        '<div class="ag-tr notranslate" translate="no" style="margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,.12);display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;">'+
+        '<span style="opacity:.75;">🌐 Translate:</span>'+
+        ['Hinglish','Hindi','English'].map(function(l){return '<button type="button" data-l="'+l+'" style="background:rgba(245,197,66,.14);border:1px solid rgba(245,197,66,.5);color:#f5c542;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;">'+(l==='Hindi'?'हिन्दी':l)+'</button>';}).join('')+
+        '<select data-more style="background:#111;color:#ddd;border:1px solid rgba(255,255,255,.3);border-radius:99px;padding:3px 6px;font-size:11px;max-width:96px;"><option value="">More…</option>'+
+        ['Bengali','Marathi','Gujarati','Tamil','Telugu','Kannada','Malayalam','Punjabi','Urdu','Nepali','Arabic','Spanish','French','German','Portuguese','Russian','Chinese','Japanese','Korean','Indonesian','Turkish'].map(function(l){return '<option>'+l+'</option>';}).join('')+'</select>'+
+        '<button type="button" data-orig="1" style="display:none;background:none;border:0;color:#aaa;text-decoration:underline;font-size:11px;cursor:pointer;">Original</button></div>';
+      var self = this;
+      el.querySelectorAll('.ag-tr button[data-l]').forEach(function(b){ b.onclick=function(){ self.translateMsg(el,b.getAttribute('data-l')); }; });
+      var sel = el.querySelector('.ag-tr select[data-more]');
+      sel.onchange = function(){ if(sel.value){ self.translateMsg(el, sel.value); sel.value=''; } };
+      el.querySelector('.ag-tr button[data-orig]').onclick = function(){ el.querySelector('.ag-body').innerHTML = self._fmt(el._raw); this.style.display='none'; };
+      self._scroll();
+    },
+    async translateMsg(el, lang){
+      var body = el.querySelector('.ag-body'), orig = el.querySelector('.ag-tr button[data-orig]');
+      body.style.opacity = .5;
+      try{
+        var res = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ messages:[{role:'user',content:el._raw}], lang: lang, translate: true })});
+        var d = await res.json();
+        if(d.reply){ body.innerHTML = this._fmt(d.reply); orig.style.display=''; }
+        else { body.innerHTML = this._fmt(el._raw) + '<br><em>Translate nahi ho paya, dobara try karo.</em>'; }
+      }catch(e){ body.innerHTML = this._fmt(el._raw) + '<br><em>Network error.</em>'; }
+      body.style.opacity = 1;
       this._scroll();
     },
 

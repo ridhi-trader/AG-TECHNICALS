@@ -1250,18 +1250,23 @@ async def admin_forgot_otp(req: AdminForgotReq, request: Request):
         return JSONResponse({'ok': True})
     return JSONResponse({'ok': False, 'error': 'Invalid action'})
 
+_CFG_CACHE = {}
+
 @app.get("/api/config/{key}")
 async def get_config(key: str):
     _k = (key or "").lower()
     if any(w in _k for w in ("pass", "secret", "token", "key_", "_key", "otp", "private")) and _k not in ("ag_products",):
         return JSONResponse({"ok": False, "value": None})
+    _hit = _CFG_CACHE.get(key)
+    if _hit and time.time() - _hit[0] < 30:
+        return JSONResponse(_hit[1], headers={"Cache-Control": "public, max-age=15"})
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "value": None})
     async with pool.acquire() as conn:
         row = await conn.fetchrow("SELECT value FROM ag_config WHERE key=$1", key)
-        if row:
-            return JSONResponse({"ok": True, "value": row["value"]})
-        return JSONResponse({"ok": False, "value": None})
+        out = {"ok": True, "value": row["value"]} if row else {"ok": False, "value": None}
+        if len(_CFG_CACHE) < 200: _CFG_CACHE[key] = (time.time(), out)
+        return JSONResponse(out, headers={"Cache-Control": "public, max-age=15"})
 
 class ConfigSetReq(BaseModel):
     key: str
@@ -1274,6 +1279,7 @@ async def set_config(req: ConfigSetReq, request: Request):
     if not pool: return JSONResponse({"ok": False})
     async with pool.acquire() as conn:
         await conn.execute("INSERT INTO ag_config(key,value,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(key) DO UPDATE SET value=$2,updated_at=NOW()", req.key, req.value)
+        _CFG_CACHE.clear()
         return JSONResponse({"ok": True})
 
 @app.post("/api/admin/backup")

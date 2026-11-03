@@ -396,7 +396,7 @@ function renderEAs(){
 }
 
 function cardPrice(ea){
-  var n=Number(ea.price3m)||30000;
+  var n=(Number(ea.price3m)>=100)?Number(ea.price3m):30000;
   function f(x){return '₹'+Number(x).toLocaleString('en-IN');}
   if(!(n>=100)) return '<div class="ea-cp"><span class="ea-cp-from">3 months from</span><span class="ea-cp-now">'+f(n)+'</span></div>';
   var m=Math.round(n*4/3/100)*100, hi=Math.round(m*1.5/100)*100, pc=Math.round(100-(n/m*100));
@@ -439,9 +439,9 @@ function openPriceModal(i){
   _buyEA = ea;
   document.getElementById('priceMdlName').textContent = ea.name||'EA';
   // Pricing: use ea.price3m/6m/12m if set, else defaults
-  var p3 = ea.price3m || 30000;
-  var p6 = ea.price6m || 54000;
-  var p12 = ea.price12m || 100000;
+  var p3 = (Number(ea.price3m) >= 100) ? ea.price3m : 30000;
+  var p6 = (Number(ea.price6m) >= 100) ? ea.price6m : 54000;
+  var p12 = (Number(ea.price12m) >= 100) ? ea.price12m : 100000;
   var waNum = '917357032456';
   function fmt(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
   // Diwali offer display: show a higher original price (struck), then the real price. Real amount is always decided by the server.

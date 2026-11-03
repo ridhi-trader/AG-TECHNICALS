@@ -1526,8 +1526,8 @@ async def _pay_resolve(conn, key: str):
         price = float(ea.get(field) or defaults[months])
     except Exception:
         price = float(defaults[months])
-    if price <= 0:
-        return None
+    if price < 100:  # test/blank value in admin: use the standard plan price
+        price = float(defaults[months])
     return {"key": key, "code": str(ea.get("pid") or "")[:30], "name": f"{str(ea.get('name'))[:90]} — {months} months", "price": price, "desc": ""}
 
 @app.get("/api/pay/catalog")

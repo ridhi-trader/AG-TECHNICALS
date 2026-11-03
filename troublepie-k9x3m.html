@@ -1851,10 +1851,11 @@ function prSlug(t){return String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,'-')
 function prDraw(){
   const el=document.getElementById('prRows'); if(!el) return;
   const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-  el.innerHTML=_pr.map((r,i)=>'<div style="display:grid;grid-template-columns:1fr 2fr 1fr 3fr auto auto;gap:8px;margin-bottom:8px;align-items:center;">'
+  el.innerHTML=_pr.map((r,i)=>'<div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr 3fr auto auto;gap:8px;margin-bottom:8px;align-items:center;">'
     +'<input class="inp" placeholder="Code e.g. WEB-0001" value="'+esc(r.key)+'" oninput="_pr['+i+'].key=this.value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g,\'\')">'
     +'<input class="inp" placeholder="Name" value="'+esc(r.name)+'" oninput="_pr['+i+'].name=this.value">'
     +'<input class="inp" type="number" min="0" placeholder="Price ₹" value="'+esc(r.price)+'" oninput="_pr['+i+'].price=this.value">'
+    +'<input class="inp" type="number" min="0" placeholder="Original ₹ (kata hua)" title="Original (kata hua) price. Khali = site 25% upar khud dikha degi" value="'+esc(r.mrp||'')+'" oninput="_pr['+i+'].mrp=this.value">'
     +'<input class="inp" placeholder="Short description" value="'+esc(r.desc)+'" oninput="_pr['+i+'].desc=this.value">'
     +'<label style="font-size:12px;white-space:nowrap;"><input type="checkbox" '+(r.active!==false?'checked':'')+' onchange="_pr['+i+'].active=this.checked"> Live</label>'
     +'<button class="btn-gold" style="padding:6px 10px;background:#3a1a1a;color:#ff8a8a;" onclick="_pr.splice('+i+',1);prDraw()">✕</button></div>').join('') || '<div class="card-sub">No items yet. Click “Add item”.</div>';
@@ -1869,7 +1870,7 @@ async function prSave(){
     if(!name&&!r.price) continue;
     if(!name||!(price>0)){ msg.textContent='Every item needs a name and a price above 0.'; return; }
     let key=String(r.key||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'')||prSlug(name)||('item-'+Date.now()); let k=key,n=2; while(used[k]){k=key+'-'+n++;} used[k]=1;
-    out.push({key:k,name:name,price:price,desc:String(r.desc||'').trim(),active:r.active!==false});
+    const mrp=parseFloat(r.mrp); out.push({key:k,name:name,price:price,mrp:(mrp>price?mrp:''),desc:String(r.desc||'').trim(),active:r.active!==false});
   }
   const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:'ag_pricing',value:JSON.stringify(out)})});
   const j=await r.json().catch(()=>({}));

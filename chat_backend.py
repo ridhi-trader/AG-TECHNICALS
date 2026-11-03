@@ -1355,7 +1355,12 @@ async def _pay_catalog(conn):
             price = 0
         key = str(it.get("key", "")).strip()
         if key and price > 0 and it.get("active", True):
+            try:
+                mrp = float(it.get("mrp") or 0)
+            except Exception:
+                mrp = 0
             out.append({"key": key, "code": key, "name": str(it.get("name", key))[:120], "price": price,
+                        "mrp": mrp if mrp > price else 0,
                         "desc": str(it.get("desc", ""))[:400]})
     return out
 

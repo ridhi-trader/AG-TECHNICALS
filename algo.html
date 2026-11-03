@@ -273,8 +273,15 @@ function requireLogin(){
   }
   return true;
 }
+function agVid(u){
+  // Cloudinary videos: serve a smaller auto-quality copy + a still poster. Anything else is left untouched.
+  var m=/^(https:\/\/res\.cloudinary\.com\/[^\/]+\/video\/upload\/)(.+)$/.exec(String(u||''));
+  if(!m) return {src:u,poster:'',orig:u};
+  return {src:m[1]+'q_auto:eco,w_960,vc_auto/'+m[2],poster:m[1]+'so_0.5,w_640,f_jpg,q_auto/'+m[2].replace(/\.[a-z0-9]+$/i,'.jpg'),orig:u};
+}
+function agVidFallback(v){ var o=v.getAttribute('data-orig'); if(o&&v.getAttribute('src')!==o){ v.setAttribute('src',o); v.load(); } }
 function videoLB(src){
-  var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.src=src;b.style.display='flex';v.play().catch(function(){});}
+  var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');var q=agVid(src);v.setAttribute('data-orig',q.orig);v.onerror=function(){agVidFallback(v);};v.src=q.src;b.style.display='flex';v.play().catch(function(){});}
 function closeVideoLB(){var b=document.getElementById('vlb'),v=document.getElementById('vlbvid');v.pause();v.removeAttribute('src');v.load();b.style.display='none';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideoLB();});
 </script>
@@ -354,7 +361,7 @@ function renderEAs(){
     var hasVideo = !!vsrc;
     var cardTop = hasVideo ?
       '<div class="ea-img" style="position:relative;cursor:pointer;" onclick="videoLB(\''+vsrc+'\')">'+
-        '<video src="'+vsrc+'#t=0.1" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;" muted playsinline preload="metadata"></video>'+
+        (agVid(vsrc).poster?'<img src="'+agVid(vsrc).poster+'" alt="" loading="lazy" decoding="async" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'">':'')+
         '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">'+
           '<div style="width:56px;height:56px;border-radius:50%;background:rgba(245,197,66,0.2);border:2px solid rgba(245,197,66,0.6);display:flex;align-items:center;justify-content:center;font-size:24px;">▶</div>'+
         '</div>'+
@@ -395,7 +402,7 @@ function openItem(i){
   if(vsrc){
     vwrap.style.display='block';
     vwrap.innerHTML='<div style="position:relative;margin-bottom:16px;">'+
-      '<video controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;max-height:220px;" src="'+vsrc+'"></video>'+
+      '<video controls playsinline preload="none" poster="'+agVid(vsrc).poster+'" data-orig="'+vsrc+'" onerror="agVidFallback(this)" style="width:100%;border-radius:12px;background:#000;max-height:220px;" src="'+agVid(vsrc).src+'"></video>'+
       '<div onclick="videoLB(this.getAttribute(\"data-src\"))" data-src="'+vsrc+'" style="position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);color:#f5c542;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⛶</div>'+
     '</div>';
   } else {

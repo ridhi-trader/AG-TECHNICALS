@@ -22,6 +22,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://s3.tradingview.com" crossorigin>
+<link rel="dns-prefetch" href="https://s.tradingview.com">
+<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap"></noscript>
 <style>
@@ -742,11 +744,19 @@ const news     = load('news',     D.news);
 })();
 
 /* ── VIDEO EMBED ── */
+function agVid(u){
+  // Cloudinary videos: serve a smaller auto-quality copy + a still poster. Anything else is left untouched.
+  var m=/^(https:\/\/res\.cloudinary\.com\/[^\/]+\/video\/upload\/)(.+)$/.exec(String(u||''));
+  if(!m) return {src:u,poster:'',orig:u};
+  return {src:m[1]+'q_auto:eco,w_960,vc_auto/'+m[2],poster:m[1]+'so_0.5,w_640,f_jpg,q_auto/'+m[2].replace(/\.[a-z0-9]+$/i,'.jpg'),orig:u};
+}
+function agVidFallback(v){ var o=v.getAttribute('data-orig'); if(o&&v.getAttribute('src')!==o){ v.setAttribute('src',o); v.load(); } }
 function videoEmbed(url){
   if(!url) return '';
   // Direct mp4 file
   if(url.match(/\.mp4$/i)){
-    return `<div class="video-wrap"><video controls style="width:100%;height:100%;border-radius:8px;background:#000;" playsinline><source src="${url}" type="video/mp4">Your browser does not support video.</video></div>`;
+    var q=agVid(url);
+    return `<div class="video-wrap"><video controls preload="none" poster="${q.poster}" data-orig="${url}" onerror="agVidFallback(this)" style="width:100%;height:100%;border-radius:8px;background:#000;" playsinline src="${q.src}">Your browser does not support video.</video></div>`;
   }
   let src='';
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
@@ -1199,6 +1209,9 @@ window._loadTVWidget = loadTVWidget;
     var io=new IntersectionObserver(function(es){ if(es[0].isIntersecting){ io.disconnect(); loadTV(); } },{rootMargin:'400px'});
     io.observe(box);
   } else { window.addEventListener('load', loadTV); }
+  // warm up: fetch the chart script while the browser is idle, so it is ready by the time the user scrolls here
+  function warm(){ var l=document.createElement('link'); l.rel='preload'; l.as='script'; l.href='https://s3.tradingview.com/tv.js'; document.head.appendChild(l); }
+  window.addEventListener('load', function(){ if(window.requestIdleCallback) requestIdleCallback(warm,{timeout:4000}); else setTimeout(warm,2500); });
 })();
 </script>
 <script src="ag-contact.js"></script>

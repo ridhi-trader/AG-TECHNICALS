@@ -4,7 +4,8 @@
   var DEFAULT = [
     {name:'WhatsApp', icon:'💬', url:'https://wa.me/917357032456', handle:'+91 73570 32456'},
     {name:'Telegram', icon:'✈️', url:'https://t.me/AG_Technical_fx', handle:'@AG_Technical_fx'},
-    {name:'Instagram', icon:'📸', url:'https://instagram.com/AG_Technical_fx', handle:'@AG_Technical_fx'}
+    {name:'Instagram', icon:'📸', url:'https://instagram.com/AG_Technical_fx', handle:'@AG_Technical_fx'},
+    {name:'Facebook', icon:'📘', url:'https://www.facebook.com/share/18dJqQsGwa/', handle:'AG Technicals'}
   ];
 
   function getContacts(){

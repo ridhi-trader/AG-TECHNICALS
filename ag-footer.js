@@ -61,7 +61,8 @@
   // WhatsApp / Telegram come from the same admin-editable 'contact' list that ag-contact.js uses.
   var CONTACT_DEFAULT = [
     { name: 'WhatsApp', url: 'https://wa.me/917357032456' },
-    { name: 'Telegram', url: 'https://t.me/AG_Technical_fx' }
+    { name: 'Telegram', url: 'https://t.me/AG_Technical_fx' },
+    { name: 'Facebook', url: 'https://www.facebook.com/share/18dJqQsGwa/' }
   ];
   function contactUrl(name) {
     var list = CONTACT_DEFAULT;
@@ -86,7 +87,8 @@
     { label: 'Refund Policy',    href: 'refund-policy' },
     { label: 'Support',          href: 'mailto:' + SUPPORT_EMAIL, id: 'ag-footer-support' },
     { label: 'WhatsApp',         href: contactUrl('WhatsApp'), ext: true },
-    { label: 'Telegram',         href: contactUrl('Telegram'), ext: true }
+    { label: 'Telegram',         href: contactUrl('Telegram'), ext: true },
+    { label: 'Facebook',         href: contactUrl('Facebook'), ext: true }
   ].filter(function (l) { return l.href; });
 
   function addStyle() {

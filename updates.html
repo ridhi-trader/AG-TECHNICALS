@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Daily Updates — AG Technicals</title>
+<meta name="description" content="Daily updates, videos, charts and trading notes from AG Technicals.">
+<link rel="canonical" href="https://www.agtechnicals.com/updates">
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--card:#0b0b0b;--g5:#f5c542;--g4:#c9960c;--t1:#fff;--t2:#e5e5e5;--t3:#bdbdbd;--border:#262626;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);z-index:10;}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--g5);text-decoration:none;}
+.back{font-size:13px;color:var(--t3);text-decoration:none;}
+.back:hover{color:var(--g5);}
+.wrap{max-width:680px;margin:0 auto;padding:32px 16px 80px;}
+.tag{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:8px;}
+h1{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:800;margin-bottom:6px;}
+.sub{color:var(--t3);font-size:14px;margin-bottom:28px;line-height:1.6;}
+.post{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:18px;}
+.post-media img,.post-media video{display:block;width:100%;max-height:560px;object-fit:contain;background:#000;}
+.post-body{padding:18px 20px 20px;}
+.post-date{font-size:11px;color:var(--g5);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;}
+.post-title{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;margin-bottom:8px;line-height:1.35;}
+.post-text{font-size:14.5px;color:var(--t2);line-height:1.7;white-space:pre-wrap;word-wrap:break-word;}
+.post-link{display:inline-block;margin-top:12px;font-size:13px;font-weight:600;color:#000;background:var(--g5);padding:8px 16px;border-radius:8px;text-decoration:none;}
+.empty,.more{text-align:center;color:var(--t3);padding:40px 0;font-size:14px;}
+.more button{background:transparent;border:1px solid var(--g4);color:var(--g5);padding:10px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;}
+</style>
+</head>
+<body>
+<nav><a class="logo" href="/">AG Technicals</a><a class="back" href="/">← Home</a></nav>
+<div class="wrap">
+  <div class="tag">Daily Updates</div>
+  <h1>Latest from AG</h1>
+  <p class="sub">Fresh videos, charts and notes, posted daily.</p>
+  <div id="feed"><div class="empty">Loading…</div></div>
+  <div class="more" id="more" style="display:none"><button onclick="load()">Load older posts</button></div>
+</div>
+<script>
+var last=0, feed=document.getElementById('feed'), first=true;
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function safeUrl(u){u=String(u||'');return (/^https?:\/\//i.test(u)||u.indexOf('/uploaded_files/')===0)?u:'';}
+function when(iso){try{return new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return '';}}
+function card(p){
+  var m='', u=safeUrl(p.media_url);
+  if(u&&p.media_type==='image') m='<div class="post-media"><img loading="lazy" src="'+esc(u)+'" alt="'+esc(p.title||'AG update')+'"></div>';
+  else if(u&&p.media_type==='video') m='<div class="post-media"><video controls playsinline preload="metadata" src="'+esc(u)+'"></video></div>';
+  else if(u&&p.media_type==='link') m='';
+  var l=safeUrl(p.link)||(p.media_type==='link'?u:'');
+  return '<article class="post">'+m+'<div class="post-body"><div class="post-date">'+esc(when(p.created_at))+'</div>'
+   +(p.title?'<div class="post-title">'+esc(p.title)+'</div>':'')
+   +(p.body?'<div class="post-text">'+esc(p.body)+'</div>':'')
+   +(l?'<a class="post-link" href="'+esc(l)+'" target="_blank" rel="noopener noreferrer">Open link →</a>':'')
+   +'</div></article>';
+}
+function load(){
+  fetch('/api/posts?limit=10'+(last?'&before='+last:'')).then(function(r){return r.json();}).then(function(d){
+    var ps=(d&&d.posts)||[];
+    if(first){feed.innerHTML='';first=false;}
+    if(!ps.length&&!last){feed.innerHTML='<div class="empty">Updates coming soon. Check back tomorrow.</div>';return;}
+    ps.forEach(function(p){feed.insertAdjacentHTML('beforeend',card(p));last=p.id;});
+    document.getElementById('more').style.display=d.more?'block':'none';
+  }).catch(function(){ if(first) feed.innerHTML='<div class="empty">Could not load. Please refresh.</div>'; });
+}
+load();
+</script>
+</body>
+</html>

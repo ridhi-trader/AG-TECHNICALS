@@ -905,6 +905,15 @@ async def init_db():
                 value TEXT NOT NULL,
                 updated_at TIMESTAMP DEFAULT NOW()
             );
+            CREATE TABLE IF NOT EXISTS ag_posts (
+                id SERIAL PRIMARY KEY,
+                title TEXT DEFAULT '',
+                body TEXT DEFAULT '',
+                media_url TEXT DEFAULT '',
+                media_type TEXT DEFAULT '',
+                link TEXT DEFAULT '',
+                created_at TIMESTAMP DEFAULT NOW()
+            );
         """)
         # Load licenses from DB into bridge_module
         rows = await conn.fetch("SELECT lid, secret, user_email, account, active, expires_at FROM bridge_licenses WHERE active=TRUE")
@@ -1283,6 +1292,110 @@ async def set_config(req: ConfigSetReq, request: Request):
         await conn.execute("INSERT INTO ag_config(key,value,updated_at) VALUES($1,$2,NOW()) ON CONFLICT(key) DO UPDATE SET value=$2,updated_at=NOW()", req.key, req.value)
         _CFG_CACHE.clear()
         return JSONResponse({"ok": True})
+
+
+# ── DAILY UPDATES (posts feed) ────────────────────────────────────────────────
+_POST_IMG = {"jpg","jpeg","png","webp","gif"}
+_POST_VID = {"mp4","webm","mov","m4v"}
+
+def _post_auth(request):
+    """Admin token OR the app key (X-Post-Key, stored as sha256 hash in ag_config)."""
+    if request.headers.get("X-Admin-Token"):
+        verify_admin_token(request); return
+    key = request.headers.get("X-Post-Key", "")
+    ip = client_ip(request)
+    fails = [t for t in _RL.get("postfail|"+ip, []) if time.time() - t < 900]
+    if len(fails) >= 8:
+        raise HTTPException(status_code=429, detail="Too many failed attempts. Try later.")
+    return key  # verified async in the endpoint (needs DB)
+
+async def _post_key_ok(request, key):
+    ip = client_ip(request)
+    pool = await get_db()
+    ok = False
+    if pool and key and len(key) >= 20:
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow("SELECT value FROM ag_config WHERE key='app_post_key_hash'")
+        if row and secrets.compare_digest(row["value"].encode(), _hashlib.sha256(key.encode()).hexdigest().encode()):
+            ok = True
+    if not ok:
+        f = [t for t in _RL.get("postfail|"+ip, []) if time.time() - t < 900]
+        f.append(time.time()); _RL["postfail|"+ip] = f
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+@app.get("/api/posts")
+async def list_posts(limit: int = 20, before: int = 0):
+    limit = max(1, min(int(limit), 50))
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "posts": []})
+    async with pool.acquire() as conn:
+        if before > 0:
+            rows = await conn.fetch("SELECT * FROM ag_posts WHERE id<$1 ORDER BY id DESC LIMIT $2", before, limit)
+        else:
+            rows = await conn.fetch("SELECT * FROM ag_posts ORDER BY id DESC LIMIT $1", limit)
+    posts = [{"id": r["id"], "title": r["title"], "body": r["body"], "media_url": r["media_url"],
+              "media_type": r["media_type"], "link": r["link"],
+              "created_at": r["created_at"].isoformat() + "Z"} for r in rows]
+    return JSONResponse({"ok": True, "posts": posts, "more": len(posts) == limit},
+                        headers={"Cache-Control": "public, max-age=20"})
+
+@app.post("/api/posts")
+async def create_post(request: Request, title: str = Form(default=""), body: str = Form(default=""),
+                      link: str = Form(default=""), media_url: str = Form(default=""),
+                      file: Optional[UploadFile] = File(default=None)):
+    key = _post_auth(request)
+    if key is not None:
+        await _post_key_ok(request, key)
+    title, body, link, media_url = title.strip()[:200], body.strip()[:5000], link.strip()[:500], media_url.strip()[:500]
+    for u in (link, media_url):
+        if u and not (u.startswith("https://") or u.startswith("http://") or u.startswith("/uploaded_files/")):
+            raise HTTPException(status_code=400, detail="Links must start with https://")
+    mtype = ""
+    if file is not None and file.filename:
+        ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+        if ext in _POST_IMG: mtype = "image"
+        elif ext in _POST_VID: mtype = "video"
+        else: raise HTTPException(status_code=400, detail="Only jpg/png/webp/gif images or mp4/webm/mov videos")
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        name = f"post_{uuid.uuid4().hex[:10]}.{ext}"
+        with open(os.path.join(UPLOAD_DIR, name), "wb") as f:
+            while True:
+                chunk = await file.read(4 * 1024 * 1024)
+                if not chunk: break
+                f.write(chunk)
+        media_url = f"/uploaded_files/{name}"
+    elif media_url:
+        ml = media_url.lower().split("?")[0]
+        mtype = "video" if ml.rsplit(".",1)[-1] in _POST_VID else "image" if ml.rsplit(".",1)[-1] in _POST_IMG else "link"
+    if not (title or body or media_url):
+        raise HTTPException(status_code=400, detail="Empty post")
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        pid = await conn.fetchval("INSERT INTO ag_posts(title,body,media_url,media_type,link) VALUES($1,$2,$3,$4,$5) RETURNING id",
+                                  title, body, media_url, mtype, link)
+    return {"ok": True, "id": pid}
+
+@app.delete("/api/posts/{pid}")
+async def delete_post(pid: int, request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        await conn.execute("DELETE FROM ag_posts WHERE id=$1", pid)
+    return {"ok": True}
+
+@app.post("/api/admin/post-key")
+async def make_post_key(request: Request):
+    """Make a new app key (old one stops working). Shown once; only its hash is stored."""
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    key = "agp_" + secrets.token_urlsafe(32)
+    async with pool.acquire() as conn:
+        await conn.execute("INSERT INTO ag_config(key,value,updated_at) VALUES('app_post_key_hash',$1,NOW()) ON CONFLICT(key) DO UPDATE SET value=$1,updated_at=NOW()",
+                           _hashlib.sha256(key.encode()).hexdigest())
+    return {"ok": True, "key": key}
 
 @app.post("/api/admin/backup")
 async def admin_backup(request: Request):

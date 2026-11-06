@@ -246,6 +246,7 @@ async function verifyAdminOTP(){
       <button class="sb-btn" onclick="nav('about',this)"><span class="sb-icon">👤</span>About Us</button>
       <button class="sb-btn" onclick="nav('faq',this)"><span class="sb-icon">❓</span>FAQ</button>
       <button class="sb-btn" onclick="nav('newsed',this)"><span class="sb-icon">📰</span>News & Dossier</button>
+      <button class="sb-btn" onclick="nav('dposts',this)"><span class="sb-icon">📅</span>Daily Updates</button>
 
       <div class="sb-group">Files & System</div>
       <button class="sb-btn" onclick="nav('uploads',this)"><span class="sb-icon">📁</span>File Uploads</button>
@@ -641,6 +642,27 @@ async function verifyAdminOTP(){
       </div>
     </div>
 
+    <!-- DAILY UPDATES PAGE -->
+    <div class="page" id="page-dposts">
+      <div class="ph"><div class="ph-tag">CONTENT</div><div class="ph-title">Daily <span>Updates</span></div></div>
+      <p style="color:var(--t3);font-size:13px;margin-bottom:16px;">Post a photo, video or text. It shows on the public page <b>/updates</b>.</p>
+      <div class="card" style="padding:18px;margin-bottom:18px;">
+        <div class="field"><input class="inp" id="dpTitle" placeholder="Title (optional)" maxlength="200"></div>
+        <div class="field"><textarea class="inp" id="dpBody" placeholder="Write your update…" maxlength="5000"></textarea></div>
+        <div class="field"><input type="file" id="dpFile" accept="image/*,video/mp4,video/webm,video/quicktime" style="color:var(--t3);font-size:12px;"></div>
+        <div class="field"><input class="inp" id="dpMedia" placeholder="…or paste an image/video link (https://…)"></div>
+        <div class="field"><input class="inp" id="dpLink" placeholder="Button link (optional, https://…)"></div>
+        <button class="btn-gold" id="dpBtn" onclick="dpPost()">Post update</button>
+      </div>
+      <div class="card" style="padding:18px;margin-bottom:18px;">
+        <div style="font-weight:700;margin-bottom:6px;">App connection key</div>
+        <p style="color:var(--t3);font-size:12px;line-height:1.6;margin-bottom:10px;">Your app sends posts to <code>/api/posts</code> with header <code>X-Post-Key: &lt;key&gt;</code>. The key is shown only once. A new key makes the old one stop working.</p>
+        <button class="btn-gold" onclick="dpKey()">Make new key</button>
+        <div id="dpKeyBox" style="display:none;margin-top:10px;"><input class="inp" id="dpKeyVal" readonly onclick="this.select()"></div>
+      </div>
+      <div id="dpList"><div style="color:var(--t3);">Loading…</div></div>
+    </div>
+
     <!-- PAGE CONTENT TAB PAGE -->
     <div class="page" id="page-pagecms">
       <div class="ph"><div class="ph-tag">CMS</div><div class="ph-title">Page <span>Content</span></div></div>
@@ -943,6 +965,41 @@ async function uploadToServer(file, onProg){
 }
 
 /* ── NAV ── */
+/* ══════════════ DAILY UPDATES ══════════════ */
+async function loadDposts(){
+  const box=document.getElementById('dpList');
+  try{
+    const r=await fetch(API+'/api/posts?limit=30'); const d=await r.json();
+    const ps=d.posts||[];
+    box.innerHTML=ps.length?ps.map(p=>'<div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:center;">'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:11px;color:var(--t3);">'+escH(new Date(p.created_at).toLocaleString('en-IN'))+' · '+escH(p.media_type||'text')+'</div>'
+      +'<div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escH(p.title||p.body||p.media_url||'(media)')+'</div></div>'
+      +'<button class="btn-out" onclick="dpDel('+Number(p.id)+')">Delete</button></div>').join(''):'<div style="color:var(--t3);">No posts yet.</div>';
+  }catch(e){box.innerHTML='<div style="color:var(--t3);">Could not load.</div>';}
+}
+async function dpPost(){
+  const btn=document.getElementById('dpBtn'); const fd=new FormData();
+  fd.append('title',document.getElementById('dpTitle').value); fd.append('body',document.getElementById('dpBody').value);
+  fd.append('media_url',document.getElementById('dpMedia').value); fd.append('link',document.getElementById('dpLink').value);
+  const f=document.getElementById('dpFile').files[0]; if(f) fd.append('file',f);
+  btn.disabled=true; btn.textContent='Posting…';
+  try{
+    const r=await adminFetch(API+'/api/posts',{method:'POST',body:fd}); const d=await r.json().catch(()=>({}));
+    if(r.ok&&d.ok){toast('Posted ✓');['dpTitle','dpBody','dpMedia','dpLink','dpFile'].forEach(i=>document.getElementById(i).value='');loadDposts();}
+    else toast('Failed: '+(d.detail||r.status),'error');
+  }catch(e){toast('Failed','error');}
+  btn.disabled=false; btn.textContent='Post update';
+}
+async function dpDel(id){
+  if(!confirm('Delete this post?')) return;
+  const r=await adminFetch(API+'/api/posts/'+id,{method:'DELETE'}); if(r.ok){toast('Deleted');loadDposts();}
+}
+async function dpKey(){
+  if(!confirm('Make a new key? The old key will stop working.')) return;
+  const r=await adminFetch(API+'/api/admin/post-key',{method:'POST'}); const d=await r.json().catch(()=>({}));
+  if(d.key){document.getElementById('dpKeyBox').style.display='block';const i=document.getElementById('dpKeyVal');i.value=d.key;i.select();}
+}
+
 function nav(id, btn){
   // Handle product-specific sidebar links
   if(id.startsWith('prod_')){
@@ -964,7 +1021,7 @@ function nav(id, btn){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
-  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS};
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS,dposts:loadDposts};
   if(id==='pricing') prLoad();
   if(loaders[id]) loaders[id]();
 }

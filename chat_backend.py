@@ -668,6 +668,9 @@ _groq_model = ""
 async def chat(req: ChatReq, request: Request):
     rate_limit(request, "chat", 20, 60)
     rate_limit(request, "chatday", 400, 86400)
+    return await _chat_core(req)
+
+async def _chat_core(req: ChatReq):
     try:
         req.messages = [Msg(role=m.role, content=(m.content or "")[:2000]) for m in req.messages[-16:]]
         try:
@@ -768,6 +771,87 @@ async def chat(req: ChatReq, request: Request):
     except Exception as e:
         print(f"Chat endpoint exception: {e}")
         return {"reply": "Network error. Please try again."}
+
+# ── WHATSAPP BOT (Meta Cloud API webhook) ─────────────────────────────────────
+# Env (set in Railway only): WA_TOKEN, WA_PHONE_ID, WA_VERIFY_TOKEN, WA_APP_SECRET
+from fastapi.responses import PlainTextResponse as _PlainText
+_WA_SEEN = {}      # message id -> time (dedupe Meta retries)
+_WA_HIST = {}      # sender -> (last_time, [messages])
+_WA_HITS = {}      # sender -> [times]
+
+@app.get("/api/wa/webhook")
+async def wa_verify(request: Request):
+    q = request.query_params
+    tok = os.environ.get("WA_VERIFY_TOKEN", "")
+    if tok and q.get("hub.mode") == "subscribe" and secrets.compare_digest(q.get("hub.verify_token", "").encode(), tok.encode()):
+        return _PlainText(q.get("hub.challenge", ""))
+    raise HTTPException(status_code=403, detail="Forbidden")
+
+async def _wa_send(to: str, text: str):
+    token, pid = os.environ.get("WA_TOKEN", ""), os.environ.get("WA_PHONE_ID", "")
+    if not (token and pid):
+        print("WA send skipped: WA_TOKEN / WA_PHONE_ID not set"); return
+    try:
+        async with httpx.AsyncClient(timeout=20) as c:
+            r = await c.post(f"https://graph.facebook.com/v21.0/{pid}/messages",
+                             headers={"Authorization": f"Bearer {token}"},
+                             json={"messaging_product": "whatsapp", "to": to, "type": "text",
+                                   "text": {"body": text[:1500], "preview_url": False}})
+        if r.status_code >= 300:
+            print(f"WA send error {r.status_code}: {r.text[:200]}")
+    except Exception as e:
+        print(f"WA send exception: {e}")
+
+async def _wa_handle(sender: str, text: str):
+    now = time.time()
+    hits = [t for t in _WA_HITS.get(sender, []) if now - t < 3600]
+    if len(hits) >= 30:
+        return
+    hits.append(now); _WA_HITS[sender] = hits
+    last, hist = _WA_HIST.get(sender, (0, []))
+    if now - last > 6 * 3600: hist = []
+    hist = (hist + [Msg(role="user", content=text[:1000])])[-8:]
+    try:
+        out = await _chat_core(ChatReq(messages=hist, lang="Hinglish"))
+        reply = (out or {}).get("reply") or "Please contact us on Telegram @AG_Technical_fx."
+    except Exception as e:
+        print(f"WA chat error: {e}")
+        reply = "Abhi reply nahi de pa raha. Please Telegram @AG_Technical_fx pe message karein."
+    hist.append(Msg(role="assistant", content=reply[:1000]))
+    _WA_HIST[sender] = (now, hist[-8:])
+    if len(_WA_HIST) > 3000:
+        for k in list(_WA_HIST.keys())[:500]: _WA_HIST.pop(k, None)
+    await _wa_send(sender, reply)
+
+@app.post("/api/wa/webhook")
+async def wa_incoming(request: Request):
+    raw = await request.body()
+    secret = os.environ.get("WA_APP_SECRET", "")
+    if not secret:
+        raise HTTPException(status_code=503, detail="Not configured")
+    sig = request.headers.get("X-Hub-Signature-256", "")
+    good = "sha256=" + _sec_hmac.new(secret.encode(), raw, _hashlib.sha256).hexdigest()
+    if not secrets.compare_digest(sig.encode(), good.encode()):
+        raise HTTPException(status_code=403, detail="Bad signature")
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return {"ok": True}
+    now = time.time()
+    for entry in data.get("entry", []) or []:
+        for ch in entry.get("changes", []) or []:
+            for m in (ch.get("value", {}) or {}).get("messages", []) or []:
+                mid, sender = m.get("id", ""), str(m.get("from", ""))
+                if not mid or not sender.isdigit() or now - _WA_SEEN.get(mid, 0) < 86400:
+                    continue
+                _WA_SEEN[mid] = now
+                if len(_WA_SEEN) > 5000:
+                    for k in list(_WA_SEEN.keys())[:1000]: _WA_SEEN.pop(k, None)
+                if m.get("type") == "text":
+                    asyncio.create_task(_wa_handle(sender, (m.get("text", {}) or {}).get("body", "")))
+                else:
+                    asyncio.create_task(_wa_send(sender, "Abhi main sirf text message samajh sakta hu. Apna sawal likh ke bhejein."))
+    return {"ok": True}
 
 @app.get("/api/cache/clear")
 async def clear_cache():

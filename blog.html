@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Daily Updates — AG Technicals</title>
-<meta name="description" content="Daily updates, videos, charts and trading notes from AG Technicals.">
-<link rel="canonical" href="https://www.agtechnicals.com/updates">
+<title>Blog — AG Technicals</title>
+<meta name="description" content="Blog posts, videos, charts and trading notes from AG Technicals.">
+<link rel="canonical" href="https://www.agtechnicals.com/blog">
 <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=2">
@@ -37,9 +37,9 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;margin-
 <body>
 <nav><a class="logo" href="/">AG Technicals</a><a class="back" href="/">← Home</a></nav>
 <div class="wrap">
-  <div class="tag">Daily Updates</div>
-  <h1>Latest from AG</h1>
-  <p class="sub">Fresh videos, charts and notes, posted daily.</p>
+  <div class="tag">AG Blog</div>
+  <h1>AG Technicals Blog</h1>
+  <p class="sub">Fresh posts, videos and charts from AG.</p>
   <div id="feed"><div class="empty">Loading…</div></div>
   <div class="more" id="more" style="display:none"><button onclick="load()">Load older posts</button></div>
 </div>
@@ -64,7 +64,7 @@ function load(){
   fetch('/api/posts?limit=10'+(last?'&before='+last:'')).then(function(r){return r.json();}).then(function(d){
     var ps=(d&&d.posts)||[];
     if(first){feed.innerHTML='';first=false;}
-    if(!ps.length&&!last){feed.innerHTML='<div class="empty">Updates coming soon. Check back tomorrow.</div>';return;}
+    if(!ps.length&&!last){feed.innerHTML='<div class="empty">Blog posts coming soon. Check back soon.</div>';return;}
     ps.forEach(function(p){feed.insertAdjacentHTML('beforeend',card(p));last=p.id;});
     document.getElementById('more').style.display=d.more?'block':'none';
   }).catch(function(){ if(first) feed.innerHTML='<div class="empty">Could not load. Please refresh.</div>'; });

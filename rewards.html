@@ -53,7 +53,7 @@ h2{font-family:'Space Grotesk',sans-serif;font-size:17px;margin:26px 0 10px;text
   try{ var u=JSON.parse(localStorage.getItem('ag_user')||'null'); if(u&&u.email) user=u; }catch(e){}
   function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   if(!user){ app.innerHTML='<p class="sub">Please log in to spin.</p><div class="login"><a href="/user-login">Log in / Join free</a></div>'; return; }
-  app.innerHTML='<div class="wheelbox"><div class="pin"></div><canvas id="cv" width="600" height="600"></canvas></div><button class="btn" id="go">SPIN</button><div class="msg" id="msg" role="status" aria-live="polite"></div><div id="res"></div><h2>My vouchers</h2><div id="mine">Loading…</div>';
+  app.innerHTML='<div class="wheelbox"><div class="pin"></div><canvas id="cv" width="600" height="600"></canvas></div><button class="btn" id="go">SPIN</button><div class="msg" id="msg" role="status" aria-live="polite"></div><div id="res"></div><h2>Daily quiz <span style="font-size:12px;color:#8c8c8c">(right answer = 1 extra spin)</span></h2><div id="quiz" class="win" style="text-align:left">Loading…</div><h2>My vouchers</h2><div id="mine">Loading…</div><h2>Refer a friend</h2><div id="ref" class="win" style="text-align:left">Loading…</div>';
   var cv=document.getElementById('cv'), cx=cv.getContext('2d'), go=document.getElementById('go'), msg=document.getElementById('msg'), res=document.getElementById('res');
   function draw(){
     var n=SEG.length, a=2*Math.PI/n, R=300; cx.clearRect(0,0,600,600);
@@ -70,11 +70,35 @@ h2{font-family:'Space Grotesk',sans-serif;font-size:17px;margin:26px 0 10px;text
     fetch('/api/rewards/my?email='+encodeURIComponent(user.email)).then(function(r){return r.json();}).then(function(j){
       var m=document.getElementById('mine');
       if(!j.ok){ m.textContent='Log in again to see your vouchers.'; return; }
-      if(j.spun_today){ go.disabled=true; go.textContent='Come back tomorrow'; }
+      if(j.spun_today){ go.disabled=true; go.textContent='Come back tomorrow'; } else if(!busy){ go.disabled=false; go.textContent='SPIN'; }
       m.innerHTML=(j.vouchers&&j.vouchers.length)?j.vouchers.map(function(v){return '<div class="v"><span><b>'+esc(v.code)+'</b> · '+Number(v.pct)+'% off</span><span style="color:#8c8c8c">till '+esc(new Date(v.expires).toLocaleDateString('en-IN'))+'</span></div>';}).join('')+'<p class="fine">Type the code in the Voucher box when you buy.</p>':'<p class="sub">No active vouchers yet.</p>';
     }).catch(function(){document.getElementById('mine').textContent='Could not load.';});
   }
   mine();
+  function quiz(){
+    var el=document.getElementById('quiz');
+    fetch('/api/rewards/quiz?email='+encodeURIComponent(user.email)).then(function(r){return r.json();}).then(function(j){
+      if(!j.ok){ el.textContent='Log in again.'; return; }
+      if(j.answered){ el.innerHTML=(j.correct?'✅ Correct today! Extra spin unlocked.':'❌ Not this time. Try again tomorrow.')+'<div class="fine">'+esc(j.explain||'')+'</div>'; return; }
+      el.innerHTML='<div style="font-weight:600;margin-bottom:10px">'+esc(j.q)+'</div>'+j.options.map(function(o,i){return '<button class="cp" style="display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px 12px;font-size:13px" data-i="'+i+'">'+esc(o)+'</button>';}).join('');
+      el.querySelectorAll('button').forEach(function(b){ b.onclick=function(){
+        el.querySelectorAll('button').forEach(function(x){x.disabled=true;});
+        fetch('/api/rewards/quiz',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email,choice:Number(b.getAttribute('data-i'))})}).then(function(r){return r.json();}).then(function(a){
+          if(!a.ok){ el.textContent=a.error||'Error'; return; }
+          el.innerHTML=(a.correct?'✅ Correct! You got 1 extra spin today.':'❌ Wrong answer.')+'<div class="fine">'+esc(a.explain||'')+'</div>'; mine();
+        }).catch(function(){ el.textContent='Network error.'; });
+      };});
+    }).catch(function(){ el.textContent='Could not load.'; });
+  }
+  quiz();
+  (function(){
+    var el=document.getElementById('ref');
+    fetch('/api/rewards/ref?email='+encodeURIComponent(user.email)).then(function(r){return r.json();}).then(function(j){
+      if(!j.ok){ el.textContent='Could not load.'; return; }
+      el.innerHTML='Share your code. Your friend gets <b style="display:inline;font-size:inherit">10% off</b> their first purchase. When they buy, you get a <b style="display:inline;font-size:inherit">10% voucher</b>.<b>'+esc(j.code)+'</b><button class="cp" id="cpr">Copy</button><div class="fine">Friends joined so far: '+Number(j.friends)+' (max 10 rewards). Friend must enter your code in the Voucher box at checkout. Not valid on your own purchases.</div>';
+      document.getElementById('cpr').onclick=function(){ try{navigator.clipboard.writeText(j.code);this.textContent='Copied';}catch(e){} };
+    }).catch(function(){ el.textContent='Could not load.'; });
+  })();
   go.onclick=function(){
     if(busy) return; busy=true; go.disabled=true; msg.textContent='Spinning…'; res.innerHTML='';
     fetch('/api/rewards/spin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email})}).then(function(r){return r.json();}).then(function(j){

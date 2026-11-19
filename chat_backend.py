@@ -1512,9 +1512,15 @@ async def rewards_spin(req: SpinReq, request: Request):
         code = ""
         if pct:
             code = "AG" + "".join(r.choice(_VCH_ALPHA) for _ in range(6))
-        claimed = await conn.fetchval(
-            "INSERT INTO ag_spins(email,spin_day,prize,code) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING RETURNING 1",
-            email, day, f"{pct}%" if pct else "none", code)
+        keys = [email]
+        if await conn.fetchval("SELECT 1 FROM ag_quiz WHERE email=$1 AND qday=$2 AND ok=TRUE", email, day):
+            keys.append(email + "|bonus")
+        claimed = None
+        for k in keys:
+            claimed = await conn.fetchval(
+                "INSERT INTO ag_spins(email,spin_day,prize,code) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING RETURNING 1",
+                k, day, f"{pct}%" if pct else "none", code)
+            if claimed: break
         if not claimed:
             prev = await conn.fetchrow("SELECT prize,code FROM ag_spins WHERE email=$1 AND spin_day=$2", email, day)
             return JSONResponse({"ok": False, "already": True, "error": "You already spun today. Come back tomorrow!",
@@ -1537,9 +1543,112 @@ async def rewards_my(email: str, request: Request):
         if not await _verified_user(conn, email):
             return JSONResponse({"ok": False, "vouchers": []})
         rows = await conn.fetch("SELECT code,pct,max_uses,used,expires_at FROM ag_vouchers WHERE owner_email=$1 AND active=TRUE AND used<max_uses AND (expires_at IS NULL OR expires_at>NOW()) ORDER BY created_at DESC LIMIT 20", email)
-        spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 AND spin_day=$2", email, _ist_today())
+        day = _ist_today()
+        spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 AND spin_day=$2", email, day)
+        if spun and await conn.fetchval("SELECT 1 FROM ag_quiz WHERE email=$1 AND qday=$2 AND ok=TRUE", email, day):
+            spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 AND spin_day=$2", email + "|bonus", day)
     return {"ok": True, "spun_today": bool(spun),
             "vouchers": [{"code": r["code"], "pct": r["pct"], "expires": (r["expires_at"].isoformat() + "Z") if r["expires_at"] else ""} for r in rows]}
+
+
+# ── REWARDS: daily quiz + referral ────────────────────────────────────────────
+_QUIZ = [
+ ("What does 'pip' usually mean in forex?", ["Smallest standard price move (e.g. 0.0001)", "A type of order", "Broker fee", "Account currency"], 0, "A pip is the standard smallest quoted move, 0.0001 for most pairs."),
+ ("A stop-loss order is used to...", ["Guarantee profit", "Limit the loss on a trade", "Increase leverage", "Open a hedge"], 1, "A stop-loss closes the trade at a set price to cap the loss."),
+ ("If you BUY a pair and price goes UP, your trade is...", ["In profit", "In loss", "Closed", "Unchanged"], 0, "Buy profits when price rises."),
+ ("Higher leverage mainly...", ["Reduces risk", "Magnifies both gains and losses", "Removes spread", "Guarantees profit"], 1, "Leverage multiplies exposure, so both profit and loss grow."),
+ ("The spread is the difference between...", ["Open and close price", "Bid and ask price", "High and low of the day", "Two currencies"], 1, "Spread = ask minus bid, a cost of trading."),
+ ("What does a 1:2 risk-reward ratio mean?", ["Risk 2 to gain 1", "Risk 1 to aim for 2", "Win rate of 50%", "Two trades at once"], 1, "You risk 1 unit aiming to make 2 units."),
+ ("A candle with a long lower wick often shows...", ["Sellers pushed down but buyers rejected the low", "Market closed", "No volume", "Guaranteed reversal"], 0, "The long wick shows price was rejected from lower levels. It is a hint, not a guarantee."),
+ ("In SMC (Smart Money Concepts), 'liquidity' often sits...", ["Above swing highs and below swing lows", "Only at round numbers", "Only at news time", "At the daily open only"], 0, "Stop orders cluster above highs and below lows."),
+ ("What is 'drawdown'?", ["Profit from a trade", "Fall from an equity peak", "A broker bonus", "Margin call level"], 1, "Drawdown is the drop from a peak in account equity."),
+ ("Which is a trend-following tool?", ["Moving average", "Spread", "Swap", "Lot size"], 0, "Moving averages smooth price and help see trend direction."),
+ ("1 standard lot in forex equals how many units of base currency?", ["1,000", "10,000", "100,000", "1,000,000"], 2, "A standard lot is 100,000 units."),
+ ("Risking a small % of the account per trade helps to...", ["Survive losing streaks", "Guarantee wins", "Avoid spreads", "Remove emotions fully"], 0, "Small risk per trade keeps you in the game during losing streaks."),
+ ("RSI above 70 is commonly read as...", ["Oversold", "Overbought", "Trend ended for sure", "No signal"], 1, "RSI above 70 is called overbought, but price can stay overbought in strong trends."),
+ ("What is 'slippage'?", ["Difference between expected and actual fill price", "A type of chart", "A broker bonus", "A pending order"], 0, "Slippage happens when the order fills at a different price than requested."),
+ ("A 'Buy Limit' order is placed...", ["Above current price", "Below current price", "At any price", "Only at market"], 1, "Buy Limit waits for price to fall to your level."),
+ ("Which timeframe shows the most detail per candle period?", ["Monthly", "Weekly", "Daily", "1 minute"], 3, "Lower timeframes show smaller periods, so more detail and more noise."),
+ ("What does an Expert Advisor (EA) do in MT5?", ["Automates trading with coded rules", "Gives guaranteed profit", "Replaces the broker", "Sends news"], 0, "An EA runs trading rules automatically. It does not guarantee profit."),
+ ("Margin is...", ["Money held as collateral for open trades", "Broker profit", "Daily swap", "Trade commission"], 0, "Margin is the collateral your broker locks for open positions."),
+ ("Backtesting means...", ["Testing a strategy on past data", "Trading with real money only", "Copying a friend", "Closing all trades"], 0, "Backtests run rules on historical data. Past results do not guarantee future results."),
+ ("Which of these is a risk-management habit?", ["Using a stop-loss on every trade", "Doubling after each loss", "Removing the stop when losing", "Using max leverage"], 0, "Fixed stops and sizing are core risk control. Doubling up is dangerous."),
+ ("ATR (Average True Range) measures...", ["Volatility", "Trend direction", "Volume", "Spread"], 0, "ATR shows how much price typically moves, useful for stop distance."),
+ ("A 'swap' in forex is...", ["Fee or credit for holding a trade overnight", "Changing brokers", "Exchange of two pairs", "Spread"], 0, "Swap is the overnight holding cost or credit."),
+ ("Support level is where price has...", ["Often stopped falling before", "Never touched", "Always broken", "Only traded at night"], 0, "Support is a zone where buyers stepped in before."),
+ ("What is a 'breakout'?", ["Price moving beyond a support/resistance zone", "A broken EA", "A broker holiday", "A lost connection"], 0, "A breakout is price leaving a defined range or level."),
+ ("Overtrading usually...", ["Hurts results through fees and emotions", "Always increases profit", "Removes risk", "Is required daily"], 0, "More trades are not better trades. Quality over quantity."),
+ ("Demo account is useful to...", ["Practice without risking real money", "Earn real profit", "Skip learning", "Avoid spreads forever"], 0, "A demo account lets you test strategies safely."),
+ ("Which pair is called 'Cable'?", ["GBP/USD", "EUR/USD", "USD/JPY", "AUD/USD"], 0, "GBP/USD is nicknamed Cable."),
+ ("Gold is quoted on MT5 usually as...", ["XAU/USD", "XAG/USD", "WTI/USD", "BTC/USD"], 0, "XAU/USD is gold priced in US dollars."),
+ ("A trading journal helps you...", ["Find mistakes and improve", "Guarantee wins", "Avoid all losses", "Skip analysis"], 0, "Writing trades down shows patterns in your mistakes."),
+ ("Position size should be decided...", ["Before entering, from risk and stop distance", "After the trade is losing", "By feeling", "By max margin"], 0, "Calculate size from your risk % and stop distance before you enter."),
+]
+
+def _quiz_today():
+    day = _ist_today()
+    i = day.toordinal() % len(_QUIZ)
+    q = _QUIZ[i]
+    rot = (i * 7 + day.day) % 4          # move the right answer around so it is not always first
+    opts = q[1][rot:] + q[1][:rot]
+    return day, i, (q[0], opts, (q[2] - rot) % 4, q[3])
+
+class QuizAns(BaseModel):
+    email: str
+    choice: int
+
+@app.get("/api/rewards/quiz")
+async def rewards_quiz(email: str, request: Request):
+    rate_limit(request, "quizget", 60, 600)
+    email = email.strip().lower()[:120]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        if not await _verified_user(conn, email): return JSONResponse({"ok": False, "error": "login"})
+        day, i, q = _quiz_today()
+        row = await conn.fetchrow("SELECT ok FROM ag_quiz WHERE email=$1 AND qday=$2", email, day)
+    out = {"ok": True, "q": q[0], "options": q[1], "answered": bool(row)}
+    if row: out["correct"] = bool(row["ok"]); out["explain"] = q[3]
+    return out
+
+@app.post("/api/rewards/quiz")
+async def rewards_quiz_answer(req: QuizAns, request: Request):
+    rate_limit(request, "quizpost", 30, 600)
+    email = req.email.strip().lower()[:120]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Service busy."})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        if not await _verified_user(conn, email): return JSONResponse({"ok": False, "error": "Please log in first."})
+        day, i, q = _quiz_today()
+        good = (req.choice == q[2])
+        first = await conn.fetchval("INSERT INTO ag_quiz(email,qday,ok) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING 1", email, day, good)
+        if not first: return JSONResponse({"ok": False, "error": "You already answered today's question."})
+    return {"ok": True, "correct": good, "explain": q[3], "bonus": good}
+
+@app.get("/api/rewards/ref")
+async def rewards_ref(email: str, request: Request):
+    rate_limit(request, "refget", 30, 600)
+    email = email.strip().lower()[:120]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        if not await _verified_user(conn, email): return JSONResponse({"ok": False})
+        row = await conn.fetchrow("SELECT code FROM ag_refcodes WHERE email=$1", email)
+        if not row:
+            r = _rnd.SystemRandom()
+            for _ in range(5):
+                code = "REF-" + "".join(r.choice(_VCH_ALPHA) for _ in range(6))
+                ok = await conn.fetchval("INSERT INTO ag_refcodes(code,email) VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING 1", code, email)
+                if ok: break
+            else:
+                return JSONResponse({"ok": False})
+        else:
+            code = row["code"]
+        n = await conn.fetchval("SELECT COUNT(*) FROM ag_refs WHERE referrer=$1", email)
+    return {"ok": True, "code": code, "friends": int(n or 0)}
 
 class VoucherCheckReq(BaseModel):
     code: str
@@ -1813,12 +1922,25 @@ async def _ensure_rewards(conn):
             PRIMARY KEY (email, spin_day)
         )""")
     await conn.execute("ALTER TABLE ag_orders ADD COLUMN IF NOT EXISTS voucher TEXT DEFAULT ''")
+    await conn.execute("CREATE TABLE IF NOT EXISTS ag_quiz (email TEXT NOT NULL, qday DATE NOT NULL, ok BOOLEAN DEFAULT FALSE, PRIMARY KEY (email, qday))")
+    await conn.execute("CREATE TABLE IF NOT EXISTS ag_refcodes (code TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL)")
+    await conn.execute("CREATE TABLE IF NOT EXISTS ag_refs (referee TEXT PRIMARY KEY, referrer TEXT NOT NULL, created_at TIMESTAMP DEFAULT NOW())")
     _rewards_ready = True
 
 async def _voucher_check(conn, code, email):
     """Returns (row, error). Server is the only place that decides a voucher is valid."""
     code = _re_pay.sub(r"[^A-Z0-9-]", "", (code or "").upper())[:24]
     if not code: return None, ""
+    if code.startswith("REF-"):
+        ref = await conn.fetchrow("SELECT email FROM ag_refcodes WHERE code=$1", code)
+        me = (email or "").strip().lower()
+        if not ref: return None, "This referral code is not valid."
+        if ref["email"] == me: return None, "You cannot use your own referral code."
+        if await conn.fetchval("SELECT 1 FROM ag_orders WHERE LOWER(email)=$1 AND status='paid' LIMIT 1", me):
+            return None, "Referral codes are only for your first purchase."
+        if await conn.fetchval("SELECT 1 FROM ag_refs WHERE referee=$1", me):
+            return None, "Referral code already used on this email."
+        return {"code": code, "pct": 10}, ""
     row = await conn.fetchrow("SELECT * FROM ag_vouchers WHERE code=$1", code)
     if not row or not row["active"]: return None, "This voucher code is not valid."
     if row["expires_at"] and row["expires_at"] < datetime.utcnow(): return None, "This voucher has expired."
@@ -1976,7 +2098,20 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
         if not won:
             return out   # another request got there first and is sending the emails
         out = dict(won); out["linked"] = bool(user)
-        if won["voucher"]:
+        if won["voucher"] and won["voucher"].startswith("REF-"):
+            try:
+                ref = await conn.fetchrow("SELECT email FROM ag_refcodes WHERE code=$1", won["voucher"])
+                me = (won["email"] or "").strip().lower()
+                if ref and ref["email"] != me:
+                    first = await conn.fetchval("INSERT INTO ag_refs(referee,referrer) VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING 1", me, ref["email"])
+                    n = await conn.fetchval("SELECT COUNT(*) FROM ag_refs WHERE referrer=$1", ref["email"])
+                    if first and n <= 10:
+                        rc = "AG" + "".join(_rnd.SystemRandom().choice(_VCH_ALPHA) for _ in range(6))
+                        await conn.execute("INSERT INTO ag_vouchers(code,pct,owner_email,max_uses,expires_at,source) VALUES($1,10,$2,1,$3,'referral')",
+                                           rc, ref["email"], datetime.utcnow() + timedelta(days=30))
+            except Exception as ex:
+                print("referral reward failed:", ex)
+        elif won["voucher"]:
             await conn.execute("UPDATE ag_vouchers SET used=used+1 WHERE code=$1", won["voucher"])
         # grant access if a user with this email exists (keys with a comma cannot live in the comma-separated list)
         if user and "," not in (row["product_key"] or ""):

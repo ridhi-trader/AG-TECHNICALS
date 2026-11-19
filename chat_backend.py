@@ -1481,6 +1481,130 @@ async def make_post_key(request: Request):
                            _hashlib.sha256(key.encode()).hexdigest())
     return {"ok": True, "key": key}
 
+
+# ── REWARDS: daily spin + vouchers ────────────────────────────────────────────
+import random as _rnd
+_SPIN_PRIZES = [(0, 18), (5, 34), (10, 28), (15, 13), (20, 7)]   # (percent off, weight). 0 = better luck next time
+_VCH_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+def _ist_today():
+    return (datetime.utcnow() + timedelta(hours=5, minutes=30)).date()
+
+async def _verified_user(conn, email):
+    return await conn.fetchrow("SELECT id,username FROM ag_users WHERE LOWER(email)=$1 AND verified=TRUE", (email or "").strip().lower())
+
+class SpinReq(BaseModel):
+    email: str
+
+@app.post("/api/rewards/spin")
+async def rewards_spin(req: SpinReq, request: Request):
+    rate_limit(request, "spin", 20, 3600)
+    email = req.email.strip().lower()[:120]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        if not await _verified_user(conn, email):
+            return JSONResponse({"ok": False, "error": "Please log in to your AG Technicals account to spin."})
+        day = _ist_today()
+        r = _rnd.SystemRandom()
+        pct = r.choices([p for p, w in _SPIN_PRIZES], weights=[w for p, w in _SPIN_PRIZES])[0]
+        code = ""
+        if pct:
+            code = "AG" + "".join(r.choice(_VCH_ALPHA) for _ in range(6))
+        claimed = await conn.fetchval(
+            "INSERT INTO ag_spins(email,spin_day,prize,code) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING RETURNING 1",
+            email, day, f"{pct}%" if pct else "none", code)
+        if not claimed:
+            prev = await conn.fetchrow("SELECT prize,code FROM ag_spins WHERE email=$1 AND spin_day=$2", email, day)
+            return JSONResponse({"ok": False, "already": True, "error": "You already spun today. Come back tomorrow!",
+                                 "prize": prev["prize"] if prev else "", "code": prev["code"] if prev else ""})
+        exp = None
+        if pct:
+            exp = datetime.utcnow() + timedelta(days=7)
+            await conn.execute("INSERT INTO ag_vouchers(code,pct,owner_email,max_uses,expires_at,source) VALUES($1,$2,$3,1,$4,'spin')",
+                               code, pct, email, exp)
+    return {"ok": True, "pct": pct, "code": code, "expires": exp.isoformat() + "Z" if exp else ""}
+
+@app.get("/api/rewards/my")
+async def rewards_my(email: str, request: Request):
+    rate_limit(request, "rwmy", 60, 600)
+    email = email.strip().lower()[:120]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "vouchers": []})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        if not await _verified_user(conn, email):
+            return JSONResponse({"ok": False, "vouchers": []})
+        rows = await conn.fetch("SELECT code,pct,max_uses,used,expires_at FROM ag_vouchers WHERE owner_email=$1 AND active=TRUE AND used<max_uses AND (expires_at IS NULL OR expires_at>NOW()) ORDER BY created_at DESC LIMIT 20", email)
+        spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 AND spin_day=$2", email, _ist_today())
+    return {"ok": True, "spun_today": bool(spun),
+            "vouchers": [{"code": r["code"], "pct": r["pct"], "expires": (r["expires_at"].isoformat() + "Z") if r["expires_at"] else ""} for r in rows]}
+
+class VoucherCheckReq(BaseModel):
+    code: str
+    email: str = ""
+    product_key: str
+
+@app.post("/api/rewards/check")
+async def rewards_check(req: VoucherCheckReq, request: Request):
+    rate_limit(request, "vchk", 30, 600)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        item = await _pay_resolve(conn, req.product_key)
+        if not item: return JSONResponse({"ok": False, "error": "This item is not available."})
+        if not _re_pay.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", req.email.strip()):
+            return JSONResponse({"ok": False, "error": "Enter your email first, then apply the voucher."})
+        vrow, err = await _voucher_check(conn, req.code, req.email.strip().lower())
+        if err or not vrow: return JSONResponse({"ok": False, "error": err or "Enter a voucher code."})
+        new = max(1.0, round(item["price"] * (100 - vrow["pct"]) / 100, 2))
+    return {"ok": True, "pct": vrow["pct"], "code": vrow["code"], "price": new}
+
+class VoucherMakeReq(BaseModel):
+    code: str = ""
+    pct: int
+    max_uses: int = 1
+    days: int = 30
+    owner_email: str = ""
+
+@app.post("/api/admin/voucher")
+async def admin_voucher_make(req: VoucherMakeReq, request: Request):
+    verify_admin_token(request)
+    if not (1 <= req.pct <= 50): return JSONResponse({"ok": False, "error": "Percent must be 1 to 50."})
+    code = _re_pay.sub(r"[^A-Z0-9-]", "", (req.code or "").upper())[:24] or ("AG" + "".join(_rnd.SystemRandom().choice(_VCH_ALPHA) for _ in range(6)))
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        exp = datetime.utcnow() + timedelta(days=max(1, min(req.days, 365)))
+        ok = await conn.fetchval("INSERT INTO ag_vouchers(code,pct,owner_email,max_uses,expires_at,source) VALUES($1,$2,$3,$4,$5,'admin') ON CONFLICT DO NOTHING RETURNING 1",
+                                 code, req.pct, req.owner_email.strip().lower()[:120], max(1, min(req.max_uses, 100000)), exp)
+    if not ok: return JSONResponse({"ok": False, "error": "That code already exists."})
+    return {"ok": True, "code": code}
+
+@app.get("/api/admin/vouchers")
+async def admin_vouchers(request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "vouchers": []})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        rows = await conn.fetch("SELECT * FROM ag_vouchers ORDER BY created_at DESC LIMIT 100")
+    return {"ok": True, "vouchers": [{"code": r["code"], "pct": r["pct"], "owner": r["owner_email"], "used": r["used"], "max": r["max_uses"],
+            "active": r["active"], "source": r["source"], "expires": (r["expires_at"].isoformat() + "Z") if r["expires_at"] else ""} for r in rows]}
+
+@app.delete("/api/admin/voucher/{code}")
+async def admin_voucher_off(code: str, request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False})
+    async with pool.acquire() as conn:
+        await _ensure_rewards(conn)
+        await conn.execute("UPDATE ag_vouchers SET active=FALSE WHERE code=$1", _re_pay.sub(r"[^A-Z0-9-]", "", code.upper())[:24])
+    return {"ok": True}
+
 @app.post("/api/admin/backup")
 async def admin_backup(request: Request):
     """Save a copy of config data on the server volume (kept: newest 40)."""
@@ -1663,6 +1787,47 @@ async def _ensure_orders(conn):
     await conn.execute("ALTER TABLE ag_orders ADD COLUMN IF NOT EXISTS product_code TEXT")
     _orders_ready = True
 
+_rewards_ready = False
+async def _ensure_rewards(conn):
+    global _rewards_ready
+    if _rewards_ready: return
+    await _ensure_orders(conn)
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS ag_vouchers (
+            code TEXT PRIMARY KEY,
+            pct INTEGER NOT NULL,
+            owner_email TEXT DEFAULT '',
+            max_uses INTEGER DEFAULT 1,
+            used INTEGER DEFAULT 0,
+            expires_at TIMESTAMP,
+            active BOOLEAN DEFAULT TRUE,
+            source TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT NOW()
+        )""")
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS ag_spins (
+            email TEXT NOT NULL,
+            spin_day DATE NOT NULL,
+            prize TEXT DEFAULT '',
+            code TEXT DEFAULT '',
+            PRIMARY KEY (email, spin_day)
+        )""")
+    await conn.execute("ALTER TABLE ag_orders ADD COLUMN IF NOT EXISTS voucher TEXT DEFAULT ''")
+    _rewards_ready = True
+
+async def _voucher_check(conn, code, email):
+    """Returns (row, error). Server is the only place that decides a voucher is valid."""
+    code = _re_pay.sub(r"[^A-Z0-9-]", "", (code or "").upper())[:24]
+    if not code: return None, ""
+    row = await conn.fetchrow("SELECT * FROM ag_vouchers WHERE code=$1", code)
+    if not row or not row["active"]: return None, "This voucher code is not valid."
+    if row["expires_at"] and row["expires_at"] < datetime.utcnow(): return None, "This voucher has expired."
+    if row["used"] >= row["max_uses"]: return None, "This voucher has already been used."
+    owner = (row["owner_email"] or "").strip().lower()
+    if owner and owner != (email or "").strip().lower():
+        return None, "This voucher belongs to a different email. Use the email of the account that won it."
+    return row, ""
+
 async def _pay_catalog(conn):
     row = await conn.fetchrow("SELECT value FROM ag_config WHERE key=$1", "ag_pricing")
     try:
@@ -1745,6 +1910,7 @@ class PayOrderReq(BaseModel):
     name: str
     email: str
     phone: str = ""
+    voucher: str = ""
 
 @app.post("/api/pay/create-order")
 async def pay_create_order(req: PayOrderReq, request: Request):
@@ -1757,15 +1923,20 @@ async def pay_create_order(req: PayOrderReq, request: Request):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
     async with pool.acquire() as conn:
-        await _ensure_orders(conn)
+        await _ensure_rewards(conn)
         item = await _pay_resolve(conn, req.product_key)
         if not item: return JSONResponse({"ok": False, "error": "This item is not available."})
-        amount = int(round(item["price"] * 100))
+        pct, vcode = 0, ""
+        if (req.voucher or "").strip():
+            vrow, verr = await _voucher_check(conn, req.voucher, email)
+            if verr: return JSONResponse({"ok": False, "error": verr})
+            pct, vcode = int(vrow["pct"]), vrow["code"]
+        amount = max(100, int(round(item["price"] * 100 * (100 - pct) / 100)))
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 r = await client.post("https://api.razorpay.com/v1/orders", auth=(_rzp_id(), _rzp_secret()),
                     json={"amount": amount, "currency": "INR", "receipt": (_re_pay.sub(r"[^A-Za-z0-9_-]", "", item.get("code", ""))[:20] + "_" if item.get("code") else "agt_") + uuid.uuid4().hex[:12],
-                          "notes": {"product_key": item["key"], "product_code": item.get("code", ""), "product": item["name"], "email": email}})
+                          "notes": {"product_key": item["key"], "product_code": item.get("code", ""), "product": item["name"], "email": email, "voucher": vcode}})
             rj = r.json()
         except Exception as e:
             print(f"Razorpay create-order error: {e}")
@@ -1774,8 +1945,8 @@ async def pay_create_order(req: PayOrderReq, request: Request):
             print(f"Razorpay order error {r.status_code}: {str(rj)[:200]}")
             return JSONResponse({"ok": False, "error": "Could not start payment. Please try again."})
         await conn.execute(
-            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone,product_code) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
-            rj["id"], item["key"], item["name"], amount, name, email, phone, item.get("code", ""))
+            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone,product_code,voucher) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+            rj["id"], item["key"], item["name"], amount, name, email, phone, item.get("code", ""), vcode)
     return JSONResponse({"ok": True, "order_id": rj["id"], "amount": amount, "currency": "INR",
                          "key_id": _rzp_id(), "name": item["name"] + (f" ({item['code']})" if item.get("code") else "")})
 
@@ -1792,7 +1963,7 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
     pool = await get_db()
     if not pool: return None
     async with pool.acquire() as conn:
-        await _ensure_orders(conn)
+        await _ensure_rewards(conn)
         row = await conn.fetchrow("SELECT * FROM ag_orders WHERE order_id=$1", order_id)
         if not row: return None
         user = await _pay_user_by_email(conn, row["email"])
@@ -1805,6 +1976,8 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
         if not won:
             return out   # another request got there first and is sending the emails
         out = dict(won); out["linked"] = bool(user)
+        if won["voucher"]:
+            await conn.execute("UPDATE ag_vouchers SET used=used+1 WHERE code=$1", won["voucher"])
         # grant access if a user with this email exists (keys with a comma cannot live in the comma-separated list)
         if user and "," not in (row["product_key"] or ""):
             cur = [p.strip() for p in (user["products"] or "").split(",") if p.strip()]

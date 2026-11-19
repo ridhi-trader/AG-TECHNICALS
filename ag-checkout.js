@@ -3,7 +3,7 @@
    The price shown is only a label; the server decides the real amount from its own data. */
 (function(){
   if(window.AGCheckout) return;
-  var WA='917357032456', cur=null, onPaidCb=null, built=false, $;
+  var WA='917357032456', cur=null, vch='', onPaidCb=null, built=false, $;
   function inr(n){return '₹'+Number(n).toLocaleString('en-IN',{maximumFractionDigits:2});}
   function build(){
     if(built) return; built=true;
@@ -19,13 +19,14 @@
     '.agc .x{float:right;background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;line-height:1}'+
     '.agc .e{color:#f26d6d;font-size:13px;min-height:18px;margin-top:8px}.agc .n{font-size:11px;color:#888;margin-top:12px;line-height:1.5;text-align:center}'+
     '.agc .ok{text-align:center;padding:12px 0}.agc .ok b{display:block;font-size:20px;color:#4ade80;margin-bottom:8px}'+
-    '.agc .en{font-size:11px;color:#9a9a9a;margin-top:5px;line-height:1.45}.agc input[readonly]{opacity:.8;cursor:not-allowed;border-color:rgba(245,197,66,.35)}';
+    '.agc .vr{display:flex;gap:8px}.agc .vr input{flex:1}.agc .va{padding:0 14px;border-radius:9px;border:1px solid rgba(245,197,66,.5);background:none;color:#f5c542;font-weight:700;cursor:pointer}.agc .vm{font-size:12px;margin-top:5px;min-height:16px}.agc .en{font-size:11px;color:#9a9a9a;margin-top:5px;line-height:1.45}.agc input[readonly]{opacity:.8;cursor:not-allowed;border-color:rgba(245,197,66,.35)}';
     document.head.appendChild(st);
     var d=document.createElement('div'); d.className='agc-ov'; d.id='agcOv'; d.setAttribute('role','dialog'); d.setAttribute('aria-modal','true');
     d.innerHTML='<div class="agc"><button class="x" id="agcX" aria-label="Close">×</button><div id="agcForm"><h3>Complete your purchase</h3><div class="s" id="agcSub"></div>'+
     '<label for="agcN">Full name</label><input id="agcN" type="text" autocomplete="name">'+
     '<label for="agcE">Email (receipt and access details come here)</label><input id="agcE" type="email" autocomplete="email"><div class="en" id="agcEN"></div>'+
     '<label for="agcP">WhatsApp / phone</label><input id="agcP" type="tel" autocomplete="tel">'+
+    '<label for="agcV">Voucher code (optional)</label><div class="vr"><input id="agcV" type="text" autocomplete="off" maxlength="24" style="text-transform:uppercase"><button class="va" id="agcVA" type="button">Apply</button></div><div class="vm" id="agcVM" role="status"></div>'+
     '<div class="t"><input type="checkbox" id="agcA"><span>I agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a>, <a href="/refund-policy" target="_blank" rel="noopener">Refund Policy</a> and <a href="/risk-disclaimer" target="_blank" rel="noopener">Risk Disclaimer</a>. This is software only, not investment advice.</span></div>'+
     '<button class="go" id="agcGo" type="button">Pay now</button><div class="e" id="agcErr" role="alert"></div>'+
     '<div class="n">Secure payment by Razorpay (UPI, cards, netbanking). We never see your card details.</div></div>'+
@@ -35,7 +36,19 @@
     $('agcX').onclick=close; $('agcDone').onclick=close;
     d.addEventListener('click',function(e){if(e.target===d)close();});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-    $('agcGo').onclick=pay;
+    $('agcGo').onclick=pay; $('agcVA').onclick=applyV;
+    $('agcV').addEventListener('input',function(){ if(vch){ vch=''; $('agcVM').textContent=''; $('agcSub').textContent=sub0; } });
+  }
+  var sub0='';
+  function applyV(){
+    var c=$('agcV').value.trim(), e=$('agcE').value.trim(), m=$('agcVM');
+    if(!c){ m.style.color='#f26d6d'; m.textContent='Type a voucher code first.'; return; }
+    m.style.color='#aaa'; m.textContent='Checking…';
+    fetch('/api/rewards/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:c,email:e,product_key:cur.key})})
+    .then(function(r){return r.json();}).then(function(j){
+      if(j.ok){ vch=j.code; m.style.color='#4ade80'; m.textContent=j.pct+'% off applied. New price '+inr(j.price)+'.'; $('agcSub').textContent=cur.name+' · '+inr(j.price)+' (voucher '+j.code+')'; }
+      else { vch=''; m.style.color='#f26d6d'; m.textContent=j.error||'Voucher not valid.'; }
+    }).catch(function(){ m.style.color='#f26d6d'; m.textContent='Network error.'; });
   }
   function getUser(){ try{ var u=JSON.parse(localStorage.getItem('ag_user')||'null'); return (u&&u.email)?u:null; }catch(e){ return null; } }
   function close(){ if($) $('agcOv').classList.remove('on'); }
@@ -61,7 +74,7 @@
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){ $('agcErr').textContent='Please enter a valid email.'; return; }
     if(!$('agcA').checked){ $('agcErr').textContent='Please accept the Terms and Refund Policy.'; return; }
     $('agcErr').textContent=''; $('agcGo').disabled=true; $('agcGo').textContent='Starting payment…';
-    fetch('/api/pay/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_key:cur.key,name:n,email:e,phone:p})})
+    fetch('/api/pay/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_key:cur.key,name:n,email:e,phone:p,voucher:vch})})
     .then(function(r){return r.json();}).then(function(j){
       if(!j.ok){ if(/not enabled/i.test(j.error||'')) waFallback(j.error); else $('agcErr').textContent=j.error||'Could not start payment.'; reset(); return; }
       loadRzp(function(){
@@ -82,7 +95,7 @@
     }).catch(function(){ $('agcErr').textContent='Network error. Please try again.'; reset(); });
   }
   window.AGCheckout={open:function(it,opts){
-    build(); cur=it; onPaidCb=(opts&&opts.onPaid)||null; $('agcSub').textContent=it.name+(it.code?' ('+it.code+')':'')+(it.price?' · '+inr(it.price):'');
+    build(); cur=it; vch=''; $('agcV').value=''; $('agcVM').textContent=''; onPaidCb=(opts&&opts.onPaid)||null; $('agcSub').textContent=it.name+(it.code?' ('+it.code+')':'')+(it.price?' · '+inr(it.price):''); sub0=$('agcSub').textContent;
     var u=getUser();
     if(u){ $('agcE').value=u.email; $('agcE').readOnly=true; $('agcEN').textContent='Logged in as '+u.email+'. This purchase will be linked to your account automatically.'; }
     else { $('agcE').readOnly=false; $('agcEN').textContent='Use the same email as your AG Technicals account so your purchase links to it. No account yet? You can still pay and sign up later with this email.'; }

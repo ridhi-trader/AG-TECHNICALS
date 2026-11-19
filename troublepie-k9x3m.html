@@ -246,6 +246,7 @@ async function verifyAdminOTP(){
       <button class="sb-btn" onclick="nav('about',this)"><span class="sb-icon">👤</span>About Us</button>
       <button class="sb-btn" onclick="nav('faq',this)"><span class="sb-icon">❓</span>FAQ</button>
       <button class="sb-btn" onclick="nav('newsed',this)"><span class="sb-icon">📰</span>News & Dossier</button>
+      <button class="sb-btn" onclick="nav('vouchers',this)"><span class="sb-icon">🎟️</span>Vouchers</button>
       <button class="sb-btn" onclick="nav('dposts',this)"><span class="sb-icon">📅</span>Blog Posts</button>
 
       <div class="sb-group">Files & System</div>
@@ -643,6 +644,19 @@ async function verifyAdminOTP(){
     </div>
 
     <!-- BLOG PAGE -->
+    <div class="page" id="page-vouchers">
+      <div class="ph"><div class="ph-tag">REWARDS</div><div class="ph-title"><span>Vouchers</span></div></div>
+      <p style="color:var(--t3);font-size:13px;margin-bottom:16px;">Make discount codes. Customers type them at checkout. Spin-wheel winners get codes automatically (5 to 20% off, 7 days, one use).</p>
+      <div class="card" style="padding:18px;margin-bottom:18px;">
+        <div class="field"><input class="inp" id="vcCode" placeholder="Code (leave empty = auto)" maxlength="24"></div>
+        <div class="field"><input class="inp" id="vcPct" type="number" min="1" max="50" placeholder="Percent off (1 to 50)"></div>
+        <div class="field"><input class="inp" id="vcUses" type="number" min="1" placeholder="How many times it can be used (default 1)"></div>
+        <div class="field"><input class="inp" id="vcDays" type="number" min="1" placeholder="Valid for how many days (default 30)"></div>
+        <div class="field"><input class="inp" id="vcOwner" placeholder="Only for this email (optional)"></div>
+        <button class="btn-gold" onclick="vcMake()">Make voucher</button>
+      </div>
+      <div id="vcList"><div style="color:var(--t3);">Loading…</div></div>
+    </div>
     <div class="page" id="page-dposts">
       <div class="ph"><div class="ph-tag">CONTENT</div><div class="ph-title"><span>Blog</span> Posts</div></div>
       <p style="color:var(--t3);font-size:13px;margin-bottom:16px;">Post a photo, video or text. It shows on the public page <b>/blog</b>.</p>
@@ -994,6 +1008,27 @@ async function dpDel(id){
   if(!confirm('Delete this post?')) return;
   const r=await adminFetch(API+'/api/posts/'+id,{method:'DELETE'}); if(r.ok){toast('Deleted');loadDposts();}
 }
+async function loadVouchers(){
+  const box=document.getElementById('vcList');
+  try{
+    const r=await adminFetch(API+'/api/admin/vouchers'); const d=await r.json(); const v=d.vouchers||[];
+    box.innerHTML=v.length?v.map(x=>'<div class="card" style="padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:center;">'
+      +'<div style="flex:1;min-width:0;"><div style="font-weight:700;letter-spacing:1px;">'+escH(x.code)+' · '+Number(x.pct)+'% off'+(x.active?'':' · OFF')+'</div>'
+      +'<div style="font-size:11px;color:var(--t3);">used '+Number(x.used)+'/'+Number(x.max)+' · '+escH(x.source)+(x.owner?' · '+escH(x.owner):'')+(x.expires?' · till '+escH(new Date(x.expires).toLocaleDateString('en-IN')):'')+'</div></div>'
+      +(x.active?'<button class="btn-out" onclick="vcOff(\''+escH(x.code)+'\')">Turn off</button>':'')+'</div>').join(''):'<div style="color:var(--t3);">No vouchers yet.</div>';
+  }catch(e){box.innerHTML='<div style="color:var(--t3);">Could not load.</div>';}
+}
+async function vcMake(){
+  const g=i=>document.getElementById(i).value.trim();
+  const body={code:g('vcCode'),pct:parseInt(g('vcPct')||'0'),max_uses:parseInt(g('vcUses')||'1'),days:parseInt(g('vcDays')||'30'),owner_email:g('vcOwner')};
+  const r=await adminFetch(API+'/api/admin/voucher',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); const d=await r.json().catch(()=>({}));
+  if(d.ok){toast('Voucher '+d.code+' ready');['vcCode','vcPct','vcUses','vcDays','vcOwner'].forEach(i=>document.getElementById(i).value='');loadVouchers();}
+  else toast(d.error||'Could not make voucher');
+}
+async function vcOff(c){
+  if(!confirm('Turn off '+c+'?')) return;
+  await adminFetch(API+'/api/admin/voucher/'+encodeURIComponent(c),{method:'DELETE'}); loadVouchers();
+}
 async function dpKey(){
   if(!confirm('Make a new key? The old key will stop working.')) return;
   const r=await adminFetch(API+'/api/admin/post-key',{method:'POST'}); const d=await r.json().catch(()=>({}));
@@ -1021,7 +1056,7 @@ function nav(id, btn){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
-  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS,dposts:loadDposts};
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS,dposts:loadDposts,vouchers:loadVouchers};
   if(id==='pricing') prLoad();
   if(loaders[id]) loaders[id]();
 }

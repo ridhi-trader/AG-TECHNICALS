@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Daily Rewards — AG Technicals</title>
+<meta name="description" content="Spin the AG wheel once a day and win discount vouchers on AG Technicals software and learning products. Free to play.">
+<link rel="canonical" href="https://www.agtechnicals.com/rewards">
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--card:#0b0b0b;--g5:#f5c542;--g4:#c9960c;--t1:#fff;--t2:#e5e5e5;--t3:#bdbdbd;--border:#262626;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);z-index:10;}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:var(--g5);text-decoration:none;}
+.back{font-size:13px;color:var(--t3);text-decoration:none;}
+.wrap{max-width:460px;margin:0 auto;padding:32px 16px 80px;text-align:center;}
+.tag{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:8px;}
+h1{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;margin-bottom:6px;}
+.sub{color:var(--t3);font-size:14px;margin-bottom:22px;line-height:1.6;}
+.wheelbox{position:relative;width:300px;max-width:100%;margin:0 auto 18px;}
+canvas{width:100%;height:auto;display:block;border-radius:50%;box-shadow:0 0 40px rgba(245,197,66,.25);}
+.pin{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:24px solid #fff;filter:drop-shadow(0 2px 3px #000);z-index:2;}
+.btn{background:linear-gradient(135deg,#c9960c,#f5c542);color:#000;font-weight:800;font-size:16px;border:none;border-radius:10px;padding:13px 34px;cursor:pointer;}
+.btn:disabled{opacity:.55;cursor:not-allowed;}
+.msg{min-height:44px;margin:16px 0;font-size:15px;line-height:1.5;}
+.win{background:var(--card);border:1px solid var(--g4);border-radius:12px;padding:14px;margin:12px 0;}
+.win b{font-size:22px;letter-spacing:3px;color:var(--g5);display:block;margin:6px 0;}
+.cp{background:none;border:1px solid var(--g4);color:var(--g5);border-radius:8px;padding:6px 14px;font-weight:600;cursor:pointer;font-size:12px;}
+h2{font-family:'Space Grotesk',sans-serif;font-size:17px;margin:26px 0 10px;text-align:left;}
+.v{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:13px;text-align:left;}
+.v b{letter-spacing:2px;color:var(--g5);}
+.fine{font-size:11px;color:#8c8c8c;line-height:1.6;margin-top:28px;text-align:left;}
+.login a{color:#000;background:var(--g5);padding:12px 26px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block;}
+</style>
+</head>
+<body>
+<nav><a class="logo" href="/">AG Technicals</a><a class="back" href="/">← Home</a></nav>
+<div class="wrap">
+  <div class="tag">Daily Rewards</div>
+  <h1>Spin &amp; Save</h1>
+  <p class="sub">One free spin every day. Win a discount voucher for AG Technicals software and learning products.</p>
+  <div id="app"></div>
+  <p class="fine"><b>How it works.</b> Free to play, nothing to pay or deposit. Prizes are discount vouchers (5% to 20%) for AG Technicals products only. No cash prizes, no money withdrawal. One spin per account per day (India time). A voucher is valid for 7 days, works once, and only with the email of the account that won it. Offers can be changed or stopped at any time. This is software and education, not investment advice or a promise of profit.</p>
+</div>
+<script>
+(function(){
+  var SEG=[5,10,0,15,5,20,0,10], COL=['#f5c542','#1c1c1c'], app=document.getElementById('app'), user=null, rot=0, busy=false;
+  try{ var u=JSON.parse(localStorage.getItem('ag_user')||'null'); if(u&&u.email) user=u; }catch(e){}
+  function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  if(!user){ app.innerHTML='<p class="sub">Please log in to spin.</p><div class="login"><a href="/user-login">Log in / Join free</a></div>'; return; }
+  app.innerHTML='<div class="wheelbox"><div class="pin"></div><canvas id="cv" width="600" height="600"></canvas></div><button class="btn" id="go">SPIN</button><div class="msg" id="msg" role="status" aria-live="polite"></div><div id="res"></div><h2>My vouchers</h2><div id="mine">Loading…</div>';
+  var cv=document.getElementById('cv'), cx=cv.getContext('2d'), go=document.getElementById('go'), msg=document.getElementById('msg'), res=document.getElementById('res');
+  function draw(){
+    var n=SEG.length, a=2*Math.PI/n, R=300; cx.clearRect(0,0,600,600);
+    for(var i=0;i<n;i++){
+      cx.beginPath(); cx.moveTo(R,R); cx.arc(R,R,R-4,i*a-Math.PI/2-a/2,(i+1)*a-Math.PI/2-a/2); cx.closePath();
+      cx.fillStyle=COL[i%2]; cx.fill(); cx.strokeStyle='#000'; cx.lineWidth=3; cx.stroke();
+      cx.save(); cx.translate(R,R); cx.rotate(i*a); cx.textAlign='center'; cx.fillStyle=(i%2?'#f5c542':'#000'); cx.font='800 40px Space Grotesk,sans-serif';
+      cx.fillText(SEG[i]?SEG[i]+'%':'Try again',0,-R+70); cx.restore();
+    }
+    cx.beginPath(); cx.arc(R,R,38,0,7); cx.fillStyle='#000'; cx.fill(); cx.strokeStyle='#f5c542'; cx.lineWidth=5; cx.stroke();
+  }
+  draw();
+  function mine(){
+    fetch('/api/rewards/my?email='+encodeURIComponent(user.email)).then(function(r){return r.json();}).then(function(j){
+      var m=document.getElementById('mine');
+      if(!j.ok){ m.textContent='Log in again to see your vouchers.'; return; }
+      if(j.spun_today){ go.disabled=true; go.textContent='Come back tomorrow'; }
+      m.innerHTML=(j.vouchers&&j.vouchers.length)?j.vouchers.map(function(v){return '<div class="v"><span><b>'+esc(v.code)+'</b> · '+Number(v.pct)+'% off</span><span style="color:#8c8c8c">till '+esc(new Date(v.expires).toLocaleDateString('en-IN'))+'</span></div>';}).join('')+'<p class="fine">Type the code in the Voucher box when you buy.</p>':'<p class="sub">No active vouchers yet.</p>';
+    }).catch(function(){document.getElementById('mine').textContent='Could not load.';});
+  }
+  mine();
+  go.onclick=function(){
+    if(busy) return; busy=true; go.disabled=true; msg.textContent='Spinning…'; res.innerHTML='';
+    fetch('/api/rewards/spin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:user.email})}).then(function(r){return r.json();}).then(function(j){
+      if(!j.ok){ msg.textContent=j.error||'Try again later.'; busy=false; if(j.already) go.textContent='Come back tomorrow'; else go.disabled=false; return; }
+      var idx=[]; SEG.forEach(function(p,i){ if(p===j.pct) idx.push(i); }); var i=idx[Math.floor(Math.random()*idx.length)];
+      var a=360/SEG.length; rot+=360*5+((360-(i*a))-(rot%360)+360)%360;
+      cv.style.transition='transform 4.2s cubic-bezier(.12,.7,.1,1)'; cv.style.transform='rotate('+rot+'deg)';
+      setTimeout(function(){
+        if(j.pct){ msg.textContent='You won '+j.pct+'% off!'; res.innerHTML='<div class="win">Your voucher code<b>'+esc(j.code)+'</b><button class="cp" id="cp">Copy</button><div class="fine" style="text-align:center">Valid 7 days, one use.</div></div>';
+          document.getElementById('cp').onclick=function(){ try{navigator.clipboard.writeText(j.code);this.textContent='Copied';}catch(e){} }; }
+        else msg.textContent='No voucher this time. Spin again tomorrow!';
+        go.textContent='Come back tomorrow'; busy=false; mine();
+      },4400);
+    }).catch(function(){ msg.textContent='Network error.'; busy=false; go.disabled=false; });
+  };
+})();
+</script>
+</body>
+</html>

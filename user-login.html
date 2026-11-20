@@ -74,7 +74,7 @@ input:focus{border-color:rgba(245,197,66,.5);}
 
       <!-- LOGIN FORM -->
       <div id="loginForm">
-        <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="field"><label>Username Or User ID</label><input type="text" id="loginEmail" placeholder="agtrades or AGU-AB12CD" autocomplete="username" autocapitalize="none"></div>
         <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <div class="msg err" id="loginErr"></div>
         <button class="btn" onclick="doLogin()">Login →</button>
@@ -84,29 +84,18 @@ input:focus{border-color:rgba(245,197,66,.5);}
       <!-- SIGNUP FORM -->
       <div id="signupForm" style="display:none;">
         <div class="field"><label>Username</label><input type="text" id="signupUser" placeholder="agtrades" autocomplete="username"></div>
-        <div class="field"><label>Email</label><input type="email" id="signupEmail" placeholder="you@email.com" autocomplete="email"></div>
         <div class="field"><label>Password</label><input type="password" id="signupPass" placeholder="Min 6 characters" autocomplete="new-password"></div>
         <div class="msg err" id="signupErr"></div>
         <button class="btn" onclick="doSignup()">Create Account →</button>
       </div>
     </div>
 
-    <!-- OTP VERIFY STEP -->
-    <div id="otpStep" class="step">
-      <div class="back-step" onclick="backToMain()">← Back</div>
-      <div class="box-title">Verify Email</div>
-      <div class="box-sub">OTP sent to <span id="otpEmailShow" style="color:var(--g5);"></span></div>
-      <div class="field" style="margin-top:20px;"><label>Enter 6-Digit OTP</label><input type="text" id="otpInput" placeholder="123456" maxlength="6" inputmode="numeric" onkeydown="if(event.key==='Enter')doVerifyOtp()"></div>
-      <div class="msg err" id="otpErr"></div>
-      <button class="btn" onclick="doVerifyOtp()">Verify OTP →</button>
-      <div class="forgot-link" onclick="resendOtp()">Resend OTP</div>
-    </div>
-
     <!-- FORGOT PASSWORD STEP -->
     <div id="forgotStep" class="step">
       <div class="back-step" onclick="backToMain()">← Back</div>
       <div class="box-title">Reset Password</div>
-      <div class="box-sub">Enter your email to receive an OTP.</div>
+      <div class="box-sub">Accounts made with an email can reset here. If you signed up with a username only, message us on WhatsApp or Telegram and we will reset it for you.</div>
+      <div style="display:flex;gap:8px;margin:14px 0 0;"><a class="btn-out" style="text-align:center;text-decoration:none;" href="https://wa.me/917357032456?text=Hi%20AG%20Technicals%2C%20I%20forgot%20my%20password.%20My%20username%20is%3A%20" target="_blank" rel="noopener">WhatsApp</a><a class="btn-out" style="text-align:center;text-decoration:none;" href="https://t.me/AG_Technical_fx" target="_blank" rel="noopener">Telegram</a></div>
       <div class="field" style="margin-top:20px;"><label>Email</label><input type="email" id="forgotEmail" placeholder="you@email.com"></div>
       <div class="msg err" id="forgotErr"></div>
       <button class="btn" onclick="doForgot()">Send OTP →</button>
@@ -129,7 +118,13 @@ input:focus{border-color:rgba(245,197,66,.5);}
       <div style="text-align:center;padding:20px 0;">
         <div style="font-size:48px;margin-bottom:16px;">✅</div>
         <div class="box-title" style="margin-bottom:8px;">You're In!</div>
-        <div class="box-sub" style="margin-bottom:24px;">Redirecting to your dashboard...</div>
+        <div class="box-sub" style="margin-bottom:24px;" id="succSub">Redirecting to your dashboard...</div>
+        <div id="uidBox" style="display:none;margin:0 0 20px;padding:16px;border:1px solid var(--g4);border-radius:12px;background:#000;">
+          <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Your User ID</div>
+          <div id="uidVal" style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:var(--g5);letter-spacing:2px;"></div>
+          <div style="font-size:12px;color:var(--t3);margin-top:8px;line-height:1.5;">Save this ID and your password. Write them down or take a screenshot. You can log in with your username or this ID.</div>
+        </div>
+        <button class="btn" id="contBtn" style="display:none;margin-bottom:16px;" onclick="goNext()">Continue To Dashboard →</button>
         <div style="width:100%;background:var(--border);border-radius:4px;height:3px;overflow:hidden;"><div id="progressBar" style="height:100%;background:var(--g5);width:0%;transition:width 2s linear;"></div></div>
       </div>
     </div>
@@ -139,7 +134,6 @@ input:focus{border-color:rgba(245,197,66,.5);}
 
 <script>
 const API = '';
-let _signupEmail = '';
 let _forgotEmail = '';
 let _currentTab = 'login';
 
@@ -160,12 +154,12 @@ function setErr(id, msg){ const el=document.getElementById(id); el.textContent=m
 function setOk(id, msg){ const el=document.getElementById(id); el.textContent=msg; el.className='msg ok'; }
 
 async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim();
+  const ident=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPass').value;
-  if(!email||!pass){setErr('loginErr','Fill all fields');return;}
+  if(!ident||!pass){setErr('loginErr','Fill all fields');return;}
   setErr('loginErr','Logging in...');
   try{
-    const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:ident,password:pass})});
     const d=await r.json();
     if(d.ok){ localStorage.setItem('ag_user',JSON.stringify({...d.user, loginTime: Date.now()})); showSuccess(); }
     else setErr('loginErr', d.error||'Login failed');
@@ -174,41 +168,17 @@ async function doLogin(){
 
 async function doSignup(){
   const username=document.getElementById('signupUser').value.trim();
-  const email=document.getElementById('signupEmail').value.trim();
   const pass=document.getElementById('signupPass').value;
-  if(!username||!email||!pass){setErr('signupErr','Fill all fields');return;}
+  if(!username||!pass){setErr('signupErr','Fill all fields');return;}
+  if(username.length<3){setErr('signupErr','Username min 3 characters');return;}
   if(pass.length<6){setErr('signupErr','Password min 6 characters');return;}
   setErr('signupErr','Creating account...');
   try{
-    const r=await fetch(API+'/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password:pass})});
+    const r=await fetch(API+'/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password:pass})});
     const d=await r.json();
-    if(d.ok){
-      _signupEmail=email;
-      document.getElementById('otpEmailShow').textContent=email;
-      setErr('signupErr','');
-      showStep('otpStep');
-    } else setErr('signupErr', d.error||'Signup failed');
+    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify({...d.user, loginTime: Date.now()})); showSuccess(d.user.uid); }
+    else setErr('signupErr', d.error||'Signup failed');
   }catch(e){setErr('signupErr','Network error. Try again.');}
-}
-
-async function doVerifyOtp(){
-  const otp=document.getElementById('otpInput').value.trim();
-  if(otp.length!==6){setErr('otpErr','Enter 6-digit OTP');return;}
-  setErr('otpErr','Verifying...');
-  try{
-    const r=await fetch(API+'/api/auth/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_signupEmail,otp})});
-    const d=await r.json();
-    if(d.ok){ localStorage.setItem('ag_user',JSON.stringify({...d.user, loginTime: Date.now()})); showSuccess(); }
-    else setErr('otpErr',d.error||'Invalid OTP');
-  }catch(e){setErr('otpErr','Network error');}
-}
-
-async function resendOtp(){
-  try{
-    const r=await fetch(API+'/api/auth/resend-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_signupEmail})});
-    const d=await r.json();
-    setErr('otpErr', d.ok ? 'New OTP sent! Check inbox/spam.' : (d.error||'Could not resend'));
-  }catch(e){}
 }
 
 async function doForgot(){
@@ -243,10 +213,19 @@ async function doReset(){
   }catch(e){setErr('forgotOtpErr','Network error');}
 }
 
-function showSuccess(){
+function goNext(){ const redir=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=redir||'user-dashboard'; }
+function showSuccess(newUid){
   showStep('successStep');
+  if(newUid){
+    document.getElementById('succSub').textContent='Account created. Your User ID is below.';
+    document.getElementById('uidVal').textContent=newUid;
+    document.getElementById('uidBox').style.display='block';
+    document.getElementById('contBtn').style.display='block';
+    document.getElementById('progressBar').parentNode.style.display='none';
+    return;
+  }
   setTimeout(()=>{ document.getElementById('progressBar').style.width='100%'; },100);
-  setTimeout(()=>{ const redir=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=redir||'user-dashboard'; },2100);
+  setTimeout(goNext,2100);
 }
 
 // If already logged in, redirect

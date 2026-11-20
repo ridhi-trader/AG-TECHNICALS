@@ -348,7 +348,7 @@ WEBSITE PAGES
 - Guide page: EA Guides + TradingView Guides
 - News page: Live market news, prices, charts
 - About page: About AG Technicals
-- User Login: Email OTP based login for licensed users
+- User Login: username + password login (no email needed); every user gets a User ID like AGU-AB12CD
 - User Dashboard: Access license details after login
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -392,7 +392,7 @@ PRICING, PAYMENTS & ACCESS
 - Payment: online via Razorpay (UPI, cards, net banking); we never see card details. After payment our team delivers access manually (email/dashboard/WhatsApp).
 - Digital products are non-refundable once delivered (see Refund Policy page). Never promise a refund.
 - Websites, custom software, custom strategy: quoted after the user shares requirements on WhatsApp/Telegram or the Web & Software / Custom Strategy page.
-- Login = email + OTP; the Dashboard shows the user's own plans.
+- Login = username (or User ID) + password, no email OTP. Forgot password: message us on WhatsApp or Telegram. The Dashboard shows the user's own plans.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 WEBSITE FEATURES
@@ -999,6 +999,8 @@ async def init_db():
                 created_at TIMESTAMP DEFAULT NOW()
             );
         """)
+        await conn.execute("ALTER TABLE ag_users ADD COLUMN IF NOT EXISTS uid TEXT")
+        await conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS ag_users_uid_idx ON ag_users(uid)")
         # Load licenses from DB into bridge_module
         rows = await conn.fetch("SELECT lid, secret, user_email, account, active, expires_at FROM bridge_licenses WHERE active=TRUE")
         for row in rows:
@@ -1048,18 +1050,28 @@ def otp_email_html(otp, purpose):
       <div style="font-size:12px;color:#7e7a90;">If you did not request this, ignore this email.</div>
     </div>"""
 
+_UID_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+_INT_DOMAIN = "@users.agt.invalid"   # internal id-mail for accounts without a real email (never emailed)
+def _new_uid(): return "AGU-" + "".join(secrets.choice(_UID_ALPHA) for _ in range(6))
+def _int_email(uid): return uid.lower() + _INT_DOMAIN
+def _is_int_email(e): return (e or "").strip().lower().endswith(_INT_DOMAIN)
+def _user_json(user, prods):
+    return {"id": user['id'], "username": user['username'], "uid": user['uid'] or "", "email": user['email'], "products": prods,
+            "internal": _is_int_email(user['email'])}
+
 class SignupReq(BaseModel):
     username: str
-    email: str
     password: str
+    email: str = ""   # no longer used; kept so old pages do not break
 
 class OtpReq(BaseModel):
     email: str
     otp: str
 
 class LoginReq(BaseModel):
-    email: str
     password: str
+    username: str = ""   # username or User ID (AGU-XXXXXX)
+    email: str = ""      # old accounts can still log in with email
 
 class ForgotReq(BaseModel):
     email: str
@@ -1118,41 +1130,42 @@ async def _send_signup_otp(conn, email):
 
 @app.post("/api/auth/signup")
 async def signup(req: SignupReq, request: Request):
-    rate_limit(request, "signup", 6, 900)
+    rate_limit(request, "signup", 30, 3600)   # attempts (typos, taken names)
+    _ip = client_ip(request)
+    _made = [t for t in _RL.get("signupok|" + _ip, []) if time.time() - t < 86400]
+    if len(_made) >= 5:   # real accounts per IP per day (stops fake-account farming of rewards)
+        return JSONResponse({"ok": False, "error": "Too many accounts created from this network today. Please try again tomorrow or contact support."})
     pool = await get_db()
     if not pool:
         return JSONResponse({"ok": False, "error": "Database unavailable"})
-    email = (req.email or '').strip().lower()
     import re as _re_u
     username = _re_u.sub(r"[^A-Za-z0-9 _.\-]", "", (req.username or '')).strip()[:30]
-    email = email[:120]
-    if not _re_u.match(r"^[^@\s<>'\"]+@[^@\s<>'\"]+\.[^@\s<>'\"]+$", email):
-        return JSONResponse({"ok": False, "error": "Please enter a valid email"})
     if len(req.password) < 6 or len(req.password) > 200:
         return JSONResponse({"ok": False, "error": "Password must be at least 6 characters"})
     if len(username) < 3:
         return JSONResponse({"ok": False, "error": "Username must be at least 3 characters"})
+    if username.upper().startswith("AGU-"):
+        return JSONResponse({"ok": False, "error": "Please choose a different username"})
     try:
         async with pool.acquire() as conn:
-            by_email = await conn.fetchrow("SELECT id,verified FROM ag_users WHERE LOWER(email)=$1", email)
-            by_user = await conn.fetchrow("SELECT id FROM ag_users WHERE LOWER(username)=LOWER($1)", username)
-            if by_email and by_email['verified']:
-                return JSONResponse({"ok": False, "error": "This email is already registered — please Login (or use Forgot Password)"})
-            if by_user and (not by_email or by_user['id'] != by_email['id']):
-                return JSONResponse({"ok": False, "error": "Username already taken — try another username"})
-            if by_email:
-                # Earlier signup never verified — refresh details and resend OTP
-                await conn.execute("UPDATE ag_users SET username=$1, password_hash=$2, email=$3 WHERE id=$4",
-                    username, hash_pass(req.password), email, by_email['id'])
-            else:
-                await conn.execute("INSERT INTO ag_users (username, email, password_hash) VALUES ($1,$2,$3)",
-                    username, email, hash_pass(req.password))
-            await _send_signup_otp(conn, email)
-            return JSONResponse({"ok": True, "msg": "OTP sent to your email"})
+            for _ in range(6):
+                if await conn.fetchrow("SELECT id FROM ag_users WHERE LOWER(username)=LOWER($1)", username):
+                    return JSONResponse({"ok": False, "error": "Username already taken - try another username"})
+                uid = _new_uid()
+                try:
+                    row = await conn.fetchrow(
+                        "INSERT INTO ag_users (username, email, password_hash, verified, uid) VALUES ($1,$2,$3,TRUE,$4) RETURNING id,username,email,products,uid",
+                        username, _int_email(uid), hash_pass(req.password), uid)
+                except asyncpg.UniqueViolationError:
+                    continue   # username race or uid clash: re-check and retry
+                _made.append(time.time()); _RL["signupok|" + _ip] = _made
+                return JSONResponse({"ok": True, "user": _user_json(row, row['products'] or "")})
+        return JSONResponse({"ok": False, "error": "Could not create account. Please try again."})
     except HTTPException:
         raise
     except Exception as e:
-        return JSONResponse({"ok": False, "error": str(e)})
+        print(f"signup error: {e}")
+        return JSONResponse({"ok": False, "error": "Could not create account. Please try again."})
 
 class ResendReq(BaseModel):
     email: str
@@ -1181,27 +1194,39 @@ async def verify_otp(req: OtpReq, request: Request):
         if not row: return JSONResponse({"ok": False, "error": "Invalid or expired OTP"})
         await conn.execute("UPDATE ag_otps SET used=TRUE WHERE id=$1", row['id'])
         await conn.execute("UPDATE ag_users SET verified=TRUE WHERE LOWER(email)=$1", email)
-        user = await conn.fetchrow("SELECT id,username,email,products FROM ag_users WHERE LOWER(email)=$1", email)
+        user = await conn.fetchrow("SELECT id,username,email,products,uid FROM ag_users WHERE LOWER(email)=$1", email)
         prods = await _sync_paid_products(conn, user['id'], user['email'], user['products'])
-        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": prods}})
+        return JSONResponse({"ok": True, "user": _user_json(user, prods)})
 
 @app.post("/api/auth/login")
 async def login(req: LoginReq, request: Request):
-    rate_limit(request, "login", 8, 600, (req.email or "").strip().lower())
+    ident = (req.username or req.email or "").strip()[:120]
+    rate_limit(request, "login", 8, 600, ident.lower())
     rate_limit(request, "loginip", 30, 600)
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
     async with pool.acquire() as conn:
-        email = (req.email or '').strip().lower()
-        user = await conn.fetchrow("SELECT * FROM ag_users WHERE LOWER(email)=$1", email)
-        if not user: return JSONResponse({"ok": False, "error": "No account with this email — please Sign Up"})
-        if not check_pass(req.password, user['password_hash']): return JSONResponse({"ok": False, "error": "Wrong password — try again or use Forgot Password"})
+        user = await conn.fetchrow(
+            "SELECT * FROM ag_users WHERE LOWER(uid)=LOWER($1) OR LOWER(username)=LOWER($1) OR LOWER(email)=LOWER($1) "
+            "ORDER BY (LOWER(uid)=LOWER($1)) DESC, (LOWER(username)=LOWER($1)) DESC LIMIT 1", ident)
+        if not user: return JSONResponse({"ok": False, "error": "No account with this username - please Sign Up"})
+        if not check_pass(req.password, user['password_hash']): return JSONResponse({"ok": False, "error": "Wrong password - try again"})
         if not (user['password_hash'] or "").startswith("pbkdf2$"):
             try: await conn.execute("UPDATE ag_users SET password_hash=$1 WHERE id=$2", hash_pass(req.password), user['id'])
             except Exception as _e: print("rehash failed", _e)
-        if not user['verified']: return JSONResponse({"ok": False, "error": "Email not verified — please Sign Up again with same email to get a new OTP"})
+        if not user['verified']:
+            return JSONResponse({"ok": False, "error": "This old account was never verified. Please contact support on WhatsApp or Telegram."})
+        if not user['uid']:   # old account: give it a User ID the first time it logs in
+            for _ in range(6):
+                nu = _new_uid()
+                try:
+                    await conn.execute("UPDATE ag_users SET uid=$1 WHERE id=$2 AND uid IS NULL", nu, user['id'])
+                    break
+                except asyncpg.UniqueViolationError:
+                    continue
+            user = await conn.fetchrow("SELECT * FROM ag_users WHERE id=$1", user['id'])
         prods = await _sync_paid_products(conn, user['id'], user['email'], user['products'])
-        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": prods}})
+        return JSONResponse({"ok": True, "user": _user_json(user, prods)})
 
 @app.post("/api/auth/forgot-password")
 async def forgot_password(req: ForgotReq, request: Request):
@@ -1240,10 +1265,10 @@ async def get_user(user_id: int, request: Request, email: str = ""):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False})
     async with pool.acquire() as conn:
-        user = await conn.fetchrow("SELECT id,username,email,products,created_at FROM ag_users WHERE id=$1", user_id)
+        user = await conn.fetchrow("SELECT id,username,email,products,created_at,uid FROM ag_users WHERE id=$1", user_id)
         if not user or (user['email'] or "").strip().lower() != (email or "").strip().lower():
             return JSONResponse({"ok": False, "error": "User not found"})
-        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "email": user['email'], "products": user['products'], "joined": str(user['created_at'])[:10]}})
+        return JSONResponse({"ok": True, "user": {"id": user['id'], "username": user['username'], "uid": user['uid'] or "", "email": user['email'], "products": user['products'], "joined": str(user['created_at'])[:10], "internal": _is_int_email(user['email'])}})
 
 # Admin: assign products to user
 class AssignReq(BaseModel):
@@ -1742,8 +1767,8 @@ async def admin_users(request: Request):
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "users": []})
     async with pool.acquire() as conn:
-        rows = await conn.fetch("SELECT id,username,email,products,created_at,verified FROM ag_users ORDER BY created_at DESC")
-        return JSONResponse({"ok": True, "users": [{"id":r['id'],"username":r['username'],"email":r['email'],"products":r['products'],"joined":str(r['created_at'])[:10],"verified":r['verified']} for r in rows]})
+        rows = await conn.fetch("SELECT id,username,email,products,created_at,verified,uid FROM ag_users ORDER BY created_at DESC")
+        return JSONResponse({"ok": True, "users": [{"id":r['id'],"username":r['username'],"uid":r['uid'] or "","email":r['email'],"products":r['products'],"joined":str(r['created_at'])[:10],"verified":r['verified']} for r in rows]})
 
 # ── BRIDGE LICENSE MANAGEMENT ─────────────────────────────────────────────────
 
@@ -1894,6 +1919,7 @@ async def _ensure_orders(conn):
             paid_at TIMESTAMP
         )""")
     await conn.execute("ALTER TABLE ag_orders ADD COLUMN IF NOT EXISTS product_code TEXT")
+    await conn.execute("ALTER TABLE ag_orders ADD COLUMN IF NOT EXISTS contact_email TEXT DEFAULT ''")
     _orders_ready = True
 
 _rewards_ready = False
@@ -2033,6 +2059,7 @@ class PayOrderReq(BaseModel):
     email: str
     phone: str = ""
     voucher: str = ""
+    contact_email: str = ""   # real email for the receipt, used when the account has no email
 
 @app.post("/api/pay/create-order")
 async def pay_create_order(req: PayOrderReq, request: Request):
@@ -2042,6 +2069,9 @@ async def pay_create_order(req: PayOrderReq, request: Request):
     name = req.name.strip()[:80]; email = req.email.strip().lower()[:120]; phone = _re_pay.sub(r"[^0-9+]", "", req.phone)[:15]
     if len(name) < 2: return JSONResponse({"ok": False, "error": "Please enter your name."})
     if not _re_pay.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email): return JSONResponse({"ok": False, "error": "Please enter a valid email."})
+    contact = (req.contact_email or "").strip().lower()[:120]
+    if contact and not _re_pay.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", contact): return JSONResponse({"ok": False, "error": "Please enter a valid email for the receipt."})
+    if _is_int_email(contact): contact = ""
     pool = await get_db()
     if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
     async with pool.acquire() as conn:
@@ -2067,8 +2097,8 @@ async def pay_create_order(req: PayOrderReq, request: Request):
             print(f"Razorpay order error {r.status_code}: {str(rj)[:200]}")
             return JSONResponse({"ok": False, "error": "Could not start payment. Please try again."})
         await conn.execute(
-            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone,product_code,voucher) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
-            rj["id"], item["key"], item["name"], amount, name, email, phone, item.get("code", ""), vcode)
+            "INSERT INTO ag_orders (order_id,product_key,product_name,amount_paise,name,email,phone,product_code,voucher,contact_email) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+            rj["id"], item["key"], item["name"], amount, name, email, phone, item.get("code", ""), vcode, contact)
     return JSONResponse({"ok": True, "order_id": rj["id"], "amount": amount, "currency": "INR",
                          "key_id": _rzp_id(), "name": item["name"] + (f" ({item['code']})" if item.get("code") else "")})
 
@@ -2123,7 +2153,11 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
     linked = row["linked"]
     amt = f"₹{row['amount_paise']/100:,.2f}"
     e = _html_pay.escape
-    if linked:
+    _internal = _is_int_email(row["email"])
+    _rcpt = (row.get("contact_email") or "").strip() or ("" if _internal else (row["email"] or ""))
+    if linked and _internal:
+        acct_line = "<p>Your purchase is linked to your AG Technicals account. You can see it any time in <b>My Dashboard</b> on agtechnicals.com.</p>"
+    elif linked:
         acct_line = (f"<p>Your purchase is linked to your AG Technicals account (<b>{e(row['email'] or '')}</b>). "
                      f"You can see it any time in <b>My Dashboard</b> on agtechnicals.com.</p>")
     else:
@@ -2131,7 +2165,9 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
                      f"To see your purchase on the website, create an account at agtechnicals.com using this same email. "
                      f"It will show up automatically after you log in.</p>")
     try:
-        await asyncio.to_thread(send_email, row["email"], "Payment received — AG Technicals",
+        if not _rcpt:
+            raise Exception("no receipt email given (account has no email)")
+        await asyncio.to_thread(send_email, _rcpt, "Payment received — AG Technicals",
             f"<div style='font-family:Arial,sans-serif;max-width:480px'><h2>Thank you, {e(row['name'] or '')}!</h2>"
             f"<p>We received your payment of <b>{amt}</b> for <b>{e(row['product_name'])}</b>{(' (Code: ' + e(row['product_code']) + ')') if row['product_code'] else ''}.</p>"
             f"<p>Order ID: {e(order_id)}<br>Payment ID: {e(payment_id)}</p>"
@@ -2145,7 +2181,7 @@ async def _pay_mark_paid(order_id: str, payment_id: str):
         try:
             warn = "" if linked else f"<p style='color:#b00'><b>No account found for this email.</b> The customer's dashboard will not show this purchase until they sign up with {e(row['email'] or '')} (it links automatically at login). You can also add access by hand in Admin → Users & Access.</p>"
             await asyncio.to_thread(send_email, admin_to, f"{'' if linked else 'NO ACCOUNT - '}New order: {('[' + row['product_code'] + '] ') if row['product_code'] else ''}{row['product_name']} {amt}",
-                f"<p>{e(row['name'] or '')} ({e(row['email'] or '')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>{(' · Code ' + e(row['product_code'])) if row['product_code'] else ''}.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>{warn}")
+                f"<p>{e(row['name'] or '')} (account {e(row['email'] or '')}, receipt email {e(_rcpt or 'none')}, {e(row['phone'] or '')}) paid {amt} for <b>{e(row['product_name'])}</b>{(' · Code ' + e(row['product_code'])) if row['product_code'] else ''}.<br>Order {e(order_id)} · Payment {e(payment_id)}</p>{warn}")
         except Exception as ex:
             print(f"admin order email failed: {ex}")
     return row
@@ -2192,10 +2228,10 @@ async def admin_orders(request: Request):
     if not pool: return JSONResponse({"ok": False, "orders": []})
     async with pool.acquire() as conn:
         await _ensure_orders(conn)
-        rows = await conn.fetch("SELECT o.order_id,o.product_name,o.product_code,o.amount_paise,o.name,o.email,o.phone,o.status,o.payment_id,o.created_at,o.paid_at, EXISTS(SELECT 1 FROM ag_users u WHERE LOWER(u.email)=LOWER(o.email)) AS linked FROM ag_orders o ORDER BY o.created_at DESC LIMIT 200")
+        rows = await conn.fetch("SELECT o.order_id,o.product_name,o.product_code,o.amount_paise,o.name,o.email,o.phone,o.status,o.payment_id,o.created_at,o.paid_at,o.contact_email, EXISTS(SELECT 1 FROM ag_users u WHERE LOWER(u.email)=LOWER(o.email)) AS linked FROM ag_orders o ORDER BY o.created_at DESC LIMIT 200")
     return JSONResponse({"ok": True, "enabled": _pay_enabled(), "orders": [
         {"order_id": r["order_id"], "product": r["product_name"], "code": r["product_code"] or "", "amount": r["amount_paise"]/100, "name": r["name"], "email": r["email"],
-         "phone": r["phone"], "status": r["status"], "payment_id": r["payment_id"], "linked": bool(r["linked"]),
+         "phone": r["phone"], "status": r["status"], "payment_id": r["payment_id"], "linked": bool(r["linked"]), "contact_email": r["contact_email"] or "",
          "created": str(r["created_at"])[:16], "paid": str(r["paid_at"])[:16] if r["paid_at"] else ""} for r in rows]})
 
 

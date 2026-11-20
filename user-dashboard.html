@@ -160,7 +160,7 @@ function render(){
       <div class="avatar">${firstLetter}</div>
       <div>
         <div class="profile-name">${(user.username||'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';')}</div>
-        <div class="profile-email">${user.email}</div>
+        <div class="profile-email">${user.uid ? 'User ID: '+String(user.uid).replace(/[^A-Za-z0-9-]/g,'') : (user.internal ? '' : String(user.email||'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'))}</div>
         <div class="profile-joined">Member since ${joined}</div>
       </div>
     </div>

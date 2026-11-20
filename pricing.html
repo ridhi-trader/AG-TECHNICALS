@@ -121,7 +121,10 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
   function getUser(){try{var u=JSON.parse(localStorage.getItem('ag_user')||'null');return(u&&u.email)?u:null;}catch(e){return null;}}
   function open(it){cur=it;$('mSub').textContent=it.name+' ('+it.key+') · '+inr(it.price);
     var u=getUser();
-    if(u){$('cE').value=u.email;$('cE').readOnly=true;$('cEN').textContent='Logged in as '+u.email+'. This purchase will be linked to your account automatically.';}
+    var lb=document.querySelector('label[for=cE]'),isI=!!(u&&/@users\.agt\.invalid$/i.test(u.email||''));
+    if(lb)lb.textContent=isI?'Email for receipt (optional)':'Email (we send your receipt and access details here)';
+    if(isI){$('cE').value='';$('cE').readOnly=false;$('cEN').textContent='Logged in as '+(u.username||'')+(u.uid?' ('+u.uid+')':'')+'. This purchase links to your account automatically. Add an email only if you want a receipt by email.';}
+    else if(u){$('cE').value=u.email;$('cE').readOnly=true;$('cEN').textContent='Logged in as '+u.email+'. This purchase will be linked to your account automatically.';}
     else{$('cE').readOnly=false;$('cEN').textContent='Use the same email as your AG Technicals account so your purchase links to it. No account yet? You can still pay and sign up later with this email.';}$('cErr').textContent='';$('mForm').hidden=false;$('mOk').hidden=true;$('ov').classList.add('on');setTimeout(function(){$('cN').focus();},50);}
   function close(){$('ov').classList.remove('on');}
   function loadCheckout(cb){
@@ -135,11 +138,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
   $('cGo').addEventListener('click',function(){
     var n=$('cN').value.trim(),e=$('cE').value.trim(),p=$('cP').value.trim();
+    var uu=getUser(),internal=!!(uu&&/@users\.agt\.invalid$/i.test(uu.email||'')),acct=internal?uu.email:e,contact=internal?e:'';
     if(n.length<2){$('cErr').textContent='Please enter your name.';return;}
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){$('cErr').textContent='Please enter a valid email.';return;}
+    if(internal?(e&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)):!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){$('cErr').textContent='Please enter a valid email.';return;}
+    if(internal&&!p){$('cErr').textContent='Please enter your WhatsApp number so we can send access details.';return;}
     if(!$('cA').checked){$('cErr').textContent='Please accept the Terms and Refund Policy.';return;}
     $('cErr').textContent='';$('cGo').disabled=true;$('cGo').textContent='Starting payment…';
-    fetch('/api/pay/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_key:cur.key,name:n,email:e,phone:p})})
+    fetch('/api/pay/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_key:cur.key,name:n,email:acct,phone:p,contact_email:contact})})
     .then(function(r){return r.json();}).then(function(j){
       if(!j.ok){$('cErr').textContent=j.error||'Could not start payment.';$('cGo').disabled=false;$('cGo').textContent='Pay now';return;}
       loadCheckout(function(){
@@ -150,7 +155,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
             $('cGo').textContent='Confirming…';
             fetch('/api/pay/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(res)})
             .then(function(r){return r.json();}).then(function(v){
-              if(v.ok){$('okMsg').textContent=v.linked?('Thank you. Your purchase is linked to your account ('+e+'). A receipt is on its way to your email, and we will contact you shortly with access details.'):('Thank you. A receipt is on its way to '+e+'. We could not find an AG Technicals account with this email, so create one with the same email to see your purchase on the website. We will contact you shortly with access details.');$('mForm').hidden=true;$('mOk').hidden=false;}
+              if(v.ok){$('okMsg').textContent=internal?('Thank you. Your purchase is linked to your account'+(e?'. A receipt is on its way to '+e:'')+'. We will contact you shortly with access details.'):v.linked?('Thank you. Your purchase is linked to your account ('+e+'). A receipt is on its way to your email, and we will contact you shortly with access details.'):('Thank you. A receipt is on its way to '+e+'. We could not find an AG Technicals account with this email, so create one with the same email to see your purchase on the website. We will contact you shortly with access details.');$('mForm').hidden=true;$('mOk').hidden=false;}
               else{$('cErr').textContent=v.error||'We could not confirm the payment. If money was deducted, write to support@agtechnicals.com with your payment ID: '+res.razorpay_payment_id;}
               $('cGo').disabled=false;$('cGo').textContent='Pay now';
             }).catch(function(){$('cErr').textContent='Network issue while confirming. If money was deducted, write to support@agtechnicals.com with payment ID: '+res.razorpay_payment_id;$('cGo').disabled=false;$('cGo').textContent='Pay now';});

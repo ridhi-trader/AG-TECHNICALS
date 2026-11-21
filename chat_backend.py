@@ -945,7 +945,7 @@ async def get_db():
     global _db_pool
     if not _db_pool and DB_URL:
         try:
-            _db_pool = await asyncpg.create_pool(DB_URL, ssl='require', min_size=1, max_size=5)
+            _db_pool = await asyncpg.create_pool(DB_URL, ssl=('prefer' if 'railway.internal' in DB_URL else 'require'), min_size=1, max_size=5)
             await init_db()
         except HTTPException:
             raise
@@ -1055,9 +1055,34 @@ _INT_DOMAIN = "@users.agt.invalid"   # internal id-mail for accounts without a r
 def _new_uid(): return "AGU-" + "".join(secrets.choice(_UID_ALPHA) for _ in range(6))
 def _int_email(uid): return uid.lower() + _INT_DOMAIN
 def _is_int_email(e): return (e or "").strip().lower().endswith(_INT_DOMAIN)
+def _tok_key():
+    return (os.environ.get("ADMIN_PASS", "") + "|ag-user-token").encode()
+def _mk_token(user_id):
+    """Signed login token (30 days). Used to unlock members-only files."""
+    exp = int(time.time()) + 30 * 86400
+    msg = f"{int(user_id)}.{exp}"
+    return msg + "." + _sec_hmac.new(_tok_key(), msg.encode(), hashlib.sha256).hexdigest()[:32]
+def _chk_token(t):
+    try:
+        if not os.environ.get("ADMIN_PASS", ""): return False
+        uid, exp, sig = str(t or "").split(".")
+        good = _sec_hmac.new(_tok_key(), f"{uid}.{exp}".encode(), hashlib.sha256).hexdigest()[:32]
+        return _sec_hmac.compare_digest(sig, good) and int(exp) > time.time()
+    except Exception:
+        return False
 def _user_json(user, prods):
     return {"id": user['id'], "username": user['username'], "uid": user['uid'] or "", "email": user['email'], "products": prods,
-            "internal": _is_int_email(user['email'])}
+            "internal": _is_int_email(user['email']), "token": _mk_token(user['id'])}
+
+# Members-only education pages: served only with a valid login token (direct URLs are blocked in nginx)
+_EDU_FILES = {"foundation": "education-foundation.html", "smc": "education-smc.html"}
+@app.get("/api/edu/{name}")
+async def edu_file(name: str, t: str = ""):
+    f = _EDU_FILES.get(name.lower())
+    if not f or not _chk_token(t):
+        return JSONResponse({"ok": False, "error": "Please log in to view this course."}, status_code=401)
+    return FileResponse(os.path.join(_base, f), media_type="text/html",
+                        headers={"Cache-Control": "no-store", "X-Robots-Tag": "noindex"})
 
 class SignupReq(BaseModel):
     username: str

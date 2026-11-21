@@ -334,6 +334,11 @@ function openContent(e, url){ e.preventDefault();
     window.location.href = 'user-login';
     return;
   }
+  var em = String(url||'').match(/education-(foundation|smc)(\.html)?([?#].*)?$/i);
+  if(em){
+    if(!user.token){ localStorage.removeItem('ag_user'); localStorage.setItem('ag_redirect_after_login', window.location.href); window.location.href='user-login'; return; }
+    url = '/api/edu/' + em[1].toLowerCase() + '?t=' + encodeURIComponent(user.token);
+  }
   var modal = document.getElementById('contentModal');
   var frame = document.getElementById('contentFrame');
   modal.style.display='flex';

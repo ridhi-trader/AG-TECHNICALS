@@ -174,7 +174,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
     <div class="field"><label>Describe The Rules You Want Built</label>
       <textarea id="csMsg" placeholder="e.g. Indicator that marks EMA 20/50 crossovers on Gold M15 with alerts, or an EA that follows these rules..."></textarea>
     </div>
-    <button class="btn-wa" onclick="sendWa()">💬 Send Request On WhatsApp</button>
+    <button class="btn-wa" id="csSite" onclick="sendSite()">📩 Send Request To AG Technicals (Here On Site)</button>
+    <div id="csSiteMsg" role="status" aria-live="polite" style="font-size:13px;text-align:center;margin-top:10px;min-height:18px;"></div>
+    <button class="btn-tg" onclick="sendWa()">💬 Send Request On WhatsApp</button>
     <button class="btn-tg" onclick="sendTg()">✈️ Send Via Telegram Instead</button>
     <div style="font-size:11px;color:var(--t3);text-align:center;margin-top:12px;">Not financial advice. Pricing shared after initial discussion.</div>
   </div>
@@ -190,6 +192,23 @@ function buildMsg(){
   const tf   = document.getElementById('csTf').value||'Not specified';
   const msg  = document.getElementById('csMsg').value.trim();
   return 'Hi AG Technicals!\n\nI want a Custom Indicator / Algo.\n\nName: '+name+(wa?'\nWhatsApp: '+wa:'')+'\nMarket: '+mkt+'\nExperience: '+exp+'\nTimeframe: '+tf+(msg?'\n\nAdditional Info: '+msg:'');
+}
+function sendSite(){
+  var name=document.getElementById('csName').value.trim(), wa=document.getElementById('csWa').value.trim();
+  var m=document.getElementById('csSiteMsg'), b=document.getElementById('csSite');
+  function say(t,ok){ m.style.color= ok?'#4ade80':'#f26d6d'; m.textContent=t; }
+  if(name.length<2){ say('Please enter your name.',false); return; }
+  if(wa.replace(/\D/g,'').length<8){ say('Please enter your WhatsApp number so we can reach you.',false); return; }
+  b.disabled=true; say('Sending...',true);
+  fetch('/api/custom-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    name:name, phone:wa, market:document.getElementById('csMkt').value, experience:document.getElementById('csExp').value,
+    timeframe:document.getElementById('csTf').value, details:document.getElementById('csMsg').value.trim(), website:''})})
+  .then(function(r){return r.json().catch(function(){return {};});})
+  .then(function(j){
+    if(j&&j.ok){ say('Request received. We will contact you on WhatsApp within 24 hours.',true); b.textContent='✅ Request Sent'; }
+    else { b.disabled=false; say((j&&(j.error||j.detail))||'Could not send right now. Please use WhatsApp or Telegram below.',false); }
+  })
+  .catch(function(){ b.disabled=false; say('Network error. Please use WhatsApp or Telegram below.',false); });
 }
 function sendWa(){
   const txt = buildMsg();

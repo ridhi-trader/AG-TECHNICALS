@@ -17,6 +17,45 @@
   var path = (location.pathname || '').toLowerCase();
   if (/(^|\/)(admin|troublepie-[a-z0-9]+)(\.html)?$/.test(path)) return;
 
+  // Rewards side tab: a small gold tab on the left edge that opens the spin wheel in a side panel.
+  (function () {
+    if (/(^|\/)(rewards|user-login)(\.html)?$/.test(path)) return;
+    function mount() {
+      if (document.getElementById('ag-rw-tab')) return;
+      var st = document.createElement('style');
+      st.textContent =
+        '#ag-rw-tab{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:99980;background:linear-gradient(135deg,#f5c542,#c9960c);color:#000;border:none;border-radius:0 12px 12px 0;padding:14px 8px;font:700 12px/1 "Space Grotesk",Inter,sans-serif;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5);writing-mode:vertical-rl;text-orientation:mixed}' +
+        '#ag-rw-tab:hover{padding-left:12px}' +
+        '#ag-rw-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100000;display:none}' +
+        '#ag-rw-ov.on{display:block}' +
+        '#ag-rw-pn{position:fixed;left:0;top:0;bottom:0;width:min(440px,100vw);background:#0a0a0b;border-right:1px solid #c9960c;z-index:100001;transform:translateX(-105%);transition:transform .28s ease;display:flex;flex-direction:column}' +
+        '#ag-rw-pn.on{transform:none}' +
+        '#ag-rw-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #262626;color:#f5c542;font:700 15px "Space Grotesk",Inter,sans-serif}' +
+        '#ag-rw-x{background:none;border:none;color:#fff;font-size:24px;cursor:pointer;line-height:1}' +
+        '#ag-rw-fr{flex:1;width:100%;border:0;background:#000}';
+      document.head.appendChild(st);
+      var tab = document.createElement('button');
+      tab.id = 'ag-rw-tab'; tab.className = 'ag-keep'; tab.type = 'button';
+      tab.setAttribute('aria-label', 'Open daily rewards'); tab.textContent = '🎁 Rewards';
+      var ov = document.createElement('div'); ov.id = 'ag-rw-ov'; ov.className = 'ag-keep';
+      var pn = document.createElement('div'); pn.id = 'ag-rw-pn'; pn.className = 'ag-keep';
+      pn.setAttribute('role', 'dialog'); pn.setAttribute('aria-label', 'Daily rewards');
+      pn.innerHTML = '<div id="ag-rw-hd"><span>🎁 Daily Rewards</span><button id="ag-rw-x" type="button" aria-label="Close">×</button></div>';
+      var fr = null;
+      function open() {
+        if (!fr) { fr = document.createElement('iframe'); fr.id = 'ag-rw-fr'; fr.title = 'Daily rewards'; fr.src = '/rewards?embed=1'; pn.appendChild(fr); }
+        pn.classList.add('on'); ov.classList.add('on');
+      }
+      function close() { pn.classList.remove('on'); ov.classList.remove('on'); }
+      tab.addEventListener('click', open);
+      ov.addEventListener('click', close);
+      pn.querySelector('#ag-rw-x').addEventListener('click', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+      document.body.appendChild(ov); document.body.appendChild(pn); document.body.appendChild(tab);
+    }
+    if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);
+  })();
+
   // "Back To Site" goes back to the page the visitor came from (inside this site), not always Home.
   // If there is no earlier page on this site (opened directly, from Google, from a new tab) or the earlier
   // page was the login page, the link works as before and opens Home.

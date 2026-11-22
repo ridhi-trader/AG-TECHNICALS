@@ -253,6 +253,7 @@ async function verifyAdminOTP(){
       <button class="sb-btn" onclick="nav('uploads',this)"><span class="sb-icon">📁</span>File Uploads</button>
       <button class="sb-btn" onclick="nav('export',this)"><span class="sb-icon">📦</span>Export / Backup</button>
       <button class="sb-btn" onclick="nav('pricing',this)"><span class="sb-icon">💳</span>Pricing &amp; Orders</button>
+      <button class="sb-btn" onclick="nav('creq',this)"><span class="sb-icon">📩</span>Custom Requests</button>
       <button class="sb-btn" onclick="nav('cleanup',this)"><span class="sb-icon">🧹</span>Compliance Cleanup</button>
       <button class="sb-btn" onclick="nav('password',this)"><span class="sb-icon">🔐</span>Security</button>
       <button class="sb-btn" onclick="nav('bridge_lic',this)"><span class="sb-icon">🌉</span>Bridge Licenses</button>
@@ -604,6 +605,15 @@ async function verifyAdminOTP(){
         <button class="btn-gold" onclick="ccAddWebdev()" style="margin-left:8px;">+ Add Websites &amp; Software box</button>
         <div class="file-status" id="ccMsg" style="margin-top:12px;"></div>
         <div id="ccOut" style="margin-top:14px;font-size:13px;line-height:1.7;"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-creq">
+      <div class="ph"><div class="ph-tag">Requests</div><div class="ph-title">Custom <span>Requests</span></div></div>
+      <div class="form-box">
+        <div class="card-sub" style="margin-bottom:12px;">Requests sent from the Custom Indicator &amp; Algo page on the site. You also get an email for each one.</div>
+        <button class="btn-gold" onclick="crLoad()">↻ Refresh</button>
+        <div id="crList" style="margin-top:14px;overflow-x:auto;"></div>
       </div>
     </div>
 
@@ -1058,6 +1068,7 @@ function nav(id, btn){
   if(btn) btn.classList.add('active');
   const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS,dposts:loadDposts,vouchers:loadVouchers};
   if(id==='pricing') prLoad();
+  if(id==='creq') crLoad();
   if(loaders[id]) loaders[id]();
 }
 
@@ -1979,6 +1990,33 @@ async function orRefund(id){
     if(j.ok) toast('Marked refunded ✓'); else toast(j.error||'Failed','err');
   }catch(e){ toast('Failed','err'); }
   orLoad();
+}
+async function crLoad(){
+  const box=document.getElementById('crList'); if(!box) return;
+  box.textContent='Loading...';
+  const esc=t=>String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  try{
+    const r=await adminFetch('/api/admin/requests'); const j=await r.json();
+    if(!j.ok){ box.textContent=j.error||'Could not load.'; return; }
+    if(!j.requests.length){ box.textContent='No requests yet.'; return; }
+    box.innerHTML='<table style="width:100%;font-size:12px;border-collapse:collapse;min-width:640px;"><tr style="text-align:left;color:#888"><th>Date</th><th>Name / WhatsApp</th><th>Market / Level / Timeframe</th><th>Details</th><th>Status</th></tr>'
+      +j.requests.map(q=>{
+        const num=String(q.phone||'').replace(/[^0-9]/g,'');
+        const done=q.status==='done';
+        return '<tr style="border-top:1px solid #222;vertical-align:top"><td style="padding:8px 6px;white-space:nowrap">'+esc(q.created)+'</td>'
+          +'<td style="padding:8px 6px"><b>'+esc(q.name)+'</b><br><a style="color:#f5c542" target="_blank" rel="noopener" href="https://wa.me/'+num+'">'+esc(q.phone)+'</a></td>'
+          +'<td style="padding:8px 6px">'+esc(q.market||'-')+'<br>'+esc(q.experience||'-')+'<br>'+esc(q.timeframe||'-')+'</td>'
+          +'<td style="padding:8px 6px;max-width:360px;white-space:pre-wrap">'+esc(q.details||'-')+'</td>'
+          +'<td style="padding:8px 6px"><button class="btn-gold" style="padding:4px 10px;font-size:11px" onclick="crSet('+q.id+',\''+(done?'new':'done')+'\')">'+(done?'✅ Done (undo)':'Mark done')+'</button></td></tr>';
+      }).join('')+'</table>';
+  }catch(e){ box.textContent='Could not load requests.'; }
+}
+async function crSet(id,status){
+  try{
+    const r=await adminFetch('/api/admin/request-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,status:status})});
+    const j=await r.json(); if(!j.ok) toast(j.error||'Failed','err');
+  }catch(e){ toast('Failed','err'); }
+  crLoad();
 }
 async function orLoad(){
   const box=document.getElementById('orList'), st=document.getElementById('orStatus'); if(!box) return;

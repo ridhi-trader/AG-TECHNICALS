@@ -2329,3 +2329,85 @@ async def admin_order_status(req: OrderStatusReq, request: Request):
                 cur = [p.strip() for p in (user["products"] or "").split(",") if p.strip() and p.strip() != row["product_key"]]
                 await conn.execute("UPDATE ag_users SET products=$1 WHERE id=$2", ",".join(cur), user["id"])
     return JSONResponse({"ok": True})
+
+
+# ── CUSTOM TOOL REQUESTS (from /custom-strategy "Send To Site") ───────────────
+_req_ready = False
+async def _ensure_requests(conn):
+    global _req_ready
+    if _req_ready: return
+    await conn.execute("""CREATE TABLE IF NOT EXISTS ag_requests (
+        id SERIAL PRIMARY KEY, name TEXT, phone TEXT, market TEXT, experience TEXT, timeframe TEXT,
+        details TEXT, status TEXT DEFAULT 'new', created_at TIMESTAMPTZ DEFAULT NOW())""")
+    _req_ready = True
+
+class CustomReq(BaseModel):
+    name: str
+    phone: str
+    market: str = ""
+    experience: str = ""
+    timeframe: str = ""
+    details: str = ""
+    website: str = ""   # honeypot: real people leave it empty
+
+@app.post("/api/custom-request")
+async def custom_request(req: CustomReq, request: Request):
+    rate_limit(request, "creq", 5, 3600)
+    if (req.website or "").strip():
+        return JSONResponse({"ok": True})
+    name = " ".join((req.name or "").split())[:60]
+    phone = "".join(ch for ch in (req.phone or "") if ch.isdigit() or ch in "+ -()")[:25]
+    if len(name) < 2: return JSONResponse({"ok": False, "error": "Please enter your name."})
+    if sum(ch.isdigit() for ch in phone) < 8: return JSONResponse({"ok": False, "error": "Please enter your WhatsApp number."})
+    market = (req.market or "")[:80]; exp = (req.experience or "")[:80]; tf = (req.timeframe or "")[:80]
+    details = (req.details or "").strip()[:2000]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Could not save right now. Please use WhatsApp or Telegram below."})
+    try:
+        async with pool.acquire() as conn:
+            await _ensure_requests(conn)
+            rid = await conn.fetchval(
+                "INSERT INTO ag_requests (name,phone,market,experience,timeframe,details) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id",
+                name, phone, market, exp, tf, details)
+    except Exception as ex:
+        print(f"custom request save failed: {ex}")
+        return JSONResponse({"ok": False, "error": "Could not save right now. Please use WhatsApp or Telegram below."})
+    admin_to = os.environ.get("ADMIN_EMAIL", "").strip()
+    if admin_to:
+        try:
+            e = _html_pay.escape
+            await asyncio.to_thread(send_email, admin_to, f"New custom tool request #{rid}: {name}",
+                f"<div style='font-family:Arial,sans-serif'><h3>New custom tool request</h3>"
+                f"<p><b>{e(name)}</b><br>WhatsApp: {e(phone)}<br>Market: {e(market or '-')} | Experience: {e(exp or '-')} | Timeframe: {e(tf or '-')}</p>"
+                f"<p style='white-space:pre-wrap'>{e(details or '-')}</p><p>See it in Admin > Custom Requests.</p></div>")
+        except Exception as ex:
+            print(f"custom request email failed: {ex}")
+    return JSONResponse({"ok": True})
+
+@app.get("/api/admin/requests")
+async def admin_requests(request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        await _ensure_requests(conn)
+        rows = await conn.fetch("SELECT id,name,phone,market,experience,timeframe,details,status,created_at FROM ag_requests ORDER BY id DESC LIMIT 200")
+    return JSONResponse({"ok": True, "requests": [
+        {"id": r["id"], "name": r["name"], "phone": r["phone"], "market": r["market"] or "", "experience": r["experience"] or "",
+         "timeframe": r["timeframe"] or "", "details": r["details"] or "", "status": r["status"] or "new",
+         "created": str(r["created_at"])[:16]} for r in rows]})
+
+class ReqStatusReq(BaseModel):
+    id: int
+    status: str
+
+@app.post("/api/admin/request-status")
+async def admin_request_status(req: ReqStatusReq, request: Request):
+    verify_admin_token(request)
+    if req.status not in ("new", "done"): return JSONResponse({"ok": False, "error": "Bad status"})
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database unavailable"})
+    async with pool.acquire() as conn:
+        await _ensure_requests(conn)
+        await conn.execute("UPDATE ag_requests SET status=$1 WHERE id=$2", req.status, req.id)
+    return JSONResponse({"ok": True})

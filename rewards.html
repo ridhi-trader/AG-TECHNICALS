@@ -52,7 +52,8 @@ h2{font-family:'Space Grotesk',sans-serif;font-size:17px;margin:26px 0 10px;text
   var SEG=[5,10,0,15,5,20,0,10], COL=['#f5c542','#1c1c1c'], app=document.getElementById('app'), user=null, rot=0, busy=false;
   try{ var u=JSON.parse(localStorage.getItem('ag_user')||'null'); if(u&&u.email) user=u; }catch(e){}
   function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  if(!user){ app.innerHTML='<p class="sub">Please log in to spin.</p><div class="login"><a href="/user-login">Log in / Join free</a></div>'; return; }
+  if(/[?&]embed=1/.test(location.search)){ var _n=document.querySelector('nav'); if(_n) _n.style.display='none'; }
+  if(!user){ app.innerHTML='<p class="sub">Please log in to spin.</p><div class="login"><a href="/user-login" target="_top">Log in / Join free</a></div>'; return; }
   app.innerHTML='<div class="wheelbox"><div class="pin"></div><canvas id="cv" width="600" height="600"></canvas></div><button class="btn" id="go">SPIN</button><div class="msg" id="msg" role="status" aria-live="polite"></div><div id="res"></div><h2>Daily quiz <span style="font-size:12px;color:#8c8c8c">(right answer = 1 extra spin)</span></h2><div id="quiz" class="win" style="text-align:left">Loading…</div><h2>My vouchers</h2><div id="mine">Loading…</div><h2>Refer a friend</h2><div id="ref" class="win" style="text-align:left">Loading…</div>';
   var cv=document.getElementById('cv'), cx=cv.getContext('2d'), go=document.getElementById('go'), msg=document.getElementById('msg'), res=document.getElementById('res');
   function draw(){

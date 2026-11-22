@@ -118,13 +118,13 @@ input:focus{border-color:rgba(245,197,66,.5);}
       <div style="text-align:center;padding:20px 0;">
         <div style="font-size:48px;margin-bottom:16px;">✅</div>
         <div class="box-title" style="margin-bottom:8px;">You're In!</div>
-        <div class="box-sub" style="margin-bottom:24px;" id="succSub">Redirecting to your dashboard...</div>
+        <div class="box-sub" style="margin-bottom:24px;" id="succSub">Taking you to Home...</div>
         <div id="uidBox" style="display:none;margin:0 0 20px;padding:16px;border:1px solid var(--g4);border-radius:12px;background:#000;">
           <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Your User ID</div>
           <div id="uidVal" style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:var(--g5);letter-spacing:2px;"></div>
           <div style="font-size:12px;color:var(--t3);margin-top:8px;line-height:1.5;">Save this ID and your password. Write them down or take a screenshot. You can log in with your username or this ID.</div>
         </div>
-        <button class="btn" id="contBtn" style="display:none;margin-bottom:16px;" onclick="goNext()">Continue To Dashboard →</button>
+        <button class="btn" id="contBtn" style="display:none;margin-bottom:16px;" onclick="goNext()">Continue To Home →</button>
         <div style="width:100%;background:var(--border);border-radius:4px;height:3px;overflow:hidden;"><div id="progressBar" style="height:100%;background:var(--g5);width:0%;transition:width 2s linear;"></div></div>
       </div>
     </div>
@@ -213,7 +213,7 @@ async function doReset(){
   }catch(e){setErr('forgotOtpErr','Network error');}
 }
 
-function goNext(){ const redir=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=redir||'user-dashboard'; }
+function goNext(){ localStorage.removeItem('ag_redirect_after_login'); window.location.href='/'; }
 function showSuccess(newUid){
   showStep('successStep');
   if(newUid){
@@ -229,7 +229,7 @@ function showSuccess(newUid){
 }
 
 // If already logged in, redirect
-if(localStorage.getItem('ag_user')){ const r=localStorage.getItem('ag_redirect_after_login'); localStorage.removeItem('ag_redirect_after_login'); window.location.href=r||'user-dashboard'; }
+if(localStorage.getItem('ag_user')){ localStorage.removeItem('ag_redirect_after_login'); window.location.href='/'; }
 </script>
 <script src="ag-contact.js"></script>
 <script src="ag-assistant.js"></script>

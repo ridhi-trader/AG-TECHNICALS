@@ -787,7 +787,9 @@ async def wa_verify(request: Request):
         return _PlainText(q.get("hub.challenge", ""))
     raise HTTPException(status_code=403, detail="Forbidden")
 
-async def _wa_send(to: str, text: str):
+_WA_SITE = "https://www.agtechnicals.com"
+
+async def _wa_post(payload: dict):
     token, pid = os.environ.get("WA_TOKEN", ""), os.environ.get("WA_PHONE_ID", "")
     if not (token and pid):
         print("WA send skipped: WA_TOKEN / WA_PHONE_ID not set"); return
@@ -795,14 +797,51 @@ async def _wa_send(to: str, text: str):
         async with httpx.AsyncClient(timeout=20) as c:
             r = await c.post(f"https://graph.facebook.com/v21.0/{pid}/messages",
                              headers={"Authorization": f"Bearer {token}"},
-                             json={"messaging_product": "whatsapp", "to": to, "type": "text",
-                                   "text": {"body": text[:1500], "preview_url": False}})
+                             json={"messaging_product": "whatsapp", **payload})
         if r.status_code >= 300:
             print(f"WA send error {r.status_code}: {r.text[:200]}")
     except Exception as e:
         print(f"WA send exception: {e}")
 
-async def _wa_handle(sender: str, text: str):
+async def _wa_send(to: str, text: str):
+    await _wa_post({"to": to, "type": "text", "text": {"body": text[:3500], "preview_url": False}})
+
+async def _wa_buttons(to: str, body: str, buttons: list):
+    await _wa_post({"to": to, "type": "interactive", "interactive": {"type": "button", "body": {"text": body[:1000]},
+        "action": {"buttons": [{"type": "reply", "reply": {"id": i, "title": t[:20]}} for i, t in buttons[:3]]}}})
+
+async def _wa_cta(to: str, body: str, label: str, url: str):
+    await _wa_post({"to": to, "type": "interactive", "interactive": {"type": "cta_url", "body": {"text": body[:1000]},
+        "action": {"name": "cta_url", "parameters": {"display_text": label[:20], "url": url}}}})
+
+_WA_MENU = [
+    ("m_algo", "Algo (MT5)", "Expert Advisors for MT5"),
+    ("m_tvi", "TradingView Indicators", "SMC, EMA, Order Flow tools"),
+    ("m_edu", "Education Courses", "Learn how our tools work"),
+    ("m_web", "Websites & Software", "Custom website or software"),
+    ("m_custom", "Custom Indicator / Algo", "Get a tool built for you"),
+    ("m_buy", "Buy / Pricing", "See plans and pay online"),
+    ("m_human", "Talk To AG", "Contact the team directly"),
+]
+_WA_PROMPTS = {
+    "m_algo": "Tell me about the Algo (MT5) Expert Advisors you offer and how they work.",
+    "m_tvi": "Tell me about your TradingView Indicators and what each one does.",
+    "m_edu": "Tell me about your Education courses.",
+    "m_web": "Tell me about your Websites and Software development service.",
+}
+
+async def _wa_menu(to: str):
+    await _wa_post({"to": to, "type": "interactive", "interactive": {"type": "list",
+        "header": {"type": "text", "text": "AG Technicals"},
+        "body": {"text": "Namaste! Main AG Technicals ka AI assistant hu. Hum trading software aur education dete hain (tips ya signals nahi). Neeche se chuno ya seedha apna sawal likho."},
+        "footer": {"text": "Software and education provider"},
+        "action": {"button": "Open Menu", "sections": [{"title": "How can we help?",
+            "rows": [{"id": i, "title": t[:24], "description": d[:72]} for i, t, d in _WA_MENU]}]}}})
+
+async def _wa_followup(to: str):
+    await _wa_buttons(to, "Aur kuch jaanna hai? Sawal likh sakte ho ya chuno:", [("m_menu", "Main Menu"), ("m_buy", "Buy / Pricing"), ("m_human", "Talk To AG")])
+
+async def _wa_ai(sender: str, text: str):
     now = time.time()
     hits = [t for t in _WA_HITS.get(sender, []) if now - t < 3600]
     if len(hits) >= 30:
@@ -822,6 +861,34 @@ async def _wa_handle(sender: str, text: str):
     if len(_WA_HIST) > 3000:
         for k in list(_WA_HIST.keys())[:500]: _WA_HIST.pop(k, None)
     await _wa_send(sender, reply)
+    await _wa_followup(sender)
+
+async def _wa_intent(sender: str, iid: str):
+    if iid == "m_menu":
+        await _wa_menu(sender)
+    elif iid in _WA_PROMPTS:
+        await _wa_ai(sender, _WA_PROMPTS[iid])
+    elif iid == "m_custom":
+        await _wa_cta(sender, "Custom Indicator ya Algo chahiye? Apni requirement site pe bhejo, seedha AG Technicals ke paas jaati hai. Hum 24 ghante me WhatsApp pe contact karenge.",
+                      "Send Request", _WA_SITE + "/custom-strategy")
+        await _wa_followup(sender)
+    elif iid == "m_buy":
+        await _wa_cta(sender, "Plans dekhne aur online pay karne ke liye site kholo. Payment Razorpay se secure hota hai.", "Open Pricing", _WA_SITE + "/pricing")
+        await _wa_followup(sender)
+    elif iid == "m_human":
+        await _wa_send(sender, "AG Technicals team se seedha baat karne ke liye:\nTelegram: https://t.me/AG_Technical_fx\nEmail: support@agtechnicals.com\nWebsite: " + _WA_SITE)
+        await _wa_followup(sender)
+    else:
+        await _wa_menu(sender)
+
+_WA_GREET = {"hi", "hii", "hiii", "hello", "hey", "helo", "namaste", "menu", "start", "help", "hlo", "hy"}
+
+async def _wa_handle(sender: str, text: str):
+    t = " ".join((text or "").lower().replace("!", " ").replace(".", " ").split())
+    if not t or t in _WA_GREET or (len(t.split()) <= 3 and t.split()[0] in _WA_GREET):
+        await _wa_menu(sender)
+        return
+    await _wa_ai(sender, text)
 
 @app.post("/api/wa/webhook")
 async def wa_incoming(request: Request):
@@ -849,6 +916,10 @@ async def wa_incoming(request: Request):
                     for k in list(_WA_SEEN.keys())[:1000]: _WA_SEEN.pop(k, None)
                 if m.get("type") == "text":
                     asyncio.create_task(_wa_handle(sender, (m.get("text", {}) or {}).get("body", "")))
+                elif m.get("type") == "interactive":
+                    it = m.get("interactive", {}) or {}
+                    rep = it.get("list_reply") or it.get("button_reply") or {}
+                    asyncio.create_task(_wa_intent(sender, str(rep.get("id", ""))))
                 else:
                     asyncio.create_task(_wa_send(sender, "Abhi main sirf text message samajh sakta hu. Apna sawal likh ke bhejein."))
     return {"ok": True}

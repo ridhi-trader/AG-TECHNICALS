@@ -59,6 +59,32 @@ h2{text-align:center;font-size:28px;margin:46px 0 18px}
 .note{color:var(--mut);font-size:12px;text-align:center;max-width:640px;margin:28px auto 0}
 footer{margin-top:50px;padding:24px 0;border-top:1px solid rgba(255,255,255,.08);text-align:center;color:var(--mut);font-size:13px}
 @media(prefers-reduced-motion:reduce){.scene,.chip{transition:none}.caret{animation:none}}
+
+.appwin{background:linear-gradient(135deg,#fbe8f3,#ece6ff 50%,#dff7ee);color:#2b2540;min-height:430px;font-size:13px}
+.ah{display:flex;gap:8px;align-items:center;padding:10px 14px;background:rgba(255,255,255,.75);flex-wrap:wrap}
+.logo2{font-weight:800;color:#8b5cf6;font-style:italic;margin-right:6px}
+.tb{padding:6px 12px;border-radius:99px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer}
+.tb.on{background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;border-color:transparent}
+.who{margin-left:auto;font-size:11px;color:#8a8499}
+.ac{margin:14px auto;max-width:520px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(120,80,200,.15);text-align:left}
+.ct{font-weight:800;font-size:16px;margin-bottom:8px;font-style:italic}
+.lb{font-size:11px;color:#6b6480;margin:10px 0 4px;font-style:italic}
+.rw{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pl{border:1px solid #e3dcf3;border-radius:99px;padding:5px 12px;font-size:12px;background:#fff;color:#3a3150}
+.pl.on2{background:#efe6ff;border-color:#8b5cf6;color:#6d3fd6}
+.ta{border:1px solid #e3dcf3;border-radius:10px;padding:10px;min-height:54px;margin:8px 0;color:#3a3150}
+.fl{border:1px solid #e3dcf3;border-radius:10px;padding:8px 10px;color:#6b6480;font-size:12px}
+.mt{color:#8a8499;font-size:12px;font-style:italic}
+.rd{display:inline-block;width:11px;height:11px;border-radius:50%;border:2px solid #8b5cf6;vertical-align:-1px;margin-right:4px}
+.rd.on{background:#8b5cf6}
+.pb{display:inline-block;margin-top:12px;padding:9px 22px;border-radius:99px;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font-weight:700}
+.pb.s{margin-top:0;padding:6px 14px;font-size:12px}
+.aip{background:#faf7ff;border:1px solid #e3dcf3;border-radius:12px;padding:10px;margin:8px 0}
+.hrow{display:flex;justify-content:space-between;border:1px solid #eee7fb;border-radius:10px;padding:9px 12px;margin-top:8px}
+.hrow b{color:#6d3fd6}
+.capbar{padding:12px 18px;font-weight:700;text-align:center;color:var(--gold2);border-top:1px solid rgba(255,255,255,.08);min-height:46px}
+.demonote{font-size:11px;color:var(--mut);text-align:center;margin:0;padding:0 14px 12px}
+.ctl .nb{padding:6px 10px}
 </style>
 </head>
 <body>
@@ -71,17 +97,11 @@ footer{margin-top:50px;padding:24px 0;border-top:1px solid rgba(255,255,255,.08)
 <a class="btn" href="#pricing">See pricing</a> <a class="btn ghost" href="https://social-hub-production-7ba8.up.railway.app/" target="_blank" rel="noopener">Open the app</a>
 </section>
 
-<section class="demo" aria-label="Animated overview of Social Hub">
-<div class="stage" id="stage">
-<div class="scene on"><h3>Social Hub in 30 seconds</h3><p>One post. All your accounts. Here is how it works.</p></div>
-<div class="scene"><h3>1. Write your post</h3><p>Type your text, or let the AI helper write it. Add emoji, fonts, and an image or a video.</p><div class="box" id="typed"><span id="typedTxt"></span><span class="caret"></span></div></div>
-<div class="scene"><h3>2. Let AI help you write</h3><p>Pick a topic, a language and a tone. Write a new post or improve your own text.</p><div class="chips"><span class="chip">Diwali</span><span class="chip">Sale</span><span class="chip">Hinglish</span><span class="chip">Hindi</span><span class="chip">English</span><span class="chip">Friendly</span><span class="chip">Festive</span></div></div>
-<div class="scene"><h3>3. Pick your accounts</h3><p>Select all, or choose only the ones you want.</p><div class="chips"><span class="chip">Instagram</span><span class="chip">Facebook Page</span><span class="chip">YouTube</span><span class="chip">LinkedIn</span><span class="chip">Telegram</span><span class="chip">X</span><span class="chip">WhatsApp Channel</span><span class="chip">Threads</span><span class="chip">Pinterest</span><span class="chip">Google Business</span><span class="chip">Email</span><span class="chip">Website</span></div></div>
-<div class="scene"><h3>4. Post now or schedule</h3><p>Send it right away, or set a time for later.</p><div class="row"><span class="pill sel">Now</span><span class="pill">Schedule</span></div></div>
-<div class="scene"><h3>5. Check your history</h3><p>See what you posted and when.</p><div class="hist"><div><span>Morning update</span><b>Posted</b></div><div><span>Weekend reminder</span><b>Scheduled</b></div><div><span>New video</span><b>Posted</b></div></div></div>
-<div class="scene"><h3>Ready to try it?</h3><p>Subscribe for Rs 5,000 per month. Contact us to get started.</p><div class="row"><a class="btn" href="#pricing" style="pointer-events:auto">See pricing</a></div></div>
-</div>
-<div class="ctl"><button type="button" id="pp">Pause</button><div class="bar"><i id="bar"></i></div><span class="step" id="stp">1/6</span></div>
+<section class="demo" aria-label="Overview of Social Hub">
+<div class="appwin"><div class="ah"><span class="logo2">🚀 Social Hub</span><span class="tb" data-t="0">✍️ New post</span><span class="tb" data-t="1">📜 History</span><span class="tb" data-t="2">🔗 Accounts</span><span class="who">Demo</span></div><div id="scr"></div></div>
+<div class="capbar" id="cap"></div>
+<div class="ctl"><button type="button" class="nb" id="pv" aria-label="Previous">&#8249;</button><button type="button" id="pp">Pause</button><button type="button" class="nb" id="nx" aria-label="Next">&#8250;</button><div class="bar"><i id="bar"></i></div><span class="step" id="stp">1/7</span></div>
+<p class="demonote">Screens recreated from the real Social Hub app. Account names and posts shown are examples.</p>
 </section>
 
 <h2>What you can do</h2>
@@ -109,12 +129,34 @@ footer{margin-top:50px;padding:24px 0;border-top:1px solid rgba(255,255,255,.08)
 <footer>&copy; AG Technicals</footer>
 <script>
 (function(){
-  var sc=document.querySelectorAll('.scene'),bar=document.getElementById('bar'),stp=document.getElementById('stp'),pp=document.getElementById('pp'),tt=document.getElementById('typedTxt');
-  var i=0,playing=true,D=4200,t0=Date.now(),ty=null,msg='Good morning! Our new update is live. Check it out today.';
-  function typeIt(){clearInterval(ty);var k=0;tt.textContent='';ty=setInterval(function(){k++;tt.textContent=msg.slice(0,k);if(k>=msg.length)clearInterval(ty);},55);}
-  function show(n){i=(n+sc.length)%sc.length;for(var j=0;j<sc.length;j++)sc[j].classList.toggle('on',j===i);stp.textContent=(i+1)+'/'+sc.length;t0=Date.now();if(i===1)typeIt();}
+  var MSG='Good morning! Our new update is live. Check it out today.';
+  function pl(t,on){return '<span class="pl'+(on?' on2':'')+'">'+t+'</span>';}
+  var AIP='<div class="aip"><div class="lb">Tap topic:</div><div class="rw">'+pl('Diwali')+pl('Sale')+pl('New')+pl('Thanks')+pl('Open')+pl('💡 Ideas for me')+'</div><div class="rw" style="margin-top:6px">'+pl('Hinglish',1)+pl('हिंदी')+pl('English')+'</div><div class="rw" style="margin-top:6px">'+pl('Professional')+pl('Friendly',1)+pl('Festive')+pl('Short')+'</div><div class="rw" style="margin-top:8px"><span class="pb s">Write post</span>'+pl('Improve my text')+'</div></div>';
+  function np(o){
+    var acc=o.sel?pl('Instagram',1)+pl('Facebook Page',1)+pl('YouTube',1)+pl('LinkedIn',1)+pl('Telegram'):'<span class="mt">No accounts yet. Add some in the Accounts tab.</span>';
+    return '<div class="ac"><div class="ct">✍️ New post</div><div class="lb">Main text</div><div class="rw">'+pl('😀 Emoji')+pl('𝓐𝓪 Font')+'</div><div class="ta">'+(o.text||'<span class="mt">Write your post...</span>')+'</div><div class="rw">'+pl('✨ AI '+(o.ai?'▴':'▾'),o.ai)+'</div>'+(o.ai?AIP:'')+'<div class="lb">Image or video</div><div class="fl">Choose File &nbsp; No file chosen</div><div class="lb">Post to</div><div class="rw">'+pl('Select all')+pl('Clear')+'</div><div class="rw" style="margin-top:6px">'+acc+'</div><div class="lb">When</div><div class="rw"><span><i class="rd'+(o.sch?'':' on')+'"></i>Now</span><span style="margin-left:14px"><i class="rd'+(o.sch?' on':'')+'"></i>Schedule</span></div><div class="pb">📤 Post</div></div>';
+  }
+  var PL=['Instagram','Facebook Page','YouTube','LinkedIn','Telegram','Threads','Google Business','Pinterest','Email','X','WhatsApp Channel','Website'];
+  var ACC='<div class="ac"><div class="ct">🔗 Accounts</div><p class="mt" style="margin:0 0 10px">Tap a Connect button for each platform. Instagram, Facebook, YouTube and LinkedIn ask you to log in. Telegram, X, WhatsApp Channel and manual Instagram ask for one detail (username or link).</p><div class="rw">'+PL.map(function(p){return pl('Connect '+p);}).join('')+'</div></div>';
+  var HIS='<div class="ac"><div class="ct">📜 History</div><div class="hrow"><span>Morning update</span><b>Posted</b></div><div class="hrow"><span>Weekend reminder</span><b>Scheduled</b></div><div class="hrow"><span>New video</span><b>Posted</b></div></div>';
+  var S=[
+    {t:0,c:'1. Open Social Hub and tap New post',h:np({})},
+    {t:0,c:'2. Write your post. Add emoji and fonts.',h:np({text:MSG})},
+    {t:0,c:'3. Or let AI help: topic, language and tone',h:np({text:MSG,ai:1})},
+    {t:0,c:'4. Choose the accounts to post to',h:np({text:MSG,sel:1})},
+    {t:0,c:'5. Post now, or schedule for later',h:np({text:MSG,sel:1,sch:1})},
+    {t:2,c:'6. Connect 12 platforms in Accounts',h:ACC},
+    {t:1,c:'7. See everything you posted in History',h:HIS}
+  ];
+  var scr=document.getElementById('scr'),cap=document.getElementById('cap'),bar=document.getElementById('bar'),stp=document.getElementById('stp'),pp=document.getElementById('pp');
+  var tabs=document.querySelectorAll('.tb'),i=0,playing=true,D=4500,t0=Date.now();
+  function show(n){i=(n+S.length)%S.length;scr.innerHTML=S[i].h;cap.textContent=S[i].c;stp.textContent=(i+1)+'/'+S.length;for(var k=0;k<tabs.length;k++){tabs[k].classList.toggle('on',Number(tabs[k].getAttribute('data-t'))===S[i].t);}t0=Date.now();}
+  show(0);
   setInterval(function(){if(!playing)return;var p=(Date.now()-t0)/D;bar.style.width=Math.min(100,p*100)+'%';if(p>=1)show(i+1);},60);
   pp.addEventListener('click',function(){playing=!playing;pp.textContent=playing?'Pause':'Play';if(playing)t0=Date.now();});
+  document.getElementById('pv').addEventListener('click',function(){show(i-1);});
+  document.getElementById('nx').addEventListener('click',function(){show(i+1);});
+  for(var k=0;k<tabs.length;k++){(function(el){el.addEventListener('click',function(){var t=Number(el.getAttribute('data-t'));for(var j=0;j<S.length;j++){if(S[j].t===t){show(j);break;}}});})(tabs[k]);}
 })();
 </script>
 </body>

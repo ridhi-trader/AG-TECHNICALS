@@ -568,6 +568,12 @@ async function verifyAdminOTP(){
         <button class="btn-gold" onclick="exportData()">⬇ Download Backup JSON</button>
       </div>
       <div class="form-box">
+        <div class="card-title" style="margin-bottom:8px;">Restore Old Site Content From This Browser</div>
+        <div class="card-sub" style="margin-bottom:12px;">If the site shows your old products, education files and pricing in this browser but Admin looks empty, click this. It copies the saved copy from this browser to the site database. Use the same Chrome profile where the site still shows your old content.</div>
+        <button class="btn-gold" onclick="restoreFromBrowser()">⟳ Restore From This Browser</button>
+        <div id="rbMsg" style="margin-top:10px;font-size:13px;"></div>
+      </div>
+      <div class="form-box">
         <div class="card-title" style="margin-bottom:8px;">Import Backup</div>
         <div class="card-sub" style="margin-bottom:12px;">Restore from a previously downloaded backup JSON.</div>
         <input type="file" class="file-inp" id="importFile" accept=".json" style="margin-bottom:10px;">
@@ -1990,6 +1996,25 @@ async function orRefund(id){
     if(j.ok) toast('Marked refunded ✓'); else toast(j.error||'Failed','err');
   }catch(e){ toast('Failed','err'); }
   orLoad();
+}
+async function restoreFromBrowser(){
+  const re=/^(ag_products|ag_pricing|ag_hero|ag_faq|ag_about|ag_news|ag_contact|ag_ticker|ag_toolcards|hero|about|contact|faq|news|ticker|toolcards|indicators|productPrices|ag_page_[A-Za-z0-9_-]+)$/;
+  const keys=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(re.test(k)) keys.push(k); }
+  const out=document.getElementById('rbMsg');
+  if(!keys.length){ out.style.color='#f26d6d'; out.textContent='Nothing saved in this browser. Open Admin in the Chrome profile where the site still shows your old content.'; return; }
+  if(!confirm('Found '+keys.length+' saved items in this browser:\n'+keys.join(', ')+'\n\nCopy them to the site database now? This replaces what is on the server for these items.')) return;
+  let ok=0; const fail=[];
+  for(const k of keys){
+    const v=localStorage.getItem(k);
+    try{ JSON.parse(v); }catch(e){ continue; }
+    try{
+      const r=await adminFetch('/api/config/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:v})});
+      const j=await r.json(); if(j.ok) ok++; else fail.push(k);
+    }catch(e){ fail.push(k); }
+  }
+  out.style.color=fail.length?'#f26d6d':'#4ade80';
+  out.textContent='Restored '+ok+' of '+keys.length+' items.'+(fail.length?' Failed: '+fail.join(', '):' Reload Admin and the site now.');
+  toast('Restore done: '+ok+' items');
 }
 async function crLoad(){
   const box=document.getElementById('crList'); if(!box) return;

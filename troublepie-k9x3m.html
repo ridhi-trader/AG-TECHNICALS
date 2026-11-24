@@ -247,6 +247,7 @@ async function verifyAdminOTP(){
       <button class="sb-btn" onclick="nav('faq',this)"><span class="sb-icon">❓</span>FAQ</button>
       <button class="sb-btn" onclick="nav('newsed',this)"><span class="sb-icon">📰</span>News & Dossier</button>
       <button class="sb-btn" onclick="nav('vouchers',this)"><span class="sb-icon">🎟️</span>Vouchers</button>
+<button class="sb-btn" onclick="nav('feedback',this)"><span class="sb-icon">💡</span>Feedback</button>
       <button class="sb-btn" onclick="nav('dposts',this)"><span class="sb-icon">📅</span>Blog Posts</button>
 
       <div class="sb-group">Files & System</div>
@@ -673,7 +674,8 @@ async function verifyAdminOTP(){
       </div>
       <div id="vcList"><div style="color:var(--t3);">Loading…</div></div>
     </div>
-    <div class="page" id="page-dposts">
+    <div class="page" id="page-feedback"><h2 style="margin:0 0 6px">💡 User Ideas &amp; Feedback</h2><p style="opacity:.7;margin:0 0 14px;font-size:13px">Idea site pe apply ho jaye to "Applied + Coupon" dabao. User ko % off coupon milega (30 din, 1 use).</p><div id="fbList">Loading...</div></div>
+<div class="page" id="page-dposts">
       <div class="ph"><div class="ph-tag">CONTENT</div><div class="ph-title"><span>Blog</span> Posts</div></div>
       <p style="color:var(--t3);font-size:13px;margin-bottom:16px;">Post a photo, video or text. It shows on the public page <b>/blog</b>.</p>
       <div class="card" style="padding:18px;margin-bottom:18px;">
@@ -1024,6 +1026,36 @@ async function dpDel(id){
   if(!confirm('Delete this post?')) return;
   const r=await adminFetch(API+'/api/posts/'+id,{method:'DELETE'}); if(r.ok){toast('Deleted');loadDposts();}
 }
+async function loadFeedback(){
+  var box=document.getElementById('fbList'); if(!box) return;
+  try{
+    var r=await adminFetch('/api/admin/feedback'); var j=await r.json();
+    var items=(j&&j.items)||[];
+    if(!items.length){box.textContent='Abhi koi idea nahi aaya.';return;}
+    box.innerHTML=items.map(function(x){
+      var cp=x.voucher?'<div style="margin-top:6px;color:#c9960c">🎟️ Coupon: <b>'+escH(x.voucher)+'</b></div>':'';
+      var btns='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">'+
+        '<button class="btn" onclick="fbAct('+x.id+',\'reviewed\')">Reviewed</button>'+
+        (x.voucher?'':'<button class="btn" onclick="fbApply('+x.id+')">Applied + Coupon</button>')+
+        '<button class="btn" onclick="fbAct('+x.id+',\'rejected\')">Reject</button></div>';
+      return '<div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;margin-bottom:10px">'+
+        '<div style="font-size:12px;opacity:.7">#'+x.id+' · '+escH(x.kind||'')+' · '+escH(x.email||'')+' · '+escH(String(x.created_at||'').slice(0,16))+' · <b>'+escH(x.status||'')+'</b></div>'+
+        '<div style="margin-top:6px;white-space:pre-wrap">'+escH(x.message||'')+'</div>'+cp+btns+'</div>';
+    }).join('');
+  }catch(e){box.textContent='Load fail: '+e;}
+}
+async function fbAct(id,status,pct){
+  try{
+    var r=await adminFetch('/api/admin/feedback/'+id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:status,pct:pct||null})});
+    var j=await r.json();
+    if(j&&j.ok){toast(j.code?('Coupon: '+j.code):'Updated');loadFeedback();}else toast('Fail','err');
+  }catch(e){toast('Fail','err');}
+}
+function fbApply(id){
+  var p=parseInt(prompt('Kitna % discount coupon? (1-50)','10'),10);
+  if(!p||p<1||p>50){toast('1 se 50 ke beech','err');return;}
+  fbAct(id,'applied',p);
+}
 async function loadVouchers(){
   const box=document.getElementById('vcList');
   try{
@@ -1072,7 +1104,7 @@ function nav(id, btn){
   document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
-  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS,dposts:loadDposts,vouchers:loadVouchers};
+  const loaders={products:renderProds,indicators:renderInds,users:renderUsers,analytics:renderAnalytics,strategy:renderStrategy,hero:loadHero,ticker:loadTicker,contact:loadContact,toolcards:loadToolCards,about:loadAbout,faq:loadFaq,newsed:loadNews,uploads:loadUploads,export:()=>{},password:()=>{},bridge_lic:loadLicenses,pagecms:loadPageCMS,dposts:loadDposts,vouchers:loadVouchers,feedback:loadFeedback};
   if(id==='pricing') prLoad();
   if(id==='creq') crLoad();
   if(loaders[id]) loaders[id]();

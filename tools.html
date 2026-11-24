@@ -30,6 +30,21 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 4
 .ic-svg{background:none;width:auto;height:auto;margin-bottom:18px}.ic-svg svg{max-width:100%;height:auto}
 .card:hover{border-color:rgba(245,197,66,.6);transform:translateY(-3px);}
 .card:focus-visible{outline:2px solid var(--g5);outline-offset:3px;}
+/* Tools cards: richer look (original icons, gold glow) */
+.card{position:relative;overflow:hidden;background:linear-gradient(155deg,rgba(245,197,66,.16),rgba(11,11,11,.97) 58%);border:1.5px solid rgba(245,197,66,.38);border-radius:22px;padding:32px 28px;box-shadow:0 14px 34px rgba(0,0,0,.65);animation:tIn .6s ease backwards;}
+.card:nth-child(2){animation-delay:.12s;}
+.card::before{content:'';position:absolute;right:-50px;top:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(245,197,66,.25),transparent 70%);pointer-events:none;}
+.card::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.1),transparent);transform:skewX(-18deg);transition:left .7s;pointer-events:none;}
+.card:hover{border-color:#f5c542;transform:translateY(-6px);box-shadow:0 22px 46px rgba(0,0,0,.75),0 0 40px rgba(245,197,66,.28);}
+.card:hover::after{left:130%;}
+.card>*{position:relative;z-index:1;}
+.ic-svg svg{filter:drop-shadow(0 0 14px rgba(245,197,66,.45));}
+.ic-svg svg rect:first-child{fill:#1a1405;}
+.t{font-size:28px;}
+.go{display:inline-block;padding:9px 18px;border:1px solid rgba(245,197,66,.55);border-radius:99px;background:rgba(245,197,66,.08);transition:background .2s,transform .2s;}
+.card:hover .go{background:rgba(245,197,66,.2);transform:translateX(4px);}
+@keyframes tIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+@media(prefers-reduced-motion:reduce){.card{animation:none;}}
 .ic{font-size:34px;margin-bottom:14px;}
 .t{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;}
 .d{color:var(--t3);font-size:14px;line-height:1.7;margin-bottom:18px;}

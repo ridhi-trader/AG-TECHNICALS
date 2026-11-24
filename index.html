@@ -628,6 +628,61 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div id="contactGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:860px;margin:0 auto;"></div>
 </section>
 
+<!-- IDEAS / FEEDBACK -->
+<section id="ideas" style="padding:64px 20px;text-align:center">
+<div style="max-width:640px;margin:0 auto">
+<h2 style="font-size:28px;margin:0 0 8px">💡 Share Your Idea</h2>
+<p style="opacity:.75;margin:0 0 20px;font-size:14px;line-height:1.6">Site ke liye koi suggestion ya idea hai? Likho. Agar tumhara idea site pe apply hua to tumhe product discount coupon milega.</p>
+<div id="ideaLogin" style="display:none"><p style="margin:0 0 12px">Idea bhejne ke liye pehle login karo.</p><a class="wd-cta" href="user-login">Login</a></div>
+<form id="ideaForm" style="display:none;text-align:left" onsubmit="return false">
+<select id="ideaKind" style="width:100%;padding:10px;border-radius:10px;margin-bottom:10px"><option value="idea">Idea</option><option value="feedback">Feedback</option><option value="bug">Problem / Bug</option></select>
+<textarea id="ideaMsg" maxlength="1000" rows="5" placeholder="Apna idea ya suggestion likho (kam se kam 15 akshar)..." style="width:100%;padding:12px;border-radius:10px;resize:vertical"></textarea>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px"><span id="ideaCnt" style="font-size:12px;opacity:.6">0/1000</span><button type="button" id="ideaSend" class="wd-cta" style="cursor:pointer;border:0">Send</button></div>
+<div id="ideaStatus" style="margin-top:10px;font-size:13px"></div>
+<div id="ideaMine" style="margin-top:18px"></div>
+<p style="font-size:11px;opacity:.55;margin-top:14px">Coupon sirf products pe discount hota hai, cash nahi. Idea apply hona admin ke decision par hai.</p>
+</form>
+</div>
+</section>
+<script>
+(function(){
+  var u=null;try{u=JSON.parse(localStorage.getItem('ag_user')||'null');}catch(e){}
+  var em=u&&u.email;
+  var login=document.getElementById('ideaLogin'),form=document.getElementById('ideaForm');
+  if(!login||!form) return;
+  if(!em){login.style.display='block';return;}
+  form.style.display='block';
+  var msg=document.getElementById('ideaMsg'),cnt=document.getElementById('ideaCnt'),st=document.getElementById('ideaStatus'),mine=document.getElementById('ideaMine');
+  msg.addEventListener('input',function(){cnt.textContent=msg.value.length+'/1000';});
+  function loadMine(){
+    fetch('/api/feedback/my?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(j){
+      mine.textContent='';
+      var items=(j&&j.items)||[];
+      if(!items.length) return;
+      var h=document.createElement('div');h.style.cssText='font-weight:600;margin-bottom:8px';h.textContent='Tumhare ideas';mine.appendChild(h);
+      items.forEach(function(x){
+        var d=document.createElement('div');d.style.cssText='border:1px solid rgba(128,128,128,.3);border-radius:10px;padding:10px;margin-bottom:8px;font-size:13px';
+        var m=document.createElement('div');m.textContent=x.message;d.appendChild(m);
+        var s=document.createElement('div');s.style.cssText='opacity:.7;margin-top:4px;font-size:12px';
+        s.textContent='Status: '+x.status+(x.voucher?'  |  Coupon: '+x.voucher:'');d.appendChild(s);
+        mine.appendChild(d);
+      });
+    }).catch(function(){});
+  }
+  loadMine();
+  document.getElementById('ideaSend').addEventListener('click',function(){
+    var text=msg.value.trim();
+    if(text.length<15){st.textContent='Kam se kam 15 akshar likho.';return;}
+    st.textContent='Bhej raha hu...';
+    fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,kind:document.getElementById('ideaKind').value,message:text})})
+    .then(function(r){return r.json();}).then(function(j){
+      if(j&&j.ok){st.textContent='Thanks! Idea mil gaya.';msg.value='';cnt.textContent='0/1000';loadMine();}
+      else st.textContent=(j&&(j.error||j.detail))||'Nahi gaya, baad me try karo.';
+    }).catch(function(){st.textContent='Network error, baad me try karo.';});
+  });
+})();
+</script>
+
 <!-- DISCLAIMER -->
 <div class="disclaimer-box">
   <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#e74c3c;margin-bottom:8px;font-family:'Space Grotesk',sans-serif;">⚠ RISK DISCLAIMER</div>

@@ -1866,6 +1866,104 @@ async def admin_users(request: Request):
         rows = await conn.fetch("SELECT id,username,email,products,created_at,verified,uid FROM ag_users ORDER BY created_at DESC")
         return JSONResponse({"ok": True, "users": [{"id":r['id'],"username":r['username'],"uid":r['uid'] or "","email":r['email'],"products":r['products'],"joined":str(r['created_at'])[:10],"verified":r['verified']} for r in rows]})
 
+# ── FEEDBACK & IDEAS: users write ideas; an applied idea can be rewarded with a discount voucher ──
+_feedback_ready = False
+async def _ensure_feedback(conn):
+    global _feedback_ready
+    if _feedback_ready: return
+    await conn.execute("""
+        CREATE TABLE IF NOT EXISTS ag_feedback (
+            id SERIAL PRIMARY KEY,
+            email TEXT NOT NULL,
+            username TEXT DEFAULT '',
+            kind TEXT DEFAULT 'idea',
+            message TEXT NOT NULL,
+            status TEXT DEFAULT 'new',
+            voucher TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT NOW()
+        )""")
+    _feedback_ready = True
+
+class FeedbackReq(BaseModel):
+    email: str
+    kind: str = "idea"
+    message: str
+
+@app.post("/api/feedback")
+async def feedback_submit(req: FeedbackReq, request: Request):
+    rate_limit(request, "feedback", 10, 3600)
+    email = req.email.strip().lower()[:120]
+    kind = req.kind if req.kind in ("idea", "feedback", "bug") else "idea"
+    msg = (req.message or "").strip()[:1000]
+    if len(msg) < 15:
+        return JSONResponse({"ok": False, "error": "Please write a little more so we understand."})
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Service busy. Please try again."})
+    async with pool.acquire() as conn:
+        await _ensure_feedback(conn)
+        user = await _verified_user(conn, email)
+        if not user:
+            return JSONResponse({"ok": False, "error": "Please log in to your AG Technicals account to share an idea."})
+        recent = await conn.fetchval("SELECT COUNT(*) FROM ag_feedback WHERE email=$1 AND created_at > NOW() - INTERVAL '24 hours'", email)
+        if recent >= 3:
+            return JSONResponse({"ok": False, "error": "You can send 3 ideas a day. Please come back tomorrow."})
+        await conn.execute("INSERT INTO ag_feedback(email,username,kind,message) VALUES($1,$2,$3,$4)",
+                           email, str(user["username"] or "")[:60], kind, msg)
+    return {"ok": True}
+
+@app.get("/api/feedback/my")
+async def feedback_my(email: str, request: Request):
+    rate_limit(request, "fbmy", 60, 600)
+    email = email.strip().lower()[:120]
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "items": []})
+    async with pool.acquire() as conn:
+        await _ensure_feedback(conn)
+        if not await _verified_user(conn, email):
+            return JSONResponse({"ok": False, "items": []})
+        rows = await conn.fetch("SELECT id,message,status,voucher,created_at FROM ag_feedback WHERE email=$1 ORDER BY created_at DESC LIMIT 10", email)
+    return {"ok": True, "items": [{"id": r["id"], "message": r["message"][:200], "status": r["status"],
+            "voucher": r["voucher"], "date": r["created_at"].isoformat() + "Z"} for r in rows]}
+
+@app.get("/api/admin/feedback")
+async def admin_feedback_list(request: Request):
+    verify_admin_token(request)
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "items": []})
+    async with pool.acquire() as conn:
+        await _ensure_feedback(conn)
+        rows = await conn.fetch("SELECT * FROM ag_feedback ORDER BY created_at DESC LIMIT 200")
+    return {"ok": True, "items": [{"id": r["id"], "email": r["email"], "username": r["username"], "kind": r["kind"],
+            "message": r["message"], "status": r["status"], "voucher": r["voucher"],
+            "date": r["created_at"].isoformat() + "Z"} for r in rows]}
+
+class FeedbackActReq(BaseModel):
+    status: str
+    pct: int = 0
+
+@app.post("/api/admin/feedback/{fid}")
+async def admin_feedback_act(fid: int, req: FeedbackActReq, request: Request):
+    verify_admin_token(request)
+    if req.status not in ("new", "reviewed", "applied", "rejected"):
+        return JSONResponse({"ok": False, "error": "Bad status."})
+    if req.pct and not (1 <= req.pct <= 50):
+        return JSONResponse({"ok": False, "error": "Percent must be 1 to 50."})
+    pool = await get_db()
+    if not pool: return JSONResponse({"ok": False, "error": "Database busy."})
+    async with pool.acquire() as conn:
+        await _ensure_feedback(conn)
+        await _ensure_rewards(conn)
+        row = await conn.fetchrow("SELECT email,voucher FROM ag_feedback WHERE id=$1", fid)
+        if not row: return JSONResponse({"ok": False, "error": "Not found."})
+        code = row["voucher"] or ""
+        if req.status == "applied" and req.pct and not code:
+            code = "AG" + "".join(_rnd.SystemRandom().choice(_VCH_ALPHA) for _ in range(6))
+            exp = datetime.utcnow() + timedelta(days=30)
+            await conn.execute("INSERT INTO ag_vouchers(code,pct,owner_email,max_uses,expires_at,source) VALUES($1,$2,$3,1,$4,'idea')",
+                               code, req.pct, row["email"], exp)
+        await conn.execute("UPDATE ag_feedback SET status=$1, voucher=$2 WHERE id=$3", req.status, code, fid)
+    return {"ok": True, "code": code}
+
 # ── BRIDGE LICENSE MANAGEMENT ─────────────────────────────────────────────────
 
 class BridgeLicReq(BaseModel):

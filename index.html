@@ -440,6 +440,7 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
     <li><a href="#news">News</a></li>
+    <li><a href="#apps">Apps</a></li>
     <li><a href="about">About Us</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#ideas">Feedback</a></li>
@@ -627,6 +628,36 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-h" id="contactH">Join The Community</div>
   <div class="sec-sub" id="contactSub" style="margin-bottom:36px;">Reach Us On Your Preferred Platform — We're Active Daily.</div>
   <div id="contactGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:860px;margin:0 auto;"></div>
+</section>
+
+<!-- OUR APPS -->
+<section id="apps" style="padding:64px 20px;text-align:center">
+<div style="max-width:760px;margin:0 auto">
+<h2 style="font-size:28px;margin:0 0 8px">📱 Our Apps</h2>
+<p style="opacity:.75;margin:0 0 24px;font-size:14px;line-height:1.6">Apps from AG Technicals. Open in your browser or install on your phone.</p>
+<div style="border:1px solid rgba(201,150,12,.35);border-radius:16px;padding:22px;text-align:left;background:linear-gradient(145deg,rgba(201,150,12,.08),rgba(255,255,255,.02))">
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+<div style="font-size:38px">🌐</div>
+<div style="flex:1;min-width:200px"><div style="font-size:20px;font-weight:700">Social Hub</div><div style="opacity:.75;font-size:13px;margin-top:2px">AG Technicals social app. Works in your browser and installs like an app on Android, iPhone and PC.</div></div>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+<a class="wd-cta" href="https://social-hub-production-7ba8.up.railway.app/" target="_blank" rel="noopener" style="text-decoration:none">Open Social Hub</a>
+<button type="button" id="appShare" class="wd-cta" style="cursor:pointer;border:0">Share</button>
+</div>
+<details style="margin-top:14px;font-size:13px;opacity:.85"><summary style="cursor:pointer">How to install</summary>
+<ul style="margin:8px 0 0 18px;line-height:1.7"><li>Android (Chrome): open the app, tap the menu, then "Install app" or "Add to Home screen".</li><li>iPhone (Safari): tap Share, then "Add to Home Screen".</li><li>PC (Chrome or Edge): click the install icon in the address bar.</li></ul></details>
+</div>
+</div>
+<script>
+(function(){
+  var b=document.getElementById('appShare'); if(!b) return;
+  b.addEventListener('click',function(){
+    var url='https://social-hub-production-7ba8.up.railway.app/', text='Check out Social Hub by AG Technicals';
+    if(navigator.share){navigator.share({title:'Social Hub',text:text,url:url}).catch(function(){});}
+    else{window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');}
+  });
+})();
+</script>
 </section>
 
 <!-- IDEAS / FEEDBACK -->

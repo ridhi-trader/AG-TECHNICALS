@@ -1628,6 +1628,9 @@ async def rewards_spin(req: SpinReq, request: Request):
         if not await _verified_user(conn, email):
             return JSONResponse({"ok": False, "error": "Please log in to your AG Technicals account to spin."})
         day = _ist_today()
+        _prev_any = await conn.fetchrow("SELECT prize,code FROM ag_spins WHERE email=$1 OR email=$2 LIMIT 1", email, email + "|bonus")
+        if _prev_any:
+            return JSONResponse({"ok": False, "already": True, "error": "You have already used your free spin.", "prize": _prev_any["prize"], "code": _prev_any["code"]})
         r = _rnd.SystemRandom()
         pct = r.choices([p for p, w in _SPIN_PRIZES], weights=[w for p, w in _SPIN_PRIZES])[0]
         code = ""
@@ -1665,9 +1668,7 @@ async def rewards_my(email: str, request: Request):
             return JSONResponse({"ok": False, "vouchers": []})
         rows = await conn.fetch("SELECT code,pct,max_uses,used,expires_at FROM ag_vouchers WHERE owner_email=$1 AND active=TRUE AND used<max_uses AND (expires_at IS NULL OR expires_at>NOW()) ORDER BY created_at DESC LIMIT 20", email)
         day = _ist_today()
-        spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 AND spin_day=$2", email, day)
-        if spun and await conn.fetchval("SELECT 1 FROM ag_quiz WHERE email=$1 AND qday=$2 AND ok=TRUE", email, day):
-            spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 AND spin_day=$2", email + "|bonus", day)
+        spun = await conn.fetchval("SELECT 1 FROM ag_spins WHERE email=$1 OR email=$2 LIMIT 1", email, email + "|bonus")
     return {"ok": True, "spun_today": bool(spun),
             "vouchers": [{"code": r["code"], "pct": r["pct"], "expires": (r["expires_at"].isoformat() + "Z") if r["expires_at"] else ""} for r in rows]}
 

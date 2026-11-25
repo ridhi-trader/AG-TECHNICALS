@@ -85,6 +85,16 @@ footer{margin-top:50px;padding:24px 0;border-top:1px solid rgba(255,255,255,.08)
 .capbar{padding:12px 18px;font-weight:700;text-align:center;color:var(--gold2);border-top:1px solid rgba(255,255,255,.08);min-height:46px}
 .demonote{font-size:11px;color:var(--mut);text-align:center;margin:0;padding:0 14px 12px}
 .ctl .nb{padding:6px 10px}
+
+.appwin{position:relative;overflow:hidden}
+#scr>*{animation:scrIn .55s ease both}
+@keyframes scrIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#agcur{position:absolute;left:30px;top:30px;width:26px;height:26px;z-index:9;pointer-events:none;transition:left 1s cubic-bezier(.45,.05,.2,1),top 1s cubic-bezier(.45,.05,.2,1);filter:drop-shadow(0 3px 5px rgba(0,0,0,.45))}
+#agcur svg{width:26px;height:26px;display:block}
+.agrip{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid #8b5cf6;background:rgba(139,92,246,.25);z-index:8;pointer-events:none;animation:agrip .7s ease-out forwards}
+@keyframes agrip{from{transform:scale(.4);opacity:1}to{transform:scale(3.4);opacity:0}}
+#agtoast{position:absolute;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;z-index:9;background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff;font:700 13px system-ui,sans-serif;padding:10px 18px;border-radius:999px;box-shadow:0 8px 22px rgba(139,92,246,.45);transition:all .45s ease;pointer-events:none;white-space:nowrap}
+#agtoast.on{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -157,6 +167,45 @@ footer{margin-top:50px;padding:24px 0;border-top:1px solid rgba(255,255,255,.08)
   document.getElementById('pv').addEventListener('click',function(){show(i-1);});
   document.getElementById('nx').addEventListener('click',function(){show(i+1);});
   for(var k=0;k<tabs.length;k++){(function(el){el.addEventListener('click',function(){var t=Number(el.getAttribute('data-t'));for(var j=0;j<S.length;j++){if(S[j].t===t){show(j);break;}}});})(tabs[k]);}
+})();
+</script>
+<div id="agcur" style="display:none"><svg viewBox="0 0 24 24"><path d="M4 2l15 9-6.5 1.5L9.5 19z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div id="agtoast"></div>
+<script>
+(function(){
+  var win=document.querySelector('.appwin'),scr=document.getElementById('scr'),stp=document.getElementById('stp');
+  if(!win||!scr)return;
+  var cur=document.getElementById('agcur'),toast=document.getElementById('agtoast');
+  win.appendChild(cur);win.appendChild(toast);cur.style.display='block';
+  function leaf(txt,sel){var a=win.querySelectorAll(sel||'#scr span,#scr div,#scr button,#scr textarea,.tb');for(var k=0;k<a.length;k++){if(a[k].children.length===0&&a[k].textContent.indexOf(txt)>-1)return a[k];}return null;}
+  function target(n){
+    switch(n){
+      case 0:return win.querySelector('.tb[data-t="0"]');
+      case 1:return leaf('Good morning')||win.querySelector('#scr .ac');
+      case 2:return leaf('Friendly')||leaf('Hinglish');
+      case 3:return leaf('Instagram');
+      case 4:return leaf('Post')||win.querySelector('#scr .pb');
+      case 5:return leaf('Connect Instagram');
+      case 6:return win.querySelector('.tb[data-t="1"]');
+    }return null;
+  }
+  var tm=[];
+  function clr(){while(tm.length)clearTimeout(tm.pop());toast.classList.remove('on');}
+  function run(){
+    clr();var n=(parseInt(stp.textContent,10)||1)-1;
+    tm.push(setTimeout(function(){
+      var el=target(n);if(!el)return;
+      var w=win.getBoundingClientRect(),r=el.getBoundingClientRect();
+      var x=r.left-w.left+Math.min(r.width/2,60),y=r.top-w.top+r.height/2;
+      cur.style.left=(x-4)+'px';cur.style.top=(y-3)+'px';
+      tm.push(setTimeout(function(){
+        var rp=document.createElement('span');rp.className='agrip';rp.style.left=x+'px';rp.style.top=y+'px';win.appendChild(rp);
+        setTimeout(function(){if(rp.parentNode)rp.parentNode.removeChild(rp);},800);
+        if(n===4){tm.push(setTimeout(function(){toast.textContent='✓ Posted to 4 accounts';toast.classList.add('on');},700));}
+      },1050));
+    },500));
+  }
+  new MutationObserver(function(){run();}).observe(stp,{childList:true,characterData:true,subtree:true});
+  run();
 })();
 </script>
 </body>

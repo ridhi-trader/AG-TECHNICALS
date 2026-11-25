@@ -440,7 +440,6 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <ul class="nav-links" id="navLinks">
     <li><a href="#services">Services</a></li>
     <li><a href="#news">News</a></li>
-    <li><a href="#apps">Apps</a></li>
     <li><a href="about">About Us</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#ideas">Feedback</a></li>
@@ -628,46 +627,6 @@ h1,h2,h3,h4,.step-title,.feat-title,.node-title,.ea-name,
   <div class="sec-h" id="contactH">Join The Community</div>
   <div class="sec-sub" id="contactSub" style="margin-bottom:36px;">Reach Us On Your Preferred Platform — We're Active Daily.</div>
   <div id="contactGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:860px;margin:0 auto;"></div>
-</section>
-
-<!-- OUR APPS -->
-<section id="apps" style="padding:64px 20px;text-align:center;scroll-margin-top:90px">
-<div style="max-width:760px;margin:0 auto">
-<h2 style="font-size:28px;margin:0 0 8px">📱 Our Apps</h2>
-<p style="opacity:.75;margin:0 0 24px;font-size:14px;line-height:1.6">Apps from AG Technicals. Open in your browser or install on your phone.</p>
-<div style="border:1px solid rgba(201,150,12,.35);border-radius:16px;padding:22px;text-align:left;background:linear-gradient(145deg,rgba(201,150,12,.08),rgba(255,255,255,.02))">
-<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-<div style="font-size:38px">🌐</div>
-<div style="flex:1;min-width:200px"><div style="font-size:20px;font-weight:700">Social Hub</div><div style="opacity:.75;font-size:13px;margin-top:2px">AG Technicals social app. Works in your browser and installs like an app on Android, iPhone and PC. Rs 5,000 per month.</div></div>
-</div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-<a class="wd-cta" href="social-hub" style="text-decoration:none">Details &amp; Pricing</a>
-<a class="wd-cta" href="https://social-hub-production-7ba8.up.railway.app/" target="_blank" rel="noopener" style="text-decoration:none">Open Social Hub</a>
-<button type="button" id="appShare" class="wd-cta" style="cursor:pointer;border:0">Share</button>
-</div>
-<details style="margin-top:14px;font-size:13px;opacity:.85"><summary style="cursor:pointer">How to install</summary>
-<ul style="margin:8px 0 0 18px;line-height:1.7"><li>Android (Chrome): open the app, tap the menu, then "Install app" or "Add to Home screen".</li><li>iPhone (Safari): tap Share, then "Add to Home Screen".</li><li>PC (Chrome or Edge): click the install icon in the address bar.</li></ul></details>
-</div>
-<div style="border:1px solid rgba(201,150,12,.35);border-radius:16px;padding:22px;text-align:left;margin-top:16px;background:linear-gradient(145deg,rgba(201,150,12,.08),rgba(255,255,255,.02))">
-<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-<div style="font-size:38px">📍</div>
-<div style="flex:1;min-width:200px"><div style="font-size:20px;font-weight:700">AG Tracker</div><div style="opacity:.75;font-size:13px;margin-top:2px">Field tracking app for Android. Location is used only after you allow it. Rs 5,000 per month.</div></div>
-</div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-<a class="wd-cta" href="ag-tracker" style="text-decoration:none">Details &amp; Pricing</a>
-</div>
-</div>
-</div>
-<script>
-(function(){
-  var b=document.getElementById('appShare'); if(!b) return;
-  b.addEventListener('click',function(){
-    var url='https://social-hub-production-7ba8.up.railway.app/', text='Check out Social Hub by AG Technicals';
-    if(navigator.share){navigator.share({title:'Social Hub',text:text,url:url}).catch(function(){});}
-    else{window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');}
-  });
-})();
-</script>
 </section>
 
 <!-- IDEAS / FEEDBACK -->
@@ -1017,6 +976,15 @@ function mergeProducts(src){
     var ic=list.findIndex(function(p){return p.id==='custom';});
     if(ic>-1)list.splice(ic,0,wd);else list.push(wd);
   }
+  [
+    {id:'socialhub',name:'Social Hub',icon:'🌐',sub:'Post Once, Publish Everywhere',badge:'APP',title:'Social Hub',desc:'One post to many social accounts, with AI writing help and scheduling.',cta:'View App →',type:'page',url:'social-hub',hidden:false,img:'',items:[]},
+    {id:'agtracker',name:'AG Tracker',icon:'📍',sub:'Field Tracking App',badge:'APP',title:'AG Tracker',desc:'Field tracking app for Android. Location is used only after you allow it.',cta:'View App →',type:'page',url:'ag-tracker',hidden:false,img:'',items:[]}
+  ].forEach(function(a){
+    if(!list.some(function(p){return p.id===a.id;})){
+      var ic2=list.findIndex(function(p){return p.id==='custom';});
+      if(ic2>-1)list.splice(ic2,0,a);else list.push(a);
+    }
+  });
   return list;
 }
 function renderProducts(products){
@@ -1060,6 +1028,8 @@ document.getElementById('prodGrid').innerHTML = visProds.map((p,idx)=>{
   };
   svgCovers.tools = '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="tlbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d0b06"/><stop offset="100%" stop-color="#060606"/></linearGradient><pattern id="tlgrid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#f5c542" stroke-opacity=".06"/></pattern></defs><rect width="320" height="150" fill="url(#tlbg)"/><rect width="320" height="150" fill="url(#tlgrid)"/><text x="160" y="16" text-anchor="middle" font-family="monospace" font-size="8" letter-spacing="2" fill="#c9960c">AG TOOLS · ALGO + INDICATORS</text><g><rect x="22" y="28" width="132" height="102" rx="9" fill="#0a0a0a" stroke="#f5c542" stroke-opacity=".45"/><path d="M22 44h132" stroke="#262626"/><circle cx="33" cy="36" r="2.5" fill="#ff5c6c"/><circle cx="42" cy="36" r="2.5" fill="#f5c542"/><circle cx="51" cy="36" r="2.5" fill="#2ee6a6"/><rect x="104" y="31" width="9" height="9" rx="2" fill="none" stroke="#f5c542" stroke-width="1.2"/><path d="M106 38v-5M108.5 38v-6M111 38v-4" stroke="#f5c542" stroke-width="1"/><text x="150" y="39" text-anchor="end" font-family="Arial" font-weight="800" font-size="9" fill="#f5c542">MT5</text><g stroke-width="1.6" stroke-linecap="round"><g stroke="#2ee6a6" fill="#2ee6a6"><path d="M40 108V88M40 100V94"/><rect x="37" y="92" width="6" height="10" stroke="none"/><path d="M58 98V78"/><rect x="55" y="82" width="6" height="12" stroke="none"/><path d="M94 86V66"/><rect x="91" y="70" width="6" height="12" stroke="none"/><path d="M130 76V56"/><rect x="127" y="60" width="6" height="12" stroke="none"/></g><g stroke="#ff5c6c" fill="#ff5c6c"><path d="M76 94V80"/><rect x="73" y="84" width="6" height="8" stroke="none"/><path d="M112 82V68"/><rect x="109" y="72" width="6" height="7" stroke="none"/></g></g><path d="M36 106Q60 88 84 82T130 62" fill="none" stroke="#f5c542" stroke-width="1.6"/><rect x="34" y="114" width="46" height="11" rx="5.5" fill="#f5c542"/><text x="57" y="122" text-anchor="middle" font-family="Arial" font-weight="800" font-size="6.5" fill="#000">AUTO · ON</text></g><g><rect x="166" y="28" width="132" height="102" rx="9" fill="#0a0a0a" stroke="#2ee6a6" stroke-opacity=".45"/><path d="M166 44h132" stroke="#262626"/><rect x="214" y="31" width="9" height="9" rx="2" fill="none" stroke="#2ee6a6" stroke-width="1.2"/><path d="M215.5 38l2.5-3 2 1.5 2-3" fill="none" stroke="#2ee6a6" stroke-width="1"/><text x="294" y="39" text-anchor="end" font-family="Arial" font-weight="800" font-size="9" fill="#2ee6a6">TradingView</text><rect x="182" y="64" width="100" height="28" rx="3" fill="#2ee6a6" fill-opacity=".1" stroke="#2ee6a6" stroke-opacity=".5" stroke-dasharray="3 2"/><path d="M180 112L204 98L222 104L246 78L264 84L284 58" fill="none" stroke="#2ee6a6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M180 118L204 108L222 112L246 94L264 98L284 80" fill="none" stroke="#f5c542" stroke-width="1.4" stroke-dasharray="4 3"/><circle cx="284" cy="58" r="3.5" fill="#2ee6a6"/><text x="188" y="76" font-family="monospace" font-size="6.5" fill="#2ee6a6">ZONE</text></g></svg>';
   svgCovers.webdev = '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="wbbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d0b06"/><stop offset="100%" stop-color="#060606"/></linearGradient><linearGradient id="wbhero" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f5c542"/><stop offset="100%" stop-color="#c9960c"/></linearGradient><pattern id="wbgrid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#f5c542" stroke-opacity=".06"/></pattern></defs><rect width="320" height="150" fill="url(#wbbg)"/><rect width="320" height="150" fill="url(#wbgrid)"/><text x="160" y="16" text-anchor="middle" font-family="monospace" font-size="8" letter-spacing="2" fill="#c9960c">AG STUDIO · WEBSITES + SOFTWARE</text><g><rect x="30" y="26" width="178" height="108" rx="9" fill="#0a0a0a" stroke="#f5c542" stroke-opacity=".45"/><path d="M30 42h178" stroke="#262626"/><circle cx="41" cy="34" r="2.5" fill="#ff5c6c"/><circle cx="50" cy="34" r="2.5" fill="#f5c542"/><circle cx="59" cy="34" r="2.5" fill="#2ee6a6"/><rect x="74" y="30" width="86" height="8" rx="4" fill="#161616"/><rect x="42" y="50" width="154" height="32" rx="5" fill="url(#wbhero)" fill-opacity=".9"/><rect x="50" y="58" width="70" height="6" rx="3" fill="#000" fill-opacity=".75"/><rect x="50" y="68" width="48" height="4" rx="2" fill="#000" fill-opacity=".4"/><rect x="146" y="60" width="40" height="14" rx="7" fill="#000" fill-opacity=".8"/><g fill="#151515" stroke="#262626"><rect x="42" y="90" width="48" height="36" rx="5"/><rect x="96" y="90" width="48" height="36" rx="5"/><rect x="150" y="90" width="46" height="36" rx="5"/></g><g fill="#f5c542" fill-opacity=".8"><rect x="48" y="96" width="14" height="14" rx="3"/><rect x="102" y="96" width="14" height="14" rx="3" fill="#2ee6a6"/><rect x="156" y="96" width="14" height="14" rx="3"/></g><g fill="#3a3a3a"><rect x="48" y="115" width="34" height="3" rx="1.5"/><rect x="102" y="115" width="34" height="3" rx="1.5"/><rect x="156" y="115" width="32" height="3" rx="1.5"/></g></g><g><rect x="222" y="38" width="64" height="100" rx="11" fill="#0a0a0a" stroke="#2ee6a6" stroke-opacity=".5" stroke-width="1.5"/><rect x="246" y="42" width="16" height="3.5" rx="1.75" fill="#262626"/><rect x="230" y="52" width="48" height="22" rx="4" fill="#2ee6a6" fill-opacity=".15" stroke="#2ee6a6" stroke-opacity=".4"/><path d="M234 70l10-8 8 5 12-9 8 5" fill="none" stroke="#2ee6a6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g fill="#1a1a1a" stroke="#262626"><rect x="230" y="80" width="48" height="12" rx="3"/><rect x="230" y="96" width="48" height="12" rx="3"/></g><rect x="236" y="84" width="22" height="3.5" rx="1.75" fill="#f5c542"/><rect x="236" y="100" width="30" height="3.5" rx="1.75" fill="#555"/><rect x="230" y="114" width="48" height="16" rx="8" fill="url(#wbhero)"/></g><g font-family="Arial" font-weight="800" font-size="7"><rect x="212" y="20" width="0" height="0"/></g></svg>';
+  svgCovers.socialhub = '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="shbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d0b06"/><stop offset="100%" stop-color="#060606"/></linearGradient><pattern id="shgrid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#f5c542" stroke-opacity=".06"/></pattern></defs><rect width="320" height="150" fill="url(#shbg)"/><rect width="320" height="150" fill="url(#shgrid)"/><text x="160" y="16" text-anchor="middle" font-family="monospace" font-size="8" letter-spacing="2" fill="#c9960c">AG APPS · SOCIAL HUB</text><rect x="34" y="34" width="96" height="96" rx="10" fill="#141414" stroke="#f5c542" stroke-opacity=".55"/><rect x="44" y="44" width="76" height="34" rx="5" fill="#f5c542" fill-opacity=".18"/><circle cx="58" cy="58" r="6" fill="#f5c542"/><path d="M70 72l12-14 10 10 8-6 14 10z" fill="#c9960c"/><rect x="44" y="88" width="76" height="5" rx="2.5" fill="#f5c542" fill-opacity=".5"/><rect x="44" y="99" width="58" height="5" rx="2.5" fill="#f5c542" fill-opacity=".3"/><rect x="44" y="110" width="40" height="8" rx="4" fill="#c9960c"/><g stroke="#f5c542" stroke-opacity=".6" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M130 82C170 82 180 44 214 44"/><path d="M130 82C170 82 184 70 214 70"/><path d="M130 82C170 82 184 96 214 96"/><path d="M130 82C170 82 180 122 214 122"/></g><g fill="#141414" stroke="#f5c542" stroke-width="1.6"><circle cx="228" cy="44" r="12"/><circle cx="228" cy="70" r="12"/><circle cx="228" cy="96" r="12"/><circle cx="228" cy="122" r="12"/></g><g fill="#f5c542"><circle cx="228" cy="44" r="4"/><circle cx="228" cy="70" r="4"/><circle cx="228" cy="96" r="4"/><circle cx="228" cy="122" r="4"/></g><text x="268" y="76" font-family="monospace" font-size="9" fill="#f5c542" fill-opacity=".8">ONE</text><text x="268" y="88" font-family="monospace" font-size="9" fill="#f5c542" fill-opacity=".8">POST</text></svg>';
+  svgCovers.agtracker = '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><linearGradient id="trbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0d0b06"/><stop offset="100%" stop-color="#060606"/></linearGradient><pattern id="trgrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#f5c542" stroke-opacity=".08"/></pattern></defs><rect width="320" height="150" fill="url(#trbg)"/><rect width="320" height="150" fill="url(#trgrid)"/><text x="160" y="16" text-anchor="middle" font-family="monospace" font-size="8" letter-spacing="2" fill="#c9960c">AG APPS · TRACKER</text><path d="M30 118C70 118 80 70 120 78C160 86 168 112 204 92C236 74 244 52 282 50" fill="none" stroke="#f5c542" stroke-opacity=".7" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/><circle cx="30" cy="118" r="6" fill="#141414" stroke="#f5c542" stroke-width="2"/><g transform="translate(282,50)"><circle r="22" fill="#f5c542" fill-opacity=".12"/><circle r="13" fill="#f5c542" fill-opacity=".2"/><path d="M0 -16C-8 -16 -13 -10 -13 -4C-13 6 0 18 0 18C0 18 13 6 13 -4C13 -10 8 -16 0 -16Z" fill="#f5c542"/><circle cx="0" cy="-5" r="5" fill="#0d0b06"/></g><rect x="100" y="96" width="62" height="22" rx="11" fill="#141414" stroke="#f5c542" stroke-opacity=".5"/><circle cx="114" cy="107" r="4" fill="#f5c542"/><text x="124" y="110" font-family="monospace" font-size="8" fill="#f5c542">LIVE</text></svg>';
   window.__agCov = svgCovers;
   const svgKey = p.id || '';
   const svgByName = {'custom strategy':'custom','calculator':'calculator','risk calculator':'calculator','custom':'custom','trading view indicator':'tvindicator','tvindicator':'tvindicator','algo':'algo','algo (mt5)':'algo','bridge':'bridge','education':'education','guide':'guide','guides':'guide','news':'news'};
